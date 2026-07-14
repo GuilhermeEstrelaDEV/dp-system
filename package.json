@@ -1,0 +1,28 @@
+{
+  "name": "dp-system",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.5",
+  "engines": {
+    "node": ">=20.17.0 <21",
+    "pnpm": ">=9.15.0 <10"
+  },
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prisma:generate": "pnpm --filter @dp-system/api prisma:generate",
+    "prisma:migrate:deploy": "pnpm --filter @dp-system/api prisma:migrate:deploy",
+    "prisma:seed": "pnpm --filter @dp-system/api prisma:seed"
+  },
+  "devDependencies": {
+    "eslint": "^9.17.0",
+    "lint-staged": "^15.3.0",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  }
+}
