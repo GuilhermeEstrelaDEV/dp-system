@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Development guide
+    url: https://github.com
+    about: Consult the repository development documentation before opening an issue.

@@ -44,3 +44,20 @@ Prisma ORM 6 é usado pela compatibilidade com Node.js 20.17.0, conforme ADR-004
 - `pnpm.cmd exec prisma` na raiz não encontra Prisma porque ele é dependência exclusiva de `apps/api`, decisão que preserva o isolamento dos workspaces. Os comandos equivalentes com filtro da API geraram o client e validaram o schema com sucesso.
 - Os pacotes compiláveis `@dp-system/types`, `@dp-system/ui` e `@dp-system/config` continuam compilando isoladamente. `@dp-system/eslint-config` e `@dp-system/tsconfig` são pacotes declarativos e não exigem scripts de build.
 - A migration `0001_initial_platform` contém as sete tabelas do schema de plataforma. O seed permanece restrito a papéis e permissões, sem usuários, credenciais ou dados de Departamento Pessoal.
+
+## Qualidade e automação — ETP-002.2
+
+- Husky, lint-staged e Commitlint validam arquivos staged e mensagens Conventional Commits localmente.
+- O frontend usa Vitest com jsdom e Testing Library; a API usa Jest e ts-jest. As configurações, comandos e diretórios de cobertura permanecem isolados por aplicação.
+- O Turborepo executa `test` e `test:coverage` respeitando a compilação dos pacotes compartilhados.
+- `pnpm check` é o contrato local e de CI: lint, typecheck, testes, build e validação do schema Prisma.
+- GitHub Actions executa o mesmo contrato em push e Pull Request; Dependabot mantém dependências e Actions monitorados.
+- A etapa não altera domínio, schema Prisma, migrations ou funcionalidades de negócio.
+
+## Validações da ETP-002.2
+
+- `pnpm check` foi aprovado com lint, typecheck, testes, build e validação Prisma em todos os workspaces aplicáveis.
+- Vitest validou o shell técnico React; Jest validou o health check técnico da API. Os runners permanecem isolados por aplicação.
+- Cobertura V8 foi gerada em ambos os apps. Nesta fundação, o componente `App` e o `HealthController` alcançam 100% de linhas; o total global ainda é baixo por não haver módulos de negócio testáveis e não há threshold artificial.
+- Husky instalou hooks em `.husky/_`; pre-commit foi executado sem arquivos staged, Commitlint rejeitou mensagem inválida e aceitou `chore(ci): validate quality automation`, sem criar commits.
+- Workflow, Dependabot, templates e documentação foram adicionados. A execução remota do GitHub Actions depende do próximo push ou Pull Request.

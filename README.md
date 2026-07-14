@@ -4,7 +4,7 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Fase atual: **ETP-002.1 concluída — bootstrap técnico validado; aguardando confirmação para a próxima etapa**.
+Fase atual: **ETP-002.2 concluída — qualidade, testes e automação técnica validados**.
 
 ## Topologia planejada
 
@@ -18,6 +18,21 @@ Monorepo `pnpm` + Turborepo com aplicações em `apps/web` e `apps/api`, e pacot
 - Docker Compose e Dockerfiles configurados; execução de contêineres aguarda Docker Desktop no ambiente.
 
 Consulte o [manual de instalação](docs/INSTALLATION.md) e o [relatório da ETP-002.1](docs/project-management/ETP-002_STAGE_01.md).
+
+## Qualidade e validação
+
+Os comandos de validação devem ser executados a partir da raiz do monorepo:
+
+```powershell
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm prisma:validate
+pnpm check
+```
+
+`pnpm check` executa lint, typecheck, testes, build e validação do schema Prisma, nessa ordem. Consulte o [guia de desenvolvimento](docs/DEVELOPMENT.md) para testes, cobertura, hooks e padrão Conventional Commits.
 
 ## Documentação
 
@@ -35,6 +50,7 @@ Consulte o [manual de instalação](docs/INSTALLATION.md) e o [relatório da ETP
 - [Backlog inicial priorizado](docs/product/INITIAL_BACKLOG.md)
 - [Decisões de negócio pendentes](docs/project-management/BUSINESS_DECISIONS_PENDING.md)
 - [Plano da ETP-002](docs/project-management/ETP-002_INFRASTRUCTURE_PLAN.md)
+- [Guia de desenvolvimento](docs/DEVELOPMENT.md)
 - [ADR-003 — Monorepo e fronteiras de pacotes](docs/architecture/decisions/ADR-003-monorepo-turborepo-boundaries.md)
 
 ## Princípios
