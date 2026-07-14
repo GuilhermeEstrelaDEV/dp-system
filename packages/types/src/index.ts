@@ -1,7 +1,9 @@
 export interface ApiSuccessResponse<TData> {
   data: TData;
   meta: {
-    traceId: string;
+    correlationId: string;
+    timestamp: string;
+    path: string;
   };
 }
 
@@ -12,7 +14,9 @@ export interface ApiErrorResponse {
     details?: Record<string, string[]>;
   };
   meta: {
-    traceId: string;
+    correlationId: string;
+    timestamp: string;
+    path: string;
   };
 }
 

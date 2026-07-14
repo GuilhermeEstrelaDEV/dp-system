@@ -61,3 +61,10 @@ Prisma ORM 6 é usado pela compatibilidade com Node.js 20.17.0, conforme ADR-004
 - Cobertura V8 foi gerada em ambos os apps. Nesta fundação, o componente `App` e o `HealthController` alcançam 100% de linhas; o total global ainda é baixo por não haver módulos de negócio testáveis e não há threshold artificial.
 - Husky instalou hooks em `.husky/_`; pre-commit foi executado sem arquivos staged, Commitlint rejeitou mensagem inválida e aceitou `chore(ci): validate quality automation`, sem criar commits.
 - Workflow, Dependabot, templates e documentação foram adicionados. A execução remota do GitHub Actions depende do próximo push ou Pull Request.
+
+## Serviços técnicos da plataforma — ETP-002.3
+
+- A API usa prefixo global `/api` e versionamento URI padrão `v1`; Swagger fica em `/api/docs` e seu JSON em `/api/docs-json` quando habilitado por ambiente.
+- Respostas HTTP possuem envelope técnico com correlation ID, timestamp e path. Erros inesperados não expõem stack trace ou detalhes internos.
+- Helmet, CORS configurável, limite de body e rate limit em memória são aplicados globalmente. Health checks são isentos do limiter; múltiplas instâncias exigirão armazenamento distribuído em etapa futura.
+- Liveness não consulta o banco; readiness consulta Prisma de forma leve e retorna 503 se indisponível. Shutdown gracioso usa hooks Nest e o lifecycle do Prisma.

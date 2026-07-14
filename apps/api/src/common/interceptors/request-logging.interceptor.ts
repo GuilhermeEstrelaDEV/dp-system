@@ -1,6 +1,7 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
+import type { RequestWithContext } from '../http/request-context';
+import { requestPath } from '../http/request-context';
 import { Observable, tap } from 'rxjs';
 import { AppLoggerService } from '../logger/app-logger.service';
 
@@ -10,19 +11,17 @@ export class RequestLoggingInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const httpContext = context.switchToHttp();
-    const request = httpContext.getRequest<Request & { id?: string }>();
+    const request = httpContext.getRequest<RequestWithContext>();
     const response = httpContext.getResponse<Response>();
     const startedAt = performance.now();
-    request.id = request.header('x-request-id') ?? randomUUID();
-
     return next.handle().pipe(
       tap(() => {
         this.logger.log('HTTP request completed', 'HTTP', {
           method: request.method,
-          path: request.url,
+          path: requestPath(request),
           statusCode: response.statusCode,
           durationMs: Math.round(performance.now() - startedAt),
-          traceId: request.id,
+          correlationId: request.correlationId,
         });
       }),
     );

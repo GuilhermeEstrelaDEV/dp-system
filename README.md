@@ -4,7 +4,7 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Fase atual: **ETP-002.2 concluída — qualidade, testes e automação técnica validados**.
+Fase atual: **ETP-002.3 concluída — serviços técnicos da plataforma validados**.
 
 ## Topologia planejada
 

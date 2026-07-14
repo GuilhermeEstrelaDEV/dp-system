@@ -34,6 +34,8 @@ As mensagens devem seguir Conventional Commits, por exemplo: `feat(web): add emp
 - API técnica: `http://localhost:3000/api/v1/health`.
 - Swagger local: `http://localhost:3000/docs`.
 - Web: `http://localhost:5173`.
+- Swagger: `http://localhost:3000/api/docs` quando `SWAGGER_ENABLED=true`.
+- Health: `GET /api/v1/health/live` e `GET /api/v1/health/ready`.
 
 ## Banco
 
