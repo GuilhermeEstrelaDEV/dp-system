@@ -1,0 +1,29 @@
+name: Feature request
+description: Propose an improvement that is aligned with the approved product scope.
+title: 'feat: '
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: Describe the problem before proposing a solution.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Explain the user or operational problem to be solved.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: Describe the expected result without prescribing implementation details.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable criteria that define completion.
+    validations:
+      required: true

@@ -15,6 +15,20 @@
 5. Com Docker disponível, execute `docker compose up --build`.
 6. Em execução local sem contêineres de aplicação, inicie PostgreSQL/Redis e execute `pnpm dev`.
 
+## Qualidade e hooks locais
+
+Após `pnpm install`, o Husky instala os hooks de Git para validar arquivos staged e mensagens de commit. Em terminais PowerShell com bloqueio de `pnpm.ps1`, substitua `pnpm` por `pnpm.cmd`.
+
+Execute a validação completa antes de abrir um Pull Request:
+
+```powershell
+pnpm check
+```
+
+Para gerar relatórios de cobertura, execute `pnpm test:coverage`. Os relatórios HTML ficam em `apps/web/coverage` e `apps/api/coverage`.
+
+As mensagens devem seguir Conventional Commits, por exemplo: `feat(web): add employee list` ou `chore(ci): configure validation workflow`.
+
 ## Verificações
 
 - API técnica: `http://localhost:3000/api/v1/health`.
