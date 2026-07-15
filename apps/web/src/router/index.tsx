@@ -4,6 +4,11 @@ import { DashboardPage } from '@/pages/DashboardPage';
 import { ModulePlaceholderPage } from '@/pages/ModulePlaceholderPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { RouteErrorPage } from '@/pages/RouteErrorPage';
+import { BranchesPage } from '@/features/branches';
+import { CompaniesPage } from '@/features/companies';
+import { CostCentersPage } from '@/features/cost-centers';
+import { DepartmentsPage } from '@/features/departments';
+import { PositionsPage } from '@/features/positions';
 
 export const appRoutes: RouteObject[] = [
   {
@@ -13,7 +18,12 @@ export const appRoutes: RouteObject[] = [
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'administracao', element: <ModulePlaceholderPage /> },
-      { path: 'estrutura', element: <ModulePlaceholderPage /> },
+      { path: 'estrutura', element: <CompaniesPage /> },
+      { path: 'estrutura/empresas', element: <CompaniesPage /> },
+      { path: 'estrutura/filiais', element: <BranchesPage /> },
+      { path: 'estrutura/departamentos', element: <DepartmentsPage /> },
+      { path: 'estrutura/cargos', element: <PositionsPage /> },
+      { path: 'estrutura/centros-de-custo', element: <CostCentersPage /> },
       { path: 'colaboradores', element: <ModulePlaceholderPage /> },
       { path: 'admissoes', element: <ModulePlaceholderPage /> },
       { path: 'movimentacoes', element: <ModulePlaceholderPage /> },

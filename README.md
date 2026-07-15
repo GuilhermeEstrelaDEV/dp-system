@@ -4,7 +4,7 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Fase atual: **ETP-003 concluída — application shell e experiência visual inicial disponíveis**.
+Fase atual: **ETP-004 em implementação — estrutura organizacional**.
 
 ## Topologia planejada
 

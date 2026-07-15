@@ -24,3 +24,71 @@ export interface HealthStatus {
   status: 'ok';
   database: 'connected';
 }
+
+export type RecordStatus = 'ACTIVE' | 'INACTIVE';
+
+export interface PaginationMeta {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface PaginatedResult<TItem> {
+  items: TItem[];
+  pagination: PaginationMeta;
+}
+
+export interface CompanyContract {
+  id: string;
+  legalName: string;
+  tradeName: string;
+  taxId: string;
+  status: RecordStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BranchContract {
+  id: string;
+  companyId: string;
+  code: string;
+  name: string;
+  taxId: string | null;
+  address: Record<string, string> | null;
+  status: RecordStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DepartmentContract {
+  id: string;
+  companyId: string;
+  branchId: string | null;
+  code: string;
+  name: string;
+  status: RecordStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PositionContract {
+  id: string;
+  companyId: string;
+  code: string;
+  name: string;
+  description: string | null;
+  status: RecordStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CostCenterContract {
+  id: string;
+  companyId: string;
+  code: string;
+  name: string;
+  status: RecordStatus;
+  createdAt: string;
+  updatedAt: string;
+}

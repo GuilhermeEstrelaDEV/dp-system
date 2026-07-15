@@ -37,6 +37,27 @@ async function main() {
       }),
     ),
   );
+
+  const company = await prisma.company.upsert({
+    where: { taxId: '00.000.000/0001-00' },
+    update: {},
+    create: {
+      legalName: 'Empresa Fictícia de Demonstração Ltda.',
+      tradeName: 'Empresa Demonstração',
+      taxId: '00.000.000/0001-00',
+    },
+  });
+
+  await prisma.branch.upsert({
+    where: { companyId_code: { companyId: company.id, code: 'MATRIZ-DEMO' } },
+    update: {},
+    create: {
+      companyId: company.id,
+      code: 'MATRIZ-DEMO',
+      name: 'Filial Matriz Demonstrativa',
+      address: { city: 'Cidade Fictícia', state: 'DF' },
+    },
+  });
 }
 
 main()

@@ -44,6 +44,8 @@ Execute `pnpm dev` para iniciar as aplicações em desenvolvimento. Consulte `do
 
 O application shell e sua configuração de navegação estão documentados em [Application Shell](frontend/APPLICATION_SHELL.md). Mantenha caminhos, rótulos, ícones e breadcrumbs centralizados nessa configuração; telas demonstrativas devem identificar todo conteúdo fictício de modo visível.
 
+Os cadastros organizacionais usam TanStack Query, React Hook Form, Zod e `@hookform/resolvers`. Execute as migrations antes de testar a API contra uma base local.
+
 ## Git e commits
 
 O Husky instala hooks em `pnpm install`:

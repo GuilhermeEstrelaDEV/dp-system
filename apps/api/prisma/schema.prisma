@@ -112,3 +112,88 @@ model AuditLog {
   @@index([traceId])
   @@map("audit_logs")
 }
+
+model Company {
+  id          String       @id @default(uuid()) @db.Uuid
+  legalName   String       @map("legal_name") @db.VarChar(160)
+  tradeName   String       @map("trade_name") @db.VarChar(160)
+  taxId       String       @unique @map("tax_id") @db.VarChar(20)
+  status      String       @default("ACTIVE") @db.VarChar(20)
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  branches    Branch[]
+  departments Department[]
+  positions   Position[]
+  costCenters CostCenter[]
+
+  @@index([status])
+  @@map("companies")
+}
+
+model Branch {
+  id          String       @id @default(uuid()) @db.Uuid
+  companyId   String       @map("company_id") @db.Uuid
+  code        String       @db.VarChar(50)
+  name        String       @db.VarChar(160)
+  taxId       String?      @map("tax_id") @db.VarChar(20)
+  address     Json?
+  status      String       @default("ACTIVE") @db.VarChar(20)
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  departments Department[]
+
+  @@unique([companyId, code])
+  @@unique([companyId, taxId])
+  @@index([companyId, status])
+  @@map("branches")
+}
+
+model Department {
+  id        String    @id @default(uuid()) @db.Uuid
+  companyId String    @map("company_id") @db.Uuid
+  branchId  String?   @map("branch_id") @db.Uuid
+  code      String    @db.VarChar(50)
+  name      String    @db.VarChar(160)
+  status    String    @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  branch    Branch?   @relation(fields: [branchId], references: [id], onDelete: Restrict)
+
+  @@unique([companyId, code])
+  @@index([companyId, status])
+  @@index([branchId])
+  @@map("departments")
+}
+
+model Position {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  code        String   @db.VarChar(50)
+  name        String   @db.VarChar(160)
+  description String?  @db.VarChar(1000)
+  status      String   @default("ACTIVE") @db.VarChar(20)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@unique([companyId, code])
+  @@index([companyId, status])
+  @@map("positions")
+}
+
+model CostCenter {
+  id        String   @id @default(uuid()) @db.Uuid
+  companyId String   @map("company_id") @db.Uuid
+  code      String   @db.VarChar(50)
+  name      String   @db.VarChar(160)
+  status    String   @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@unique([companyId, code])
+  @@index([companyId, status])
+  @@map("cost_centers")
+}
