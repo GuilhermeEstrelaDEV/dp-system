@@ -48,6 +48,8 @@ Os cadastros organizacionais usam TanStack Query, React Hook Form, Zod e `@hookf
 
 Os módulos de colaboradores e contratos tratam apenas dados mínimos demonstrativos. Não inclua CPF, endereço, documentos, banco, saúde ou remuneração em fixtures, testes, logs ou telas; consulte [Colaboradores e contratos](modules/EMPLOYEES_AND_CONTRACTS.md) para o recorte LGPD e as decisões pendentes.
 
+O fluxo admissional persiste somente metadados operacionais e requisitos documentais lógicos. Não introduza upload, armazenamento de arquivo, OCR, assinatura, eSocial ou prazo legal fixo sem decisão de DP documentada; consulte [Admissão e checklist admissional](modules/ADMISSION_WORKFLOW.md).
+
 ## Git e commits
 
 O Husky instala hooks em `pnpm install`:

@@ -53,7 +53,7 @@ export const navigationItems: readonly NavigationItem[] = [
   {
     label: 'Admissões',
     path: '/admissoes',
-    description: 'Os fluxos de admissão serão construídos neste módulo.',
+    description: 'Processos admissionais demonstrativos, checklists e prazos internos.',
     icon: 'admissions',
   },
   {

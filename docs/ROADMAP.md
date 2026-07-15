@@ -42,6 +42,12 @@ Empresas, filiais, departamentos, cargos e centros de custo passam a compor a fu
 
 Colaboradores, contatos mínimos, contratos e histórico contratual passam a usar a estrutura organizacional. Dados pessoais e trabalhistas sensíveis, como CPF, endereço, documentos, banco e remuneração, permanecem fora do escopo até validação formal do DP. Consulte [Colaboradores e contratos](modules/EMPLOYEES_AND_CONTRACTS.md).
 
+## ETP-006 — Admissão e checklist admissional
+
+**Status:** em implementação.
+
+Processos admissionais demonstrativos, templates de checklist, instâncias imutáveis, itens com bloqueio/reabertura/não aplicável e requisitos documentais lógicos são tratados sem arquivos reais, integração externa ou regras legais presumidas. Consulte [Admissão e checklist admissional](modules/ADMISSION_WORKFLOW.md).
+
 ## Etapa 2 — Fundação técnica
 
 Criar monorepo, ambientes, autenticação, autorização, auditoria, banco e pipeline de qualidade. Não inclui funcionalidade de DP.
