@@ -16,6 +16,10 @@ import { DepartmentsModule } from './modules/departments/departments.module';
 import { PositionsModule } from './modules/positions/positions.module';
 import { EmployeesModule } from './modules/employees/employees.module';
 import { EmploymentContractsModule } from './modules/employment-contracts/employment-contracts.module';
+import { AdmissionProcessesModule } from './modules/admission-processes/admission-processes.module';
+import { ChecklistTemplatesModule } from './modules/checklist-templates/checklist-templates.module';
+import { AdmissionChecklistsModule } from './modules/admission-checklists/admission-checklists.module';
+import { AdmissionDocumentsModule } from './modules/admission-documents/admission-documents.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -44,6 +48,10 @@ import { PrismaModule } from './prisma/prisma.module';
     CostCentersModule,
     EmployeesModule,
     EmploymentContractsModule,
+    AdmissionProcessesModule,
+    ChecklistTemplatesModule,
+    AdmissionChecklistsModule,
+    AdmissionDocumentsModule,
   ],
   providers: [
     AppLoggerService,
