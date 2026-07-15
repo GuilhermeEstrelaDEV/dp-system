@@ -3,3 +3,6 @@ dist/
 .turbo/
 coverage/
 pnpm-lock.yaml
+# Prettier does not provide parsers for Prisma schemas or migration SQL in this workspace.
+apps/api/prisma/schema.prisma
+apps/api/prisma/migrations/**/migration.sql
