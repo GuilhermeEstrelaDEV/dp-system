@@ -2,8 +2,8 @@
 
 ## ETP-006 — Admissão e checklist admissional
 
-- **Status:** branch publicada; bloqueada na abertura do Pull Request por autenticação/autorização externa do GitHub
-- **Branch:** `feature/admission-workflow`
+- **Status:** concluída e mergeada em `develop`
+- **Branch:** `feature/admission-workflow` (local e remota excluídas após o merge)
 - **Base:** `develop` em `21c1ef6`
 - **Migration prevista:** `0004_admission_workflow`
 - **Escopo ativo:** processo admissional, templates e instâncias de checklist, requisitos documentais lógicos, prazos internos e telas demonstrativas.
@@ -14,11 +14,17 @@
 - **Formatação:** o `format:check` apontou 20 arquivos históricos do ETP-005 após a exclusão explícita de Prisma/SQL, sem parser no projeto. Eles receberam apenas formatação mecânica, e `format:check` passou globalmente.
 - **Validações aprovadas:** `prisma:validate`, `format:check`, `lint`, `typecheck`, `test` (26 API + 18 web), `test:coverage`, `build`, `check`, `install --frozen-lockfile` e `git diff --check`.
 - **Arquivos concluídos:** schema e migration, quatro módulos NestJS, testes unitários, telas de admissões/checklist/documentos/templates, documentação e formatação global.
-- **Arquivos pendentes:** Pull Request, CI, merge em `develop` e limpeza da branch.
-- **Push:** `origin/feature/admission-workflow` publicado em `00f6c62`.
-- **Falha atual:** a integração GitHub retornou `403 Resource not accessible by integration` ao criar o Pull Request para `develop`.
-- **Próximo passo exato:** autenticar uma conta GitHub com permissão de criar Pull Requests em `GuilhermeEstrelaDEV/dp-system`, abrir PR de `feature/admission-workflow` para `develop`, aguardar CI e retomar por este arquivo.
+- **Pull Request e merge:** PR #19 mergeado em `develop` no commit `e3ca780`.
+- **Validação final:** o merge foi confirmado em `origin/develop`; branch de feature ausente localmente e no remoto.
+- **Próximo passo exato:** iniciar a ETP-007 a partir de `develop` sincronizada, criando `feature/attendance-time-balance`.
 
-## ETP-007 a ETP-015
+## ETP-007 — Jornada e banco de horas
+
+- **Status:** em preparação
+- **Branch prevista:** `feature/attendance-time-balance`
+- **Migration prevista:** `0005_attendance_time_balance`
+- **Próximo passo exato:** criar a branch da ETP-007, registrar a base de `develop` e iniciar a implementação de jornadas, ocorrências e livro de movimentos do banco de horas.
+
+## ETP-008 a ETP-015
 
 - **Status:** pendentes; cada etapa será iniciada somente após o merge da anterior em `develop`.
