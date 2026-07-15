@@ -2,7 +2,7 @@
 
 ## ETP-006 — Admissão e checklist admissional
 
-- **Status:** implementação e commits locais concluídos; aguardando publicação do Pull Request
+- **Status:** branch publicada; bloqueada na abertura do Pull Request por autenticação/autorização externa do GitHub
 - **Branch:** `feature/admission-workflow`
 - **Base:** `develop` em `21c1ef6`
 - **Migration prevista:** `0004_admission_workflow`
@@ -13,9 +13,11 @@
 - **Concluído nesta execução:** schema Prisma e migration `0004_admission_workflow`; módulos de processos, templates, instâncias/itens de checklist e documentos lógicos; rotas de detalhes, criação/edição, checklist, documentos e templates; testes unitários dos serviços; documentação transversal e de módulo.
 - **Formatação:** o `format:check` apontou 20 arquivos históricos do ETP-005 após a exclusão explícita de Prisma/SQL, sem parser no projeto. Eles receberam apenas formatação mecânica, e `format:check` passou globalmente.
 - **Validações aprovadas:** `prisma:validate`, `format:check`, `lint`, `typecheck`, `test` (26 API + 18 web), `test:coverage`, `build`, `check`, `install --frozen-lockfile` e `git diff --check`.
-- **Arquivos pendentes:** atualização deste status, push, Pull Request, CI, merge e limpeza da branch.
-- **Falha atual:** nenhuma local.
-- **Próximo passo exato:** criar o commit desta atualização de status, publicar `feature/admission-workflow` e abrir Pull Request para `develop`.
+- **Arquivos concluídos:** schema e migration, quatro módulos NestJS, testes unitários, telas de admissões/checklist/documentos/templates, documentação e formatação global.
+- **Arquivos pendentes:** Pull Request, CI, merge em `develop` e limpeza da branch.
+- **Push:** `origin/feature/admission-workflow` publicado em `00f6c62`.
+- **Falha atual:** a integração GitHub retornou `403 Resource not accessible by integration` ao criar o Pull Request para `develop`.
+- **Próximo passo exato:** autenticar uma conta GitHub com permissão de criar Pull Requests em `GuilhermeEstrelaDEV/dp-system`, abrir PR de `feature/admission-workflow` para `develop`, aguardar CI e retomar por este arquivo.
 
 ## ETP-007 a ETP-015
 
