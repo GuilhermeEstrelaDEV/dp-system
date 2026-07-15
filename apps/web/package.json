@@ -15,26 +15,28 @@
     "@dp-system/config": "workspace:*",
     "@dp-system/types": "workspace:*",
     "@dp-system/ui": "workspace:*",
+    "@hookform/resolvers": "^5.4.0",
     "@tanstack/react-query": "^5.62.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
-    "react-router-dom": "^6.28.1"
+    "react-router-dom": "^6.28.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@dp-system/tsconfig": "workspace:*",
-    "@types/react": "^19.0.2",
-    "@types/react-dom": "^19.0.2",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "3.2.4",
     "autoprefixer": "^10.4.20",
+    "jsdom": "^26.1.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2",
     "vite": "^6.0.5",
-    "vitest": "3.2.4",
-    "jsdom": "^26.1.0"
+    "vitest": "3.2.4"
   }
 }

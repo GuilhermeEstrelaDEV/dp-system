@@ -15,6 +15,8 @@
 | BDP-009 | Definir alçadas de aprovação para folha, rescisão, parâmetros legais e acessos emergenciais.                      | Permissões, segregação de funções e auditoria.            | Crítica    | Diretoria, DP e Financeiro       | Pendente |
 | BDP-010 | Confirmar fornecedores, formatos e responsabilidades para ponto, contabilidade, assinatura e eSocial.             | Adaptadores de integração e cronograma.                   | Média      | TI, DP e fornecedores            | Pendente |
 | BDP-011 | Definir retenção documental, acesso a dados médicos, descarte, exportação e política LGPD.                        | Segurança, auditoria e armazenamento de documentos.       | Crítica    | Diretoria, Jurídico/DPO e DP     | Pendente |
+| BDP-012 | Definir organização raiz e regra definitiva de unicidade fiscal entre empresas do mesmo grupo.                    | Isolamento multiempresa e evolução de dados.              | Alta       | Administração e TI               | Pendente |
+| BDP-013 | Confirmar hierarquia, vigência e eventual obrigatoriedade de filial para departamentos.                           | Estrutura organizacional e vínculos futuros.              | Alta       | RH e Departamento Pessoal        | Pendente |
 
 ## Gestão
 
