@@ -4,7 +4,7 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Fase atual: **ETP-004 em implementação — estrutura organizacional**.
+Fase atual: **ETP-005 em implementação — colaboradores e contratos de trabalho**.
 
 ## Topologia planejada
 
@@ -52,6 +52,7 @@ pnpm check
 - [Plano da ETP-002](docs/project-management/ETP-002_INFRASTRUCTURE_PLAN.md)
 - [Guia de desenvolvimento](docs/DEVELOPMENT.md)
 - [Application Shell do frontend](docs/frontend/APPLICATION_SHELL.md)
+- [Colaboradores e contratos de trabalho](docs/modules/EMPLOYEES_AND_CONTRACTS.md)
 - [ADR-003 — Monorepo e fronteiras de pacotes](docs/architecture/decisions/ADR-003-monorepo-turborepo-boundaries.md)
 
 ## Princípios

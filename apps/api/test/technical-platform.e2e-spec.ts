@@ -23,9 +23,11 @@ class TechnicalTestModule {}
 describe('technical platform integration', () => {
   let moduleRef: TestingModule;
   let app: Awaited<ReturnType<typeof createApplication>>;
+  const originalCorsOrigins = process.env.CORS_ORIGINS;
   const prisma = { $queryRaw: jest.fn().mockResolvedValue([{ result: 1 }]) };
 
   beforeAll(async () => {
+    process.env.CORS_ORIGINS = 'http://allowed.test';
     moduleRef = await Test.createTestingModule({ imports: [TechnicalTestModule] })
       .overrideProvider(PrismaService)
       .useValue(prisma)
@@ -36,6 +38,7 @@ describe('technical platform integration', () => {
 
   afterAll(async () => {
     if (app) await app.close();
+    process.env.CORS_ORIGINS = originalCorsOrigins;
   });
 
   it('serves versioned, correlated, secure and CORS-aware HTTP responses', async () => {

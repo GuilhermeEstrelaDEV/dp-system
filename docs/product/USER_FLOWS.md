@@ -24,12 +24,26 @@ Os fluxos representam comportamento esperado; telas e APIs serão especificadas 
 3. Sistema valida duplicidade, permissão e qualidade de dados.
 4. Dados sensíveis são exibidos apenas a perfis habilitados; atualização gera auditoria.
 
+### Recorte demonstrativo da ETP-005
+
+1. RH/DP cadastra nome legal e, opcionalmente, nome preferencial do colaborador.
+2. Pode adicionar e-mail ou telefone manualmente, apenas com informação fictícia no ambiente demonstrativo.
+3. O colaborador é ativado ou inativado sem exclusão física; inativação é bloqueada enquanto houver contrato ativo.
+4. CPF, endereço, documentos, banco e outros dados sensíveis não são coletados nesta etapa.
+
 ## Contratos
 
 1. DP seleciona colaborador e empresa.
 2. Informa admissão, tipo de vínculo, cargo, setor, jornada, remuneração e identificadores.
 3. Sistema valida vigência, unicidade de matrícula e conflitos com contrato ativo.
 4. Alterações futuras ou retroativas criam histórico; encerramento exige motivo e data.
+
+### Recorte demonstrativo da ETP-005
+
+1. DP seleciona colaborador, empresa, cargo e referências organizacionais permitidas.
+2. Informa matrícula manual, admissão, tipo, regime e carga horária, sem salário.
+3. O sistema verifica empresa ativa e compatibilidade de filial, departamento, cargo e centro de custo.
+4. Apenas um contrato ativo por colaborador e empresa é permitido pela camada de serviço; toda alteração ou inativação adiciona histórico com motivo opcional.
 
 ## Admissão
 

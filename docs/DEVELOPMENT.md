@@ -46,6 +46,8 @@ O application shell e sua configuração de navegação estão documentados em [
 
 Os cadastros organizacionais usam TanStack Query, React Hook Form, Zod e `@hookform/resolvers`. Execute as migrations antes de testar a API contra uma base local.
 
+Os módulos de colaboradores e contratos tratam apenas dados mínimos demonstrativos. Não inclua CPF, endereço, documentos, banco, saúde ou remuneração em fixtures, testes, logs ou telas; consulte [Colaboradores e contratos](modules/EMPLOYEES_AND_CONTRACTS.md) para o recorte LGPD e as decisões pendentes.
+
 ## Git e commits
 
 O Husky instala hooks em `pnpm install`:
