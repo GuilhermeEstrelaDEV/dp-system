@@ -105,6 +105,10 @@ Os módulos `companies`, `branches`, `departments`, `positions` e `cost-centers`
 
 O modelo não persiste identificadores sensíveis, endereços, documentos, banco ou remuneração antes das decisões de DP e dos controles de proteção correspondentes.
 
+## 4.4 Admissão e checklist
+
+Os módulos `admission-processes`, `checklist-templates`, `admission-checklists` e `admission-documents` isolam o fluxo admissional da estrutura e dos contratos. A instância do checklist é um snapshot dos itens do template; atualizações do template não alteram processos já iniciados. Os requisitos documentais são registros lógicos sem armazenamento ou transmissão de arquivos.
+
 ## 5. Serviços de domínio principais
 
 | Serviço                   | Responsabilidade                                                   |

@@ -52,6 +52,14 @@ Os fluxos representam comportamento esperado; telas e APIs serão especificadas 
 3. Responsáveis concluem tarefas, anexam evidências e geram documentos.
 4. DP revisa e aprova; pendência crítica bloqueia conclusão e integração.
 
+### Recorte demonstrativo da ETP-006
+
+1. DP seleciona um contrato já cadastrado e abre um processo admissional interno.
+2. Um template ativo gera itens de checklist independentes, com prazos configuráveis de referência.
+3. Cada item pode ser concluído, bloqueado ou marcado como não aplicável; bloqueio e não aplicável exigem justificativa e a reabertura de item concluído exige observação.
+4. Requisitos documentais são controlados apenas como rótulos e estados de recebimento/revisão; não há upload, arquivo ou decisão de validade documental.
+5. O processo só pode ser concluído quando todos os itens obrigatórios estiverem concluídos ou justificados como não aplicáveis.
+
 ## Benefícios
 
 1. RH/DP configura catálogo e planos por empresa.

@@ -165,3 +165,7 @@ Eventos são publicados após confirmação transacional por meio de outbox; nã
 | Rescisão           | Encerramento do vínculo e apuração de verbas                                |
 | RET                | Registro de eventos trabalhistas usado pelo eSocial                         |
 | eSocial            | Integração governamental de eventos trabalhistas, previdenciários e fiscais |
+
+## 9. Admissão demonstrativa
+
+`AdmissionProcess` vincula colaborador, contrato e empresa; pode referenciar um `ChecklistTemplate` ativo. A geração cria um `ChecklistInstance` com `AdmissionChecklistItem` próprio, preservando o snapshot. `AdmissionDocumentRequirement` representa somente o estado lógico de recebimento e revisão, sem arquivo ou dado documental.

@@ -26,6 +26,12 @@
 - BDP-005: o serviço impede mais de um contrato ativo por colaborador e empresa, sem decidir a regra futura para vínculos múltiplos.
 - BDP-013: filial, departamento e centro de custo permanecem opcionais; quando informados, precisam ser compatíveis com a empresa.
 
+## Aplicação segura na ETP-006
+
+- BDP-001 e BDP-011: a etapa não coleta, armazena ou transmite documentos pessoais; os requisitos documentais são apenas rótulos e estados lógicos.
+- BDP-011: retenção, acesso, descarte, lista oficial de documentos e qualquer upload permanecem fora do escopo até validação de DP, Jurídico e DPO.
+- Nova decisão necessária: validar templates oficiais, responsáveis, prazos legais e critérios de aceite do checklist antes de uso operacional. A ETP-006 usa somente prazos internos configuráveis e demonstrativos.
+
 ## Gestão
 
 - Cada decisão será atualizada para `Em análise`, `Aprovada` ou `Descartada`, com data, evidência e responsável.

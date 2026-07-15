@@ -15,6 +15,12 @@ import {
   EmploymentContractDetailsPage,
   EmploymentContractsPage,
 } from '@/features/employment-contracts';
+import { AdmissionsPage } from '@/features/admissions';
+import { AdmissionChecklistPage } from '@/features/admissions/AdmissionChecklistPage';
+import { AdmissionDetailsPage } from '@/features/admissions/AdmissionDetailsPage';
+import { AdmissionDocumentsPage } from '@/features/admissions/AdmissionDocumentsPage';
+import { AdmissionFormPage } from '@/features/admissions/AdmissionFormPage';
+import { ChecklistTemplatesPage } from '@/features/admissions/ChecklistTemplatesPage';
 
 export const appRoutes: RouteObject[] = [
   {
@@ -36,7 +42,13 @@ export const appRoutes: RouteObject[] = [
       { path: 'employees/:employeeId/contracts', element: <EmploymentContractsPage /> },
       { path: 'contratos', element: <EmploymentContractsPage /> },
       { path: 'contratos/:contractId', element: <EmploymentContractDetailsPage /> },
-      { path: 'admissoes', element: <ModulePlaceholderPage /> },
+      { path: 'admissoes', element: <AdmissionsPage /> },
+      { path: 'admissoes/nova', element: <AdmissionFormPage /> },
+      { path: 'admissoes/:admissionId', element: <AdmissionDetailsPage /> },
+      { path: 'admissoes/:admissionId/editar', element: <AdmissionFormPage /> },
+      { path: 'admissoes/:admissionId/checklist', element: <AdmissionChecklistPage /> },
+      { path: 'admissoes/:admissionId/documentos', element: <AdmissionDocumentsPage /> },
+      { path: 'configuracoes/checklists', element: <ChecklistTemplatesPage /> },
       { path: 'movimentacoes', element: <ModulePlaceholderPage /> },
       { path: 'jornada', element: <ModulePlaceholderPage /> },
       { path: 'beneficios', element: <ModulePlaceholderPage /> },
