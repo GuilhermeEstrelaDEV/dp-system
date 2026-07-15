@@ -4,7 +4,7 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Fase atual: **ETP-002.3 concluída — serviços técnicos da plataforma validados**.
+Fase atual: **ETP-003 concluída — application shell e experiência visual inicial disponíveis**.
 
 ## Topologia planejada
 
@@ -12,7 +12,7 @@ Monorepo `pnpm` + Turborepo com aplicações em `apps/web` e `apps/api`, e pacot
 
 ## Fundação técnica disponível
 
-- React/Vite, Tailwind, React Router, TanStack Query e React Hook Form preparados sem telas de ERP.
+- React/Vite, Tailwind e React Router com application shell responsivo, dashboard demonstrativo, rotas de placeholder e fallback visual, sem integração com API.
 - NestJS com Swagger, logger estruturado, tratamento global de erros, JWT apenas estrutural e health check técnico.
 - Prisma 6.19.0, PostgreSQL, migration e seed restritos a identidade de plataforma.
 - Docker Compose e Dockerfiles configurados; execução de contêineres aguarda Docker Desktop no ambiente.
@@ -51,6 +51,7 @@ pnpm check
 - [Decisões de negócio pendentes](docs/project-management/BUSINESS_DECISIONS_PENDING.md)
 - [Plano da ETP-002](docs/project-management/ETP-002_INFRASTRUCTURE_PLAN.md)
 - [Guia de desenvolvimento](docs/DEVELOPMENT.md)
+- [Application Shell do frontend](docs/frontend/APPLICATION_SHELL.md)
 - [ADR-003 — Monorepo e fronteiras de pacotes](docs/architecture/decisions/ADR-003-monorepo-turborepo-boundaries.md)
 
 ## Princípios
