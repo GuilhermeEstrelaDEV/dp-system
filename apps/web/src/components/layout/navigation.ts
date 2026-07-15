@@ -41,7 +41,13 @@ export const navigationItems: readonly NavigationItem[] = [
   {
     label: 'Colaboradores',
     path: '/colaboradores',
-    description: 'Os cadastros de colaboradores estarão disponíveis neste módulo.',
+    description: 'Cadastros demonstrativos de colaboradores e contatos.',
+    icon: 'people',
+  },
+  {
+    label: 'Contratos',
+    path: '/contratos',
+    description: 'Vínculos de trabalho demonstrativos e seu histórico.',
     icon: 'people',
   },
   {
@@ -95,5 +101,7 @@ export const navigationItems: readonly NavigationItem[] = [
 ];
 
 export function getNavigationItem(pathname: string) {
-  return navigationItems.find((item) => item.path === pathname);
+  return navigationItems.find(
+    (item) => pathname === item.path || (item.path !== '/' && pathname.startsWith(`${item.path}/`)),
+  );
 }

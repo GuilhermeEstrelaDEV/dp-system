@@ -99,6 +99,12 @@ O `apps/web` possui um application shell local à aplicação, composto por side
 
 Os módulos `companies`, `branches`, `departments`, `positions` e `cost-centers` são módulos NestJS independentes, persistidos por Prisma e expostos por REST. Registros subordinados exigem `companyId`; a autorização por usuário permanece fora do escopo enquanto não houver autenticação funcional.
 
+## 4.3 Colaboradores e contratos
+
+`employees` e `employee_contacts` pertencem ao módulo de colaboradores. `employment_contracts` referencia a estrutura organizacional e registra eventos append-only em `contract_history`. O serviço de contratos concentra a validação de empresa, cargo, filial, departamento e centro de custo, bem como a regra de um contrato ativo por colaborador e empresa. A plataforma de identidade, permissões e auditoria não participa desta etapa.
+
+O modelo não persiste identificadores sensíveis, endereços, documentos, banco ou remuneração antes das decisões de DP e dos controles de proteção correspondentes.
+
 ## 5. Serviços de domínio principais
 
 | Serviço                   | Responsabilidade                                                   |

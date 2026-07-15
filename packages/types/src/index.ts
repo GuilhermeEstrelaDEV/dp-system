@@ -92,3 +92,38 @@ export interface CostCenterContract {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface EmployeeContract {
+  id: string;
+  legalName: string;
+  preferredName: string | null;
+  status: RecordStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EmployeeContactContract {
+  id: string;
+  employeeId: string;
+  type: 'EMAIL' | 'PHONE';
+  value: string;
+  isPrimary: boolean;
+  status: RecordStatus;
+}
+
+export interface EmploymentContractContract {
+  id: string;
+  employeeId: string;
+  companyId: string;
+  branchId: string | null;
+  departmentId: string | null;
+  positionId: string;
+  costCenterId: string | null;
+  registrationNumber: string;
+  contractType: string;
+  employmentRegime: string;
+  startDate: string;
+  endDate: string | null;
+  weeklyHours: number;
+  status: RecordStatus;
+}

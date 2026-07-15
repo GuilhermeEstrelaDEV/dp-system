@@ -46,6 +46,10 @@ flowchart LR
 - Uma `PayrollRun` contém uma execução por contrato (`PayrollRunEmployee`), entradas e itens calculados imutáveis após fechamento.
 - Um `ChecklistInstance` e seus documentos podem ser associados a admissão, férias, afastamento ou rescisão.
 
+### Recorte implementado na ETP-005
+
+A primeira entrega de pessoas implementa `Employee`, `EmployeeContact`, `EmploymentContract` e `ContractHistory`. O histórico contratual é append-only e guarda a ação e motivo opcional; não substitui os futuros registros temporais de lotação e remuneração. Endereço, documentos, dependentes, banco, salário e remuneração permanecem adiados até a validação das decisões BDP-001, BDP-004 e BDP-011.
+
 ## 4. Fluxos de negócio
 
 ### Admissão

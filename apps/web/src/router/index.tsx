@@ -9,6 +9,12 @@ import { CompaniesPage } from '@/features/companies';
 import { CostCentersPage } from '@/features/cost-centers';
 import { DepartmentsPage } from '@/features/departments';
 import { PositionsPage } from '@/features/positions';
+import { EmployeeDetailsPage } from '@/features/employees/EmployeeDetailsPage';
+import { EmployeesPage } from '@/features/employees';
+import {
+  EmploymentContractDetailsPage,
+  EmploymentContractsPage,
+} from '@/features/employment-contracts';
 
 export const appRoutes: RouteObject[] = [
   {
@@ -24,7 +30,12 @@ export const appRoutes: RouteObject[] = [
       { path: 'estrutura/departamentos', element: <DepartmentsPage /> },
       { path: 'estrutura/cargos', element: <PositionsPage /> },
       { path: 'estrutura/centros-de-custo', element: <CostCentersPage /> },
-      { path: 'colaboradores', element: <ModulePlaceholderPage /> },
+      { path: 'colaboradores', element: <EmployeesPage /> },
+      { path: 'colaboradores/:employeeId', element: <EmployeeDetailsPage /> },
+      { path: 'colaboradores/:employeeId/contratos', element: <EmploymentContractsPage /> },
+      { path: 'employees/:employeeId/contracts', element: <EmploymentContractsPage /> },
+      { path: 'contratos', element: <EmploymentContractsPage /> },
+      { path: 'contratos/:contractId', element: <EmploymentContractDetailsPage /> },
       { path: 'admissoes', element: <ModulePlaceholderPage /> },
       { path: 'movimentacoes', element: <ModulePlaceholderPage /> },
       { path: 'jornada', element: <ModulePlaceholderPage /> },

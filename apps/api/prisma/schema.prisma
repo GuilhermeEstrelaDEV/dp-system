@@ -125,6 +125,7 @@ model Company {
   departments Department[]
   positions   Position[]
   costCenters CostCenter[]
+  employmentContracts EmploymentContract[]
 
   @@index([status])
   @@map("companies")
@@ -142,6 +143,7 @@ model Branch {
   updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
   company     Company      @relation(fields: [companyId], references: [id], onDelete: Restrict)
   departments Department[]
+  employmentContracts EmploymentContract[]
 
   @@unique([companyId, code])
   @@unique([companyId, taxId])
@@ -160,6 +162,7 @@ model Department {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   company   Company   @relation(fields: [companyId], references: [id], onDelete: Restrict)
   branch    Branch?   @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  employmentContracts EmploymentContract[]
 
   @@unique([companyId, code])
   @@index([companyId, status])
@@ -177,6 +180,7 @@ model Position {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   company     Company  @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  employmentContracts EmploymentContract[]
 
   @@unique([companyId, code])
   @@index([companyId, status])
@@ -192,8 +196,84 @@ model CostCenter {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  employmentContracts EmploymentContract[]
 
   @@unique([companyId, code])
   @@index([companyId, status])
   @@map("cost_centers")
+}
+
+model Employee {
+  id                  String              @id @default(uuid()) @db.Uuid
+  legalName           String              @map("legal_name") @db.VarChar(160)
+  preferredName       String?             @map("preferred_name") @db.VarChar(160)
+  status              String              @default("ACTIVE") @db.VarChar(20)
+  createdAt           DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+  contacts            EmployeeContact[]
+  employmentContracts EmploymentContract[]
+
+  @@index([status])
+  @@index([legalName])
+  @@map("employees")
+}
+
+model EmployeeContact {
+  id         String   @id @default(uuid()) @db.Uuid
+  employeeId String   @map("employee_id") @db.Uuid
+  type       String   @db.VarChar(20)
+  value      String   @db.VarChar(254)
+  isPrimary  Boolean  @default(false) @map("is_primary")
+  status     String   @default("ACTIVE") @db.VarChar(20)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+
+  @@unique([employeeId, type, value])
+  @@index([employeeId, status])
+  @@map("employee_contacts")
+}
+
+model EmploymentContract {
+  id                 String             @id @default(uuid()) @db.Uuid
+  employeeId         String             @map("employee_id") @db.Uuid
+  companyId          String             @map("company_id") @db.Uuid
+  branchId           String?            @map("branch_id") @db.Uuid
+  departmentId       String?            @map("department_id") @db.Uuid
+  positionId         String             @map("position_id") @db.Uuid
+  costCenterId       String?            @map("cost_center_id") @db.Uuid
+  registrationNumber String             @map("registration_number") @db.VarChar(50)
+  contractType       String             @map("contract_type") @db.VarChar(50)
+  employmentRegime   String             @map("employment_regime") @db.VarChar(50)
+  startDate          DateTime           @map("start_date") @db.Date
+  endDate            DateTime?          @map("end_date") @db.Date
+  weeklyHours        Int                @map("weekly_hours")
+  status             String             @default("ACTIVE") @db.VarChar(20)
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employee           Employee           @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  company            Company            @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  branch             Branch?            @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  department         Department?        @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  position           Position           @relation(fields: [positionId], references: [id], onDelete: Restrict)
+  costCenter         CostCenter?        @relation(fields: [costCenterId], references: [id], onDelete: Restrict)
+  history            ContractHistory[]
+
+  @@unique([companyId, registrationNumber])
+  @@index([employeeId, status])
+  @@index([companyId, status])
+  @@map("employment_contracts")
+}
+
+model ContractHistory {
+  id                   String             @id @default(uuid()) @db.Uuid
+  employmentContractId String             @map("employment_contract_id") @db.Uuid
+  action               String             @db.VarChar(50)
+  reason               String?            @db.VarChar(500)
+  snapshot             Json?
+  occurredAt           DateTime           @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  employmentContract   EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+
+  @@index([employmentContractId, occurredAt])
+  @@map("contract_history")
 }
