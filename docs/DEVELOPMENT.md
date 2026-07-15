@@ -38,6 +38,11 @@ Execute `pnpm dev` para iniciar as aplicações em desenvolvimento. Consulte `do
 - `apps/api` usa Jest e ts-jest para testes da aplicação NestJS.
 - Os dois runners permanecem isolados: cada aplicação possui scripts, configuração e diretório de cobertura próprios.
 - Todo comportamento novo deve possuir teste quando aplicável. Não reduza regras de lint, TypeScript ou cobertura para acomodar uma alteração.
+- Para rotas e componentes visuais, prefira queries acessíveis da Testing Library e roteamento em memória; os testes de frontend não devem depender da API.
+
+## Frontend
+
+O application shell e sua configuração de navegação estão documentados em [Application Shell](frontend/APPLICATION_SHELL.md). Mantenha caminhos, rótulos, ícones e breadcrumbs centralizados nessa configuração; telas demonstrativas devem identificar todo conteúdo fictício de modo visível.
 
 ## Git e commits
 
