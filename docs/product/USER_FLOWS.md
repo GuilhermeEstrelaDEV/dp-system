@@ -13,8 +13,9 @@ Os fluxos representam comportamento esperado; telas e APIs serão especificadas 
 
 1. Administrador cria empresa e seus dados fiscais/operacionais.
 2. Cadastra estabelecimentos, departamentos, centros de custo, cargos e jornadas.
-3. O sistema impede inativação de estrutura em uso sem data de fim e substituição definida.
-4. Alterações com impacto em contrato ou folha são vigentes e auditadas.
+3. Nesta etapa, filiais, departamentos, cargos e centros de custo são administrados por empresa e podem ser ativados ou inativados sem exclusão física.
+4. O sistema impede inativação de estrutura em uso sem data de fim e substituição definida.
+5. Alterações com impacto em contrato ou folha são vigentes e auditadas.
 
 ## Funcionários
 

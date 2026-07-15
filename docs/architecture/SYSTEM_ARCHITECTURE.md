@@ -95,6 +95,10 @@ Dependências apontam para dentro. O domínio não conhece HTTP, ORM, Redis, arm
 
 O `apps/web` possui um application shell local à aplicação, composto por sidebar responsiva, header, breadcrumbs e área de rota. Caminhos, rótulos, ícones e descrições dos módulos ficam em uma única configuração de navegação; sidebar, menu mobile e breadcrumbs a consomem sem duplicar a estrutura. O shell não realiza chamadas HTTP nem concentra estado global: o estado de apresentação da sidebar e do menu mobile permanece no próprio layout. Consulte [Application Shell](../frontend/APPLICATION_SHELL.md).
 
+## 4.2 Estrutura organizacional
+
+Os módulos `companies`, `branches`, `departments`, `positions` e `cost-centers` são módulos NestJS independentes, persistidos por Prisma e expostos por REST. Registros subordinados exigem `companyId`; a autorização por usuário permanece fora do escopo enquanto não houver autenticação funcional.
+
 ## 5. Serviços de domínio principais
 
 | Serviço                   | Responsabilidade                                                   |
