@@ -24,6 +24,18 @@ O bootstrap de monorepo, React/Vite, NestJS, Prisma/PostgreSQL, Docker e documen
 
 O plano e o manifesto de arquivos estão em [ETP-002 — Plano de Infraestrutura Técnica](project-management/ETP-002_INFRASTRUCTURE_PLAN.md). A revisão para pnpm + Turborepo e as fronteiras de pacotes estão registradas na [ADR-003](architecture/decisions/ADR-003-monorepo-turborepo-boundaries.md).
 
+## ETP-003 — Application Shell e experiência visual inicial
+
+**Status:** concluída.
+
+O frontend agora possui sidebar responsiva e recolhível, header, breadcrumbs, menu mobile acessível, dashboard exclusivamente demonstrativo, rotas de placeholder, página 404 e fallback de erro. A etapa não inclui autenticação, autorização, API, dados reais, CRUD ou regras de Departamento Pessoal. A estrutura está documentada em [Application Shell](frontend/APPLICATION_SHELL.md).
+
+## ETP-004 — Estrutura Organizacional
+
+**Status:** em implementação.
+
+Empresas, filiais, departamentos, cargos e centros de custo passam a compor a fundação organizacional, com API e interface próprias. Consulte [Estrutura Organizacional](modules/ORGANIZATIONAL_STRUCTURE.md).
+
 ## Etapa 2 — Fundação técnica
 
 Criar monorepo, ambientes, autenticação, autorização, auditoria, banco e pipeline de qualidade. Não inclui funcionalidade de DP.

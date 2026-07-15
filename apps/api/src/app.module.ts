@@ -9,6 +9,11 @@ import { AppLoggerService } from './common/logger/app-logger.service';
 import { GracefulShutdownService } from './common/lifecycle/graceful-shutdown.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { HealthModule } from './modules/health/health.module';
+import { BranchesModule } from './modules/branches/branches.module';
+import { CompaniesModule } from './modules/companies/companies.module';
+import { CostCentersModule } from './modules/cost-centers/cost-centers.module';
+import { DepartmentsModule } from './modules/departments/departments.module';
+import { PositionsModule } from './modules/positions/positions.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -30,6 +35,11 @@ import { PrismaModule } from './prisma/prisma.module';
     PrismaModule,
     AuthModule,
     HealthModule,
+    CompaniesModule,
+    BranchesModule,
+    DepartmentsModule,
+    PositionsModule,
+    CostCentersModule,
   ],
   providers: [
     AppLoggerService,
