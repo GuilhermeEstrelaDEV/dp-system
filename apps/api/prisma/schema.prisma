@@ -126,6 +126,8 @@ model Company {
   positions   Position[]
   costCenters CostCenter[]
   employmentContracts EmploymentContract[]
+  admissionProcesses AdmissionProcess[]
+  checklistTemplates ChecklistTemplate[]
 
   @@index([status])
   @@map("companies")
@@ -212,6 +214,7 @@ model Employee {
   updatedAt           DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
   contacts            EmployeeContact[]
   employmentContracts EmploymentContract[]
+  admissionProcesses AdmissionProcess[]
 
   @@index([status])
   @@index([legalName])
@@ -258,6 +261,7 @@ model EmploymentContract {
   position           Position           @relation(fields: [positionId], references: [id], onDelete: Restrict)
   costCenter         CostCenter?        @relation(fields: [costCenterId], references: [id], onDelete: Restrict)
   history            ContractHistory[]
+  admissionProcesses AdmissionProcess[]
 
   @@unique([companyId, registrationNumber])
   @@index([employeeId, status])
@@ -276,4 +280,143 @@ model ContractHistory {
 
   @@index([employmentContractId, occurredAt])
   @@map("contract_history")
+}
+
+model AdmissionProcess {
+  id                    String                         @id @default(uuid()) @db.Uuid
+  employeeId            String                         @map("employee_id") @db.Uuid
+  employmentContractId  String                         @map("employment_contract_id") @db.Uuid
+  companyId             String                         @map("company_id") @db.Uuid
+  checklistTemplateId   String?                        @map("checklist_template_id") @db.Uuid
+  plannedAdmissionDate  DateTime                       @map("planned_admission_date") @db.Date
+  effectiveAdmissionDate DateTime?                     @map("effective_admission_date") @db.Date
+  status                String                         @default("DRAFT") @db.VarChar(20)
+  operationalOwner      String?                        @map("operational_owner") @db.VarChar(160)
+  notes                 String?                        @db.VarChar(2000)
+  cancellationReason    String?                        @map("cancellation_reason") @db.VarChar(500)
+  completedAt           DateTime?                      @map("completed_at") @db.Timestamptz(6)
+  cancelledAt           DateTime?                      @map("cancelled_at") @db.Timestamptz(6)
+  createdAt             DateTime                       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime                       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employee              Employee                       @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  employmentContract    EmploymentContract             @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  company               Company                        @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  checklistTemplate     ChecklistTemplate?             @relation(fields: [checklistTemplateId], references: [id], onDelete: Restrict)
+  checklistInstances    ChecklistInstance[]
+  documents             AdmissionDocumentRequirement[]
+  statusHistory         AdmissionStatusHistory[]
+
+  @@index([employmentContractId, status])
+  @@index([companyId, status])
+  @@index([plannedAdmissionDate])
+  @@map("admission_processes")
+}
+
+model ChecklistTemplate {
+  id        String                      @id @default(uuid()) @db.Uuid
+  companyId String                      @map("company_id") @db.Uuid
+  name      String                      @db.VarChar(160)
+  description String?                   @db.VarChar(1000)
+  status    String                      @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime                    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime                    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company   Company                     @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  items     ChecklistTemplateItem[]
+  admissionProcesses AdmissionProcess[]
+
+  @@unique([companyId, name])
+  @@index([companyId, status])
+  @@map("checklist_templates")
+}
+
+model ChecklistTemplateItem {
+  id              String            @id @default(uuid()) @db.Uuid
+  checklistTemplateId String         @map("checklist_template_id") @db.Uuid
+  title           String             @db.VarChar(160)
+  description     String?            @db.VarChar(1000)
+  sortOrder       Int                @map("sort_order")
+  isRequired      Boolean            @default(true) @map("is_required")
+  relativeDueDays Int?               @map("relative_due_days")
+  createdAt       DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  checklistTemplate ChecklistTemplate @relation(fields: [checklistTemplateId], references: [id], onDelete: Restrict)
+
+  @@unique([checklistTemplateId, sortOrder])
+  @@map("checklist_template_items")
+}
+
+model ChecklistInstance {
+  id               String              @id @default(uuid()) @db.Uuid
+  admissionProcessId String             @map("admission_process_id") @db.Uuid
+  checklistTemplateId String?           @map("checklist_template_id") @db.Uuid
+  templateName      String?             @map("template_name") @db.VarChar(160)
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  admissionProcess  AdmissionProcess    @relation(fields: [admissionProcessId], references: [id], onDelete: Restrict)
+  items             AdmissionChecklistItem[]
+
+  @@unique([admissionProcessId])
+  @@map("checklist_instances")
+}
+
+model AdmissionChecklistItem {
+  id                 String              @id @default(uuid()) @db.Uuid
+  checklistInstanceId String              @map("checklist_instance_id") @db.Uuid
+  title              String               @db.VarChar(160)
+  description        String?              @db.VarChar(1000)
+  sortOrder          Int                  @map("sort_order")
+  isRequired         Boolean              @default(true) @map("is_required")
+  dueDate            DateTime?            @map("due_date") @db.Date
+  status             String               @default("PENDING") @db.VarChar(20)
+  observation        String?              @db.VarChar(1000)
+  completedAt        DateTime?            @map("completed_at") @db.Timestamptz(6)
+  createdAt          DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  checklistInstance  ChecklistInstance    @relation(fields: [checklistInstanceId], references: [id], onDelete: Restrict)
+  history            AdmissionChecklistItemHistory[]
+
+  @@unique([checklistInstanceId, sortOrder])
+  @@index([status, dueDate])
+  @@map("admission_checklist_items")
+}
+
+model AdmissionChecklistItemHistory {
+  id                      String                 @id @default(uuid()) @db.Uuid
+  admissionChecklistItemId String                 @map("admission_checklist_item_id") @db.Uuid
+  action                  String                  @db.VarChar(50)
+  reason                  String?                 @db.VarChar(1000)
+  occurredAt              DateTime                @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  admissionChecklistItem  AdmissionChecklistItem  @relation(fields: [admissionChecklistItemId], references: [id], onDelete: Restrict)
+
+  @@index([admissionChecklistItemId, occurredAt])
+  @@map("admission_checklist_item_history")
+}
+
+model AdmissionDocumentRequirement {
+  id                 String           @id @default(uuid()) @db.Uuid
+  admissionProcessId String           @map("admission_process_id") @db.Uuid
+  documentType       String           @map("document_type") @db.VarChar(160)
+  isRequired         Boolean          @default(true) @map("is_required")
+  receiptStatus      String           @default("PENDING") @map("receipt_status") @db.VarChar(20)
+  reviewStatus       String           @default("PENDING") @map("review_status") @db.VarChar(20)
+  receivedAt         DateTime?        @map("received_at") @db.Timestamptz(6)
+  reviewedAt         DateTime?        @map("reviewed_at") @db.Timestamptz(6)
+  observation        String?          @db.VarChar(1000)
+  createdAt          DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  admissionProcess   AdmissionProcess @relation(fields: [admissionProcessId], references: [id], onDelete: Restrict)
+
+  @@index([admissionProcessId, receiptStatus])
+  @@map("admission_document_requirements")
+}
+
+model AdmissionStatusHistory {
+  id                 String           @id @default(uuid()) @db.Uuid
+  admissionProcessId String           @map("admission_process_id") @db.Uuid
+  status             String           @db.VarChar(20)
+  reason             String?          @db.VarChar(1000)
+  occurredAt         DateTime         @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  admissionProcess   AdmissionProcess @relation(fields: [admissionProcessId], references: [id], onDelete: Restrict)
+
+  @@index([admissionProcessId, occurredAt])
+  @@map("admission_status_history")
 }
