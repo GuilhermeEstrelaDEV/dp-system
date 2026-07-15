@@ -18,6 +18,14 @@
 | BDP-012 | Definir organização raiz e regra definitiva de unicidade fiscal entre empresas do mesmo grupo.                    | Isolamento multiempresa e evolução de dados.              | Alta       | Administração e TI               | Pendente |
 | BDP-013 | Confirmar hierarquia, vigência e eventual obrigatoriedade de filial para departamentos.                           | Estrutura organizacional e vínculos futuros.              | Alta       | RH e Departamento Pessoal        | Pendente |
 
+## Aplicação segura na ETP-005
+
+- BDP-001 e BDP-011: endereço, documentos, banco, dependentes e demais dados sensíveis não foram implementados.
+- BDP-003: a matrícula é manual e única por empresa; não há migração ou geração automática.
+- BDP-004: salário e histórico salarial foram adiados integralmente.
+- BDP-005: o serviço impede mais de um contrato ativo por colaborador e empresa, sem decidir a regra futura para vínculos múltiplos.
+- BDP-013: filial, departamento e centro de custo permanecem opcionais; quando informados, precisam ser compatíveis com a empresa.
+
 ## Gestão
 
 - Cada decisão será atualizada para `Em análise`, `Aprovada` ou `Descartada`, com data, evidência e responsável.

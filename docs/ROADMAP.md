@@ -32,9 +32,15 @@ O frontend agora possui sidebar responsiva e recolhível, header, breadcrumbs, m
 
 ## ETP-004 — Estrutura Organizacional
 
-**Status:** em implementação.
+**Status:** concluída.
 
 Empresas, filiais, departamentos, cargos e centros de custo passam a compor a fundação organizacional, com API e interface próprias. Consulte [Estrutura Organizacional](modules/ORGANIZATIONAL_STRUCTURE.md).
+
+## ETP-005 — Colaboradores e contratos de trabalho
+
+**Status:** em implementação.
+
+Colaboradores, contatos mínimos, contratos e histórico contratual passam a usar a estrutura organizacional. Dados pessoais e trabalhistas sensíveis, como CPF, endereço, documentos, banco e remuneração, permanecem fora do escopo até validação formal do DP. Consulte [Colaboradores e contratos](modules/EMPLOYEES_AND_CONTRACTS.md).
 
 ## Etapa 2 — Fundação técnica
 

@@ -14,6 +14,8 @@ import { CompaniesModule } from './modules/companies/companies.module';
 import { CostCentersModule } from './modules/cost-centers/cost-centers.module';
 import { DepartmentsModule } from './modules/departments/departments.module';
 import { PositionsModule } from './modules/positions/positions.module';
+import { EmployeesModule } from './modules/employees/employees.module';
+import { EmploymentContractsModule } from './modules/employment-contracts/employment-contracts.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -40,6 +42,8 @@ import { PrismaModule } from './prisma/prisma.module';
     DepartmentsModule,
     PositionsModule,
     CostCentersModule,
+    EmployeesModule,
+    EmploymentContractsModule,
   ],
   providers: [
     AppLoggerService,
