@@ -58,7 +58,7 @@
 
 ## ETP-009 — Férias e afastamentos
 
-- **Status:** em implementação
+- **Status:** publicada; Pull Request bloqueado por permissão
 - **Branch:** `feature/vacations-leaves`
 - **Base:** `develop` em `853d9b1`
 - **Migration prevista:** `0007_vacations_leaves`
@@ -70,9 +70,11 @@
 - **Validações aprovadas:** `pnpm.cmd prisma:validate`; `pnpm.cmd prisma:generate`; `pnpm.cmd --filter api typecheck`; `pnpm.cmd --filter api test -- vacations-leaves.service.spec.ts` (3 testes); `pnpm.cmd --filter web typecheck`; `pnpm.cmd --filter web test -- vacations-leaves.test.tsx` (1 teste).
 - **Validações globais aprovadas:** `pnpm.cmd format:check`, `pnpm.cmd lint`, `pnpm.cmd typecheck`, `pnpm.cmd test` (17 suítes/35 testes API), `pnpm.cmd test:coverage`, `pnpm.cmd build`, `pnpm.cmd check`, `pnpm.cmd install --frozen-lockfile` e `git diff --check`.
 - **Correção aplicada:** `format:check` revelou oito arquivos preexistentes de benefícios sem formatação. Foram formatados mecanicamente em commit isolado, sem mudança de comportamento ou escopo de férias/afastamentos.
-- **Arquivos pendentes:** commits de documentação/formatação, push, Pull Request, CI e merge.
-- **Falha atual:** nenhuma.
-- **Próximo passo exato:** criar os commits pendentes, publicar `feature/vacations-leaves` e tentar abrir Pull Request para `develop`.
+- **Arquivos pendentes:** Pull Request, CI, merge em `develop`, sincronização e limpeza da branch.
+- **Publicação:** `feature/vacations-leaves` foi publicada em `origin` até `7643b06`.
+- **Link de comparação:** `https://github.com/GuilhermeEstrelaDEV/dp-system/compare/develop...feature/vacations-leaves`.
+- **Falha atual:** a criação do Pull Request pela integração GitHub retornou `403 Resource not accessible by integration` em 2026-07-16. Não foi usado contorno de permissão.
+- **Próximo passo exato:** autenticar uma identidade GitHub com permissão para criar Pull Requests e abrir `feature/vacations-leaves` contra `develop`; então acompanhar CI, corrigir falhas reproduzíveis, realizar o merge, sincronizar `develop` e iniciar a ETP-010.
 
 ## ETP-010 a ETP-015
 
