@@ -58,8 +58,8 @@
 
 ## ETP-009 — Férias e afastamentos
 
-- **Status:** publicada; Pull Request bloqueado por permissão
-- **Branch:** `feature/vacations-leaves`
+- **Status:** concluída e mergeada em `develop`
+- **Branch:** `feature/vacations-leaves` (local e remota excluídas após o merge)
 - **Base:** `develop` em `853d9b1`
 - **Migration prevista:** `0007_vacations_leaves`
 - **Escopo ativo:** períodos aquisitivos e concessivos informados de forma configurável, solicitações e programação de férias, férias coletivas estruturais, tipos/casos de afastamento, retornos, histórico e alertas lógicos.
@@ -70,12 +70,20 @@
 - **Validações aprovadas:** `pnpm.cmd prisma:validate`; `pnpm.cmd prisma:generate`; `pnpm.cmd --filter api typecheck`; `pnpm.cmd --filter api test -- vacations-leaves.service.spec.ts` (3 testes); `pnpm.cmd --filter web typecheck`; `pnpm.cmd --filter web test -- vacations-leaves.test.tsx` (1 teste).
 - **Validações globais aprovadas:** `pnpm.cmd format:check`, `pnpm.cmd lint`, `pnpm.cmd typecheck`, `pnpm.cmd test` (17 suítes/35 testes API), `pnpm.cmd test:coverage`, `pnpm.cmd build`, `pnpm.cmd check`, `pnpm.cmd install --frozen-lockfile` e `git diff --check`.
 - **Correção aplicada:** `format:check` revelou oito arquivos preexistentes de benefícios sem formatação. Foram formatados mecanicamente em commit isolado, sem mudança de comportamento ou escopo de férias/afastamentos.
-- **Arquivos pendentes:** Pull Request, CI, merge em `develop`, sincronização e limpeza da branch.
-- **Publicação:** `feature/vacations-leaves` foi publicada em `origin` até `7643b06`.
-- **Link de comparação:** `https://github.com/GuilhermeEstrelaDEV/dp-system/compare/develop...feature/vacations-leaves`.
-- **Falha atual:** a criação do Pull Request pela integração GitHub retornou `403 Resource not accessible by integration` em 2026-07-16. Não foi usado contorno de permissão.
-- **Próximo passo exato:** autenticar uma identidade GitHub com permissão para criar Pull Requests e abrir `feature/vacations-leaves` contra `develop`; então acompanhar CI, corrigir falhas reproduzíveis, realizar o merge, sincronizar `develop` e iniciar a ETP-010.
+- **Pull Request e merge:** PR #22 mergeado em `develop` no commit `750b679`.
+- **Validação final:** `origin/develop` contém `44a2503` e todos os commits funcionais da ETP-009; a branch local e a remota foram excluídas.
+- **Próximo passo exato:** iniciar ETP-010 a partir de `develop` sincronizada, criando `feature/payroll-engine`.
 
-## ETP-010 a ETP-015
+## ETP-010 — Motor de folha de pagamento
+
+- **Status:** em preparação
+- **Branch:** `feature/payroll-engine`
+- **Base:** `develop` em `750b679`
+- **Migrations previstas:** `0008_payroll_foundation` e `0009_payroll_calculation`
+- **Escopo ativo:** fundação configurável de competências, rubricas, parâmetros versionados, lançamentos, fechamento/reabertura justificados e cálculo determinístico sem parâmetros legais preenchidos.
+- **Restrições preservadas:** nenhum valor legal, alíquota, tabela, cálculo homologado ou declaração de conformidade será inferido sem fonte oficial validada.
+- **Próximo passo exato:** registrar o início na branch e revisar os modelos existentes para delimitar a primeira migration de fundação.
+
+## ETP-011 a ETP-015
 
 - **Status:** pendentes; cada etapa será iniciada somente após o merge da anterior em `develop`.
