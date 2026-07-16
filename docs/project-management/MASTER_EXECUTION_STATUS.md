@@ -100,6 +100,7 @@
 - **Pendências:** `payroll-inputs`, `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
 - **Concluído adicionalmente:** `payroll-inputs` com listagem paginada/filtrável/ordenável, busca, criação, edição e inativação lógica. Os valores e quantidades são recebidos como strings decimais e convertidos para `Prisma.Decimal`; contrato, colaborador, empresa, competência, status e vigência da rubrica são verificados antes da gravação. A chave de origem é única por competência e o fechamento torna o lançamento imutável.
 - **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/api typecheck`, `pnpm.cmd --filter @dp-system/api lint` e `git diff --check`.
+- **Commit incremental:** `aec6a11` — `feat(api): add payroll input module`.
 - **Pendências:** `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
 - **Próximo passo exato:** implementar `payroll-runs` com execução estrutural demonstrativa, versões de motor/parâmetros, avisos e erros bloqueantes, sem cálculos legais.
 
