@@ -92,6 +92,7 @@
 - **Commit incremental:** `1d52007` — `feat(api): add payroll periods module`.
 - **Concluído adicionalmente:** `payroll-rubrics` com listagem paginada/pesquisável/ordenável, busca por ID, criação de rubrica e primeira versão obrigatória, configurações JSON de base/incidência, atualização e ativação/inativação lógica. A categoria deve pertencer à empresa e renomeação é bloqueada após uso em resultado histórico.
 - **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck` após o módulo de rubricas.
+- **Commit incremental:** `59b84d2` — `feat(api): add payroll rubric module`.
 - **Pendências:** `payroll-parameters`, `payroll-inputs`, `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
 - **Próximo passo exato:** implementar `payroll-parameters` com vigência, versões append-only, ativação/inativação e bloqueio de sobreposição incompatível.
 
