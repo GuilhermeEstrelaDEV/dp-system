@@ -29,7 +29,6 @@
 - **Concluído adicionalmente:** feature React `time-management` em `/jornada`, com jornadas, ocorrências, consulta de saldo derivado e fechamento demonstrativo; teste de interface e documentação do módulo.
 - **Validações adicionais aprovadas:** `pnpm.cmd --filter web typecheck` e `pnpm.cmd --filter web test -- time-management.test.tsx` (1 teste aprovado).
 - **Concluído adicionalmente:** README, roadmap e guia de desenvolvimento documentam o recorte de jornada.
-- **Arquivos pendentes:** validações globais e fluxo Git.
 - **Validações adicionais aprovadas:** `pnpm.cmd format:check` após formatação mecânica dos arquivos históricos apontados pelo verificador; `pnpm.cmd lint`; `pnpm.cmd typecheck`; `pnpm.cmd test` (15 suítes/29 testes API e 7 arquivos/19 testes web); `pnpm.cmd test:coverage` (mesmas 15 suítes/29 testes API e 7 arquivos/19 testes web); `pnpm.cmd build`; `pnpm.cmd check`; `pnpm.cmd install --frozen-lockfile`; `git diff --check`.
 - **Falha atual:** nenhuma; a execução agregada anterior excedeu o limite antes de retornar resultado completo.
 - **Arquivos concluídos:** schema/migration, módulo NestJS, APIs, testes unitários, frontend demonstrativo, documentação de módulo e documentação transversal.
@@ -39,10 +38,22 @@
 
 ## ETP-008 — Benefícios
 
-- **Status:** em preparação
-- **Branch prevista:** `feature/employee-benefits`
+- **Status:** em implementação
+- **Branch:** `feature/employee-benefits`
+- **Base:** `develop` em `c4a1e2f`
 - **Migration prevista:** `0006_employee_benefits`
-- **Próximo passo exato:** criar a branch da ETP-008 e modelar catálogo, planos, adesões vigentes e histórico de benefícios, sem integração com operadoras ou cálculo de folha.
+- **Concluído nesta execução:** schema Prisma e migration `0006_employee_benefits` para catálogo por empresa, planos com valores `Decimal`, coparticipação configurável, adesões com vigência e histórico append-only.
+- **Validações aprovadas:** `pnpm.cmd prisma:validate` e `pnpm.cmd prisma:generate`.
+- **Concluído adicionalmente:** módulo NestJS `benefits` com APIs de catálogo, planos e adesões; valores monetários são validados como texto decimal. A adesão confere empresa do contrato, bloqueia sobreposição ativa por benefício e registra histórico para adesão, suspensão e cancelamento.
+- **Concluído adicionalmente:** feature React em `/beneficios`, com catálogo, pesquisa, filtro, paginação local, planos, vigência, coparticipação, adesões, consulta por contrato e estados de carregamento, erro e vazio. Os formulários usam React Hook Form e Zod; as consultas usam TanStack Query.
+- **Concluído adicionalmente:** testes unitários do serviço de benefícios e testes de interface para estado vazio, pesquisa e falha de API; documentação do módulo e referências de desenvolvimento, roadmap e decisões pendentes.
+- **Validações adicionais aprovadas:** `pnpm.cmd --filter api typecheck`; `pnpm.cmd --filter web typecheck`; `pnpm.cmd --filter api test -- benefits.service.spec.ts` (3 testes); `pnpm.cmd --filter web test -- benefits.test.tsx` (3 testes).
+- **Validações globais aprovadas:** `pnpm.cmd format:check`, `pnpm.cmd lint`, `pnpm.cmd test` (16 suítes/32 testes API e 8 arquivos/22 testes web), `pnpm.cmd test:coverage`, `pnpm.cmd build`, `pnpm.cmd check`, `pnpm.cmd install --frozen-lockfile` e `git diff --check`.
+- **Correção aplicada:** a primeira rodada apontou somente formatação preexistente em arquivos de jornada e um aviso de dependência React na nova tela. A formatação foi aplicada mecanicamente, o aviso foi corrigido e a rodada final foi aprovada.
+- **Commits criados:** `7db391a feat(db): add employee benefits schema`; `8547ecd feat(api): add employee benefits endpoints`; `5a63743 feat(web): add employee benefits screens`; `1d2fd18 test: cover employee benefits flows`; `795e322 docs: document employee benefits module`.
+- **Arquivos pendentes:** publicar a branch e criar Pull Request para `develop`.
+- **Falha atual:** nenhuma.
+- **Próximo passo exato:** criar o commit de status, fazer push de `feature/employee-benefits` e tentar criar o Pull Request para `develop`.
 
 ## ETP-009 a ETP-015
 
