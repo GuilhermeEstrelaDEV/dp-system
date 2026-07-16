@@ -22,6 +22,7 @@ import { AdmissionDocumentsPage } from '@/features/admissions/AdmissionDocuments
 import { AdmissionFormPage } from '@/features/admissions/AdmissionFormPage';
 import { ChecklistTemplatesPage } from '@/features/admissions/ChecklistTemplatesPage';
 import { TimeManagementPage } from '@/features/time-management';
+import { BenefitsPage } from '@/features/benefits';
 
 export const appRoutes: RouteObject[] = [
   {
@@ -52,7 +53,7 @@ export const appRoutes: RouteObject[] = [
       { path: 'configuracoes/checklists', element: <ChecklistTemplatesPage /> },
       { path: 'movimentacoes', element: <ModulePlaceholderPage /> },
       { path: 'jornada', element: <TimeManagementPage /> },
-      { path: 'beneficios', element: <ModulePlaceholderPage /> },
+      { path: 'beneficios', element: <BenefitsPage /> },
       { path: 'folha', element: <ModulePlaceholderPage /> },
       { path: 'desligamentos', element: <ModulePlaceholderPage /> },
       { path: 'documentos', element: <ModulePlaceholderPage /> },

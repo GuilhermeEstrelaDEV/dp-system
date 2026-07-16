@@ -132,6 +132,7 @@ model Company {
   holidays Holiday[]
   timeEntries TimeEntry[]
   timeBalanceClosings TimeBalanceClosing[]
+  benefits Benefit[]
 
   @@index([status])
   @@map("companies")
@@ -269,6 +270,7 @@ model EmploymentContract {
   workScheduleAssignments ContractWorkSchedule[]
   timeEntries TimeEntry[]
   timeBalanceEntries TimeBalanceEntry[]
+  benefitEnrollments BenefitEnrollment[]
 
   @@unique([companyId, registrationNumber])
   @@index([employeeId, status])
@@ -538,4 +540,62 @@ model TimeBalanceClosing {
 
   @@unique([companyId, referenceMonth])
   @@map("time_balance_closings")
+}
+
+model Benefit {
+  id String @id @default(uuid()) @db.Uuid
+  companyId String @map("company_id") @db.Uuid
+  code String @db.VarChar(50)
+  name String @db.VarChar(160)
+  type String @db.VarChar(30)
+  status String @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  plans BenefitPlan[]
+  @@unique([companyId, code])
+  @@map("benefits")
+}
+
+model BenefitPlan {
+  id String @id @default(uuid()) @db.Uuid
+  benefitId String @map("benefit_id") @db.Uuid
+  name String @db.VarChar(160)
+  employeeAmount Decimal @default(0) @map("employee_amount") @db.Decimal(15, 2)
+  companyAmount Decimal @default(0) @map("company_amount") @db.Decimal(15, 2)
+  copayAmount Decimal? @map("copay_amount") @db.Decimal(15, 2)
+  validFrom DateTime @map("valid_from") @db.Date
+  validTo DateTime? @map("valid_to") @db.Date
+  status String @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  benefit Benefit @relation(fields: [benefitId], references: [id], onDelete: Restrict)
+  enrollments BenefitEnrollment[]
+  @@unique([benefitId, name, validFrom])
+  @@map("benefit_plans")
+}
+
+model BenefitEnrollment {
+  id String @id @default(uuid()) @db.Uuid
+  employmentContractId String @map("employment_contract_id") @db.Uuid
+  benefitPlanId String @map("benefit_plan_id") @db.Uuid
+  validFrom DateTime @map("valid_from") @db.Date
+  validTo DateTime? @map("valid_to") @db.Date
+  status String @default("ACTIVE") @db.VarChar(20)
+  reason String? @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  benefitPlan BenefitPlan @relation(fields: [benefitPlanId], references: [id], onDelete: Restrict)
+  history BenefitEnrollmentHistory[]
+  @@index([employmentContractId, status])
+  @@map("benefit_enrollments")
+}
+
+model BenefitEnrollmentHistory {
+  id String @id @default(uuid()) @db.Uuid
+  benefitEnrollmentId String @map("benefit_enrollment_id") @db.Uuid
+  action String @db.VarChar(30)
+  reason String? @db.VarChar(1000)
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  benefitEnrollment BenefitEnrollment @relation(fields: [benefitEnrollmentId], references: [id], onDelete: Restrict)
+  @@map("benefit_enrollment_history")
 }

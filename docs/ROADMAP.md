@@ -38,21 +38,27 @@ Empresas, filiais, departamentos, cargos e centros de custo passam a compor a fu
 
 ## ETP-005 — Colaboradores e contratos de trabalho
 
-**Status:** em implementação.
+**Status:** concluída.
 
 Colaboradores, contatos mínimos, contratos e histórico contratual passam a usar a estrutura organizacional. Dados pessoais e trabalhistas sensíveis, como CPF, endereço, documentos, banco e remuneração, permanecem fora do escopo até validação formal do DP. Consulte [Colaboradores e contratos](modules/EMPLOYEES_AND_CONTRACTS.md).
 
 ## ETP-006 — Admissão e checklist admissional
 
-**Status:** em implementação.
+**Status:** concluída.
 
 Processos admissionais demonstrativos, templates de checklist, instâncias imutáveis, itens com bloqueio/reabertura/não aplicável e requisitos documentais lógicos são tratados sem arquivos reais, integração externa ou regras legais presumidas. Consulte [Admissão e checklist admissional](modules/ADMISSION_WORKFLOW.md).
 
 ## ETP-007 — Jornada e banco de horas
 
-**Status:** em implementação.
+**Status:** concluída.
 
 Jornadas e escalas configuráveis, ocorrências em minutos, livro imutável de movimentos e fechamento por competência são tratados sem relógio de ponto, integração externa ou regras legais presumidas. Consulte [Jornada e banco de horas](modules/TIME_MANAGEMENT.md).
+
+## ETP-008 — Benefícios
+
+**Status:** em implementação.
+
+Catálogo por empresa, planos com vigência, adesões contratuais e coparticipação parametrizável são tratados como controles demonstrativos. Não há cálculo de folha, dados de saúde, integração com operadoras ou regras legais presumidas. Consulte [Benefícios de colaboradores](modules/EMPLOYEE_BENEFITS.md).
 
 ## Etapa 2 — Fundação técnica
 
