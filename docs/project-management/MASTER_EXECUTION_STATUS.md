@@ -80,6 +80,7 @@
 - **Branch:** `feature/payroll-engine`
 - **Base:** `develop` em `4b2a109`
 - **Migration criada:** `apps/api/prisma/migrations/0008_payroll_foundation/migration.sql`.
+- **Commit criado:** `540359a` — `feat(db): add payroll foundation schema`.
 - **Entidades concluídas:** `PayrollCalendar`, `PayrollPeriod`, `PayrollRubricCategory`, `PayrollRubric`, `PayrollRubricVersion`, `PayrollParameter`, `PayrollInput`, `PayrollRun`, `PayrollRunEmployee`, `PayrollCalculationItem`, `PayrollRunMessage` e `PayrollPeriodClosure`.
 - **Estrutura preservada:** UUIDs, timestamps, `Decimal(15,2)` para dinheiro, vigências temporais, chaves estrangeiras `RESTRICT`, índices, unicidades de competência e idempotência por `source_key`. Fechamento/reabertura e versões de motor/parâmetros ficam registrados sem exclusão em cascata; a imutabilidade de competências fechadas e de versões históricas será imposta na camada de serviço.
 - **Revisão de SQL:** não há `FLOAT`, nem `ON DELETE CASCADE` nas entidades de folha; valores monetários usam `DECIMAL`, as vigências têm `CHECK`, e todas as relações têm FK e índices de consulta.
