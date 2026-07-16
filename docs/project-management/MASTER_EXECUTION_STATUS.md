@@ -94,7 +94,10 @@
 - **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck` após o módulo de rubricas.
 - **Commit incremental:** `59b84d2` — `feat(api): add payroll rubric module`.
 - **Pendências:** `payroll-parameters`, `payroll-inputs`, `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
-- **Próximo passo exato:** implementar `payroll-parameters` com vigência, versões append-only, ativação/inativação e bloqueio de sobreposição incompatível.
+- **Concluído adicionalmente:** `payroll-parameters` com listagem paginada, filtros, pesquisa e ordenação limitada; detalhe, criação com vigência obrigatória, bloqueio de sobreposição e atualização somente antes do uso em competência fechada. O campo configurável permanece JSON sem valores legais; qualquer valor monetário futuro deve ser representado como string decimal e convertido por uma camada de domínio, nunca `float`.
+- **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck` após o módulo de parâmetros.
+- **Pendências:** `payroll-inputs`, `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
+- **Próximo passo exato:** implementar `payroll-inputs` com validação de empresa/contrato/rubrica, idempotência por chave de origem e bloqueio após o fechamento.
 
 ## ETP-011 a ETP-015
 

@@ -25,6 +25,7 @@ import { BenefitsModule } from './modules/benefits/benefits.module';
 import { VacationsLeavesModule } from './modules/vacations-leaves/vacations-leaves.module';
 import { PayrollPeriodsModule } from './modules/payroll-periods/payroll-periods.module';
 import { PayrollRubricsModule } from './modules/payroll-rubrics/payroll-rubrics.module';
+import { PayrollParametersModule } from './modules/payroll-parameters/payroll-parameters.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -62,6 +63,7 @@ import { PrismaModule } from './prisma/prisma.module';
     VacationsLeavesModule,
     PayrollPeriodsModule,
     PayrollRubricsModule,
+    PayrollParametersModule,
   ],
   providers: [
     AppLoggerService,
