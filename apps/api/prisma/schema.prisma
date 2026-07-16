@@ -128,6 +128,10 @@ model Company {
   employmentContracts EmploymentContract[]
   admissionProcesses AdmissionProcess[]
   checklistTemplates ChecklistTemplate[]
+  workSchedules WorkSchedule[]
+  holidays Holiday[]
+  timeEntries TimeEntry[]
+  timeBalanceClosings TimeBalanceClosing[]
 
   @@index([status])
   @@map("companies")
@@ -262,6 +266,9 @@ model EmploymentContract {
   costCenter         CostCenter?        @relation(fields: [costCenterId], references: [id], onDelete: Restrict)
   history            ContractHistory[]
   admissionProcesses AdmissionProcess[]
+  workScheduleAssignments ContractWorkSchedule[]
+  timeEntries TimeEntry[]
+  timeBalanceEntries TimeBalanceEntry[]
 
   @@unique([companyId, registrationNumber])
   @@index([employeeId, status])
@@ -419,4 +426,116 @@ model AdmissionStatusHistory {
 
   @@index([admissionProcessId, occurredAt])
   @@map("admission_status_history")
+}
+
+model WorkSchedule {
+  id String @id @default(uuid()) @db.Uuid
+  companyId String @map("company_id") @db.Uuid
+  code String @db.VarChar(50)
+  name String @db.VarChar(160)
+  weeklyMinutes Int @map("weekly_minutes")
+  status String @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  periods WorkSchedulePeriod[]
+  assignments ContractWorkSchedule[]
+
+  @@unique([companyId, code])
+  @@index([companyId, status])
+  @@map("work_schedules")
+}
+
+model WorkSchedulePeriod {
+  id String @id @default(uuid()) @db.Uuid
+  workScheduleId String @map("work_schedule_id") @db.Uuid
+  weekday Int
+  startMinute Int @map("start_minute")
+  endMinute Int @map("end_minute")
+  breakMinutes Int @default(0) @map("break_minutes")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  workSchedule WorkSchedule @relation(fields: [workScheduleId], references: [id], onDelete: Restrict)
+
+  @@unique([workScheduleId, weekday, startMinute])
+  @@map("work_schedule_periods")
+}
+
+model ContractWorkSchedule {
+  id String @id @default(uuid()) @db.Uuid
+  employmentContractId String @map("employment_contract_id") @db.Uuid
+  workScheduleId String @map("work_schedule_id") @db.Uuid
+  validFrom DateTime @map("valid_from") @db.Date
+  validTo DateTime? @map("valid_to") @db.Date
+  reason String? @db.VarChar(500)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  workSchedule WorkSchedule @relation(fields: [workScheduleId], references: [id], onDelete: Restrict)
+
+  @@unique([employmentContractId, validFrom])
+  @@index([workScheduleId])
+  @@map("contract_work_schedules")
+}
+
+model Holiday {
+  id String @id @default(uuid()) @db.Uuid
+  companyId String? @map("company_id") @db.Uuid
+  holidayDate DateTime @map("holiday_date") @db.Date
+  name String @db.VarChar(160)
+  scope String @default("COMPANY") @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@unique([companyId, holidayDate, name])
+  @@index([holidayDate])
+  @@map("holidays")
+}
+
+model TimeEntry {
+  id String @id @default(uuid()) @db.Uuid
+  employmentContractId String @map("employment_contract_id") @db.Uuid
+  companyId String @map("company_id") @db.Uuid
+  occurredOn DateTime @map("occurred_on") @db.Date
+  type String @db.VarChar(30)
+  minutes Int
+  source String @default("MANUAL") @db.VarChar(30)
+  status String @default("PENDING") @db.VarChar(20)
+  reason String? @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  balanceEntries TimeBalanceEntry[]
+
+  @@index([employmentContractId, occurredOn])
+  @@index([companyId, occurredOn])
+  @@map("time_entries")
+}
+
+model TimeBalanceEntry {
+  id String @id @default(uuid()) @db.Uuid
+  employmentContractId String @map("employment_contract_id") @db.Uuid
+  timeEntryId String? @map("time_entry_id") @db.Uuid
+  occurredOn DateTime @map("occurred_on") @db.Date
+  minutes Int
+  type String @db.VarChar(30)
+  reason String? @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  timeEntry TimeEntry? @relation(fields: [timeEntryId], references: [id], onDelete: Restrict)
+
+  @@index([employmentContractId, occurredOn])
+  @@map("time_balance_entries")
+}
+
+model TimeBalanceClosing {
+  id String @id @default(uuid()) @db.Uuid
+  companyId String @map("company_id") @db.Uuid
+  referenceMonth DateTime @map("reference_month") @db.Date
+  status String @default("OPEN") @db.VarChar(20)
+  closedAt DateTime? @map("closed_at") @db.Timestamptz(6)
+  reason String? @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@unique([companyId, referenceMonth])
+  @@map("time_balance_closings")
 }
