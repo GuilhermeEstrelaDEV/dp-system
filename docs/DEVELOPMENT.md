@@ -52,6 +52,8 @@ O fluxo admissional persiste somente metadados operacionais e requisitos documen
 
 Jornada e banco de horas usam minutos inteiros e movimentos append-only. Não introduza integração com relógio de ponto, tolerância, adicional, compensação ou regra legal sem decisão formal de DP; consulte [Jornada e banco de horas](modules/TIME_MANAGEMENT.md).
 
+Benefícios usam valores decimais textuais e controles de vigência/adesão. Não adicione cálculo de desconto, dados de saúde, integração com operadora, elegibilidade legal ou documentos de recusa sem a decisão BDP-008; consulte [Benefícios de colaboradores](modules/EMPLOYEE_BENEFITS.md).
+
 ## Git e commits
 
 O Husky instala hooks em `pnpm install`:

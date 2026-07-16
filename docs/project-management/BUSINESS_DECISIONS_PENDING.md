@@ -32,6 +32,12 @@
 - BDP-011: retenção, acesso, descarte, lista oficial de documentos e qualquer upload permanecem fora do escopo até validação de DP, Jurídico e DPO.
 - Nova decisão necessária: validar templates oficiais, responsáveis, prazos legais e critérios de aceite do checklist antes de uso operacional. A ETP-006 usa somente prazos internos configuráveis e demonstrativos.
 
+## Aplicação segura na ETP-008
+
+- BDP-008: o catálogo é parametrizável e demonstrativo; elegibilidade material, políticas de adesão/recusa, documentos, descontos e regras de coparticipação não foram implementados.
+- BDP-011: o módulo não coleta dados médicos, laudos, documentos, dependentes ou qualquer dado pessoal novo.
+- Valores registrados são somente insumos futuros, sem cálculo, retenção, lançamento ou integração de folha.
+
 ## Gestão
 
 - Cada decisão será atualizada para `Em análise`, `Aprovada` ou `Descartada`, com data, evidência e responsável.
