@@ -98,7 +98,10 @@
 - **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck` após o módulo de parâmetros.
 - **Commit incremental:** `2519774` — `feat(api): add payroll parameter module`.
 - **Pendências:** `payroll-inputs`, `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
-- **Próximo passo exato:** implementar `payroll-inputs` com validação de empresa/contrato/rubrica, idempotência por chave de origem e bloqueio após o fechamento.
+- **Concluído adicionalmente:** `payroll-inputs` com listagem paginada/filtrável/ordenável, busca, criação, edição e inativação lógica. Os valores e quantidades são recebidos como strings decimais e convertidos para `Prisma.Decimal`; contrato, colaborador, empresa, competência, status e vigência da rubrica são verificados antes da gravação. A chave de origem é única por competência e o fechamento torna o lançamento imutável.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/api typecheck`, `pnpm.cmd --filter @dp-system/api lint` e `git diff --check`.
+- **Pendências:** `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
+- **Próximo passo exato:** implementar `payroll-runs` com execução estrutural demonstrativa, versões de motor/parâmetros, avisos e erros bloqueantes, sem cálculos legais.
 
 ## ETP-011 a ETP-015
 
