@@ -38,8 +38,8 @@
 
 ## ETP-008 — Benefícios
 
-- **Status:** publicada; Pull Request bloqueado por permissão
-- **Branch:** `feature/employee-benefits`
+- **Status:** concluída e mergeada em `develop`
+- **Branch:** `feature/employee-benefits` (local e remota excluídas após o merge)
 - **Base:** `develop` em `c4a1e2f`
 - **Migration prevista:** `0006_employee_benefits`
 - **Concluído nesta execução:** schema Prisma e migration `0006_employee_benefits` para catálogo por empresa, planos com valores `Decimal`, coparticipação configurável, adesões com vigência e histórico append-only.
@@ -51,11 +51,10 @@
 - **Validações globais aprovadas:** `pnpm.cmd format:check`, `pnpm.cmd lint`, `pnpm.cmd test` (16 suítes/32 testes API e 8 arquivos/22 testes web), `pnpm.cmd test:coverage`, `pnpm.cmd build`, `pnpm.cmd check`, `pnpm.cmd install --frozen-lockfile` e `git diff --check`.
 - **Correção aplicada:** a primeira rodada apontou somente formatação preexistente em arquivos de jornada e um aviso de dependência React na nova tela. A formatação foi aplicada mecanicamente, o aviso foi corrigido e a rodada final foi aprovada.
 - **Commits criados:** `7db391a feat(db): add employee benefits schema`; `8547ecd feat(api): add employee benefits endpoints`; `5a63743 feat(web): add employee benefits screens`; `1d2fd18 test: cover employee benefits flows`; `795e322 docs: document employee benefits module`; `d5a1e26 docs: update benefits execution status`.
-- **Arquivos pendentes:** Pull Request, CI, merge em `develop`, sincronização e limpeza da branch.
-- **Publicação:** `feature/employee-benefits` foi publicada em `origin` e está sincronizada até `d5a1e26`.
-- **Link de comparação:** `https://github.com/GuilhermeEstrelaDEV/dp-system/compare/develop...feature/employee-benefits`.
-- **Falha atual:** a criação do Pull Request pela integração GitHub retornou `403 Resource not accessible by integration` em 2026-07-16. O GitHub CLI não está instalado neste ambiente; não foi tentado nenhum contorno de permissão.
-- **Próximo passo exato:** autenticar uma identidade GitHub com permissão de criar Pull Requests e abrir `feature/employee-benefits` contra `develop` pelo link de comparação; então acompanhar CI, corrigir falhas reproduzíveis, realizar o merge e retomar a ETP-009.
+- **Pull Request e merge:** PR #21 mergeado em `develop` no commit `013e8ad`.
+- **Validação final:** `origin/develop` contém `b76c257` e os commits funcionais da ETP-008; a branch local e a remota foram excluídas.
+- **Formatação residual da ETP-007:** oito arquivos foram inspecionados com hashes de blob idênticos no índice e no worktree. Não havia diff de conteúdo; a marcação era somente de metadados desatualizados e foi resolvida de forma não destrutiva durante o checkout de `develop`.
+- **Próximo passo exato:** iniciar ETP-009 a partir de `develop` sincronizada, criando `feature/vacations-leaves`.
 
 ## ETP-009 a ETP-015
 
