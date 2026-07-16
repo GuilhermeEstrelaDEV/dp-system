@@ -38,6 +38,12 @@
 - BDP-011: o módulo não coleta dados médicos, laudos, documentos, dependentes ou qualquer dado pessoal novo.
 - Valores registrados são somente insumos futuros, sem cálculo, retenção, lançamento ou integração de folha.
 
+## Aplicação segura na ETP-009
+
+- Regras de férias, fracionamento, aviso, conversão, pagamento e prazos não foram implementadas sem fonte oficial e homologação de DP/Jurídico.
+- Afastamentos não armazenam dados de saúde, diagnóstico, CID, documentos ou evidências.
+- O módulo usa apenas tipos e datas administrativas configuráveis, sem declaração de conformidade legal.
+
 ## Gestão
 
 - Cada decisão será atualizada para `Em análise`, `Aprovada` ou `Descartada`, com data, evidência e responsável.

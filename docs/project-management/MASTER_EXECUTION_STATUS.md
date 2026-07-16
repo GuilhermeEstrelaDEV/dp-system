@@ -56,6 +56,24 @@
 - **Formatação residual da ETP-007:** oito arquivos foram inspecionados com hashes de blob idênticos no índice e no worktree. Não havia diff de conteúdo; a marcação era somente de metadados desatualizados e foi resolvida de forma não destrutiva durante o checkout de `develop`.
 - **Próximo passo exato:** iniciar ETP-009 a partir de `develop` sincronizada, criando `feature/vacations-leaves`.
 
-## ETP-009 a ETP-015
+## ETP-009 — Férias e afastamentos
+
+- **Status:** em implementação
+- **Branch:** `feature/vacations-leaves`
+- **Base:** `develop` em `853d9b1`
+- **Migration prevista:** `0007_vacations_leaves`
+- **Escopo ativo:** períodos aquisitivos e concessivos informados de forma configurável, solicitações e programação de férias, férias coletivas estruturais, tipos/casos de afastamento, retornos, histórico e alertas lógicos.
+- **Restrições preservadas:** sem cálculo financeiro de férias, prazo legal presumido, autenticação funcional, documentos reais ou integrações externas.
+- **Concluído nesta execução:** schema Prisma e migration `0007_vacations_leaves`; módulo NestJS com períodos, solicitações, decisão administrativa, férias coletivas, tipos/casos de afastamento e retorno; rota React `/movimentacoes` demonstrativa para períodos e afastamentos.
+- **Regras implementadas:** datas coerentes, período ligado ao contrato, bloqueio de sobreposição de férias/afastamento, tipo de afastamento isolado por empresa, retorno previsto quando configurado e histórico append-only; nenhum período ou prazo legal é calculado automaticamente.
+- **Commits criados:** `e4c8b91 feat(db): add vacations and leaves schema`; `1c9aeb7 feat(api): add vacations and leaves modules`; `0f1f4da feat(web): add vacations and leaves screens`; `344efed test: cover vacations and leaves flows`.
+- **Validações aprovadas:** `pnpm.cmd prisma:validate`; `pnpm.cmd prisma:generate`; `pnpm.cmd --filter api typecheck`; `pnpm.cmd --filter api test -- vacations-leaves.service.spec.ts` (3 testes); `pnpm.cmd --filter web typecheck`; `pnpm.cmd --filter web test -- vacations-leaves.test.tsx` (1 teste).
+- **Validações globais aprovadas:** `pnpm.cmd format:check`, `pnpm.cmd lint`, `pnpm.cmd typecheck`, `pnpm.cmd test` (17 suítes/35 testes API), `pnpm.cmd test:coverage`, `pnpm.cmd build`, `pnpm.cmd check`, `pnpm.cmd install --frozen-lockfile` e `git diff --check`.
+- **Correção aplicada:** `format:check` revelou oito arquivos preexistentes de benefícios sem formatação. Foram formatados mecanicamente em commit isolado, sem mudança de comportamento ou escopo de férias/afastamentos.
+- **Arquivos pendentes:** commits de documentação/formatação, push, Pull Request, CI e merge.
+- **Falha atual:** nenhuma.
+- **Próximo passo exato:** criar os commits pendentes, publicar `feature/vacations-leaves` e tentar abrir Pull Request para `develop`.
+
+## ETP-010 a ETP-015
 
 - **Status:** pendentes; cada etapa será iniciada somente após o merge da anterior em `develop`.

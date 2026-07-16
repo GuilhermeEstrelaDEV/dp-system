@@ -60,6 +60,12 @@ Jornadas e escalas configuráveis, ocorrências em minutos, livro imutável de m
 
 Catálogo por empresa, planos com vigência, adesões contratuais e coparticipação parametrizável são tratados como controles demonstrativos. Não há cálculo de folha, dados de saúde, integração com operadoras ou regras legais presumidas. Consulte [Benefícios de colaboradores](modules/EMPLOYEE_BENEFITS.md).
 
+## ETP-009 — Férias e afastamentos
+
+**Status:** em implementação.
+
+Períodos, solicitações, férias coletivas estruturais, afastamentos e retornos são tratados como controles administrativos demonstrativos. Não há cálculo financeiro, prazo legal, regra de fracionamento ou dado médico. Consulte [Férias e afastamentos](modules/VACATIONS_AND_LEAVES.md).
+
 ## Etapa 2 — Fundação técnica
 
 Criar monorepo, ambientes, autenticação, autorização, auditoria, banco e pipeline de qualidade. Não inclui funcionalidade de DP.

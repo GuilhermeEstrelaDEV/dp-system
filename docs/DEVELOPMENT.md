@@ -54,6 +54,8 @@ Jornada e banco de horas usam minutos inteiros e movimentos append-only. Não in
 
 Benefícios usam valores decimais textuais e controles de vigência/adesão. Não adicione cálculo de desconto, dados de saúde, integração com operadora, elegibilidade legal ou documentos de recusa sem a decisão BDP-008; consulte [Benefícios de colaboradores](modules/EMPLOYEE_BENEFITS.md).
 
+Férias e afastamentos usam datas administrativas configuráveis, sem cálculo legal. Não introduza prazo, pagamento, fracionamento obrigatório, dado médico, CID ou documento real sem fonte validada e decisão de DP/Jurídico; consulte [Férias e afastamentos](modules/VACATIONS_AND_LEAVES.md).
+
 ## Git e commits
 
 O Husky instala hooks em `pnpm install`:

@@ -4,7 +4,7 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Fase atual: **ETP-008 em implementação — benefícios de colaboradores**.
+Fase atual: **ETP-009 em implementação — férias e afastamentos**.
 
 ## Topologia planejada
 
@@ -56,6 +56,7 @@ pnpm check
 - [Admissão e checklist admissional](docs/modules/ADMISSION_WORKFLOW.md)
 - [Jornada e banco de horas](docs/modules/TIME_MANAGEMENT.md)
 - [Benefícios de colaboradores](docs/modules/EMPLOYEE_BENEFITS.md)
+- [Férias e afastamentos](docs/modules/VACATIONS_AND_LEAVES.md)
 - [ADR-003 — Monorepo e fronteiras de pacotes](docs/architecture/decisions/ADR-003-monorepo-turborepo-boundaries.md)
 
 ## Princípios
