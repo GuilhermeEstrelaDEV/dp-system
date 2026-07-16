@@ -20,8 +20,8 @@
 
 ## ETP-007 — Jornada e banco de horas
 
-- **Status:** implementação concluída e branch publicada; bloqueada na abertura do Pull Request por permissão externa
-- **Branch:** `feature/attendance-time-balance`
+- **Status:** concluída e mergeada em `develop`
+- **Branch:** `feature/attendance-time-balance` (local e remota excluídas após o merge)
 - **Base:** `develop` em `35303d6`
 - **Migration prevista:** `0005_attendance_time_balance`
 - **Commits já criados:** `42d2bb9 feat(db): add attendance and time balance schema`; `6cb82fe feat(api): add attendance and time balance modules`; `1d8ec34 feat(web): add attendance management screens`.
@@ -33,12 +33,17 @@
 - **Validações adicionais aprovadas:** `pnpm.cmd format:check` após formatação mecânica dos arquivos históricos apontados pelo verificador; `pnpm.cmd lint`; `pnpm.cmd typecheck`; `pnpm.cmd test` (15 suítes/29 testes API e 7 arquivos/19 testes web); `pnpm.cmd test:coverage` (mesmas 15 suítes/29 testes API e 7 arquivos/19 testes web); `pnpm.cmd build`; `pnpm.cmd check`; `pnpm.cmd install --frozen-lockfile`; `git diff --check`.
 - **Falha atual:** nenhuma; a execução agregada anterior excedeu o limite antes de retornar resultado completo.
 - **Arquivos concluídos:** schema/migration, módulo NestJS, APIs, testes unitários, frontend demonstrativo, documentação de módulo e documentação transversal.
-- **Arquivos pendentes:** Pull Request, CI, merge em `develop` e limpeza da branch.
-- **Publicação:** `origin/feature/attendance-time-balance` está publicada em `1d8ec34`.
-- **Link de comparação:** https://github.com/GuilhermeEstrelaDEV/dp-system/compare/develop...feature/attendance-time-balance
-- **Falha atual:** a integração GitHub retornou `403 Resource not accessible by integration` ao criar o Pull Request para `develop`.
-- **Próximo passo exato:** autenticar uma conta GitHub com permissão de criar Pull Requests em `GuilhermeEstrelaDEV/dp-system`, abrir o PR da branch atual para `develop`, aguardar CI e retomar por este arquivo.
+- **Pull Request e merge:** PR #20 mergeado em `develop` no commit `dcf1fbd`.
+- **Validação final:** merge confirmado em `origin/develop`; branch de feature excluída localmente e no remoto.
+- **Próximo passo exato:** iniciar ETP-008 a partir de `develop` sincronizada, criando `feature/employee-benefits`.
 
-## ETP-008 a ETP-015
+## ETP-008 — Benefícios
+
+- **Status:** em preparação
+- **Branch prevista:** `feature/employee-benefits`
+- **Migration prevista:** `0006_employee_benefits`
+- **Próximo passo exato:** criar a branch da ETP-008 e modelar catálogo, planos, adesões vigentes e histórico de benefícios, sem integração com operadoras ou cálculo de folha.
+
+## ETP-009 a ETP-015
 
 - **Status:** pendentes; cada etapa será iniciada somente após o merge da anterior em `develop`.
