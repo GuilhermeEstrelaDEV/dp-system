@@ -20,10 +20,20 @@
 
 ## ETP-007 — Jornada e banco de horas
 
-- **Status:** em preparação
-- **Branch prevista:** `feature/attendance-time-balance`
+- **Status:** em implementação
+- **Branch:** `feature/attendance-time-balance`
+- **Base:** `develop` em `35303d6`
 - **Migration prevista:** `0005_attendance_time_balance`
-- **Próximo passo exato:** criar a branch da ETP-007, registrar a base de `develop` e iniciar a implementação de jornadas, ocorrências e livro de movimentos do banco de horas.
+- **Commits já criados:** `42d2bb9 feat(db): add attendance and time balance schema`; `6cb82fe feat(api): add attendance and time balance modules`.
+- **Validações aprovadas:** `pnpm.cmd prisma:validate`, `pnpm.cmd prisma:generate`, `pnpm.cmd --filter api typecheck` e `pnpm.cmd --filter api test -- time-management.service.spec.ts` (3 testes aprovados).
+- **Concluído adicionalmente:** feature React `time-management` em `/jornada`, com jornadas, ocorrências, consulta de saldo derivado e fechamento demonstrativo; teste de interface e documentação do módulo.
+- **Validações adicionais aprovadas:** `pnpm.cmd --filter web typecheck` e `pnpm.cmd --filter web test -- time-management.test.tsx` (1 teste aprovado).
+- **Concluído adicionalmente:** README, roadmap e guia de desenvolvimento documentam o recorte de jornada.
+- **Arquivos pendentes:** validações globais e fluxo Git.
+- **Validações adicionais aprovadas:** `pnpm.cmd format:check` após formatação mecânica dos arquivos históricos apontados pelo verificador; `pnpm.cmd lint`; `pnpm.cmd typecheck`; `pnpm.cmd test` (15 suítes/29 testes API e 7 arquivos/19 testes web); `pnpm.cmd test:coverage` (mesmas 15 suítes/29 testes API e 7 arquivos/19 testes web); `pnpm.cmd build`; `pnpm.cmd check`; `pnpm.cmd install --frozen-lockfile`; `git diff --check`.
+- **Falha atual:** nenhuma; a execução agregada anterior excedeu o limite antes de retornar resultado completo.
+- **Arquivos pendentes:** commit do frontend/testes/documentação, push, Pull Request, CI, merge e limpeza da branch.
+- **Próximo passo exato:** revisar o diff remanescente, criar o commit de frontend/testes/documentação e publicar `feature/attendance-time-balance`.
 
 ## ETP-008 a ETP-015
 
