@@ -20,6 +20,7 @@ import { AdmissionProcessesModule } from './modules/admission-processes/admissio
 import { ChecklistTemplatesModule } from './modules/checklist-templates/checklist-templates.module';
 import { AdmissionChecklistsModule } from './modules/admission-checklists/admission-checklists.module';
 import { AdmissionDocumentsModule } from './modules/admission-documents/admission-documents.module';
+import { TimeManagementModule } from './modules/time-management/time-management.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -52,6 +53,7 @@ import { PrismaModule } from './prisma/prisma.module';
     ChecklistTemplatesModule,
     AdmissionChecklistsModule,
     AdmissionDocumentsModule,
+    TimeManagementModule,
   ],
   providers: [
     AppLoggerService,
