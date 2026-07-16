@@ -96,6 +96,7 @@
 - **Pendências:** `payroll-parameters`, `payroll-inputs`, `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
 - **Concluído adicionalmente:** `payroll-parameters` com listagem paginada, filtros, pesquisa e ordenação limitada; detalhe, criação com vigência obrigatória, bloqueio de sobreposição e atualização somente antes do uso em competência fechada. O campo configurável permanece JSON sem valores legais; qualquer valor monetário futuro deve ser representado como string decimal e convertido por uma camada de domínio, nunca `float`.
 - **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck` após o módulo de parâmetros.
+- **Commit incremental:** `2519774` — `feat(api): add payroll parameter module`.
 - **Pendências:** `payroll-inputs`, `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
 - **Próximo passo exato:** implementar `payroll-inputs` com validação de empresa/contrato/rubrica, idempotência por chave de origem e bloqueio após o fechamento.
 
