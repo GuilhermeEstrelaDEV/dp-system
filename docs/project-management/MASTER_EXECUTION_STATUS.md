@@ -20,10 +20,24 @@
 
 ## ETP-007 — Jornada e banco de horas
 
-- **Status:** em preparação
-- **Branch prevista:** `feature/attendance-time-balance`
+- **Status:** implementação concluída e branch publicada; bloqueada na abertura do Pull Request por permissão externa
+- **Branch:** `feature/attendance-time-balance`
+- **Base:** `develop` em `35303d6`
 - **Migration prevista:** `0005_attendance_time_balance`
-- **Próximo passo exato:** criar a branch da ETP-007, registrar a base de `develop` e iniciar a implementação de jornadas, ocorrências e livro de movimentos do banco de horas.
+- **Commits já criados:** `42d2bb9 feat(db): add attendance and time balance schema`; `6cb82fe feat(api): add attendance and time balance modules`; `1d8ec34 feat(web): add attendance management screens`.
+- **Validações aprovadas:** `pnpm.cmd prisma:validate`, `pnpm.cmd prisma:generate`, `pnpm.cmd --filter api typecheck` e `pnpm.cmd --filter api test -- time-management.service.spec.ts` (3 testes aprovados).
+- **Concluído adicionalmente:** feature React `time-management` em `/jornada`, com jornadas, ocorrências, consulta de saldo derivado e fechamento demonstrativo; teste de interface e documentação do módulo.
+- **Validações adicionais aprovadas:** `pnpm.cmd --filter web typecheck` e `pnpm.cmd --filter web test -- time-management.test.tsx` (1 teste aprovado).
+- **Concluído adicionalmente:** README, roadmap e guia de desenvolvimento documentam o recorte de jornada.
+- **Arquivos pendentes:** validações globais e fluxo Git.
+- **Validações adicionais aprovadas:** `pnpm.cmd format:check` após formatação mecânica dos arquivos históricos apontados pelo verificador; `pnpm.cmd lint`; `pnpm.cmd typecheck`; `pnpm.cmd test` (15 suítes/29 testes API e 7 arquivos/19 testes web); `pnpm.cmd test:coverage` (mesmas 15 suítes/29 testes API e 7 arquivos/19 testes web); `pnpm.cmd build`; `pnpm.cmd check`; `pnpm.cmd install --frozen-lockfile`; `git diff --check`.
+- **Falha atual:** nenhuma; a execução agregada anterior excedeu o limite antes de retornar resultado completo.
+- **Arquivos concluídos:** schema/migration, módulo NestJS, APIs, testes unitários, frontend demonstrativo, documentação de módulo e documentação transversal.
+- **Arquivos pendentes:** Pull Request, CI, merge em `develop` e limpeza da branch.
+- **Publicação:** `origin/feature/attendance-time-balance` está publicada em `1d8ec34`.
+- **Link de comparação:** https://github.com/GuilhermeEstrelaDEV/dp-system/compare/develop...feature/attendance-time-balance
+- **Falha atual:** a integração GitHub retornou `403 Resource not accessible by integration` ao criar o Pull Request para `develop`.
+- **Próximo passo exato:** autenticar uma conta GitHub com permissão de criar Pull Requests em `GuilhermeEstrelaDEV/dp-system`, abrir o PR da branch atual para `develop`, aguardar CI e retomar por este arquivo.
 
 ## ETP-008 a ETP-015
 

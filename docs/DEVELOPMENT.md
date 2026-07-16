@@ -50,6 +50,8 @@ Os módulos de colaboradores e contratos tratam apenas dados mínimos demonstrat
 
 O fluxo admissional persiste somente metadados operacionais e requisitos documentais lógicos. Não introduza upload, armazenamento de arquivo, OCR, assinatura, eSocial ou prazo legal fixo sem decisão de DP documentada; consulte [Admissão e checklist admissional](modules/ADMISSION_WORKFLOW.md).
 
+Jornada e banco de horas usam minutos inteiros e movimentos append-only. Não introduza integração com relógio de ponto, tolerância, adicional, compensação ou regra legal sem decisão formal de DP; consulte [Jornada e banco de horas](modules/TIME_MANAGEMENT.md).
+
 ## Git e commits
 
 O Husky instala hooks em `pnpm install`:

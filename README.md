@@ -4,7 +4,7 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Fase atual: **ETP-006 em implementação — admissão e checklist admissional**.
+Fase atual: **ETP-007 em implementação — jornada e banco de horas**.
 
 ## Topologia planejada
 
@@ -54,6 +54,7 @@ pnpm check
 - [Application Shell do frontend](docs/frontend/APPLICATION_SHELL.md)
 - [Colaboradores e contratos de trabalho](docs/modules/EMPLOYEES_AND_CONTRACTS.md)
 - [Admissão e checklist admissional](docs/modules/ADMISSION_WORKFLOW.md)
+- [Jornada e banco de horas](docs/modules/TIME_MANAGEMENT.md)
 - [ADR-003 — Monorepo e fronteiras de pacotes](docs/architecture/decisions/ADR-003-monorepo-turborepo-boundaries.md)
 
 ## Princípios
