@@ -90,8 +90,10 @@
 - **Implementação em andamento:** módulo `payroll-periods` criado com listagem paginada e ordenável, busca, criação, edição enquanto aberta, abertura, validação, fechamento transacional e reabertura justificada. A alteração de competência fechada retorna conflito; duplicidade é convertida em `409`; fechamento consulta mensagens bloqueantes e registra histórico append-only.
 - **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck`.
 - **Commit incremental:** `1d52007` — `feat(api): add payroll periods module`.
-- **Pendências:** `payroll-rubrics`, `payroll-parameters`, `payroll-inputs`, `payroll-runs`, `payroll-closures`, seus testes e as validações globais da API.
-- **Próximo passo exato:** implementar `payroll-rubrics` com categorias, natureza configurável, vigência e inativação lógica; depois seguir para os demais módulos da lista.
+- **Concluído adicionalmente:** `payroll-rubrics` com listagem paginada/pesquisável/ordenável, busca por ID, criação de rubrica e primeira versão obrigatória, configurações JSON de base/incidência, atualização e ativação/inativação lógica. A categoria deve pertencer à empresa e renomeação é bloqueada após uso em resultado histórico.
+- **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck` após o módulo de rubricas.
+- **Pendências:** `payroll-parameters`, `payroll-inputs`, `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
+- **Próximo passo exato:** implementar `payroll-parameters` com vigência, versões append-only, ativação/inativação e bloqueio de sobreposição incompatível.
 
 ## ETP-011 a ETP-015
 
