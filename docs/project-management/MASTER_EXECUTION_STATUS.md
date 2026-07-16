@@ -87,7 +87,10 @@
 - **Divergências registradas:** `DATABASE_SPECIFICATION.md` e `DOMAIN_MODEL.md` descrevem tabelas estatutárias, expressões de cálculo, aprovações e resultados de cálculo completos. Nesta fundação elas foram deliberadamente reduzidas a `PayrollParameter.definition` e configurações JSON sem valores, faixas, alíquotas, fórmulas ou aprovação por usuário; `contract_id` da documentação foi mapeado ao padrão existente `employment_contract_id`. O processamento legal permanece fora do escopo e a migration `0009_payroll_calculation` não foi criada.
 - **Arquivos concluídos:** `apps/api/prisma/schema.prisma` e `apps/api/prisma/migrations/0008_payroll_foundation/migration.sql`.
 - **Validações aprovadas:** `pnpm.cmd --filter @dp-system/api exec prisma format --schema prisma/schema.prisma` (equivalente ao script raiz inexistente `prisma:format`), `pnpm.cmd prisma:validate`, `pnpm.cmd prisma:generate`, `pnpm.cmd --filter @dp-system/api typecheck`, `pnpm.cmd lint` e `git diff --check`.
-- **Próximo passo exato:** implementar os módulos NestJS de configuração da folha: `payroll-periods`, `payroll-rubrics`, `payroll-parameters`, `payroll-inputs`, `payroll-runs` e `payroll-closures`.
+- **Implementação em andamento:** módulo `payroll-periods` criado com listagem paginada e ordenável, busca, criação, edição enquanto aberta, abertura, validação, fechamento transacional e reabertura justificada. A alteração de competência fechada retorna conflito; duplicidade é convertida em `409`; fechamento consulta mensagens bloqueantes e registra histórico append-only.
+- **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck`.
+- **Pendências:** `payroll-rubrics`, `payroll-parameters`, `payroll-inputs`, `payroll-runs`, `payroll-closures`, seus testes e as validações globais da API.
+- **Próximo passo exato:** implementar `payroll-rubrics` com categorias, natureza configurável, vigência e inativação lógica; depois seguir para os demais módulos da lista.
 
 ## ETP-011 a ETP-015
 
