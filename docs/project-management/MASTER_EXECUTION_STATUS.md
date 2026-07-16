@@ -38,7 +38,7 @@
 
 ## ETP-008 — Benefícios
 
-- **Status:** em implementação
+- **Status:** publicada; Pull Request bloqueado por permissão
 - **Branch:** `feature/employee-benefits`
 - **Base:** `develop` em `c4a1e2f`
 - **Migration prevista:** `0006_employee_benefits`
@@ -50,10 +50,12 @@
 - **Validações adicionais aprovadas:** `pnpm.cmd --filter api typecheck`; `pnpm.cmd --filter web typecheck`; `pnpm.cmd --filter api test -- benefits.service.spec.ts` (3 testes); `pnpm.cmd --filter web test -- benefits.test.tsx` (3 testes).
 - **Validações globais aprovadas:** `pnpm.cmd format:check`, `pnpm.cmd lint`, `pnpm.cmd test` (16 suítes/32 testes API e 8 arquivos/22 testes web), `pnpm.cmd test:coverage`, `pnpm.cmd build`, `pnpm.cmd check`, `pnpm.cmd install --frozen-lockfile` e `git diff --check`.
 - **Correção aplicada:** a primeira rodada apontou somente formatação preexistente em arquivos de jornada e um aviso de dependência React na nova tela. A formatação foi aplicada mecanicamente, o aviso foi corrigido e a rodada final foi aprovada.
-- **Commits criados:** `7db391a feat(db): add employee benefits schema`; `8547ecd feat(api): add employee benefits endpoints`; `5a63743 feat(web): add employee benefits screens`; `1d2fd18 test: cover employee benefits flows`; `795e322 docs: document employee benefits module`.
-- **Arquivos pendentes:** publicar a branch e criar Pull Request para `develop`.
-- **Falha atual:** nenhuma.
-- **Próximo passo exato:** criar o commit de status, fazer push de `feature/employee-benefits` e tentar criar o Pull Request para `develop`.
+- **Commits criados:** `7db391a feat(db): add employee benefits schema`; `8547ecd feat(api): add employee benefits endpoints`; `5a63743 feat(web): add employee benefits screens`; `1d2fd18 test: cover employee benefits flows`; `795e322 docs: document employee benefits module`; `d5a1e26 docs: update benefits execution status`.
+- **Arquivos pendentes:** Pull Request, CI, merge em `develop`, sincronização e limpeza da branch.
+- **Publicação:** `feature/employee-benefits` foi publicada em `origin` e está sincronizada até `d5a1e26`.
+- **Link de comparação:** `https://github.com/GuilhermeEstrelaDEV/dp-system/compare/develop...feature/employee-benefits`.
+- **Falha atual:** a criação do Pull Request pela integração GitHub retornou `403 Resource not accessible by integration` em 2026-07-16. O GitHub CLI não está instalado neste ambiente; não foi tentado nenhum contorno de permissão.
+- **Próximo passo exato:** autenticar uma identidade GitHub com permissão de criar Pull Requests e abrir `feature/employee-benefits` contra `develop` pelo link de comparação; então acompanhar CI, corrigir falhas reproduzíveis, realizar o merge e retomar a ETP-009.
 
 ## ETP-009 a ETP-015
 
