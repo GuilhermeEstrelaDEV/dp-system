@@ -76,13 +76,17 @@
 
 ## ETP-010 — Motor de folha de pagamento
 
-- **Status:** em preparação
+- **Status:** fundação de banco concluída; módulos NestJS de configuração pendentes.
 - **Branch:** `feature/payroll-engine`
-- **Base:** `develop` em `750b679`
-- **Migrations previstas:** `0008_payroll_foundation` e `0009_payroll_calculation`
-- **Escopo ativo:** fundação configurável de competências, rubricas, parâmetros versionados, lançamentos, fechamento/reabertura justificados e cálculo determinístico sem parâmetros legais preenchidos.
-- **Restrições preservadas:** nenhum valor legal, alíquota, tabela, cálculo homologado ou declaração de conformidade será inferido sem fonte oficial validada.
-- **Próximo passo exato:** registrar o início na branch e revisar os modelos existentes para delimitar a primeira migration de fundação.
+- **Base:** `develop` em `4b2a109`
+- **Migration criada:** `apps/api/prisma/migrations/0008_payroll_foundation/migration.sql`.
+- **Entidades concluídas:** `PayrollCalendar`, `PayrollPeriod`, `PayrollRubricCategory`, `PayrollRubric`, `PayrollRubricVersion`, `PayrollParameter`, `PayrollInput`, `PayrollRun`, `PayrollRunEmployee`, `PayrollCalculationItem`, `PayrollRunMessage` e `PayrollPeriodClosure`.
+- **Estrutura preservada:** UUIDs, timestamps, `Decimal(15,2)` para dinheiro, vigências temporais, chaves estrangeiras `RESTRICT`, índices, unicidades de competência e idempotência por `source_key`. Fechamento/reabertura e versões de motor/parâmetros ficam registrados sem exclusão em cascata; a imutabilidade de competências fechadas e de versões históricas será imposta na camada de serviço.
+- **Revisão de SQL:** não há `FLOAT`, nem `ON DELETE CASCADE` nas entidades de folha; valores monetários usam `DECIMAL`, as vigências têm `CHECK`, e todas as relações têm FK e índices de consulta.
+- **Divergências registradas:** `DATABASE_SPECIFICATION.md` e `DOMAIN_MODEL.md` descrevem tabelas estatutárias, expressões de cálculo, aprovações e resultados de cálculo completos. Nesta fundação elas foram deliberadamente reduzidas a `PayrollParameter.definition` e configurações JSON sem valores, faixas, alíquotas, fórmulas ou aprovação por usuário; `contract_id` da documentação foi mapeado ao padrão existente `employment_contract_id`. O processamento legal permanece fora do escopo e a migration `0009_payroll_calculation` não foi criada.
+- **Arquivos concluídos:** `apps/api/prisma/schema.prisma` e `apps/api/prisma/migrations/0008_payroll_foundation/migration.sql`.
+- **Validações aprovadas:** `pnpm.cmd --filter @dp-system/api exec prisma format --schema prisma/schema.prisma` (equivalente ao script raiz inexistente `prisma:format`), `pnpm.cmd prisma:validate`, `pnpm.cmd prisma:generate`, `pnpm.cmd --filter @dp-system/api typecheck`, `pnpm.cmd lint` e `git diff --check`.
+- **Próximo passo exato:** implementar os módulos NestJS de configuração da folha: `payroll-periods`, `payroll-rubrics`, `payroll-parameters`, `payroll-inputs`, `payroll-runs` e `payroll-closures`.
 
 ## ETP-011 a ETP-015
 

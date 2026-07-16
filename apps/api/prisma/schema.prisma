@@ -20,17 +20,17 @@ enum RefreshTokenStatus {
 }
 
 model User {
-  id           String         @id @default(uuid()) @db.Uuid
-  email        String         @unique @db.VarChar(254)
-  displayName  String         @map("display_name") @db.VarChar(160)
-  passwordHash String?        @map("password_hash") @db.VarChar(255)
-  status       UserStatus     @default(ACTIVE)
-  mfaEnabled   Boolean        @default(false) @map("mfa_enabled")
-  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt    DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  roles        UserRole[]
+  id            String         @id @default(uuid()) @db.Uuid
+  email         String         @unique @db.VarChar(254)
+  displayName   String         @map("display_name") @db.VarChar(160)
+  passwordHash  String?        @map("password_hash") @db.VarChar(255)
+  status        UserStatus     @default(ACTIVE)
+  mfaEnabled    Boolean        @default(false) @map("mfa_enabled")
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  roles         UserRole[]
   refreshTokens RefreshToken[]
-  auditLogs    AuditLog[]
+  auditLogs     AuditLog[]
 
   @@map("users")
 }
@@ -114,44 +114,49 @@ model AuditLog {
 }
 
 model Company {
-  id          String       @id @default(uuid()) @db.Uuid
-  legalName   String       @map("legal_name") @db.VarChar(160)
-  tradeName   String       @map("trade_name") @db.VarChar(160)
-  taxId       String       @unique @map("tax_id") @db.VarChar(20)
-  status      String       @default("ACTIVE") @db.VarChar(20)
-  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
-  branches    Branch[]
-  departments Department[]
-  positions   Position[]
-  costCenters CostCenter[]
-  employmentContracts EmploymentContract[]
-  admissionProcesses AdmissionProcess[]
-  checklistTemplates ChecklistTemplate[]
-  workSchedules WorkSchedule[]
-  holidays Holiday[]
-  timeEntries TimeEntry[]
-  timeBalanceClosings TimeBalanceClosing[]
-  benefits Benefit[]
-  collectiveVacations CollectiveVacation[]
-  leaveTypes LeaveType[]
+  id                      String                  @id @default(uuid()) @db.Uuid
+  legalName               String                  @map("legal_name") @db.VarChar(160)
+  tradeName               String                  @map("trade_name") @db.VarChar(160)
+  taxId                   String                  @unique @map("tax_id") @db.VarChar(20)
+  status                  String                  @default("ACTIVE") @db.VarChar(20)
+  createdAt               DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+  branches                Branch[]
+  departments             Department[]
+  positions               Position[]
+  costCenters             CostCenter[]
+  employmentContracts     EmploymentContract[]
+  admissionProcesses      AdmissionProcess[]
+  checklistTemplates      ChecklistTemplate[]
+  workSchedules           WorkSchedule[]
+  holidays                Holiday[]
+  timeEntries             TimeEntry[]
+  timeBalanceClosings     TimeBalanceClosing[]
+  benefits                Benefit[]
+  collectiveVacations     CollectiveVacation[]
+  leaveTypes              LeaveType[]
+  payrollCalendars        PayrollCalendar[]
+  payrollPeriods          PayrollPeriod[]
+  payrollRubricCategories PayrollRubricCategory[]
+  payrollRubrics          PayrollRubric[]
+  payrollParameters       PayrollParameter[]
 
   @@index([status])
   @@map("companies")
 }
 
 model Branch {
-  id          String       @id @default(uuid()) @db.Uuid
-  companyId   String       @map("company_id") @db.Uuid
-  code        String       @db.VarChar(50)
-  name        String       @db.VarChar(160)
-  taxId       String?      @map("tax_id") @db.VarChar(20)
-  address     Json?
-  status      String       @default("ACTIVE") @db.VarChar(20)
-  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company     Company      @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  departments Department[]
+  id                  String               @id @default(uuid()) @db.Uuid
+  companyId           String               @map("company_id") @db.Uuid
+  code                String               @db.VarChar(50)
+  name                String               @db.VarChar(160)
+  taxId               String?              @map("tax_id") @db.VarChar(20)
+  address             Json?
+  status              String               @default("ACTIVE") @db.VarChar(20)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company             Company              @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  departments         Department[]
   employmentContracts EmploymentContract[]
 
   @@unique([companyId, code])
@@ -161,16 +166,16 @@ model Branch {
 }
 
 model Department {
-  id        String    @id @default(uuid()) @db.Uuid
-  companyId String    @map("company_id") @db.Uuid
-  branchId  String?   @map("branch_id") @db.Uuid
-  code      String    @db.VarChar(50)
-  name      String    @db.VarChar(160)
-  status    String    @default("ACTIVE") @db.VarChar(20)
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company   Company   @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  branch    Branch?   @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  id                  String               @id @default(uuid()) @db.Uuid
+  companyId           String               @map("company_id") @db.Uuid
+  branchId            String?              @map("branch_id") @db.Uuid
+  code                String               @db.VarChar(50)
+  name                String               @db.VarChar(160)
+  status              String               @default("ACTIVE") @db.VarChar(20)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company             Company              @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  branch              Branch?              @relation(fields: [branchId], references: [id], onDelete: Restrict)
   employmentContracts EmploymentContract[]
 
   @@unique([companyId, code])
@@ -180,15 +185,15 @@ model Department {
 }
 
 model Position {
-  id          String   @id @default(uuid()) @db.Uuid
-  companyId   String   @map("company_id") @db.Uuid
-  code        String   @db.VarChar(50)
-  name        String   @db.VarChar(160)
-  description String?  @db.VarChar(1000)
-  status      String   @default("ACTIVE") @db.VarChar(20)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company     Company  @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  id                  String               @id @default(uuid()) @db.Uuid
+  companyId           String               @map("company_id") @db.Uuid
+  code                String               @db.VarChar(50)
+  name                String               @db.VarChar(160)
+  description         String?              @db.VarChar(1000)
+  status              String               @default("ACTIVE") @db.VarChar(20)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company             Company              @relation(fields: [companyId], references: [id], onDelete: Restrict)
   employmentContracts EmploymentContract[]
 
   @@unique([companyId, code])
@@ -197,14 +202,14 @@ model Position {
 }
 
 model CostCenter {
-  id        String   @id @default(uuid()) @db.Uuid
-  companyId String   @map("company_id") @db.Uuid
-  code      String   @db.VarChar(50)
-  name      String   @db.VarChar(160)
-  status    String   @default("ACTIVE") @db.VarChar(20)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company   Company  @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  id                  String               @id @default(uuid()) @db.Uuid
+  companyId           String               @map("company_id") @db.Uuid
+  code                String               @db.VarChar(50)
+  name                String               @db.VarChar(160)
+  status              String               @default("ACTIVE") @db.VarChar(20)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company             Company              @relation(fields: [companyId], references: [id], onDelete: Restrict)
   employmentContracts EmploymentContract[]
 
   @@unique([companyId, code])
@@ -213,15 +218,15 @@ model CostCenter {
 }
 
 model Employee {
-  id                  String              @id @default(uuid()) @db.Uuid
-  legalName           String              @map("legal_name") @db.VarChar(160)
-  preferredName       String?             @map("preferred_name") @db.VarChar(160)
-  status              String              @default("ACTIVE") @db.VarChar(20)
-  createdAt           DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt           DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                  String               @id @default(uuid()) @db.Uuid
+  legalName           String               @map("legal_name") @db.VarChar(160)
+  preferredName       String?              @map("preferred_name") @db.VarChar(160)
+  status              String               @default("ACTIVE") @db.VarChar(20)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
   contacts            EmployeeContact[]
   employmentContracts EmploymentContract[]
-  admissionProcesses AdmissionProcess[]
+  admissionProcesses  AdmissionProcess[]
 
   @@index([status])
   @@index([legalName])
@@ -245,37 +250,39 @@ model EmployeeContact {
 }
 
 model EmploymentContract {
-  id                 String             @id @default(uuid()) @db.Uuid
-  employeeId         String             @map("employee_id") @db.Uuid
-  companyId          String             @map("company_id") @db.Uuid
-  branchId           String?            @map("branch_id") @db.Uuid
-  departmentId       String?            @map("department_id") @db.Uuid
-  positionId         String             @map("position_id") @db.Uuid
-  costCenterId       String?            @map("cost_center_id") @db.Uuid
-  registrationNumber String             @map("registration_number") @db.VarChar(50)
-  contractType       String             @map("contract_type") @db.VarChar(50)
-  employmentRegime   String             @map("employment_regime") @db.VarChar(50)
-  startDate          DateTime           @map("start_date") @db.Date
-  endDate            DateTime?          @map("end_date") @db.Date
-  weeklyHours        Int                @map("weekly_hours")
-  status             String             @default("ACTIVE") @db.VarChar(20)
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
-  employee           Employee           @relation(fields: [employeeId], references: [id], onDelete: Restrict)
-  company            Company            @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  branch             Branch?            @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  department         Department?        @relation(fields: [departmentId], references: [id], onDelete: Restrict)
-  position           Position           @relation(fields: [positionId], references: [id], onDelete: Restrict)
-  costCenter         CostCenter?        @relation(fields: [costCenterId], references: [id], onDelete: Restrict)
-  history            ContractHistory[]
-  admissionProcesses AdmissionProcess[]
+  id                      String                 @id @default(uuid()) @db.Uuid
+  employeeId              String                 @map("employee_id") @db.Uuid
+  companyId               String                 @map("company_id") @db.Uuid
+  branchId                String?                @map("branch_id") @db.Uuid
+  departmentId            String?                @map("department_id") @db.Uuid
+  positionId              String                 @map("position_id") @db.Uuid
+  costCenterId            String?                @map("cost_center_id") @db.Uuid
+  registrationNumber      String                 @map("registration_number") @db.VarChar(50)
+  contractType            String                 @map("contract_type") @db.VarChar(50)
+  employmentRegime        String                 @map("employment_regime") @db.VarChar(50)
+  startDate               DateTime               @map("start_date") @db.Date
+  endDate                 DateTime?              @map("end_date") @db.Date
+  weeklyHours             Int                    @map("weekly_hours")
+  status                  String                 @default("ACTIVE") @db.VarChar(20)
+  createdAt               DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employee                Employee               @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  company                 Company                @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  branch                  Branch?                @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  department              Department?            @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  position                Position               @relation(fields: [positionId], references: [id], onDelete: Restrict)
+  costCenter              CostCenter?            @relation(fields: [costCenterId], references: [id], onDelete: Restrict)
+  history                 ContractHistory[]
+  admissionProcesses      AdmissionProcess[]
   workScheduleAssignments ContractWorkSchedule[]
-  timeEntries TimeEntry[]
-  timeBalanceEntries TimeBalanceEntry[]
-  benefitEnrollments BenefitEnrollment[]
-  vacationPeriods VacationPeriod[]
-  vacationRequests VacationRequest[]
-  leaveCases LeaveCase[]
+  timeEntries             TimeEntry[]
+  timeBalanceEntries      TimeBalanceEntry[]
+  benefitEnrollments      BenefitEnrollment[]
+  vacationPeriods         VacationPeriod[]
+  vacationRequests        VacationRequest[]
+  leaveCases              LeaveCase[]
+  payrollInputs           PayrollInput[]
+  payrollRunEmployees     PayrollRunEmployee[]
 
   @@unique([companyId, registrationNumber])
   @@index([employeeId, status])
@@ -297,28 +304,28 @@ model ContractHistory {
 }
 
 model AdmissionProcess {
-  id                    String                         @id @default(uuid()) @db.Uuid
-  employeeId            String                         @map("employee_id") @db.Uuid
-  employmentContractId  String                         @map("employment_contract_id") @db.Uuid
-  companyId             String                         @map("company_id") @db.Uuid
-  checklistTemplateId   String?                        @map("checklist_template_id") @db.Uuid
-  plannedAdmissionDate  DateTime                       @map("planned_admission_date") @db.Date
-  effectiveAdmissionDate DateTime?                     @map("effective_admission_date") @db.Date
-  status                String                         @default("DRAFT") @db.VarChar(20)
-  operationalOwner      String?                        @map("operational_owner") @db.VarChar(160)
-  notes                 String?                        @db.VarChar(2000)
-  cancellationReason    String?                        @map("cancellation_reason") @db.VarChar(500)
-  completedAt           DateTime?                      @map("completed_at") @db.Timestamptz(6)
-  cancelledAt           DateTime?                      @map("cancelled_at") @db.Timestamptz(6)
-  createdAt             DateTime                       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt             DateTime                       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  employee              Employee                       @relation(fields: [employeeId], references: [id], onDelete: Restrict)
-  employmentContract    EmploymentContract             @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
-  company               Company                        @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  checklistTemplate     ChecklistTemplate?             @relation(fields: [checklistTemplateId], references: [id], onDelete: Restrict)
-  checklistInstances    ChecklistInstance[]
-  documents             AdmissionDocumentRequirement[]
-  statusHistory         AdmissionStatusHistory[]
+  id                     String                         @id @default(uuid()) @db.Uuid
+  employeeId             String                         @map("employee_id") @db.Uuid
+  employmentContractId   String                         @map("employment_contract_id") @db.Uuid
+  companyId              String                         @map("company_id") @db.Uuid
+  checklistTemplateId    String?                        @map("checklist_template_id") @db.Uuid
+  plannedAdmissionDate   DateTime                       @map("planned_admission_date") @db.Date
+  effectiveAdmissionDate DateTime?                      @map("effective_admission_date") @db.Date
+  status                 String                         @default("DRAFT") @db.VarChar(20)
+  operationalOwner       String?                        @map("operational_owner") @db.VarChar(160)
+  notes                  String?                        @db.VarChar(2000)
+  cancellationReason     String?                        @map("cancellation_reason") @db.VarChar(500)
+  completedAt            DateTime?                      @map("completed_at") @db.Timestamptz(6)
+  cancelledAt            DateTime?                      @map("cancelled_at") @db.Timestamptz(6)
+  createdAt              DateTime                       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime                       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employee               Employee                       @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  employmentContract     EmploymentContract             @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  company                Company                        @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  checklistTemplate      ChecklistTemplate?             @relation(fields: [checklistTemplateId], references: [id], onDelete: Restrict)
+  checklistInstances     ChecklistInstance[]
+  documents              AdmissionDocumentRequirement[]
+  statusHistory          AdmissionStatusHistory[]
 
   @@index([employmentContractId, status])
   @@index([companyId, status])
@@ -327,15 +334,15 @@ model AdmissionProcess {
 }
 
 model ChecklistTemplate {
-  id        String                      @id @default(uuid()) @db.Uuid
-  companyId String                      @map("company_id") @db.Uuid
-  name      String                      @db.VarChar(160)
-  description String?                   @db.VarChar(1000)
-  status    String                      @default("ACTIVE") @db.VarChar(20)
-  createdAt DateTime                    @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime                    @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company   Company                     @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  items     ChecklistTemplateItem[]
+  id                 String                  @id @default(uuid()) @db.Uuid
+  companyId          String                  @map("company_id") @db.Uuid
+  name               String                  @db.VarChar(160)
+  description        String?                 @db.VarChar(1000)
+  status             String                  @default("ACTIVE") @db.VarChar(20)
+  createdAt          DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company            Company                 @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  items              ChecklistTemplateItem[]
   admissionProcesses AdmissionProcess[]
 
   @@unique([companyId, name])
@@ -344,49 +351,49 @@ model ChecklistTemplate {
 }
 
 model ChecklistTemplateItem {
-  id              String            @id @default(uuid()) @db.Uuid
-  checklistTemplateId String         @map("checklist_template_id") @db.Uuid
-  title           String             @db.VarChar(160)
-  description     String?            @db.VarChar(1000)
-  sortOrder       Int                @map("sort_order")
-  isRequired      Boolean            @default(true) @map("is_required")
-  relativeDueDays Int?               @map("relative_due_days")
-  createdAt       DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
-  checklistTemplate ChecklistTemplate @relation(fields: [checklistTemplateId], references: [id], onDelete: Restrict)
+  id                  String            @id @default(uuid()) @db.Uuid
+  checklistTemplateId String            @map("checklist_template_id") @db.Uuid
+  title               String            @db.VarChar(160)
+  description         String?           @db.VarChar(1000)
+  sortOrder           Int               @map("sort_order")
+  isRequired          Boolean           @default(true) @map("is_required")
+  relativeDueDays     Int?              @map("relative_due_days")
+  createdAt           DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  checklistTemplate   ChecklistTemplate @relation(fields: [checklistTemplateId], references: [id], onDelete: Restrict)
 
   @@unique([checklistTemplateId, sortOrder])
   @@map("checklist_template_items")
 }
 
 model ChecklistInstance {
-  id               String              @id @default(uuid()) @db.Uuid
-  admissionProcessId String             @map("admission_process_id") @db.Uuid
-  checklistTemplateId String?           @map("checklist_template_id") @db.Uuid
-  templateName      String?             @map("template_name") @db.VarChar(160)
-  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
-  admissionProcess  AdmissionProcess    @relation(fields: [admissionProcessId], references: [id], onDelete: Restrict)
-  items             AdmissionChecklistItem[]
+  id                  String                   @id @default(uuid()) @db.Uuid
+  admissionProcessId  String                   @map("admission_process_id") @db.Uuid
+  checklistTemplateId String?                  @map("checklist_template_id") @db.Uuid
+  templateName        String?                  @map("template_name") @db.VarChar(160)
+  createdAt           DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  admissionProcess    AdmissionProcess         @relation(fields: [admissionProcessId], references: [id], onDelete: Restrict)
+  items               AdmissionChecklistItem[]
 
   @@unique([admissionProcessId])
   @@map("checklist_instances")
 }
 
 model AdmissionChecklistItem {
-  id                 String              @id @default(uuid()) @db.Uuid
-  checklistInstanceId String              @map("checklist_instance_id") @db.Uuid
-  title              String               @db.VarChar(160)
-  description        String?              @db.VarChar(1000)
-  sortOrder          Int                  @map("sort_order")
-  isRequired         Boolean              @default(true) @map("is_required")
-  dueDate            DateTime?            @map("due_date") @db.Date
-  status             String               @default("PENDING") @db.VarChar(20)
-  observation        String?              @db.VarChar(1000)
-  completedAt        DateTime?            @map("completed_at") @db.Timestamptz(6)
-  createdAt          DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt          DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
-  checklistInstance  ChecklistInstance    @relation(fields: [checklistInstanceId], references: [id], onDelete: Restrict)
-  history            AdmissionChecklistItemHistory[]
+  id                  String                          @id @default(uuid()) @db.Uuid
+  checklistInstanceId String                          @map("checklist_instance_id") @db.Uuid
+  title               String                          @db.VarChar(160)
+  description         String?                         @db.VarChar(1000)
+  sortOrder           Int                             @map("sort_order")
+  isRequired          Boolean                         @default(true) @map("is_required")
+  dueDate             DateTime?                       @map("due_date") @db.Date
+  status              String                          @default("PENDING") @db.VarChar(20)
+  observation         String?                         @db.VarChar(1000)
+  completedAt         DateTime?                       @map("completed_at") @db.Timestamptz(6)
+  createdAt           DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime                        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  checklistInstance   ChecklistInstance               @relation(fields: [checklistInstanceId], references: [id], onDelete: Restrict)
+  history             AdmissionChecklistItemHistory[]
 
   @@unique([checklistInstanceId, sortOrder])
   @@index([status, dueDate])
@@ -394,12 +401,12 @@ model AdmissionChecklistItem {
 }
 
 model AdmissionChecklistItemHistory {
-  id                      String                 @id @default(uuid()) @db.Uuid
+  id                       String                 @id @default(uuid()) @db.Uuid
   admissionChecklistItemId String                 @map("admission_checklist_item_id") @db.Uuid
-  action                  String                  @db.VarChar(50)
-  reason                  String?                 @db.VarChar(1000)
-  occurredAt              DateTime                @default(now()) @map("occurred_at") @db.Timestamptz(6)
-  admissionChecklistItem  AdmissionChecklistItem  @relation(fields: [admissionChecklistItemId], references: [id], onDelete: Restrict)
+  action                   String                 @db.VarChar(50)
+  reason                   String?                @db.VarChar(1000)
+  occurredAt               DateTime               @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  admissionChecklistItem   AdmissionChecklistItem @relation(fields: [admissionChecklistItemId], references: [id], onDelete: Restrict)
 
   @@index([admissionChecklistItemId, occurredAt])
   @@map("admission_checklist_item_history")
@@ -436,17 +443,17 @@ model AdmissionStatusHistory {
 }
 
 model WorkSchedule {
-  id String @id @default(uuid()) @db.Uuid
-  companyId String @map("company_id") @db.Uuid
-  code String @db.VarChar(50)
-  name String @db.VarChar(160)
-  weeklyMinutes Int @map("weekly_minutes")
-  status String @default("ACTIVE") @db.VarChar(20)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  periods WorkSchedulePeriod[]
-  assignments ContractWorkSchedule[]
+  id            String                 @id @default(uuid()) @db.Uuid
+  companyId     String                 @map("company_id") @db.Uuid
+  code          String                 @db.VarChar(50)
+  name          String                 @db.VarChar(160)
+  weeklyMinutes Int                    @map("weekly_minutes")
+  status        String                 @default("ACTIVE") @db.VarChar(20)
+  createdAt     DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company       Company                @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  periods       WorkSchedulePeriod[]
+  assignments   ContractWorkSchedule[]
 
   @@unique([companyId, code])
   @@index([companyId, status])
@@ -454,29 +461,29 @@ model WorkSchedule {
 }
 
 model WorkSchedulePeriod {
-  id String @id @default(uuid()) @db.Uuid
-  workScheduleId String @map("work_schedule_id") @db.Uuid
-  weekday Int
-  startMinute Int @map("start_minute")
-  endMinute Int @map("end_minute")
-  breakMinutes Int @default(0) @map("break_minutes")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  workSchedule WorkSchedule @relation(fields: [workScheduleId], references: [id], onDelete: Restrict)
+  id             String       @id @default(uuid()) @db.Uuid
+  workScheduleId String       @map("work_schedule_id") @db.Uuid
+  weekday        Int
+  startMinute    Int          @map("start_minute")
+  endMinute      Int          @map("end_minute")
+  breakMinutes   Int          @default(0) @map("break_minutes")
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  workSchedule   WorkSchedule @relation(fields: [workScheduleId], references: [id], onDelete: Restrict)
 
   @@unique([workScheduleId, weekday, startMinute])
   @@map("work_schedule_periods")
 }
 
 model ContractWorkSchedule {
-  id String @id @default(uuid()) @db.Uuid
-  employmentContractId String @map("employment_contract_id") @db.Uuid
-  workScheduleId String @map("work_schedule_id") @db.Uuid
-  validFrom DateTime @map("valid_from") @db.Date
-  validTo DateTime? @map("valid_to") @db.Date
-  reason String? @db.VarChar(500)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
-  workSchedule WorkSchedule @relation(fields: [workScheduleId], references: [id], onDelete: Restrict)
+  id                   String             @id @default(uuid()) @db.Uuid
+  employmentContractId String             @map("employment_contract_id") @db.Uuid
+  workScheduleId       String             @map("work_schedule_id") @db.Uuid
+  validFrom            DateTime           @map("valid_from") @db.Date
+  validTo              DateTime?          @map("valid_to") @db.Date
+  reason               String?            @db.VarChar(500)
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  employmentContract   EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  workSchedule         WorkSchedule       @relation(fields: [workScheduleId], references: [id], onDelete: Restrict)
 
   @@unique([employmentContractId, validFrom])
   @@index([workScheduleId])
@@ -484,13 +491,13 @@ model ContractWorkSchedule {
 }
 
 model Holiday {
-  id String @id @default(uuid()) @db.Uuid
-  companyId String? @map("company_id") @db.Uuid
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String?  @map("company_id") @db.Uuid
   holidayDate DateTime @map("holiday_date") @db.Date
-  name String @db.VarChar(160)
-  scope String @default("COMPANY") @db.VarChar(20)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  company Company? @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  name        String   @db.VarChar(160)
+  scope       String   @default("COMPANY") @db.VarChar(20)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  company     Company? @relation(fields: [companyId], references: [id], onDelete: Restrict)
 
   @@unique([companyId, holidayDate, name])
   @@index([holidayDate])
@@ -498,19 +505,19 @@ model Holiday {
 }
 
 model TimeEntry {
-  id String @id @default(uuid()) @db.Uuid
-  employmentContractId String @map("employment_contract_id") @db.Uuid
-  companyId String @map("company_id") @db.Uuid
-  occurredOn DateTime @map("occurred_on") @db.Date
-  type String @db.VarChar(30)
-  minutes Int
-  source String @default("MANUAL") @db.VarChar(30)
-  status String @default("PENDING") @db.VarChar(20)
-  reason String? @db.VarChar(1000)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
-  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  balanceEntries TimeBalanceEntry[]
+  id                   String             @id @default(uuid()) @db.Uuid
+  employmentContractId String             @map("employment_contract_id") @db.Uuid
+  companyId            String             @map("company_id") @db.Uuid
+  occurredOn           DateTime           @map("occurred_on") @db.Date
+  type                 String             @db.VarChar(30)
+  minutes              Int
+  source               String             @default("MANUAL") @db.VarChar(30)
+  status               String             @default("PENDING") @db.VarChar(20)
+  reason               String?            @db.VarChar(1000)
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  employmentContract   EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  company              Company            @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  balanceEntries       TimeBalanceEntry[]
 
   @@index([employmentContractId, occurredOn])
   @@index([companyId, occurredOn])
@@ -518,107 +525,340 @@ model TimeEntry {
 }
 
 model TimeBalanceEntry {
-  id String @id @default(uuid()) @db.Uuid
-  employmentContractId String @map("employment_contract_id") @db.Uuid
-  timeEntryId String? @map("time_entry_id") @db.Uuid
-  occurredOn DateTime @map("occurred_on") @db.Date
-  minutes Int
-  type String @db.VarChar(30)
-  reason String? @db.VarChar(1000)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
-  timeEntry TimeEntry? @relation(fields: [timeEntryId], references: [id], onDelete: Restrict)
+  id                   String             @id @default(uuid()) @db.Uuid
+  employmentContractId String             @map("employment_contract_id") @db.Uuid
+  timeEntryId          String?            @map("time_entry_id") @db.Uuid
+  occurredOn           DateTime           @map("occurred_on") @db.Date
+  minutes              Int
+  type                 String             @db.VarChar(30)
+  reason               String?            @db.VarChar(1000)
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  employmentContract   EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  timeEntry            TimeEntry?         @relation(fields: [timeEntryId], references: [id], onDelete: Restrict)
 
   @@index([employmentContractId, occurredOn])
   @@map("time_balance_entries")
 }
 
 model TimeBalanceClosing {
-  id String @id @default(uuid()) @db.Uuid
-  companyId String @map("company_id") @db.Uuid
-  referenceMonth DateTime @map("reference_month") @db.Date
-  status String @default("OPEN") @db.VarChar(20)
-  closedAt DateTime? @map("closed_at") @db.Timestamptz(6)
-  reason String? @db.VarChar(1000)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  id             String    @id @default(uuid()) @db.Uuid
+  companyId      String    @map("company_id") @db.Uuid
+  referenceMonth DateTime  @map("reference_month") @db.Date
+  status         String    @default("OPEN") @db.VarChar(20)
+  closedAt       DateTime? @map("closed_at") @db.Timestamptz(6)
+  reason         String?   @db.VarChar(1000)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  company        Company   @relation(fields: [companyId], references: [id], onDelete: Restrict)
 
   @@unique([companyId, referenceMonth])
   @@map("time_balance_closings")
 }
 
+model PayrollCalendar {
+  id        String          @id @default(uuid()) @db.Uuid
+  companyId String          @map("company_id") @db.Uuid
+  name      String          @db.VarChar(160)
+  status    String          @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company   Company         @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  periods   PayrollPeriod[]
+
+  @@unique([companyId, name])
+  @@index([companyId, status])
+  @@map("payroll_calendars")
+}
+
+model PayrollPeriod {
+  id                String                 @id @default(uuid()) @db.Uuid
+  companyId         String                 @map("company_id") @db.Uuid
+  payrollCalendarId String                 @map("payroll_calendar_id") @db.Uuid
+  referenceDate     DateTime               @map("reference_date") @db.Date
+  type              String                 @default("REGULAR") @db.VarChar(30)
+  status            String                 @default("OPEN") @db.VarChar(20)
+  engineVersion     String                 @default("foundation-1") @map("engine_version") @db.VarChar(50)
+  parameterVersion  String?                @map("parameter_version") @db.VarChar(50)
+  openedAt          DateTime               @default(now()) @map("opened_at") @db.Timestamptz(6)
+  closedAt          DateTime?              @map("closed_at") @db.Timestamptz(6)
+  reopenedAt        DateTime?              @map("reopened_at") @db.Timestamptz(6)
+  createdAt         DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company           Company                @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  payrollCalendar   PayrollCalendar        @relation(fields: [payrollCalendarId], references: [id], onDelete: Restrict)
+  inputs            PayrollInput[]
+  runs              PayrollRun[]
+  closureHistory    PayrollPeriodClosure[]
+
+  @@unique([companyId, referenceDate, type])
+  @@index([payrollCalendarId, referenceDate])
+  @@index([companyId, status])
+  @@map("payroll_periods")
+}
+
+model PayrollRubricCategory {
+  id        String          @id @default(uuid()) @db.Uuid
+  companyId String          @map("company_id") @db.Uuid
+  code      String          @db.VarChar(50)
+  name      String          @db.VarChar(160)
+  nature    String          @db.VarChar(30)
+  status    String          @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company   Company         @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  rubrics   PayrollRubric[]
+
+  @@unique([companyId, code])
+  @@index([companyId, status])
+  @@map("payroll_rubric_categories")
+}
+
+model PayrollRubric {
+  id                      String                   @id @default(uuid()) @db.Uuid
+  companyId               String                   @map("company_id") @db.Uuid
+  payrollRubricCategoryId String                   @map("payroll_rubric_category_id") @db.Uuid
+  code                    String                   @db.VarChar(50)
+  name                    String                   @db.VarChar(160)
+  status                  String                   @default("ACTIVE") @db.VarChar(20)
+  createdAt               DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company                 Company                  @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  payrollRubricCategory   PayrollRubricCategory    @relation(fields: [payrollRubricCategoryId], references: [id], onDelete: Restrict)
+  versions                PayrollRubricVersion[]
+  inputs                  PayrollInput[]
+  calculationItems        PayrollCalculationItem[]
+
+  @@unique([companyId, code])
+  @@index([companyId, status])
+  @@index([payrollRubricCategoryId])
+  @@map("payroll_rubrics")
+}
+
+model PayrollRubricVersion {
+  id                     String                   @id @default(uuid()) @db.Uuid
+  payrollRubricId        String                   @map("payroll_rubric_id") @db.Uuid
+  version                String                   @db.VarChar(50)
+  validFrom              DateTime                 @map("valid_from") @db.Date
+  validTo                DateTime?                @map("valid_to") @db.Date
+  calculationBase        Json?                    @map("calculation_base")
+  incidenceConfiguration Json?                    @map("incidence_configuration")
+  configuration          Json?
+  status                 String                   @default("ACTIVE") @db.VarChar(20)
+  createdAt              DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  payrollRubric          PayrollRubric            @relation(fields: [payrollRubricId], references: [id], onDelete: Restrict)
+  calculationItems       PayrollCalculationItem[]
+
+  @@unique([payrollRubricId, version])
+  @@unique([payrollRubricId, validFrom])
+  @@index([payrollRubricId, validFrom, validTo])
+  @@map("payroll_rubric_versions")
+}
+
+model PayrollParameter {
+  id              String    @id @default(uuid()) @db.Uuid
+  companyId       String?   @map("company_id") @db.Uuid
+  code            String    @db.VarChar(100)
+  name            String    @db.VarChar(160)
+  category        String    @db.VarChar(50)
+  version         String    @db.VarChar(50)
+  validFrom       DateTime  @map("valid_from") @db.Date
+  validTo         DateTime? @map("valid_to") @db.Date
+  definition      Json?
+  sourceReference String?   @map("source_reference") @db.VarChar(500)
+  status          String    @default("DRAFT") @db.VarChar(20)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company         Company?  @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@unique([companyId, code, validFrom])
+  @@index([code, validFrom, validTo])
+  @@index([companyId, status])
+  @@map("payroll_parameters")
+}
+
+model PayrollInput {
+  id                   String             @id @default(uuid()) @db.Uuid
+  payrollPeriodId      String             @map("payroll_period_id") @db.Uuid
+  employmentContractId String             @map("employment_contract_id") @db.Uuid
+  payrollRubricId      String             @map("payroll_rubric_id") @db.Uuid
+  amount               Decimal            @default(0) @db.Decimal(15, 2)
+  quantity             Decimal?           @db.Decimal(15, 4)
+  source               String             @default("MANUAL") @db.VarChar(30)
+  sourceKey            String?            @map("source_key") @db.VarChar(160)
+  status               String             @default("PENDING") @db.VarChar(20)
+  metadata             Json?
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  payrollPeriod        PayrollPeriod      @relation(fields: [payrollPeriodId], references: [id], onDelete: Restrict)
+  employmentContract   EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  payrollRubric        PayrollRubric      @relation(fields: [payrollRubricId], references: [id], onDelete: Restrict)
+
+  @@unique([payrollPeriodId, sourceKey])
+  @@index([employmentContractId, payrollPeriodId])
+  @@index([payrollPeriodId, status])
+  @@map("payroll_inputs")
+}
+
+model PayrollRun {
+  id                String               @id @default(uuid()) @db.Uuid
+  payrollPeriodId   String               @map("payroll_period_id") @db.Uuid
+  sequence          Int
+  status            String               @default("DRAFT") @db.VarChar(20)
+  engineVersion     String               @map("engine_version") @db.VarChar(50)
+  parameterVersion  String?              @map("parameter_version") @db.VarChar(50)
+  parameterSnapshot Json?
+  startedAt         DateTime?            @map("started_at") @db.Timestamptz(6)
+  completedAt       DateTime?            @map("completed_at") @db.Timestamptz(6)
+  createdAt         DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  payrollPeriod     PayrollPeriod        @relation(fields: [payrollPeriodId], references: [id], onDelete: Restrict)
+  employees         PayrollRunEmployee[]
+  messages          PayrollRunMessage[]
+
+  @@unique([payrollPeriodId, sequence])
+  @@index([payrollPeriodId, status])
+  @@map("payroll_runs")
+}
+
+model PayrollRunEmployee {
+  id                   String                   @id @default(uuid()) @db.Uuid
+  payrollRunId         String                   @map("payroll_run_id") @db.Uuid
+  employmentContractId String                   @map("employment_contract_id") @db.Uuid
+  status               String                   @default("PENDING") @db.VarChar(20)
+  grossAmount          Decimal                  @default(0) @map("gross_amount") @db.Decimal(15, 2)
+  netAmount            Decimal                  @default(0) @map("net_amount") @db.Decimal(15, 2)
+  calculationMemory    Json?                    @map("calculation_memory")
+  createdAt            DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  payrollRun           PayrollRun               @relation(fields: [payrollRunId], references: [id], onDelete: Restrict)
+  employmentContract   EmploymentContract       @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  calculationItems     PayrollCalculationItem[]
+
+  @@unique([payrollRunId, employmentContractId])
+  @@index([employmentContractId, status])
+  @@map("payroll_run_employees")
+}
+
+model PayrollCalculationItem {
+  id                     String                @id @default(uuid()) @db.Uuid
+  payrollRunEmployeeId   String                @map("payroll_run_employee_id") @db.Uuid
+  payrollRubricId        String                @map("payroll_rubric_id") @db.Uuid
+  payrollRubricVersionId String?               @map("payroll_rubric_version_id") @db.Uuid
+  baseAmount             Decimal               @default(0) @map("base_amount") @db.Decimal(15, 2)
+  amount                 Decimal               @default(0) @db.Decimal(15, 2)
+  calculationMemory      Json?                 @map("calculation_memory")
+  createdAt              DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  payrollRunEmployee     PayrollRunEmployee    @relation(fields: [payrollRunEmployeeId], references: [id], onDelete: Restrict)
+  payrollRubric          PayrollRubric         @relation(fields: [payrollRubricId], references: [id], onDelete: Restrict)
+  payrollRubricVersion   PayrollRubricVersion? @relation(fields: [payrollRubricVersionId], references: [id], onDelete: Restrict)
+
+  @@index([payrollRunEmployeeId])
+  @@index([payrollRubricId])
+  @@map("payroll_calculation_items")
+}
+
+model PayrollRunMessage {
+  id           String     @id @default(uuid()) @db.Uuid
+  payrollRunId String     @map("payroll_run_id") @db.Uuid
+  severity     String     @db.VarChar(30)
+  code         String     @db.VarChar(100)
+  message      String     @db.VarChar(1000)
+  metadata     Json?
+  resolvedAt   DateTime?  @map("resolved_at") @db.Timestamptz(6)
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  payrollRun   PayrollRun @relation(fields: [payrollRunId], references: [id], onDelete: Restrict)
+
+  @@index([payrollRunId, severity])
+  @@map("payroll_run_messages")
+}
+
+model PayrollPeriodClosure {
+  id               String        @id @default(uuid()) @db.Uuid
+  payrollPeriodId  String        @map("payroll_period_id") @db.Uuid
+  action           String        @db.VarChar(30)
+  reason           String?       @db.VarChar(1000)
+  engineVersion    String        @map("engine_version") @db.VarChar(50)
+  parameterVersion String?       @map("parameter_version") @db.VarChar(50)
+  occurredAt       DateTime      @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  payrollPeriod    PayrollPeriod @relation(fields: [payrollPeriodId], references: [id], onDelete: Restrict)
+
+  @@index([payrollPeriodId, occurredAt])
+  @@map("payroll_period_closures")
+}
+
 model Benefit {
-  id String @id @default(uuid()) @db.Uuid
-  companyId String @map("company_id") @db.Uuid
-  code String @db.VarChar(50)
-  name String @db.VarChar(160)
-  type String @db.VarChar(30)
-  status String @default("ACTIVE") @db.VarChar(20)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  plans BenefitPlan[]
+  id        String        @id @default(uuid()) @db.Uuid
+  companyId String        @map("company_id") @db.Uuid
+  code      String        @db.VarChar(50)
+  name      String        @db.VarChar(160)
+  type      String        @db.VarChar(30)
+  status    String        @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company   Company       @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  plans     BenefitPlan[]
+
   @@unique([companyId, code])
   @@map("benefits")
 }
 
 model BenefitPlan {
-  id String @id @default(uuid()) @db.Uuid
-  benefitId String @map("benefit_id") @db.Uuid
-  name String @db.VarChar(160)
-  employeeAmount Decimal @default(0) @map("employee_amount") @db.Decimal(15, 2)
-  companyAmount Decimal @default(0) @map("company_amount") @db.Decimal(15, 2)
-  copayAmount Decimal? @map("copay_amount") @db.Decimal(15, 2)
-  validFrom DateTime @map("valid_from") @db.Date
-  validTo DateTime? @map("valid_to") @db.Date
-  status String @default("ACTIVE") @db.VarChar(20)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  benefit Benefit @relation(fields: [benefitId], references: [id], onDelete: Restrict)
-  enrollments BenefitEnrollment[]
+  id             String              @id @default(uuid()) @db.Uuid
+  benefitId      String              @map("benefit_id") @db.Uuid
+  name           String              @db.VarChar(160)
+  employeeAmount Decimal             @default(0) @map("employee_amount") @db.Decimal(15, 2)
+  companyAmount  Decimal             @default(0) @map("company_amount") @db.Decimal(15, 2)
+  copayAmount    Decimal?            @map("copay_amount") @db.Decimal(15, 2)
+  validFrom      DateTime            @map("valid_from") @db.Date
+  validTo        DateTime?           @map("valid_to") @db.Date
+  status         String              @default("ACTIVE") @db.VarChar(20)
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  benefit        Benefit             @relation(fields: [benefitId], references: [id], onDelete: Restrict)
+  enrollments    BenefitEnrollment[]
+
   @@unique([benefitId, name, validFrom])
   @@map("benefit_plans")
 }
 
 model BenefitEnrollment {
-  id String @id @default(uuid()) @db.Uuid
-  employmentContractId String @map("employment_contract_id") @db.Uuid
-  benefitPlanId String @map("benefit_plan_id") @db.Uuid
-  validFrom DateTime @map("valid_from") @db.Date
-  validTo DateTime? @map("valid_to") @db.Date
-  status String @default("ACTIVE") @db.VarChar(20)
-  reason String? @db.VarChar(1000)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
-  benefitPlan BenefitPlan @relation(fields: [benefitPlanId], references: [id], onDelete: Restrict)
-  history BenefitEnrollmentHistory[]
+  id                   String                     @id @default(uuid()) @db.Uuid
+  employmentContractId String                     @map("employment_contract_id") @db.Uuid
+  benefitPlanId        String                     @map("benefit_plan_id") @db.Uuid
+  validFrom            DateTime                   @map("valid_from") @db.Date
+  validTo              DateTime?                  @map("valid_to") @db.Date
+  status               String                     @default("ACTIVE") @db.VarChar(20)
+  reason               String?                    @db.VarChar(1000)
+  createdAt            DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  employmentContract   EmploymentContract         @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  benefitPlan          BenefitPlan                @relation(fields: [benefitPlanId], references: [id], onDelete: Restrict)
+  history              BenefitEnrollmentHistory[]
+
   @@index([employmentContractId, status])
   @@map("benefit_enrollments")
 }
 
 model BenefitEnrollmentHistory {
-  id String @id @default(uuid()) @db.Uuid
-  benefitEnrollmentId String @map("benefit_enrollment_id") @db.Uuid
-  action String @db.VarChar(30)
-  reason String? @db.VarChar(1000)
-  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
-  benefitEnrollment BenefitEnrollment @relation(fields: [benefitEnrollmentId], references: [id], onDelete: Restrict)
+  id                  String            @id @default(uuid()) @db.Uuid
+  benefitEnrollmentId String            @map("benefit_enrollment_id") @db.Uuid
+  action              String            @db.VarChar(30)
+  reason              String?           @db.VarChar(1000)
+  occurredAt          DateTime          @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  benefitEnrollment   BenefitEnrollment @relation(fields: [benefitEnrollmentId], references: [id], onDelete: Restrict)
+
   @@map("benefit_enrollment_history")
 }
 
 model VacationPeriod {
-  id String @id @default(uuid()) @db.Uuid
-  employmentContractId String @map("employment_contract_id") @db.Uuid
-  accrualStart DateTime @map("accrual_start") @db.Date
-  accrualEnd DateTime @map("accrual_end") @db.Date
-  grantStart DateTime? @map("grant_start") @db.Date
-  grantEnd DateTime? @map("grant_end") @db.Date
-  status String @default("OPEN") @db.VarChar(20)
-  notes String? @db.VarChar(1000)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
-  requests VacationRequest[]
-  alerts VacationAlert[]
+  id                   String             @id @default(uuid()) @db.Uuid
+  employmentContractId String             @map("employment_contract_id") @db.Uuid
+  accrualStart         DateTime           @map("accrual_start") @db.Date
+  accrualEnd           DateTime           @map("accrual_end") @db.Date
+  grantStart           DateTime?          @map("grant_start") @db.Date
+  grantEnd             DateTime?          @map("grant_end") @db.Date
+  status               String             @default("OPEN") @db.VarChar(20)
+  notes                String?            @db.VarChar(1000)
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employmentContract   EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  requests             VacationRequest[]
+  alerts               VacationAlert[]
 
   @@unique([employmentContractId, accrualStart])
   @@index([employmentContractId, status])
@@ -626,40 +866,40 @@ model VacationPeriod {
 }
 
 model CollectiveVacation {
-  id String @id @default(uuid()) @db.Uuid
-  companyId String @map("company_id") @db.Uuid
-  name String @db.VarChar(160)
-  startDate DateTime @map("start_date") @db.Date
-  endDate DateTime @map("end_date") @db.Date
-  status String @default("DRAFT") @db.VarChar(20)
-  notes String? @db.VarChar(1000)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  requests VacationRequest[]
+  id        String            @id @default(uuid()) @db.Uuid
+  companyId String            @map("company_id") @db.Uuid
+  name      String            @db.VarChar(160)
+  startDate DateTime          @map("start_date") @db.Date
+  endDate   DateTime          @map("end_date") @db.Date
+  status    String            @default("DRAFT") @db.VarChar(20)
+  notes     String?           @db.VarChar(1000)
+  createdAt DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company   Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  requests  VacationRequest[]
 
   @@index([companyId, status])
   @@map("collective_vacations")
 }
 
 model VacationRequest {
-  id String @id @default(uuid()) @db.Uuid
-  employmentContractId String @map("employment_contract_id") @db.Uuid
-  vacationPeriodId String @map("vacation_period_id") @db.Uuid
-  collectiveVacationId String? @map("collective_vacation_id") @db.Uuid
-  startDate DateTime @map("start_date") @db.Date
-  endDate DateTime @map("end_date") @db.Date
-  status String @default("DRAFT") @db.VarChar(20)
-  requestReason String? @map("request_reason") @db.VarChar(1000)
-  approvalReason String? @map("approval_reason") @db.VarChar(1000)
-  approvedAt DateTime? @map("approved_at") @db.Timestamptz(6)
-  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz(6)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
-  vacationPeriod VacationPeriod @relation(fields: [vacationPeriodId], references: [id], onDelete: Restrict)
-  collectiveVacation CollectiveVacation? @relation(fields: [collectiveVacationId], references: [id], onDelete: Restrict)
-  history VacationRequestHistory[]
+  id                   String                   @id @default(uuid()) @db.Uuid
+  employmentContractId String                   @map("employment_contract_id") @db.Uuid
+  vacationPeriodId     String                   @map("vacation_period_id") @db.Uuid
+  collectiveVacationId String?                  @map("collective_vacation_id") @db.Uuid
+  startDate            DateTime                 @map("start_date") @db.Date
+  endDate              DateTime                 @map("end_date") @db.Date
+  status               String                   @default("DRAFT") @db.VarChar(20)
+  requestReason        String?                  @map("request_reason") @db.VarChar(1000)
+  approvalReason       String?                  @map("approval_reason") @db.VarChar(1000)
+  approvedAt           DateTime?                @map("approved_at") @db.Timestamptz(6)
+  cancelledAt          DateTime?                @map("cancelled_at") @db.Timestamptz(6)
+  createdAt            DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employmentContract   EmploymentContract       @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  vacationPeriod       VacationPeriod           @relation(fields: [vacationPeriodId], references: [id], onDelete: Restrict)
+  collectiveVacation   CollectiveVacation?      @relation(fields: [collectiveVacationId], references: [id], onDelete: Restrict)
+  history              VacationRequestHistory[]
 
   @@index([employmentContractId, status])
   @@index([vacationPeriodId, startDate])
@@ -667,62 +907,62 @@ model VacationRequest {
 }
 
 model VacationRequestHistory {
-  id String @id @default(uuid()) @db.Uuid
-  vacationRequestId String @map("vacation_request_id") @db.Uuid
-  action String @db.VarChar(30)
-  reason String? @db.VarChar(1000)
-  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
-  vacationRequest VacationRequest @relation(fields: [vacationRequestId], references: [id], onDelete: Restrict)
+  id                String          @id @default(uuid()) @db.Uuid
+  vacationRequestId String          @map("vacation_request_id") @db.Uuid
+  action            String          @db.VarChar(30)
+  reason            String?         @db.VarChar(1000)
+  occurredAt        DateTime        @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  vacationRequest   VacationRequest @relation(fields: [vacationRequestId], references: [id], onDelete: Restrict)
 
   @@index([vacationRequestId, occurredAt])
   @@map("vacation_request_history")
 }
 
 model VacationAlert {
-  id String @id @default(uuid()) @db.Uuid
-  vacationPeriodId String @map("vacation_period_id") @db.Uuid
-  kind String @db.VarChar(50)
-  dueDate DateTime @map("due_date") @db.Date
-  status String @default("OPEN") @db.VarChar(20)
-  message String? @db.VarChar(1000)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  vacationPeriod VacationPeriod @relation(fields: [vacationPeriodId], references: [id], onDelete: Restrict)
+  id               String         @id @default(uuid()) @db.Uuid
+  vacationPeriodId String         @map("vacation_period_id") @db.Uuid
+  kind             String         @db.VarChar(50)
+  dueDate          DateTime       @map("due_date") @db.Date
+  status           String         @default("OPEN") @db.VarChar(20)
+  message          String?        @db.VarChar(1000)
+  createdAt        DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  vacationPeriod   VacationPeriod @relation(fields: [vacationPeriodId], references: [id], onDelete: Restrict)
 
   @@index([status, dueDate])
   @@map("vacation_alerts")
 }
 
 model LeaveType {
-  id String @id @default(uuid()) @db.Uuid
-  companyId String @map("company_id") @db.Uuid
-  code String @db.VarChar(50)
-  name String @db.VarChar(160)
-  requiresExpectedReturn Boolean @default(false) @map("requires_expected_return")
-  status String @default("ACTIVE") @db.VarChar(20)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  leaveCases LeaveCase[]
+  id                     String      @id @default(uuid()) @db.Uuid
+  companyId              String      @map("company_id") @db.Uuid
+  code                   String      @db.VarChar(50)
+  name                   String      @db.VarChar(160)
+  requiresExpectedReturn Boolean     @default(false) @map("requires_expected_return")
+  status                 String      @default("ACTIVE") @db.VarChar(20)
+  createdAt              DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company                Company     @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  leaveCases             LeaveCase[]
 
   @@unique([companyId, code])
   @@map("leave_types")
 }
 
 model LeaveCase {
-  id String @id @default(uuid()) @db.Uuid
-  employmentContractId String @map("employment_contract_id") @db.Uuid
-  leaveTypeId String @map("leave_type_id") @db.Uuid
-  startDate DateTime @map("start_date") @db.Date
-  endDate DateTime? @map("end_date") @db.Date
-  expectedReturnDate DateTime? @map("expected_return_date") @db.Date
-  actualReturnDate DateTime? @map("actual_return_date") @db.Date
-  status String @default("OPEN") @db.VarChar(20)
-  reason String? @db.VarChar(1000)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
-  leaveType LeaveType @relation(fields: [leaveTypeId], references: [id], onDelete: Restrict)
-  history LeaveCaseHistory[]
+  id                   String             @id @default(uuid()) @db.Uuid
+  employmentContractId String             @map("employment_contract_id") @db.Uuid
+  leaveTypeId          String             @map("leave_type_id") @db.Uuid
+  startDate            DateTime           @map("start_date") @db.Date
+  endDate              DateTime?          @map("end_date") @db.Date
+  expectedReturnDate   DateTime?          @map("expected_return_date") @db.Date
+  actualReturnDate     DateTime?          @map("actual_return_date") @db.Date
+  status               String             @default("OPEN") @db.VarChar(20)
+  reason               String?            @db.VarChar(1000)
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employmentContract   EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  leaveType            LeaveType          @relation(fields: [leaveTypeId], references: [id], onDelete: Restrict)
+  history              LeaveCaseHistory[]
 
   @@index([employmentContractId, status])
   @@index([leaveTypeId, startDate])
@@ -730,12 +970,12 @@ model LeaveCase {
 }
 
 model LeaveCaseHistory {
-  id String @id @default(uuid()) @db.Uuid
-  leaveCaseId String @map("leave_case_id") @db.Uuid
-  action String @db.VarChar(30)
-  reason String? @db.VarChar(1000)
-  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
-  leaveCase LeaveCase @relation(fields: [leaveCaseId], references: [id], onDelete: Restrict)
+  id          String    @id @default(uuid()) @db.Uuid
+  leaveCaseId String    @map("leave_case_id") @db.Uuid
+  action      String    @db.VarChar(30)
+  reason      String?   @db.VarChar(1000)
+  occurredAt  DateTime  @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  leaveCase   LeaveCase @relation(fields: [leaveCaseId], references: [id], onDelete: Restrict)
 
   @@index([leaveCaseId, occurredAt])
   @@map("leave_case_history")
