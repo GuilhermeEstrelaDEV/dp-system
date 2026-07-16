@@ -133,6 +133,8 @@ model Company {
   timeEntries TimeEntry[]
   timeBalanceClosings TimeBalanceClosing[]
   benefits Benefit[]
+  collectiveVacations CollectiveVacation[]
+  leaveTypes LeaveType[]
 
   @@index([status])
   @@map("companies")
@@ -271,6 +273,9 @@ model EmploymentContract {
   timeEntries TimeEntry[]
   timeBalanceEntries TimeBalanceEntry[]
   benefitEnrollments BenefitEnrollment[]
+  vacationPeriods VacationPeriod[]
+  vacationRequests VacationRequest[]
+  leaveCases LeaveCase[]
 
   @@unique([companyId, registrationNumber])
   @@index([employeeId, status])
@@ -598,4 +603,140 @@ model BenefitEnrollmentHistory {
   occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
   benefitEnrollment BenefitEnrollment @relation(fields: [benefitEnrollmentId], references: [id], onDelete: Restrict)
   @@map("benefit_enrollment_history")
+}
+
+model VacationPeriod {
+  id String @id @default(uuid()) @db.Uuid
+  employmentContractId String @map("employment_contract_id") @db.Uuid
+  accrualStart DateTime @map("accrual_start") @db.Date
+  accrualEnd DateTime @map("accrual_end") @db.Date
+  grantStart DateTime? @map("grant_start") @db.Date
+  grantEnd DateTime? @map("grant_end") @db.Date
+  status String @default("OPEN") @db.VarChar(20)
+  notes String? @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  requests VacationRequest[]
+  alerts VacationAlert[]
+
+  @@unique([employmentContractId, accrualStart])
+  @@index([employmentContractId, status])
+  @@map("vacation_periods")
+}
+
+model CollectiveVacation {
+  id String @id @default(uuid()) @db.Uuid
+  companyId String @map("company_id") @db.Uuid
+  name String @db.VarChar(160)
+  startDate DateTime @map("start_date") @db.Date
+  endDate DateTime @map("end_date") @db.Date
+  status String @default("DRAFT") @db.VarChar(20)
+  notes String? @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  requests VacationRequest[]
+
+  @@index([companyId, status])
+  @@map("collective_vacations")
+}
+
+model VacationRequest {
+  id String @id @default(uuid()) @db.Uuid
+  employmentContractId String @map("employment_contract_id") @db.Uuid
+  vacationPeriodId String @map("vacation_period_id") @db.Uuid
+  collectiveVacationId String? @map("collective_vacation_id") @db.Uuid
+  startDate DateTime @map("start_date") @db.Date
+  endDate DateTime @map("end_date") @db.Date
+  status String @default("DRAFT") @db.VarChar(20)
+  requestReason String? @map("request_reason") @db.VarChar(1000)
+  approvalReason String? @map("approval_reason") @db.VarChar(1000)
+  approvedAt DateTime? @map("approved_at") @db.Timestamptz(6)
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  vacationPeriod VacationPeriod @relation(fields: [vacationPeriodId], references: [id], onDelete: Restrict)
+  collectiveVacation CollectiveVacation? @relation(fields: [collectiveVacationId], references: [id], onDelete: Restrict)
+  history VacationRequestHistory[]
+
+  @@index([employmentContractId, status])
+  @@index([vacationPeriodId, startDate])
+  @@map("vacation_requests")
+}
+
+model VacationRequestHistory {
+  id String @id @default(uuid()) @db.Uuid
+  vacationRequestId String @map("vacation_request_id") @db.Uuid
+  action String @db.VarChar(30)
+  reason String? @db.VarChar(1000)
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  vacationRequest VacationRequest @relation(fields: [vacationRequestId], references: [id], onDelete: Restrict)
+
+  @@index([vacationRequestId, occurredAt])
+  @@map("vacation_request_history")
+}
+
+model VacationAlert {
+  id String @id @default(uuid()) @db.Uuid
+  vacationPeriodId String @map("vacation_period_id") @db.Uuid
+  kind String @db.VarChar(50)
+  dueDate DateTime @map("due_date") @db.Date
+  status String @default("OPEN") @db.VarChar(20)
+  message String? @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  vacationPeriod VacationPeriod @relation(fields: [vacationPeriodId], references: [id], onDelete: Restrict)
+
+  @@index([status, dueDate])
+  @@map("vacation_alerts")
+}
+
+model LeaveType {
+  id String @id @default(uuid()) @db.Uuid
+  companyId String @map("company_id") @db.Uuid
+  code String @db.VarChar(50)
+  name String @db.VarChar(160)
+  requiresExpectedReturn Boolean @default(false) @map("requires_expected_return")
+  status String @default("ACTIVE") @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  leaveCases LeaveCase[]
+
+  @@unique([companyId, code])
+  @@map("leave_types")
+}
+
+model LeaveCase {
+  id String @id @default(uuid()) @db.Uuid
+  employmentContractId String @map("employment_contract_id") @db.Uuid
+  leaveTypeId String @map("leave_type_id") @db.Uuid
+  startDate DateTime @map("start_date") @db.Date
+  endDate DateTime? @map("end_date") @db.Date
+  expectedReturnDate DateTime? @map("expected_return_date") @db.Date
+  actualReturnDate DateTime? @map("actual_return_date") @db.Date
+  status String @default("OPEN") @db.VarChar(20)
+  reason String? @db.VarChar(1000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employmentContract EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  leaveType LeaveType @relation(fields: [leaveTypeId], references: [id], onDelete: Restrict)
+  history LeaveCaseHistory[]
+
+  @@index([employmentContractId, status])
+  @@index([leaveTypeId, startDate])
+  @@map("leave_cases")
+}
+
+model LeaveCaseHistory {
+  id String @id @default(uuid()) @db.Uuid
+  leaveCaseId String @map("leave_case_id") @db.Uuid
+  action String @db.VarChar(30)
+  reason String? @db.VarChar(1000)
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  leaveCase LeaveCase @relation(fields: [leaveCaseId], references: [id], onDelete: Restrict)
+
+  @@index([leaveCaseId, occurredAt])
+  @@map("leave_case_history")
 }
