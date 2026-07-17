@@ -27,6 +27,7 @@ import { PayrollPeriodsModule } from './modules/payroll-periods/payroll-periods.
 import { PayrollRubricsModule } from './modules/payroll-rubrics/payroll-rubrics.module';
 import { PayrollParametersModule } from './modules/payroll-parameters/payroll-parameters.module';
 import { PayrollInputsModule } from './modules/payroll-inputs/payroll-inputs.module';
+import { PayrollRunsModule } from './modules/payroll-runs/payroll-runs.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -66,6 +67,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PayrollRubricsModule,
     PayrollParametersModule,
     PayrollInputsModule,
+    PayrollRunsModule,
   ],
   providers: [
     AppLoggerService,

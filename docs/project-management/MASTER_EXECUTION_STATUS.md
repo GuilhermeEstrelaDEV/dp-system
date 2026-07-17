@@ -102,7 +102,10 @@
 - **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/api typecheck`, `pnpm.cmd --filter @dp-system/api lint` e `git diff --check`.
 - **Commit incremental:** `aec6a11` — `feat(api): add payroll input module`.
 - **Pendências:** `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
-- **Próximo passo exato:** implementar `payroll-runs` com execução estrutural demonstrativa, versões de motor/parâmetros, avisos e erros bloqueantes, sem cálculos legais.
+- **Concluído adicionalmente:** `payroll-runs` com listagem, detalhe, início técnico determinístico, controle de execução concorrente, versões do motor e parâmetros, mensagens de aviso/erro bloqueante e metadados de execução. Cada execução recebe o aviso explícito de que não representa folha homologada; não há cálculo legal, imposto, alíquota ou incidência oficial.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/api typecheck` e `pnpm.cmd --filter @dp-system/api lint` após o módulo de execuções.
+- **Pendências:** `payroll-closures`, testes dos módulos e validações globais da API.
+- **Próximo passo exato:** implementar `payroll-closures` para expor fechamento/reabertura transacionais, exigir execução concluída e preservar o histórico.
 
 ## ETP-011 a ETP-015
 
