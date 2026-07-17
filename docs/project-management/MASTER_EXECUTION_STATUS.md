@@ -105,7 +105,10 @@
 - **Concluído adicionalmente:** `payroll-runs` com listagem, detalhe, início técnico determinístico, controle de execução concorrente, versões do motor e parâmetros, mensagens de aviso/erro bloqueante e metadados de execução. Cada execução recebe o aviso explícito de que não representa folha homologada; não há cálculo legal, imposto, alíquota ou incidência oficial.
 - **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/api typecheck` e `pnpm.cmd --filter @dp-system/api lint` após o módulo de execuções.
 - **Pendências:** `payroll-closures`, testes dos módulos e validações globais da API.
-- **Próximo passo exato:** implementar `payroll-closures` para expor fechamento/reabertura transacionais, exigir execução concluída e preservar o histórico.
+- **Concluído adicionalmente:** `payroll-closures` com listagem e detalhe do histórico, fechamento transacional e reabertura justificada. O fechamento exige competência aberta, execução técnica concluída e ausência de erros bloqueantes; persiste versões do motor/parâmetros e nunca apaga eventos anteriores.
+- **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck` após o módulo de fechamentos.
+- **Pendências:** testes unitários/controladores dos módulos de folha, validações completas da API e frontend da folha.
+- **Próximo passo exato:** executar lint e testes direcionados dos módulos `payroll-periods`, `payroll-rubrics`, `payroll-parameters`, `payroll-inputs`, `payroll-runs` e `payroll-closures`, corrigindo os casos falhos antes de iniciar o frontend.
 
 ## ETP-011 a ETP-015
 
