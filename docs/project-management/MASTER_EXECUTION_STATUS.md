@@ -118,6 +118,7 @@
 - **Pendências:** testes de `payroll-parameters` e `payroll-inputs`, testes de controller e validações completas da API; frontend ainda não iniciado.
 - **Testes adicionados:** `payroll-parameters.service.spec.ts` (criação, vigência incompatível, período inválido, inexistência e imutabilidade histórica) e `payroll-inputs.service.spec.ts` (valor decimal, vínculos ausentes/incompatíveis, rubrica inativa e bloqueio após fechamento).
 - **Validação direcionada aprovada:** `pnpm.cmd --filter @dp-system/api exec jest --config jest.config.cjs --runInBand --runTestsByPath src/modules/payroll-parameters/payroll-parameters.service.spec.ts src/modules/payroll-inputs/payroll-inputs.service.spec.ts` — 2 suítes e 10 testes aprovados.
+- **Commit de testes:** `ab3b97d` — `test(api): cover payroll parameter and input modules`.
 - **Validações completas da API aprovadas:** `pnpm.cmd --filter @dp-system/api typecheck`; Jest em `--runInBand` — 23 suítes e 62 testes aprovados; `pnpm.cmd --filter @dp-system/api lint`; `pnpm.cmd prisma:validate`; `git diff --check`.
 - **Pendências:** testes de controller adicionais e frontend/documentação da folha. Não há pendência de cálculo legal; nenhuma regra normativa foi implementada.
 - **Próximo passo exato:** iniciar o frontend da ETP-010 pela navegação e páginas demonstrativas de competências, rubricas, parâmetros, lançamentos, execuções e fechamentos.
