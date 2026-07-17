@@ -124,6 +124,7 @@
 - **Próximo passo exato:** iniciar o frontend da ETP-010 pela navegação e páginas demonstrativas de competências, rubricas, parâmetros, lançamentos, execuções e fechamentos.
 - **Frontend em andamento:** criada a feature `apps/web/src/features/payroll/index.tsx` com navegação interna e estados de carregamento, vazio e erro; rotas `/folha/competencias`, `/folha/rubricas`, `/folha/parametros`, `/folha/lancamentos`, `/folha/execucoes` e `/folha/fechamentos` foram registradas. Todas exibem o aviso obrigatório de processamento demonstrativo e não homologado.
 - **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Commit incremental:** `3227305` — `feat(web): add payroll navigation and pages`.
 - **Pendências:** formulários, ações e páginas detalhadas por domínio, testes de interface, documentação e validações globais.
 - **Próximo passo exato:** implementar a página de competências com listagem, criação, validação, fechamento e reabertura justificada.
 
