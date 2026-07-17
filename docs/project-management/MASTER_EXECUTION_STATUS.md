@@ -126,7 +126,10 @@
 - **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
 - **Commit incremental:** `3227305` — `feat(web): add payroll navigation and pages`.
 - **Pendências:** formulários, ações e páginas detalhadas por domínio, testes de interface, documentação e validações globais.
-- **Próximo passo exato:** implementar a página de competências com listagem, criação, validação, fechamento e reabertura justificada.
+- **Competências concluídas parcialmente:** `payroll-periods.ts` centraliza tipos e chamadas HTTP reais de listar, buscar, criar, atualizar, validar, fechar e reabrir. A rota de competências possui listagem por empresa, criação, validação, fechamento, indicação de imutabilidade e reabertura com justificativa obrigatória; erros do envelope HTTP são exibidos na interface.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Pendências:** edição e detalhe completos de competências, testes de interface, páginas funcionais dos demais domínios, documentação e validações globais.
+- **Próximo passo exato:** criar os testes direcionados da página de competências para loading, vazio, criação, validação, fechamento, reabertura e aviso demonstrativo.
 
 ## ETP-011 a ETP-015
 
