@@ -114,6 +114,7 @@
 - **Pendências:** testes dos módulos de configuração (`payroll-periods`, `payroll-rubrics`, `payroll-parameters`, `payroll-inputs`), testes de controller e validações completas da API; frontend ainda não iniciado.
 - **Testes adicionados:** `payroll-periods.service.spec.ts` (criação, duplicidade, competência fechada e inexistente) e `payroll-rubrics.service.spec.ts` (criação com primeira vigência, vigência inválida, inexistência e proteção histórica).
 - **Validação de testes aprovada:** `pnpm.cmd --filter @dp-system/api exec jest --config jest.config.cjs --runInBand --runTestsByPath src/modules/payroll-periods/payroll-periods.service.spec.ts src/modules/payroll-rubrics/payroll-rubrics.service.spec.ts` — 2 suítes e 8 testes aprovados.
+- **Commit de testes:** `5d4163b` — `test(api): cover payroll period and rubric modules`.
 - **Pendências:** testes de `payroll-parameters` e `payroll-inputs`, testes de controller e validações completas da API; frontend ainda não iniciado.
 - **Próximo passo exato:** criar e executar testes unitários direcionados de `payroll-parameters` e `payroll-inputs` usando `--runTestsByPath`.
 
