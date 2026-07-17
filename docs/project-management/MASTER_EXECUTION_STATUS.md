@@ -107,8 +107,11 @@
 - **Pendências:** `payroll-closures`, testes dos módulos e validações globais da API.
 - **Concluído adicionalmente:** `payroll-closures` com listagem e detalhe do histórico, fechamento transacional e reabertura justificada. O fechamento exige competência aberta, execução técnica concluída e ausência de erros bloqueantes; persiste versões do motor/parâmetros e nunca apaga eventos anteriores.
 - **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck` após o módulo de fechamentos.
-- **Pendências:** testes unitários/controladores dos módulos de folha, validações completas da API e frontend da folha.
-- **Próximo passo exato:** executar lint e testes direcionados dos módulos `payroll-periods`, `payroll-rubrics`, `payroll-parameters`, `payroll-inputs`, `payroll-runs` e `payroll-closures`, corrigindo os casos falhos antes de iniciar o frontend.
+- **Commits incrementais:** `38419f1` — `feat(api): add payroll run module`; `6246718` — `feat(api): add payroll closure workflow`.
+- **Testes adicionados:** `payroll-runs.service.spec.ts` (competência ausente/fechada, concorrência, preservação de versões e aviso demonstrativo) e `payroll-closures.service.spec.ts` (competência ausente, execução exigida, erro bloqueante, versões e reabertura inválida).
+- **Validações de testes aprovadas:** os comandos com filtro posicional do script permaneceram executando todo o conjunto e excederam 124s sem resultado; a causa foi o filtro não ser interpretado como caminho. Os comandos explícitos `pnpm.cmd --filter @dp-system/api exec jest --config jest.config.cjs --runInBand --runTestsByPath src/modules/payroll-runs/payroll-runs.service.spec.ts` (4 testes) e o equivalente de `payroll-closures` (5 testes) passaram.
+- **Pendências:** testes dos módulos de configuração (`payroll-periods`, `payroll-rubrics`, `payroll-parameters`, `payroll-inputs`), testes de controller e validações completas da API; frontend ainda não iniciado.
+- **Próximo passo exato:** criar e executar os testes unitários direcionados de `payroll-periods` e `payroll-rubrics`, depois seguir para parâmetros e lançamentos.
 
 ## ETP-011 a ETP-015
 
