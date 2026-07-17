@@ -24,6 +24,7 @@ import { ChecklistTemplatesPage } from '@/features/admissions/ChecklistTemplates
 import { TimeManagementPage } from '@/features/time-management';
 import { BenefitsPage } from '@/features/benefits';
 import { VacationsLeavesPage } from '@/features/vacations-leaves';
+import { PayrollPage } from '@/features/payroll';
 
 export const appRoutes: RouteObject[] = [
   {
@@ -55,7 +56,13 @@ export const appRoutes: RouteObject[] = [
       { path: 'movimentacoes', element: <VacationsLeavesPage /> },
       { path: 'jornada', element: <TimeManagementPage /> },
       { path: 'beneficios', element: <BenefitsPage /> },
-      { path: 'folha', element: <ModulePlaceholderPage /> },
+      { path: 'folha', element: <PayrollPage /> },
+      { path: 'folha/competencias', element: <PayrollPage /> },
+      { path: 'folha/rubricas', element: <PayrollPage /> },
+      { path: 'folha/parametros', element: <PayrollPage /> },
+      { path: 'folha/lancamentos', element: <PayrollPage /> },
+      { path: 'folha/execucoes', element: <PayrollPage /> },
+      { path: 'folha/fechamentos', element: <PayrollPage /> },
       { path: 'desligamentos', element: <ModulePlaceholderPage /> },
       { path: 'documentos', element: <ModulePlaceholderPage /> },
       { path: 'relatorios', element: <ModulePlaceholderPage /> },

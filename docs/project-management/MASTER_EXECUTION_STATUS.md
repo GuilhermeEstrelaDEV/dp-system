@@ -122,6 +122,10 @@
 - **Validações completas da API aprovadas:** `pnpm.cmd --filter @dp-system/api typecheck`; Jest em `--runInBand` — 23 suítes e 62 testes aprovados; `pnpm.cmd --filter @dp-system/api lint`; `pnpm.cmd prisma:validate`; `git diff --check`.
 - **Pendências:** testes de controller adicionais e frontend/documentação da folha. Não há pendência de cálculo legal; nenhuma regra normativa foi implementada.
 - **Próximo passo exato:** iniciar o frontend da ETP-010 pela navegação e páginas demonstrativas de competências, rubricas, parâmetros, lançamentos, execuções e fechamentos.
+- **Frontend em andamento:** criada a feature `apps/web/src/features/payroll/index.tsx` com navegação interna e estados de carregamento, vazio e erro; rotas `/folha/competencias`, `/folha/rubricas`, `/folha/parametros`, `/folha/lancamentos`, `/folha/execucoes` e `/folha/fechamentos` foram registradas. Todas exibem o aviso obrigatório de processamento demonstrativo e não homologado.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Pendências:** formulários, ações e páginas detalhadas por domínio, testes de interface, documentação e validações globais.
+- **Próximo passo exato:** implementar a página de competências com listagem, criação, validação, fechamento e reabertura justificada.
 
 ## ETP-011 a ETP-015
 
