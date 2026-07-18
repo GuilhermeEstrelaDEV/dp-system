@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
 import { payrollPeriodsApi, type CreatePayrollPeriod } from './payroll-periods';
+import { payrollInputsApi, type CreatePayrollInput } from './payroll-inputs';
 import {
   payrollParametersApi,
   type CreatePayrollParameter,
@@ -40,7 +41,10 @@ export function PayrollPage() {
   const records = useQuery({
     queryKey: ['payroll', endpoint],
     enabled:
-      path !== '/folha/competencias' && path !== '/folha/rubricas' && path !== '/folha/parametros',
+      path !== '/folha/competencias' &&
+      path !== '/folha/rubricas' &&
+      path !== '/folha/parametros' &&
+      path !== '/folha/lancamentos',
     queryFn: () => apiRequest<Paginated<PayrollRecord>>(`${endpoint}?page=1&pageSize=20`),
   });
 
@@ -71,6 +75,8 @@ export function PayrollPage() {
         <PayrollRubricsPanel />
       ) : path === '/folha/parametros' ? (
         <PayrollParametersPanel />
+      ) : path === '/folha/lancamentos' ? (
+        <PayrollInputsPanel />
       ) : (
         <section className="mt-6" aria-labelledby="payroll-section-title">
           <h2 id="payroll-section-title">{label}</h2>
@@ -667,6 +673,218 @@ function PayrollParametersPanel() {
           <button
             onClick={() => setPage(page + 1)}
             disabled={page >= parameters.data.pagination.totalPages}
+          >
+            Próxima página
+          </button>
+        </nav>
+      ) : null}
+    </section>
+  );
+}
+
+const decimalPattern = /^-?\d+(\.\d{1,4})?$/;
+
+function PayrollInputsPanel() {
+  const client = useQueryClient();
+  const [payrollPeriodId, setPayrollPeriodId] = useState('');
+  const [page, setPage] = useState(1);
+  const [formError, setFormError] = useState<string>();
+  const [form, setForm] = useState<CreatePayrollInput>({
+    payrollPeriodId: '',
+    employeeId: '',
+    employmentContractId: '',
+    payrollRubricId: '',
+    amount: '',
+    quantity: '',
+    sourceKey: '',
+    sourceType: 'MANUAL',
+    technicalNotes: '',
+  });
+  const inputs = useQuery({
+    queryKey: ['payroll-inputs', payrollPeriodId, page],
+    enabled: Boolean(payrollPeriodId),
+    queryFn: () =>
+      payrollInputsApi.list(
+        new URLSearchParams({
+          payrollPeriodId,
+          page: String(page),
+          pageSize: '20',
+          sortBy: 'createdAt',
+          sortDirection: 'desc',
+        }),
+      ),
+  });
+  const refresh = () => void client.invalidateQueries({ queryKey: ['payroll-inputs'] });
+  const create = useMutation({
+    mutationFn: payrollInputsApi.create,
+    onSuccess: () => {
+      setForm({
+        payrollPeriodId: '',
+        employeeId: '',
+        employmentContractId: '',
+        payrollRubricId: '',
+        amount: '',
+        quantity: '',
+        sourceKey: '',
+        sourceType: 'MANUAL',
+        technicalNotes: '',
+      });
+      setFormError(undefined);
+      refresh();
+    },
+  });
+  const inactivate = useMutation({
+    mutationFn: (id: string) => payrollInputsApi.update(id, { status: 'INACTIVE' }),
+    onSuccess: refresh,
+  });
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!decimalPattern.test(form.amount)) {
+      setFormError('Informe um valor decimal válido, usando texto e nunca ponto flutuante.');
+      return;
+    }
+    if (form.quantity && !/^\d+(\.\d{1,4})?$/.test(form.quantity)) {
+      setFormError('Informe uma quantidade decimal válida.');
+      return;
+    }
+    create.mutate({
+      payrollPeriodId: form.payrollPeriodId,
+      employeeId: form.employeeId,
+      employmentContractId: form.employmentContractId,
+      payrollRubricId: form.payrollRubricId,
+      amount: form.amount,
+      ...(form.quantity ? { quantity: form.quantity } : {}),
+      ...(form.sourceKey?.trim() ? { sourceKey: form.sourceKey.trim() } : {}),
+      ...(form.sourceType?.trim() ? { sourceType: form.sourceType.trim() } : {}),
+      ...(form.technicalNotes?.trim() ? { technicalNotes: form.technicalNotes.trim() } : {}),
+    });
+  };
+  return (
+    <section className="mt-6" aria-labelledby="payroll-section-title">
+      <h2 id="payroll-section-title">Lançamentos</h2>
+      <p>
+        Valores são textos decimais demonstrativos. Não há cálculo legal, valores reais ou folha
+        homologada nesta tela.
+      </p>
+      <form onSubmit={submit} className="grid gap-2">
+        <label>
+          Competência
+          <input
+            value={form.payrollPeriodId}
+            onChange={(event) => setForm({ ...form, payrollPeriodId: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Colaborador
+          <input
+            value={form.employeeId}
+            onChange={(event) => setForm({ ...form, employeeId: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Contrato
+          <input
+            value={form.employmentContractId}
+            onChange={(event) => setForm({ ...form, employmentContractId: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Rubrica
+          <input
+            value={form.payrollRubricId}
+            onChange={(event) => setForm({ ...form, payrollRubricId: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Valor decimal demonstrativo
+          <input
+            inputMode="decimal"
+            value={form.amount}
+            onChange={(event) => setForm({ ...form, amount: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Quantidade decimal (opcional)
+          <input
+            inputMode="decimal"
+            value={form.quantity}
+            onChange={(event) => setForm({ ...form, quantity: event.target.value })}
+          />
+        </label>
+        <label>
+          Chave de origem (opcional e idempotente)
+          <input
+            value={form.sourceKey}
+            onChange={(event) => setForm({ ...form, sourceKey: event.target.value })}
+          />
+        </label>
+        <label>
+          Tipo de origem
+          <input
+            value={form.sourceType}
+            onChange={(event) => setForm({ ...form, sourceType: event.target.value })}
+          />
+        </label>
+        <label>
+          Observações técnicas (opcional)
+          <textarea
+            value={form.technicalNotes}
+            onChange={(event) => setForm({ ...form, technicalNotes: event.target.value })}
+          />
+        </label>
+        <button disabled={create.isPending}>Criar lançamento</button>
+        {formError ? <p role="alert">{formError}</p> : null}
+        {create.isError ? <p role="alert">{create.error.message}</p> : null}
+      </form>
+      <label className="mt-4 block">
+        Filtrar por competência
+        <input
+          value={payrollPeriodId}
+          onChange={(event) => {
+            setPayrollPeriodId(event.target.value);
+            setPage(1);
+          }}
+        />
+      </label>
+      {inputs.isLoading ? <p role="status">Carregando lançamentos…</p> : null}
+      {inputs.isError ? <p role="alert">{inputs.error.message}</p> : null}
+      {payrollPeriodId && inputs.data?.items.length === 0 ? (
+        <p>Nenhum lançamento demonstrativo encontrado.</p>
+      ) : null}
+      <ul aria-label="Lista de lançamentos">
+        {inputs.data?.items.map((item) => (
+          <li key={item.id}>
+            <strong>{item.payrollRubric.code}</strong> — {item.payrollRubric.name} · {item.amount} (
+            {item.status})
+            <p>
+              Competência {item.payrollPeriod.referenceDate} ({item.payrollPeriod.status}) · chave{' '}
+              {item.sourceKey ?? 'manual'}
+            </p>
+            {item.status !== 'INACTIVE' ? (
+              <button onClick={() => inactivate.mutate(item.id)} disabled={inactivate.isPending}>
+                Inativar lançamento
+              </button>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+      {inactivate.isError ? <p role="alert">{inactivate.error.message}</p> : null}
+      {inputs.data?.pagination.totalPages && inputs.data.pagination.totalPages > 1 ? (
+        <nav aria-label="Paginação de lançamentos">
+          <button onClick={() => setPage(page - 1)} disabled={page === 1}>
+            Página anterior
+          </button>
+          <span>
+            Página {inputs.data.pagination.page} de {inputs.data.pagination.totalPages}
+          </span>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={page >= inputs.data.pagination.totalPages}
           >
             Próxima página
           </button>
