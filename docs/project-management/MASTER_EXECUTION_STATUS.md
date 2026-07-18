@@ -145,6 +145,11 @@
 - **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-parameters.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
 - **Pendências:** páginas funcionais de lançamentos, execuções e fechamentos, testes de interface restantes, documentação transversal e validações globais.
 - **Próximo passo exato:** implementar a página funcional de lançamentos, com valores decimais textuais, idempotência por chave de origem e bloqueio por competência fechada.
+- **Lançamentos concluídos parcialmente:** `payroll-inputs.ts` centraliza os contratos HTTP reais. A rota permite criar lançamentos com valor/quantidade decimal como texto, chave de origem idempotente e metadados técnicos; lista por competência, pagina e permite inativação lógica. A validação no cliente não envia formato decimal inválido; a API preserva a verificação de competência fechada e compatibilidade contratual.
+- **Testes de lançamentos adicionados:** `payroll-inputs.test.tsx` cobre filtro por competência, bloqueio de valor inválido no cliente e inativação pela API.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-inputs.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Pendências:** páginas funcionais de execuções e fechamentos, testes de interface restantes, documentação transversal e validações globais.
+- **Próximo passo exato:** implementar a página funcional de execuções técnicas, com versões preservadas, avisos e erros bloqueantes demonstrativos.
 
 ## ETP-011 a ETP-015
 
