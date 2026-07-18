@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
 import { payrollPeriodsApi, type CreatePayrollPeriod } from './payroll-periods';
+import { payrollRunsApi, type CreatePayrollRun } from './payroll-runs';
 import { payrollInputsApi, type CreatePayrollInput } from './payroll-inputs';
 import {
   payrollParametersApi,
@@ -44,7 +45,8 @@ export function PayrollPage() {
       path !== '/folha/competencias' &&
       path !== '/folha/rubricas' &&
       path !== '/folha/parametros' &&
-      path !== '/folha/lancamentos',
+      path !== '/folha/lancamentos' &&
+      path !== '/folha/execucoes',
     queryFn: () => apiRequest<Paginated<PayrollRecord>>(`${endpoint}?page=1&pageSize=20`),
   });
 
@@ -77,6 +79,8 @@ export function PayrollPage() {
         <PayrollParametersPanel />
       ) : path === '/folha/lancamentos' ? (
         <PayrollInputsPanel />
+      ) : path === '/folha/execucoes' ? (
+        <PayrollRunsPanel />
       ) : (
         <section className="mt-6" aria-labelledby="payroll-section-title">
           <h2 id="payroll-section-title">{label}</h2>
@@ -673,6 +677,149 @@ function PayrollParametersPanel() {
           <button
             onClick={() => setPage(page + 1)}
             disabled={page >= parameters.data.pagination.totalPages}
+          >
+            Próxima página
+          </button>
+        </nav>
+      ) : null}
+    </section>
+  );
+}
+
+function PayrollRunsPanel() {
+  const client = useQueryClient();
+  const [payrollPeriodId, setPayrollPeriodId] = useState('');
+  const [page, setPage] = useState(1);
+  const [form, setForm] = useState<CreatePayrollRun>({
+    payrollPeriodId: '',
+    engineVersion: 'foundation-v1',
+    parameterSnapshotVersion: '',
+    technicalNotes: '',
+  });
+  const runs = useQuery({
+    queryKey: ['payroll-runs', payrollPeriodId, page],
+    enabled: Boolean(payrollPeriodId),
+    queryFn: () =>
+      payrollRunsApi.list(
+        new URLSearchParams({
+          payrollPeriodId,
+          page: String(page),
+          pageSize: '20',
+          sortBy: 'createdAt',
+          sortDirection: 'desc',
+        }),
+      ),
+  });
+  const refresh = () => void client.invalidateQueries({ queryKey: ['payroll-runs'] });
+  const create = useMutation({
+    mutationFn: payrollRunsApi.create,
+    onSuccess: () => {
+      setForm({
+        payrollPeriodId: '',
+        engineVersion: 'foundation-v1',
+        parameterSnapshotVersion: '',
+        technicalNotes: '',
+      });
+      refresh();
+    },
+  });
+  return (
+    <section className="mt-6" aria-labelledby="payroll-section-title">
+      <h2 id="payroll-section-title">Execuções técnicas</h2>
+      <p>
+        Cada execução é estrutural e demonstrativa: não calcula impostos, incidências ou qualquer
+        regra trabalhista homologada.
+      </p>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          create.mutate({
+            payrollPeriodId: form.payrollPeriodId,
+            engineVersion: form.engineVersion,
+            ...(form.parameterSnapshotVersion?.trim()
+              ? { parameterSnapshotVersion: form.parameterSnapshotVersion.trim() }
+              : {}),
+            ...(form.technicalNotes?.trim() ? { technicalNotes: form.technicalNotes.trim() } : {}),
+          });
+        }}
+        className="grid gap-2"
+      >
+        <label>
+          Competência
+          <input
+            value={form.payrollPeriodId}
+            onChange={(event) => setForm({ ...form, payrollPeriodId: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Versão do motor
+          <input
+            value={form.engineVersion}
+            onChange={(event) => setForm({ ...form, engineVersion: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Versão do snapshot de parâmetros (opcional)
+          <input
+            value={form.parameterSnapshotVersion}
+            onChange={(event) => setForm({ ...form, parameterSnapshotVersion: event.target.value })}
+          />
+        </label>
+        <label>
+          Observações técnicas (opcional)
+          <textarea
+            value={form.technicalNotes}
+            onChange={(event) => setForm({ ...form, technicalNotes: event.target.value })}
+          />
+        </label>
+        <button disabled={create.isPending}>Iniciar execução técnica</button>
+        {create.isError ? <p role="alert">{create.error.message}</p> : null}
+      </form>
+      <label className="mt-4 block">
+        Filtrar por competência
+        <input
+          value={payrollPeriodId}
+          onChange={(event) => {
+            setPayrollPeriodId(event.target.value);
+            setPage(1);
+          }}
+        />
+      </label>
+      {runs.isLoading ? <p role="status">Carregando execuções…</p> : null}
+      {runs.isError ? <p role="alert">{runs.error.message}</p> : null}
+      {payrollPeriodId && runs.data?.items.length === 0 ? (
+        <p>Nenhuma execução demonstrativa encontrada.</p>
+      ) : null}
+      <ul aria-label="Lista de execuções">
+        {runs.data?.items.map((item) => (
+          <li key={item.id}>
+            <strong>Execução {item.sequence}</strong> ({item.status})
+            <p>
+              Motor {item.engineVersion} · parâmetros {item.parameterVersion ?? 'não informado'}
+            </p>
+            <ul aria-label={`Mensagens da execução ${item.sequence}`}>
+              {item.messages.map((message) => (
+                <li key={message.id}>
+                  {message.severity}: {message.code} — {message.message}
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+      {runs.data?.pagination.totalPages && runs.data.pagination.totalPages > 1 ? (
+        <nav aria-label="Paginação de execuções">
+          <button onClick={() => setPage(page - 1)} disabled={page === 1}>
+            Página anterior
+          </button>
+          <span>
+            Página {runs.data.pagination.page} de {runs.data.pagination.totalPages}
+          </span>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={page >= runs.data.pagination.totalPages}
           >
             Próxima página
           </button>
