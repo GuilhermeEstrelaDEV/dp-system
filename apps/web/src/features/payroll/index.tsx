@@ -4,6 +4,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
 import { payrollPeriodsApi, type CreatePayrollPeriod } from './payroll-periods';
+import {
+  payrollParametersApi,
+  type CreatePayrollParameter,
+  type PayrollParameter,
+} from './payroll-parameters';
 import { payrollRubricsApi, type CreatePayrollRubric, type PayrollRubric } from './payroll-rubrics';
 
 const payrollPages = [
@@ -34,7 +39,8 @@ export function PayrollPage() {
   const [, label, path, endpoint] = currentPage(location.pathname);
   const records = useQuery({
     queryKey: ['payroll', endpoint],
-    enabled: path !== '/folha/competencias' && path !== '/folha/rubricas',
+    enabled:
+      path !== '/folha/competencias' && path !== '/folha/rubricas' && path !== '/folha/parametros',
     queryFn: () => apiRequest<Paginated<PayrollRecord>>(`${endpoint}?page=1&pageSize=20`),
   });
 
@@ -63,6 +69,8 @@ export function PayrollPage() {
         <PayrollPeriodsPanel />
       ) : path === '/folha/rubricas' ? (
         <PayrollRubricsPanel />
+      ) : path === '/folha/parametros' ? (
+        <PayrollParametersPanel />
       ) : (
         <section className="mt-6" aria-labelledby="payroll-section-title">
           <h2 id="payroll-section-title">{label}</h2>
@@ -398,6 +406,267 @@ function PayrollRubricsPanel() {
           <button
             onClick={() => setPage(page + 1)}
             disabled={page >= rubrics.data.pagination.totalPages}
+          >
+            Próxima página
+          </button>
+        </nav>
+      ) : null}
+    </section>
+  );
+}
+
+type ParameterForm = CreatePayrollParameter & { definitionText: string };
+
+function parseDefinition(value: string) {
+  if (!value.trim()) return undefined;
+  const parsed: unknown = JSON.parse(value);
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    throw new Error('A definição deve ser um objeto JSON.');
+  }
+  return parsed as Record<string, unknown>;
+}
+
+function PayrollParametersPanel() {
+  const client = useQueryClient();
+  const [companyId, setCompanyId] = useState('');
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState<'ALL' | PayrollParameter['status']>('ALL');
+  const [page, setPage] = useState(1);
+  const [formError, setFormError] = useState<string>();
+  const [form, setForm] = useState<ParameterForm>({
+    companyId: '',
+    code: '',
+    name: '',
+    category: '',
+    version: 'v1',
+    validFrom: '',
+    validTo: '',
+    sourceReference: '',
+    definitionText: '',
+  });
+  const parameters = useQuery({
+    queryKey: ['payroll-parameters', companyId, search, status, page],
+    queryFn: () => {
+      const query = new URLSearchParams({
+        page: String(page),
+        pageSize: '20',
+        sortBy: 'validFrom',
+        sortDirection: 'desc',
+      });
+      if (companyId.trim()) query.set('companyId', companyId.trim());
+      if (search.trim()) query.set('search', search.trim());
+      if (status !== 'ALL') query.set('status', status);
+      return payrollParametersApi.list(query);
+    },
+  });
+  const refresh = () => void client.invalidateQueries({ queryKey: ['payroll-parameters'] });
+  const create = useMutation({
+    mutationFn: payrollParametersApi.create,
+    onSuccess: () => {
+      setForm({
+        companyId: '',
+        code: '',
+        name: '',
+        category: '',
+        version: 'v1',
+        validFrom: '',
+        validTo: '',
+        sourceReference: '',
+        definitionText: '',
+      });
+      setFormError(undefined);
+      refresh();
+    },
+  });
+  const updateStatus = useMutation({
+    mutationFn: ({ id, status: value }: { id: string; status: PayrollParameter['status'] }) =>
+      payrollParametersApi.update(id, { status: value }),
+    onSuccess: refresh,
+  });
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      const definition = parseDefinition(form.definitionText);
+      create.mutate({
+        code: form.code,
+        name: form.name,
+        category: form.category,
+        version: form.version,
+        validFrom: form.validFrom,
+        ...(form.companyId?.trim() ? { companyId: form.companyId.trim() } : {}),
+        ...(form.validTo ? { validTo: form.validTo } : {}),
+        ...(form.sourceReference?.trim() ? { sourceReference: form.sourceReference.trim() } : {}),
+        ...(definition ? { definition } : {}),
+      });
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'Definição inválida.');
+    }
+  };
+
+  return (
+    <section className="mt-6" aria-labelledby="payroll-section-title">
+      <h2 id="payroll-section-title">Parâmetros</h2>
+      <p>
+        Versione somente metadados demonstrativos. Esta tela não contém valores, faixas ou
+        parâmetros legais homologados.
+      </p>
+      <form onSubmit={submit} className="grid gap-2">
+        <label>
+          Empresa (opcional)
+          <input
+            value={form.companyId}
+            onChange={(event) => setForm({ ...form, companyId: event.target.value })}
+          />
+        </label>
+        <label>
+          Código
+          <input
+            value={form.code}
+            onChange={(event) => setForm({ ...form, code: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Nome
+          <input
+            value={form.name}
+            onChange={(event) => setForm({ ...form, name: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Categoria
+          <input
+            value={form.category}
+            onChange={(event) => setForm({ ...form, category: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Versão
+          <input
+            value={form.version}
+            onChange={(event) => setForm({ ...form, version: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Vigente a partir de
+          <input
+            type="date"
+            value={form.validFrom}
+            onChange={(event) => setForm({ ...form, validFrom: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Vigente até (opcional)
+          <input
+            type="date"
+            value={form.validTo}
+            onChange={(event) => setForm({ ...form, validTo: event.target.value })}
+          />
+        </label>
+        <label>
+          Referência de fonte (opcional)
+          <input
+            value={form.sourceReference}
+            onChange={(event) => setForm({ ...form, sourceReference: event.target.value })}
+          />
+        </label>
+        <label>
+          Definição configurável (JSON opcional)
+          <textarea
+            value={form.definitionText}
+            onChange={(event) => setForm({ ...form, definitionText: event.target.value })}
+            aria-describedby="parameter-definition-help"
+          />
+        </label>
+        <small id="parameter-definition-help">
+          Valores monetários futuros devem ser strings decimais; não use números oficiais nesta
+          fundação.
+        </small>
+        <button disabled={create.isPending}>Criar parâmetro</button>
+        {formError ? <p role="alert">{formError}</p> : null}
+        {create.isError ? <p role="alert">{create.error.message}</p> : null}
+      </form>
+      <label className="mt-4 block">
+        Filtrar por empresa
+        <input
+          value={companyId}
+          onChange={(event) => {
+            setCompanyId(event.target.value);
+            setPage(1);
+          }}
+        />
+      </label>
+      <label className="mt-2 block">
+        Pesquisar parâmetros
+        <input
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+            setPage(1);
+          }}
+        />
+      </label>
+      <label className="mt-2 block">
+        Status
+        <select
+          value={status}
+          onChange={(event) => {
+            setStatus(event.target.value as 'ALL' | PayrollParameter['status']);
+            setPage(1);
+          }}
+        >
+          <option value="ALL">Todos</option>
+          <option value="DRAFT">Rascunhos</option>
+          <option value="ACTIVE">Ativos</option>
+          <option value="INACTIVE">Inativos</option>
+        </select>
+      </label>
+      {parameters.isLoading ? <p role="status">Carregando parâmetros…</p> : null}
+      {parameters.isError ? <p role="alert">{parameters.error.message}</p> : null}
+      {parameters.data?.items.length === 0 ? (
+        <p>Nenhum parâmetro demonstrativo encontrado.</p>
+      ) : null}
+      <ul aria-label="Lista de parâmetros">
+        {parameters.data?.items.map((item) => {
+          const nextStatus = item.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+          return (
+            <li key={item.id}>
+              <strong>{item.code}</strong> — {item.name} ({item.status})
+              <p>
+                {item.category} · versão {item.version} · vigência {item.validFrom}
+                {item.validTo ? ` até ${item.validTo}` : ' em aberto'}
+              </p>
+              <p>
+                {item.definition
+                  ? 'Definição configurável registrada.'
+                  : 'Sem definição configurável.'}
+              </p>
+              <button
+                onClick={() => updateStatus.mutate({ id: item.id, status: nextStatus })}
+                disabled={updateStatus.isPending}
+              >
+                {nextStatus === 'ACTIVE' ? 'Ativar parâmetro' : 'Inativar parâmetro'}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      {updateStatus.isError ? <p role="alert">{updateStatus.error.message}</p> : null}
+      {parameters.data?.pagination.totalPages && parameters.data.pagination.totalPages > 1 ? (
+        <nav aria-label="Paginação de parâmetros">
+          <button onClick={() => setPage(page - 1)} disabled={page === 1}>
+            Página anterior
+          </button>
+          <span>
+            Página {parameters.data.pagination.page} de {parameters.data.pagination.totalPages}
+          </span>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={page >= parameters.data.pagination.totalPages}
           >
             Próxima página
           </button>
