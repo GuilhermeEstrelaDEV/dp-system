@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
 import { payrollPeriodsApi, type CreatePayrollPeriod } from './payroll-periods';
+import { payrollRubricsApi, type CreatePayrollRubric, type PayrollRubric } from './payroll-rubrics';
 
 const payrollPages = [
   ['competencias', 'Competências', '/folha/competencias', '/payroll-periods'],
@@ -33,7 +34,7 @@ export function PayrollPage() {
   const [, label, path, endpoint] = currentPage(location.pathname);
   const records = useQuery({
     queryKey: ['payroll', endpoint],
-    enabled: path !== '/folha/competencias',
+    enabled: path !== '/folha/competencias' && path !== '/folha/rubricas',
     queryFn: () => apiRequest<Paginated<PayrollRecord>>(`${endpoint}?page=1&pageSize=20`),
   });
 
@@ -60,6 +61,8 @@ export function PayrollPage() {
       </nav>
       {path === '/folha/competencias' ? (
         <PayrollPeriodsPanel />
+      ) : path === '/folha/rubricas' ? (
+        <PayrollRubricsPanel />
       ) : (
         <section className="mt-6" aria-labelledby="payroll-section-title">
           <h2 id="payroll-section-title">{label}</h2>
@@ -81,6 +84,325 @@ export function PayrollPage() {
           ) : null}
         </section>
       )}
+    </section>
+  );
+}
+
+type RubricForm = CreatePayrollRubric & { incidenceConfigurationText: string };
+
+function parseIncidenceConfiguration(value: string) {
+  if (!value.trim()) return undefined;
+  const parsed: unknown = JSON.parse(value);
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    throw new Error('A configuração de incidências deve ser um objeto JSON.');
+  }
+  return parsed as Record<string, unknown>;
+}
+
+function PayrollRubricsPanel() {
+  const client = useQueryClient();
+  const [companyId, setCompanyId] = useState('');
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState<'ALL' | PayrollRubric['status']>('ALL');
+  const [sortBy, setSortBy] = useState<'code' | 'name' | 'createdAt'>('code');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [page, setPage] = useState(1);
+  const [formError, setFormError] = useState<string>();
+  const [editing, setEditing] = useState<{ id: string; name: string }>();
+  const [form, setForm] = useState<RubricForm>({
+    companyId: '',
+    payrollRubricCategoryId: '',
+    code: '',
+    name: '',
+    version: 'v1',
+    validFrom: '',
+    validTo: '',
+    incidenceConfigurationText: '',
+  });
+  const rubrics = useQuery({
+    queryKey: ['payroll-rubrics', companyId, search, status, sortBy, sortDirection, page],
+    enabled: Boolean(companyId),
+    queryFn: () => {
+      const query = new URLSearchParams({
+        companyId,
+        page: String(page),
+        pageSize: '20',
+        sortBy,
+        sortDirection,
+      });
+      if (search.trim()) query.set('search', search.trim());
+      if (status !== 'ALL') query.set('status', status);
+      return payrollRubricsApi.list(query);
+    },
+  });
+  const refresh = () => void client.invalidateQueries({ queryKey: ['payroll-rubrics'] });
+  const create = useMutation({
+    mutationFn: payrollRubricsApi.create,
+    onSuccess: () => {
+      setForm({
+        companyId: '',
+        payrollRubricCategoryId: '',
+        code: '',
+        name: '',
+        version: 'v1',
+        validFrom: '',
+        validTo: '',
+        incidenceConfigurationText: '',
+      });
+      setFormError(undefined);
+      refresh();
+    },
+  });
+  const updateStatus = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: PayrollRubric['status'] }) =>
+      payrollRubricsApi.update(id, { status }),
+    onSuccess: refresh,
+  });
+  const updateName = useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) =>
+      payrollRubricsApi.update(id, { name }),
+    onSuccess: () => {
+      setEditing(undefined);
+      refresh();
+    },
+  });
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      const incidenceConfiguration = parseIncidenceConfiguration(form.incidenceConfigurationText);
+      create.mutate({
+        companyId: form.companyId,
+        payrollRubricCategoryId: form.payrollRubricCategoryId,
+        code: form.code,
+        name: form.name,
+        version: form.version,
+        validFrom: form.validFrom,
+        ...(form.validTo ? { validTo: form.validTo } : {}),
+        ...(incidenceConfiguration ? { incidenceConfiguration } : {}),
+      });
+    } catch (error) {
+      setFormError(
+        error instanceof Error ? error.message : 'Configuração de incidências inválida.',
+      );
+    }
+  };
+
+  return (
+    <section className="mt-6" aria-labelledby="payroll-section-title">
+      <h2 id="payroll-section-title">Rubricas</h2>
+      <p>
+        Cadastre somente configurações demonstrativas. Incidências são metadados configuráveis e não
+        representam regras legais.
+      </p>
+      <form onSubmit={submit} className="grid gap-2">
+        <label>
+          Empresa
+          <input
+            value={form.companyId}
+            onChange={(event) => setForm({ ...form, companyId: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Categoria da rubrica
+          <input
+            value={form.payrollRubricCategoryId}
+            onChange={(event) => setForm({ ...form, payrollRubricCategoryId: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Código
+          <input
+            value={form.code}
+            onChange={(event) => setForm({ ...form, code: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Nome
+          <input
+            value={form.name}
+            onChange={(event) => setForm({ ...form, name: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Versão
+          <input
+            value={form.version}
+            onChange={(event) => setForm({ ...form, version: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Vigente a partir de
+          <input
+            type="date"
+            value={form.validFrom}
+            onChange={(event) => setForm({ ...form, validFrom: event.target.value })}
+            required
+          />
+        </label>
+        <label>
+          Vigente até (opcional)
+          <input
+            type="date"
+            value={form.validTo}
+            onChange={(event) => setForm({ ...form, validTo: event.target.value })}
+          />
+        </label>
+        <label>
+          Incidências configuráveis (JSON opcional)
+          <textarea
+            value={form.incidenceConfigurationText}
+            onChange={(event) =>
+              setForm({ ...form, incidenceConfigurationText: event.target.value })
+            }
+            aria-describedby="rubric-incidence-help"
+          />
+        </label>
+        <small id="rubric-incidence-help">
+          Não informe alíquotas, faixas ou fórmulas legais nesta fundação.
+        </small>
+        <button disabled={create.isPending}>Criar rubrica</button>
+        {formError ? <p role="alert">{formError}</p> : null}
+        {create.isError ? <p role="alert">{create.error.message}</p> : null}
+      </form>
+      <label className="mt-4 block">
+        Filtrar por empresa
+        <input
+          value={companyId}
+          onChange={(event) => {
+            setCompanyId(event.target.value);
+            setPage(1);
+          }}
+        />
+      </label>
+      <label className="mt-2 block">
+        Pesquisar rubricas
+        <input
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+            setPage(1);
+          }}
+        />
+      </label>
+      <label className="mt-2 block">
+        Status
+        <select
+          value={status}
+          onChange={(event) => {
+            setStatus(event.target.value as 'ALL' | PayrollRubric['status']);
+            setPage(1);
+          }}
+        >
+          <option value="ALL">Todos</option>
+          <option value="ACTIVE">Ativas</option>
+          <option value="INACTIVE">Inativas</option>
+        </select>
+      </label>
+      <label className="mt-2 block">
+        Ordenar por
+        <select value={sortBy} onChange={(event) => setSortBy(event.target.value as typeof sortBy)}>
+          <option value="code">Código</option>
+          <option value="name">Nome</option>
+          <option value="createdAt">Data de criação</option>
+        </select>
+      </label>
+      <label className="mt-2 block">
+        Direção da ordenação
+        <select
+          value={sortDirection}
+          onChange={(event) => setSortDirection(event.target.value as typeof sortDirection)}
+        >
+          <option value="asc">Crescente</option>
+          <option value="desc">Decrescente</option>
+        </select>
+      </label>
+      {rubrics.isLoading ? <p role="status">Carregando rubricas…</p> : null}
+      {rubrics.isError ? <p role="alert">{rubrics.error.message}</p> : null}
+      {companyId && rubrics.data?.items.length === 0 ? (
+        <p>Nenhuma rubrica demonstrativa encontrada.</p>
+      ) : null}
+      <ul aria-label="Lista de rubricas">
+        {rubrics.data?.items.map((item) => {
+          const currentVersion = item.versions[0];
+          const nextStatus = item.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+          return (
+            <li key={item.id}>
+              <strong>{item.code}</strong> —{' '}
+              {editing?.id === item.id ? (
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    if (editing.name.trim()) {
+                      updateName.mutate({ id: item.id, name: editing.name.trim() });
+                    }
+                  }}
+                >
+                  <label>
+                    Novo nome da rubrica
+                    <input
+                      value={editing.name}
+                      onChange={(event) => setEditing({ ...editing, name: event.target.value })}
+                      required
+                    />
+                  </label>
+                  <button disabled={updateName.isPending}>Salvar nome</button>
+                  <button type="button" onClick={() => setEditing(undefined)}>
+                    Cancelar edição
+                  </button>
+                </form>
+              ) : (
+                item.name
+              )}{' '}
+              ({item.status})
+              <p>
+                {item.payrollRubricCategory.name} ({item.payrollRubricCategory.nature}) · versão{' '}
+                {currentVersion?.version ?? 'não informada'} · vigência{' '}
+                {currentVersion?.validFrom ?? '—'}
+                {currentVersion?.validTo ? ` até ${currentVersion.validTo}` : ' em aberto'}
+              </p>
+              <p>
+                {currentVersion?.incidenceConfiguration
+                  ? 'Incidências configuráveis registradas.'
+                  : 'Sem incidências configuráveis.'}
+              </p>
+              <button
+                onClick={() => updateStatus.mutate({ id: item.id, status: nextStatus })}
+                disabled={updateStatus.isPending}
+              >
+                {nextStatus === 'ACTIVE' ? 'Ativar rubrica' : 'Inativar rubrica'}
+              </button>
+              {editing?.id !== item.id ? (
+                <button onClick={() => setEditing({ id: item.id, name: item.name })}>
+                  Editar nome
+                </button>
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
+      {updateStatus.isError ? <p role="alert">{updateStatus.error.message}</p> : null}
+      {updateName.isError ? <p role="alert">{updateName.error.message}</p> : null}
+      {rubrics.data?.pagination.totalPages && rubrics.data.pagination.totalPages > 1 ? (
+        <nav aria-label="Paginação de rubricas">
+          <button onClick={() => setPage(page - 1)} disabled={page === 1}>
+            Página anterior
+          </button>
+          <span>
+            Página {rubrics.data.pagination.page} de {rubrics.data.pagination.totalPages}
+          </span>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={page >= rubrics.data.pagination.totalPages}
+          >
+            Próxima página
+          </button>
+        </nav>
+      ) : null}
     </section>
   );
 }
