@@ -133,6 +133,7 @@
 - **Testes de competências adicionados:** `apps/web/src/features/payroll/payroll-periods.test.tsx` cobre navegação/aviso demonstrativo, exigência de empresa e estado vazio, conflito de criação com preservação de formulário e imutabilidade com fluxo de reabertura.
 - **Correção de teste:** o primeiro seletor de imutabilidade falhou por corresponder apenas parte de um texto composto; foi corrigido para uma expressão acessível sem alterar comportamento do produto.
 - **Validações aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-periods.test.tsx` (4 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Commit de testes:** `44774fc` — `test(web): cover payroll period workflows`.
 - **Pendências:** edição/detalhe de competências, páginas funcionais dos demais domínios, documentação e validações globais.
 - **Próximo passo exato:** implementar a página funcional de rubricas com vigência e configuração de incidências, reutilizando a feature de folha.
 
