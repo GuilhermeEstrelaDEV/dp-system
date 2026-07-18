@@ -135,7 +135,11 @@
 - **Validações aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-periods.test.tsx` (4 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
 - **Commit de testes:** `44774fc` — `test(web): cover payroll period workflows`.
 - **Pendências:** edição/detalhe de competências, páginas funcionais dos demais domínios, documentação e validações globais.
-- **Próximo passo exato:** implementar a página funcional de rubricas com vigência e configuração de incidências, reutilizando a feature de folha.
+- **Rubricas concluídas parcialmente:** `payroll-rubrics.ts` centraliza os contratos HTTP reais de listagem, detalhe, criação e atualização (incluindo ativação/inativação). A rota de rubricas permite criar uma primeira versão com vigência obrigatória, configuração JSON de incidências sem regras legais, filtro por empresa/status, pesquisa, ordenação permitida, paginação, edição nominal e ativação/inativação lógica.
+- **Testes de rubricas adicionados:** `payroll-rubrics.test.tsx` cobre listagem filtrada com vigência/incidência, conflito de criação com preservação do formulário e atualização de status via API.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-rubrics.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Pendências:** páginas funcionais de parâmetros, lançamentos, execuções e fechamentos, testes de interface restantes, documentação transversal e validações globais.
+- **Próximo passo exato:** implementar a página funcional de parâmetros com vigência, versionamento e configuração sem valores legais, reutilizando a feature de folha.
 
 ## ETP-011 a ETP-015
 
