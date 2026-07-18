@@ -150,6 +150,11 @@
 - **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-inputs.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
 - **Pendências:** páginas funcionais de execuções e fechamentos, testes de interface restantes, documentação transversal e validações globais.
 - **Próximo passo exato:** implementar a página funcional de execuções técnicas, com versões preservadas, avisos e erros bloqueantes demonstrativos.
+- **Execuções concluídas parcialmente:** `payroll-runs.ts` centraliza os contratos HTTP de listagem, detalhe, criação e mensagens. A rota inicia processamento estrutural demonstrativo, preserva versões de motor e de snapshot de parâmetros e apresenta avisos/erros retornados pela API, sem qualquer cálculo legal.
+- **Testes de execuções adicionados:** `payroll-runs.test.tsx` cobre listagem com versões e aviso demonstrativo, além do início de execução com versões explícitas.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-runs.test.tsx` (2 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Pendências:** página funcional de fechamentos, testes de interface restantes, documentação transversal e validações globais.
+- **Próximo passo exato:** implementar a página funcional de fechamentos e reaberturas justificadas, preservando o histórico da competência.
 
 ## ETP-011 a ETP-015
 
