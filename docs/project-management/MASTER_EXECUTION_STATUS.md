@@ -140,6 +140,11 @@
 - **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-rubrics.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
 - **Pendências:** páginas funcionais de parâmetros, lançamentos, execuções e fechamentos, testes de interface restantes, documentação transversal e validações globais.
 - **Próximo passo exato:** implementar a página funcional de parâmetros com vigência, versionamento e configuração sem valores legais, reutilizando a feature de folha.
+- **Parâmetros concluídos parcialmente:** `payroll-parameters.ts` centraliza contratos HTTP de listagem, detalhe, criação e atualização de status/definição. A rota permite criar versões com vigência, categoria, referência e JSON configurável; suporta filtros, pesquisa, status e paginação. Não inclui valores oficiais, faixas, alíquotas ou fórmulas legais.
+- **Testes de parâmetros adicionados:** `payroll-parameters.test.tsx` cobre listagem de versão configurável, conflito de vigência com preservação do formulário e ativação por API.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-parameters.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Pendências:** páginas funcionais de lançamentos, execuções e fechamentos, testes de interface restantes, documentação transversal e validações globais.
+- **Próximo passo exato:** implementar a página funcional de lançamentos, com valores decimais textuais, idempotência por chave de origem e bloqueio por competência fechada.
 
 ## ETP-011 a ETP-015
 
