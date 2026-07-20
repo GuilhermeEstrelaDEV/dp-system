@@ -155,6 +155,12 @@
 - **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-runs.test.tsx` (2 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
 - **Pendências:** página funcional de fechamentos, testes de interface restantes, documentação transversal e validações globais.
 - **Próximo passo exato:** implementar a página funcional de fechamentos e reaberturas justificadas, preservando o histórico da competência.
+- **Fechamentos concluídos parcialmente:** `payroll-closures.ts` e a rota de fechamentos fornecem listagem de histórico, fechamento e reabertura com justificativa obrigatória, preservando versões de motor/parâmetros e histórico append-only. Nenhuma regra legal foi adicionada.
+- **Testes de fechamentos adicionados:** `payroll-closures.test.tsx` cobre navegação/aviso demonstrativo, histórico com versões, rejeição de fechamento pela API e reabertura justificada. A primeira execução revelou apenas um seletor de texto composto no histórico; o teste foi corrigido sem alterar comportamento da tela.
+- **Validações aprovadas nesta retomada:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-closures.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Commits incrementais:** `f1622db` — `feat(web): add payroll closure workflows`; `16c2a51` — `test(web): cover payroll closure workflows`.
+- **Pendências:** suíte completa e build do frontend, documentação transversal e validações globais da ETP-010.
+- **Próximo passo exato:** executar a suíte completa e o build do frontend; em seguida executar as validações globais pendentes e revisar a documentação da ETP-010.
 
 ## ETP-011 a ETP-015
 
