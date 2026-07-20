@@ -162,8 +162,11 @@
 - **Documentação da ETP-010:** criado `docs/modules/PAYROLL_FOUNDATION.md`; `docs/ROADMAP.md` e `docs/DEVELOPMENT.md` registram a fundação demonstrativa, valores decimais textuais e a exclusão explícita de cálculos legais.
 - **Validações adicionais aprovadas:** suíte completa do frontend (15 arquivos/41 testes), build do frontend, `pnpm.cmd lint`, `pnpm.cmd typecheck`, `pnpm.cmd prisma:validate`, suíte global (`23` suítes/`62` testes API e `15` arquivos/`41` testes web), `pnpm.cmd format:check`, `pnpm.cmd test:coverage`, `pnpm.cmd build`, `pnpm.cmd check`, `pnpm.cmd install --frozen-lockfile` e `git diff --check`.
 - **Formatação mecânica isolada:** `format:check` inicialmente apontou dez arquivos históricos da ETP-009; foram formatados mecanicamente, sem alteração funcional, para restaurar a validação global.
-- **Pendências:** publicação da branch, criação do Pull Request e acompanhamento do CI. Não há pendência de cálculo legal ou regra normativa.
-- **Próximo passo exato:** confirmar árvore limpa, publicar `feature/payroll-engine` e tentar criar Pull Request para `develop`; se houver 403, registrar o link de comparação e interromper.
+- **Publicação:** `feature/payroll-engine` foi publicada em `origin/feature/payroll-engine` com tracking configurado.
+- **Bloqueio atual:** o GitHub CLI (`gh`) não está instalado no ambiente, portanto a criação e o acompanhamento automático do Pull Request não podem ser executados. O push foi concluído sem força e sem alteração de commits publicados.
+- **Link de comparação:** `https://github.com/GuilhermeEstrelaDEV/dp-system/compare/develop...feature/payroll-engine`.
+- **Pendências:** criar Pull Request de `feature/payroll-engine` para `develop`, acompanhar CI, corrigir falhas reproduzíveis e realizar merge após checks verdes. Não há pendência de cálculo legal ou regra normativa.
+- **Próximo passo exato:** instalar o GitHub CLI, autenticar com `gh auth login`, executar `gh pr create --base develop --head feature/payroll-engine` e acompanhar os checks.
 
 ## ETP-011 a ETP-015
 
