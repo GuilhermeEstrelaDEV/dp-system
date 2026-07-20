@@ -160,10 +160,10 @@
 - **Validações aprovadas nesta retomada:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-closures.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
 - **Commits incrementais:** `f1622db` — `feat(web): add payroll closure workflows`; `16c2a51` — `test(web): cover payroll closure workflows`.
 - **Documentação da ETP-010:** criado `docs/modules/PAYROLL_FOUNDATION.md`; `docs/ROADMAP.md` e `docs/DEVELOPMENT.md` registram a fundação demonstrativa, valores decimais textuais e a exclusão explícita de cálculos legais.
-- **Validações adicionais aprovadas:** suíte completa do frontend (15 arquivos/41 testes), build do frontend, `pnpm.cmd lint`, `pnpm.cmd typecheck`, `pnpm.cmd prisma:validate`, suíte global (`23` suítes/`62` testes API e `15` arquivos/`41` testes web), `pnpm.cmd format:check` e `git diff --check`.
+- **Validações adicionais aprovadas:** suíte completa do frontend (15 arquivos/41 testes), build do frontend, `pnpm.cmd lint`, `pnpm.cmd typecheck`, `pnpm.cmd prisma:validate`, suíte global (`23` suítes/`62` testes API e `15` arquivos/`41` testes web), `pnpm.cmd format:check`, `pnpm.cmd test:coverage`, `pnpm.cmd build`, `pnpm.cmd check`, `pnpm.cmd install --frozen-lockfile` e `git diff --check`.
 - **Formatação mecânica isolada:** `format:check` inicialmente apontou dez arquivos históricos da ETP-009; foram formatados mecanicamente, sem alteração funcional, para restaurar a validação global.
-- **Pendências:** executar `pnpm.cmd test:coverage`, `pnpm.cmd build`, `pnpm.cmd check` e `pnpm.cmd install --frozen-lockfile`; então publicar a branch e tentar criar o Pull Request.
-- **Próximo passo exato:** executar as validações globais restantes incrementalmente, corrigir falhas reproduzíveis e criar os commits de documentação/formatação antes da publicação.
+- **Pendências:** publicação da branch, criação do Pull Request e acompanhamento do CI. Não há pendência de cálculo legal ou regra normativa.
+- **Próximo passo exato:** confirmar árvore limpa, publicar `feature/payroll-engine` e tentar criar Pull Request para `develop`; se houver 403, registrar o link de comparação e interromper.
 
 ## ETP-011 a ETP-015
 
