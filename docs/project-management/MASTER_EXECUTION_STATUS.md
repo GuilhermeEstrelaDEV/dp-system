@@ -159,8 +159,11 @@
 - **Testes de fechamentos adicionados:** `payroll-closures.test.tsx` cobre navegação/aviso demonstrativo, histórico com versões, rejeição de fechamento pela API e reabertura justificada. A primeira execução revelou apenas um seletor de texto composto no histórico; o teste foi corrigido sem alterar comportamento da tela.
 - **Validações aprovadas nesta retomada:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-closures.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
 - **Commits incrementais:** `f1622db` — `feat(web): add payroll closure workflows`; `16c2a51` — `test(web): cover payroll closure workflows`.
-- **Pendências:** suíte completa e build do frontend, documentação transversal e validações globais da ETP-010.
-- **Próximo passo exato:** executar a suíte completa e o build do frontend; em seguida executar as validações globais pendentes e revisar a documentação da ETP-010.
+- **Documentação da ETP-010:** criado `docs/modules/PAYROLL_FOUNDATION.md`; `docs/ROADMAP.md` e `docs/DEVELOPMENT.md` registram a fundação demonstrativa, valores decimais textuais e a exclusão explícita de cálculos legais.
+- **Validações adicionais aprovadas:** suíte completa do frontend (15 arquivos/41 testes), build do frontend, `pnpm.cmd lint`, `pnpm.cmd typecheck`, `pnpm.cmd prisma:validate`, suíte global (`23` suítes/`62` testes API e `15` arquivos/`41` testes web), `pnpm.cmd format:check` e `git diff --check`.
+- **Formatação mecânica isolada:** `format:check` inicialmente apontou dez arquivos históricos da ETP-009; foram formatados mecanicamente, sem alteração funcional, para restaurar a validação global.
+- **Pendências:** executar `pnpm.cmd test:coverage`, `pnpm.cmd build`, `pnpm.cmd check` e `pnpm.cmd install --frozen-lockfile`; então publicar a branch e tentar criar o Pull Request.
+- **Próximo passo exato:** executar as validações globais restantes incrementalmente, corrigir falhas reproduzíveis e criar os commits de documentação/formatação antes da publicação.
 
 ## ETP-011 a ETP-015
 
