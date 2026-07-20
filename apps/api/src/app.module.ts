@@ -23,6 +23,12 @@ import { AdmissionDocumentsModule } from './modules/admission-documents/admissio
 import { TimeManagementModule } from './modules/time-management/time-management.module';
 import { BenefitsModule } from './modules/benefits/benefits.module';
 import { VacationsLeavesModule } from './modules/vacations-leaves/vacations-leaves.module';
+import { PayrollPeriodsModule } from './modules/payroll-periods/payroll-periods.module';
+import { PayrollRubricsModule } from './modules/payroll-rubrics/payroll-rubrics.module';
+import { PayrollParametersModule } from './modules/payroll-parameters/payroll-parameters.module';
+import { PayrollInputsModule } from './modules/payroll-inputs/payroll-inputs.module';
+import { PayrollRunsModule } from './modules/payroll-runs/payroll-runs.module';
+import { PayrollClosuresModule } from './modules/payroll-closures/payroll-closures.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -58,6 +64,12 @@ import { PrismaModule } from './prisma/prisma.module';
     TimeManagementModule,
     BenefitsModule,
     VacationsLeavesModule,
+    PayrollPeriodsModule,
+    PayrollRubricsModule,
+    PayrollParametersModule,
+    PayrollInputsModule,
+    PayrollRunsModule,
+    PayrollClosuresModule,
   ],
   providers: [
     AppLoggerService,

@@ -76,13 +76,97 @@
 
 ## ETP-010 — Motor de folha de pagamento
 
-- **Status:** em preparação
+- **Status:** fundação de banco concluída; módulos NestJS de configuração pendentes.
 - **Branch:** `feature/payroll-engine`
-- **Base:** `develop` em `750b679`
-- **Migrations previstas:** `0008_payroll_foundation` e `0009_payroll_calculation`
-- **Escopo ativo:** fundação configurável de competências, rubricas, parâmetros versionados, lançamentos, fechamento/reabertura justificados e cálculo determinístico sem parâmetros legais preenchidos.
-- **Restrições preservadas:** nenhum valor legal, alíquota, tabela, cálculo homologado ou declaração de conformidade será inferido sem fonte oficial validada.
-- **Próximo passo exato:** registrar o início na branch e revisar os modelos existentes para delimitar a primeira migration de fundação.
+- **Base:** `develop` em `4b2a109`
+- **Migration criada:** `apps/api/prisma/migrations/0008_payroll_foundation/migration.sql`.
+- **Commit criado:** `540359a` — `feat(db): add payroll foundation schema`.
+- **Entidades concluídas:** `PayrollCalendar`, `PayrollPeriod`, `PayrollRubricCategory`, `PayrollRubric`, `PayrollRubricVersion`, `PayrollParameter`, `PayrollInput`, `PayrollRun`, `PayrollRunEmployee`, `PayrollCalculationItem`, `PayrollRunMessage` e `PayrollPeriodClosure`.
+- **Estrutura preservada:** UUIDs, timestamps, `Decimal(15,2)` para dinheiro, vigências temporais, chaves estrangeiras `RESTRICT`, índices, unicidades de competência e idempotência por `source_key`. Fechamento/reabertura e versões de motor/parâmetros ficam registrados sem exclusão em cascata; a imutabilidade de competências fechadas e de versões históricas será imposta na camada de serviço.
+- **Revisão de SQL:** não há `FLOAT`, nem `ON DELETE CASCADE` nas entidades de folha; valores monetários usam `DECIMAL`, as vigências têm `CHECK`, e todas as relações têm FK e índices de consulta.
+- **Divergências registradas:** `DATABASE_SPECIFICATION.md` e `DOMAIN_MODEL.md` descrevem tabelas estatutárias, expressões de cálculo, aprovações e resultados de cálculo completos. Nesta fundação elas foram deliberadamente reduzidas a `PayrollParameter.definition` e configurações JSON sem valores, faixas, alíquotas, fórmulas ou aprovação por usuário; `contract_id` da documentação foi mapeado ao padrão existente `employment_contract_id`. O processamento legal permanece fora do escopo e a migration `0009_payroll_calculation` não foi criada.
+- **Arquivos concluídos:** `apps/api/prisma/schema.prisma` e `apps/api/prisma/migrations/0008_payroll_foundation/migration.sql`.
+- **Validações aprovadas:** `pnpm.cmd --filter @dp-system/api exec prisma format --schema prisma/schema.prisma` (equivalente ao script raiz inexistente `prisma:format`), `pnpm.cmd prisma:validate`, `pnpm.cmd prisma:generate`, `pnpm.cmd --filter @dp-system/api typecheck`, `pnpm.cmd lint` e `git diff --check`.
+- **Implementação em andamento:** módulo `payroll-periods` criado com listagem paginada e ordenável, busca, criação, edição enquanto aberta, abertura, validação, fechamento transacional e reabertura justificada. A alteração de competência fechada retorna conflito; duplicidade é convertida em `409`; fechamento consulta mensagens bloqueantes e registra histórico append-only.
+- **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck`.
+- **Commit incremental:** `1d52007` — `feat(api): add payroll periods module`.
+- **Concluído adicionalmente:** `payroll-rubrics` com listagem paginada/pesquisável/ordenável, busca por ID, criação de rubrica e primeira versão obrigatória, configurações JSON de base/incidência, atualização e ativação/inativação lógica. A categoria deve pertencer à empresa e renomeação é bloqueada após uso em resultado histórico.
+- **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck` após o módulo de rubricas.
+- **Commit incremental:** `59b84d2` — `feat(api): add payroll rubric module`.
+- **Pendências:** `payroll-parameters`, `payroll-inputs`, `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
+- **Concluído adicionalmente:** `payroll-parameters` com listagem paginada, filtros, pesquisa e ordenação limitada; detalhe, criação com vigência obrigatória, bloqueio de sobreposição e atualização somente antes do uso em competência fechada. O campo configurável permanece JSON sem valores legais; qualquer valor monetário futuro deve ser representado como string decimal e convertido por uma camada de domínio, nunca `float`.
+- **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck` após o módulo de parâmetros.
+- **Commit incremental:** `2519774` — `feat(api): add payroll parameter module`.
+- **Pendências:** `payroll-inputs`, `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
+- **Concluído adicionalmente:** `payroll-inputs` com listagem paginada/filtrável/ordenável, busca, criação, edição e inativação lógica. Os valores e quantidades são recebidos como strings decimais e convertidos para `Prisma.Decimal`; contrato, colaborador, empresa, competência, status e vigência da rubrica são verificados antes da gravação. A chave de origem é única por competência e o fechamento torna o lançamento imutável.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/api typecheck`, `pnpm.cmd --filter @dp-system/api lint` e `git diff --check`.
+- **Commit incremental:** `aec6a11` — `feat(api): add payroll input module`.
+- **Pendências:** `payroll-runs`, `payroll-closures`, testes dos módulos e validações globais da API.
+- **Concluído adicionalmente:** `payroll-runs` com listagem, detalhe, início técnico determinístico, controle de execução concorrente, versões do motor e parâmetros, mensagens de aviso/erro bloqueante e metadados de execução. Cada execução recebe o aviso explícito de que não representa folha homologada; não há cálculo legal, imposto, alíquota ou incidência oficial.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/api typecheck` e `pnpm.cmd --filter @dp-system/api lint` após o módulo de execuções.
+- **Pendências:** `payroll-closures`, testes dos módulos e validações globais da API.
+- **Concluído adicionalmente:** `payroll-closures` com listagem e detalhe do histórico, fechamento transacional e reabertura justificada. O fechamento exige competência aberta, execução técnica concluída e ausência de erros bloqueantes; persiste versões do motor/parâmetros e nunca apaga eventos anteriores.
+- **Validação incremental aprovada:** `pnpm.cmd --filter @dp-system/api typecheck` após o módulo de fechamentos.
+- **Commits incrementais:** `38419f1` — `feat(api): add payroll run module`; `6246718` — `feat(api): add payroll closure workflow`.
+- **Testes adicionados:** `payroll-runs.service.spec.ts` (competência ausente/fechada, concorrência, preservação de versões e aviso demonstrativo) e `payroll-closures.service.spec.ts` (competência ausente, execução exigida, erro bloqueante, versões e reabertura inválida).
+- **Commit de testes:** `7e1811a` — `test(api): cover payroll execution modules`.
+- **Validações de testes aprovadas:** os comandos com filtro posicional do script permaneceram executando todo o conjunto e excederam 124s sem resultado; a causa foi o filtro não ser interpretado como caminho. Os comandos explícitos `pnpm.cmd --filter @dp-system/api exec jest --config jest.config.cjs --runInBand --runTestsByPath src/modules/payroll-runs/payroll-runs.service.spec.ts` (4 testes) e o equivalente de `payroll-closures` (5 testes) passaram.
+- **Pendências:** testes dos módulos de configuração (`payroll-periods`, `payroll-rubrics`, `payroll-parameters`, `payroll-inputs`), testes de controller e validações completas da API; frontend ainda não iniciado.
+- **Testes adicionados:** `payroll-periods.service.spec.ts` (criação, duplicidade, competência fechada e inexistente) e `payroll-rubrics.service.spec.ts` (criação com primeira vigência, vigência inválida, inexistência e proteção histórica).
+- **Validação de testes aprovada:** `pnpm.cmd --filter @dp-system/api exec jest --config jest.config.cjs --runInBand --runTestsByPath src/modules/payroll-periods/payroll-periods.service.spec.ts src/modules/payroll-rubrics/payroll-rubrics.service.spec.ts` — 2 suítes e 8 testes aprovados.
+- **Commit de testes:** `5d4163b` — `test(api): cover payroll period and rubric modules`.
+- **Pendências:** testes de `payroll-parameters` e `payroll-inputs`, testes de controller e validações completas da API; frontend ainda não iniciado.
+- **Testes adicionados:** `payroll-parameters.service.spec.ts` (criação, vigência incompatível, período inválido, inexistência e imutabilidade histórica) e `payroll-inputs.service.spec.ts` (valor decimal, vínculos ausentes/incompatíveis, rubrica inativa e bloqueio após fechamento).
+- **Validação direcionada aprovada:** `pnpm.cmd --filter @dp-system/api exec jest --config jest.config.cjs --runInBand --runTestsByPath src/modules/payroll-parameters/payroll-parameters.service.spec.ts src/modules/payroll-inputs/payroll-inputs.service.spec.ts` — 2 suítes e 10 testes aprovados.
+- **Commit de testes:** `ab3b97d` — `test(api): cover payroll parameter and input modules`.
+- **Validações completas da API aprovadas:** `pnpm.cmd --filter @dp-system/api typecheck`; Jest em `--runInBand` — 23 suítes e 62 testes aprovados; `pnpm.cmd --filter @dp-system/api lint`; `pnpm.cmd prisma:validate`; `git diff --check`.
+- **Pendências:** testes de controller adicionais e frontend/documentação da folha. Não há pendência de cálculo legal; nenhuma regra normativa foi implementada.
+- **Próximo passo exato:** iniciar o frontend da ETP-010 pela navegação e páginas demonstrativas de competências, rubricas, parâmetros, lançamentos, execuções e fechamentos.
+- **Frontend em andamento:** criada a feature `apps/web/src/features/payroll/index.tsx` com navegação interna e estados de carregamento, vazio e erro; rotas `/folha/competencias`, `/folha/rubricas`, `/folha/parametros`, `/folha/lancamentos`, `/folha/execucoes` e `/folha/fechamentos` foram registradas. Todas exibem o aviso obrigatório de processamento demonstrativo e não homologado.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Commit incremental:** `7794605` — `feat(web): add functional payroll period workflows`.
+- **Commit incremental:** `3227305` — `feat(web): add payroll navigation and pages`.
+- **Pendências:** formulários, ações e páginas detalhadas por domínio, testes de interface, documentação e validações globais.
+- **Competências concluídas parcialmente:** `payroll-periods.ts` centraliza tipos e chamadas HTTP reais de listar, buscar, criar, atualizar, validar, fechar e reabrir. A rota de competências possui listagem por empresa, criação, validação, fechamento, indicação de imutabilidade e reabertura com justificativa obrigatória; erros do envelope HTTP são exibidos na interface.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Pendências:** edição e detalhe completos de competências, testes de interface, páginas funcionais dos demais domínios, documentação e validações globais.
+- **Testes de competências adicionados:** `apps/web/src/features/payroll/payroll-periods.test.tsx` cobre navegação/aviso demonstrativo, exigência de empresa e estado vazio, conflito de criação com preservação de formulário e imutabilidade com fluxo de reabertura.
+- **Correção de teste:** o primeiro seletor de imutabilidade falhou por corresponder apenas parte de um texto composto; foi corrigido para uma expressão acessível sem alterar comportamento do produto.
+- **Validações aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-periods.test.tsx` (4 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Commit de testes:** `44774fc` — `test(web): cover payroll period workflows`.
+- **Pendências:** edição/detalhe de competências, páginas funcionais dos demais domínios, documentação e validações globais.
+- **Rubricas concluídas parcialmente:** `payroll-rubrics.ts` centraliza os contratos HTTP reais de listagem, detalhe, criação e atualização (incluindo ativação/inativação). A rota de rubricas permite criar uma primeira versão com vigência obrigatória, configuração JSON de incidências sem regras legais, filtro por empresa/status, pesquisa, ordenação permitida, paginação, edição nominal e ativação/inativação lógica.
+- **Testes de rubricas adicionados:** `payroll-rubrics.test.tsx` cobre listagem filtrada com vigência/incidência, conflito de criação com preservação do formulário e atualização de status via API.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-rubrics.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Pendências:** páginas funcionais de parâmetros, lançamentos, execuções e fechamentos, testes de interface restantes, documentação transversal e validações globais.
+- **Próximo passo exato:** implementar a página funcional de parâmetros com vigência, versionamento e configuração sem valores legais, reutilizando a feature de folha.
+- **Parâmetros concluídos parcialmente:** `payroll-parameters.ts` centraliza contratos HTTP de listagem, detalhe, criação e atualização de status/definição. A rota permite criar versões com vigência, categoria, referência e JSON configurável; suporta filtros, pesquisa, status e paginação. Não inclui valores oficiais, faixas, alíquotas ou fórmulas legais.
+- **Testes de parâmetros adicionados:** `payroll-parameters.test.tsx` cobre listagem de versão configurável, conflito de vigência com preservação do formulário e ativação por API.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-parameters.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Pendências:** páginas funcionais de lançamentos, execuções e fechamentos, testes de interface restantes, documentação transversal e validações globais.
+- **Próximo passo exato:** implementar a página funcional de lançamentos, com valores decimais textuais, idempotência por chave de origem e bloqueio por competência fechada.
+- **Lançamentos concluídos parcialmente:** `payroll-inputs.ts` centraliza os contratos HTTP reais. A rota permite criar lançamentos com valor/quantidade decimal como texto, chave de origem idempotente e metadados técnicos; lista por competência, pagina e permite inativação lógica. A validação no cliente não envia formato decimal inválido; a API preserva a verificação de competência fechada e compatibilidade contratual.
+- **Testes de lançamentos adicionados:** `payroll-inputs.test.tsx` cobre filtro por competência, bloqueio de valor inválido no cliente e inativação pela API.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-inputs.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Pendências:** páginas funcionais de execuções e fechamentos, testes de interface restantes, documentação transversal e validações globais.
+- **Próximo passo exato:** implementar a página funcional de execuções técnicas, com versões preservadas, avisos e erros bloqueantes demonstrativos.
+- **Execuções concluídas parcialmente:** `payroll-runs.ts` centraliza os contratos HTTP de listagem, detalhe, criação e mensagens. A rota inicia processamento estrutural demonstrativo, preserva versões de motor e de snapshot de parâmetros e apresenta avisos/erros retornados pela API, sem qualquer cálculo legal.
+- **Testes de execuções adicionados:** `payroll-runs.test.tsx` cobre listagem com versões e aviso demonstrativo, além do início de execução com versões explícitas.
+- **Validações incrementais aprovadas:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-runs.test.tsx` (2 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Pendências:** página funcional de fechamentos, testes de interface restantes, documentação transversal e validações globais.
+- **Próximo passo exato:** implementar a página funcional de fechamentos e reaberturas justificadas, preservando o histórico da competência.
+- **Fechamentos concluídos parcialmente:** `payroll-closures.ts` e a rota de fechamentos fornecem listagem de histórico, fechamento e reabertura com justificativa obrigatória, preservando versões de motor/parâmetros e histórico append-only. Nenhuma regra legal foi adicionada.
+- **Testes de fechamentos adicionados:** `payroll-closures.test.tsx` cobre navegação/aviso demonstrativo, histórico com versões, rejeição de fechamento pela API e reabertura justificada. A primeira execução revelou apenas um seletor de texto composto no histórico; o teste foi corrigido sem alterar comportamento da tela.
+- **Validações aprovadas nesta retomada:** `pnpm.cmd --filter @dp-system/web test -- --run src/features/payroll/payroll-closures.test.tsx` (3 testes), `pnpm.cmd --filter @dp-system/web typecheck`, `pnpm.cmd --filter @dp-system/web lint` e `git diff --check`.
+- **Commits incrementais:** `f1622db` — `feat(web): add payroll closure workflows`; `16c2a51` — `test(web): cover payroll closure workflows`.
+- **Documentação da ETP-010:** criado `docs/modules/PAYROLL_FOUNDATION.md`; `docs/ROADMAP.md` e `docs/DEVELOPMENT.md` registram a fundação demonstrativa, valores decimais textuais e a exclusão explícita de cálculos legais.
+- **Validações adicionais aprovadas:** suíte completa do frontend (15 arquivos/41 testes), build do frontend, `pnpm.cmd lint`, `pnpm.cmd typecheck`, `pnpm.cmd prisma:validate`, suíte global (`23` suítes/`62` testes API e `15` arquivos/`41` testes web), `pnpm.cmd format:check`, `pnpm.cmd test:coverage`, `pnpm.cmd build`, `pnpm.cmd check`, `pnpm.cmd install --frozen-lockfile` e `git diff --check`.
+- **Formatação mecânica isolada:** `format:check` inicialmente apontou dez arquivos históricos da ETP-009; foram formatados mecanicamente, sem alteração funcional, para restaurar a validação global.
+- **Publicação:** `feature/payroll-engine` foi publicada em `origin/feature/payroll-engine` com tracking configurado.
+- **Bloqueio atual:** o GitHub CLI (`gh`) não está instalado no ambiente, portanto a criação e o acompanhamento automático do Pull Request não podem ser executados. O push foi concluído sem força e sem alteração de commits publicados.
+- **Link de comparação:** `https://github.com/GuilhermeEstrelaDEV/dp-system/compare/develop...feature/payroll-engine`.
+- **Pendências:** criar Pull Request de `feature/payroll-engine` para `develop`, acompanhar CI, corrigir falhas reproduzíveis e realizar merge após checks verdes. Não há pendência de cálculo legal ou regra normativa.
+- **Próximo passo exato:** instalar o GitHub CLI, autenticar com `gh auth login`, executar `gh pr create --base develop --head feature/payroll-engine` e acompanhar os checks.
 
 ## ETP-011 a ETP-015
 

@@ -66,6 +66,12 @@ Catálogo por empresa, planos com vigência, adesões contratuais e coparticipa�
 
 Períodos, solicitações, férias coletivas estruturais, afastamentos e retornos são tratados como controles administrativos demonstrativos. Não há cálculo financeiro, prazo legal, regra de fracionamento ou dado médico. Consulte [Férias e afastamentos](modules/VACATIONS_AND_LEAVES.md).
 
+## ETP-010 — Fundação de folha de pagamento
+
+**Status:** em implementação.
+
+Competências, rubricas, parâmetros, lançamentos, execuções e fechamentos formam uma base configurável, versionada e demonstrativa. Não inclui cálculos legais, alíquotas, faixas, deduções, guias ou integrações. Consulte [Fundação de folha](modules/PAYROLL_FOUNDATION.md).
+
 ## Etapa 2 — Fundação técnica
 
 Criar monorepo, ambientes, autenticação, autorização, auditoria, banco e pipeline de qualidade. Não inclui funcionalidade de DP.
