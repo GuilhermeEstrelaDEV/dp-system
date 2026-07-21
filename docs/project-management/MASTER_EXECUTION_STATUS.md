@@ -183,3 +183,14 @@
 ### ETP-012 a ETP-015
 
 - **Status:** pendentes; cada etapa será iniciada somente após o merge da anterior em `develop`.
+
+### Especificação da ETP-013 — Conferência e aprovação de folha
+
+- **Status:** proposta documental pronta para revisão; nenhum código funcional implementado.
+- **Branch:** `docs/etp-013-specification`.
+- **Base:** `develop` em `1c7c97e`.
+- **Constatação:** a ETP-013 não possuía escopo individual atribuído.
+- **Objetivo proposto:** workflow auditável de conferência, achados e decisões antes do fechamento.
+- **Dependências bloqueantes:** merge efetivo da ETP-012/PR #26, BDP-009 e identidade/autorização funcional ou recorte técnico aprovado.
+- **Persistência:** apenas entidades candidatas foram descritas; não há alteração de Prisma ou migration.
+- **Próximo passo:** revisar a especificação com DP, Financeiro, Diretoria e arquitetura; resolver as decisões mínimas antes de autorizar implementação.
