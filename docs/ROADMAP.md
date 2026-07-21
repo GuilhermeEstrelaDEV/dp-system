@@ -86,9 +86,9 @@ Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliaçõe
 
 ## ETP-013 — Conferência e aprovação de folha
 
-**Status:** especificada; implementação não iniciada.
+**Status:** fundação técnica parcial; implementação funcional bloqueada.
 
-A etapa possui especificação documental para um workflow auditável de conferência, achados e aprovação antes do fechamento. A implementação permanece bloqueada pela BDP-009, por identidade/autorização funcional ou recorte técnico expressamente aprovado e pela homologação dos estados, responsáveis e critérios de bloqueio. Consulte [Especificação da ETP-013](project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md).
+A etapa possui especificação documental para um workflow auditável de conferência, achados e aprovação antes do fechamento. Foi implementado apenas um domínio neutro para achados e histórico append-only, sem API, persistência, interface ou operação decisória. A implementação funcional permanece bloqueada pela BDP-009, por identidade/autorização funcional e pela homologação dos estados, responsáveis e critérios de bloqueio. Consulte [Especificação da ETP-013](project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md) e [Fundação técnica de conferência](modules/PAYROLL_REVIEW_FOUNDATION.md).
 
 ## Etapa 2 — Fundação técnica
 
