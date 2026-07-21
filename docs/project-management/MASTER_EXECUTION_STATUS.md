@@ -180,6 +180,15 @@
 - **Interface:** resultados resumidos por contrato nas execuções de folha.
 - **Testes:** domínio decimal/agregação, orquestração, concorrência, competência fechada, versão vigente e natureza inválida, além da apresentação dos resultados no frontend.
 
-### ETP-012 a ETP-015
+### ETP-012 — Remuneração variável e conciliação
 
-- **Status:** pendentes; cada etapa será iniciada somente após o merge da anterior em `develop`.
+- **Status:** implementação concluída em `feature/variable-compensation`.
+- **Base:** `develop` em `1c7c97e`.
+- **Escopo documentado:** UC-09 e entidades `VariableCompensationEvent`, `SalaryAdvance`, `OffCyclePayment` e `PayrollReconciliation`.
+- **Migration:** `0009_variable_compensation`.
+- **Restrições:** sem fórmulas, percentuais, aprovação autenticada, geração automática de folha, pagamento real ou integrações; BDP-006 e BDP-009 permanecem pendentes.
+- **Entregas:** schema, migration, API, interface em `/folha/remuneracao-variavel`, testes e documentação.
+
+### ETP-013 a ETP-015
+
+- **Status:** pendentes e sem escopo individual atribuído; devem ser planejadas exclusivamente a partir da documentação aprovada antes da implementação.

@@ -78,6 +78,12 @@ Competências, rubricas, parâmetros, lançamentos, execuções e fechamentos fo
 
 As execuções consolidam lançamentos por contrato e rubrica, selecionam versões vigentes e persistem totais e memória reproduzível com aritmética decimal determinística. Naturezas ou versões inválidas falham de forma bloqueante. Nenhuma regra legal, alíquota ou fórmula normativa foi presumida. Consulte [Cálculo configurável de folha](modules/PAYROLL_CALCULATION.md).
 
+## ETP-012 — Remuneração variável e conciliação
+
+**Status:** concluída.
+
+Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliações passam a ter registro administrativo demonstrativo por contrato ou execução. Não há cálculo, percentual, aprovação autenticada, desconto automático ou liquidação enquanto BDP-006 e BDP-009 estiverem pendentes. Consulte [Remuneração variável e conciliação](modules/VARIABLE_COMPENSATION.md).
+
 ## Etapa 2 — Fundação técnica
 
 Criar monorepo, ambientes, autenticação, autorização, auditoria, banco e pipeline de qualidade. Não inclui funcionalidade de DP.
