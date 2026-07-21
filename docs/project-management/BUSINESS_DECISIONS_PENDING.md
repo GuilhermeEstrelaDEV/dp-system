@@ -44,6 +44,13 @@
 - Afastamentos não armazenam dados de saúde, diagnóstico, CID, documentos ou evidências.
 - O módulo usa apenas tipos e datas administrativas configuráveis, sem declaração de conformidade legal.
 
+## Impacto na especificação da ETP-013
+
+- BDP-009 bloqueia o workflow definitivo de conferência e aprovação: atores, etapas, alçadas, substituições e segregação precisam de decisão formal.
+- Tolerâncias de conciliação, prazos e escalonamentos não serão presumidos.
+- A implementação também depende de identidade e autorização funcionais para atribuir decisões e aplicar isolamento por empresa.
+- A especificação propõe estrutura técnica, mas não autoriza schema, migration, API ou interface até esses pré-requisitos serem aprovados.
+
 ## Gestão
 
 ## Aplicação segura na ETP-012
