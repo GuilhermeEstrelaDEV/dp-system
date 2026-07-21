@@ -26,3 +26,7 @@ Não há cálculo de INSS, FGTS, IRRF, encargos, faixas, alíquotas, deduções,
 - idempotência de lançamentos por chave de origem e competência;
 - bloqueio de alterações em competência fechada na API;
 - mensagens técnicas de aviso e erro bloqueante no processamento demonstrativo.
+
+## Evolução
+
+A consolidação determinística entregue na ETP-011 está documentada em [Cálculo configurável de folha](PAYROLL_CALCULATION.md). A fundação e seus contratos históricos permanecem compatíveis.

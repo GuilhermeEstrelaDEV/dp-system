@@ -16,6 +16,13 @@ export type PayrollRun = {
   startedAt?: string | null;
   completedAt?: string | null;
   messages: PayrollRunMessage[];
+  employees?: Array<{
+    id: string;
+    employmentContractId: string;
+    status: string;
+    grossAmount: string;
+    netAmount: string;
+  }>;
 };
 export type PayrollRunPage = {
   items: PayrollRun[];
