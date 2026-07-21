@@ -72,6 +72,12 @@ Períodos, solicitações, férias coletivas estruturais, afastamentos e retorno
 
 Competências, rubricas, parâmetros, lançamentos, execuções e fechamentos formam uma base configurável, versionada e demonstrativa. Não inclui cálculos legais, alíquotas, faixas, deduções, guias ou integrações. Consulte [Fundação de folha](modules/PAYROLL_FOUNDATION.md).
 
+## ETP-011 — Cálculo configurável de folha
+
+**Status:** concluída.
+
+As execuções consolidam lançamentos por contrato e rubrica, selecionam versões vigentes e persistem totais e memória reproduzível com aritmética decimal determinística. Naturezas ou versões inválidas falham de forma bloqueante. Nenhuma regra legal, alíquota ou fórmula normativa foi presumida. Consulte [Cálculo configurável de folha](modules/PAYROLL_CALCULATION.md).
+
 ## Etapa 2 — Fundação técnica
 
 Criar monorepo, ambientes, autenticação, autorização, auditoria, banco e pipeline de qualidade. Não inclui funcionalidade de DP.

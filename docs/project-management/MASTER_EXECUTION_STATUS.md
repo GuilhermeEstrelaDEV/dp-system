@@ -170,4 +170,16 @@
 
 ## ETP-011 a ETP-015
 
+### ETP-011 — Cálculo configurável de folha
+
+- **Status:** implementação concluída em `feature/payroll-calculation`.
+- **Base:** `develop` em `ba57107`.
+- **Escopo:** consolidação determinística de lançamentos pendentes, seleção temporal de versões de rubrica, totais bruto/líquido, itens e memória de cálculo por contrato.
+- **Falha segura:** naturezas desconhecidas e versões ausentes geram mensagens bloqueantes; nenhuma regra legal é inferida.
+- **Persistência:** reutiliza as entidades históricas da migration `0008_payroll_foundation`; nenhuma migration adicional é necessária.
+- **Interface:** resultados resumidos por contrato nas execuções de folha.
+- **Testes:** domínio decimal/agregação, orquestração, concorrência, competência fechada, versão vigente e natureza inválida, além da apresentação dos resultados no frontend.
+
+### ETP-012 a ETP-015
+
 - **Status:** pendentes; cada etapa será iniciada somente após o merge da anterior em `develop`.
