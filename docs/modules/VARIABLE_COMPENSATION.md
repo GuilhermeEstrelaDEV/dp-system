@@ -16,4 +16,4 @@ As APIs ficam sob `/api/v1/variable-compensation`; a interface está em `/folha/
 
 ## Pendências explícitas
 
-BDP-006 mantém pendentes as regras de comissão, prêmio, adicional, quinquênio, descontos e pagamentos externos. BDP-009 mantém pendentes alçadas, atores e segregação de aprovação. Por isso a etapa não implementa fórmula, percentual, elegibilidade, aprovação autenticada, geração automática de `PayrollInput`, liquidação, dados bancários ou integração financeira.
+BDP-006 mantém pendentes as regras de comissão, prêmio, adicional, quinquênio, descontos e pagamentos externos. A BDP-009 foi resolvida para a versão 1, mas sua infraestrutura ainda não está implementada. Por isso a etapa continua sem fórmula, percentual, elegibilidade, aprovação autenticada, geração automática de `PayrollInput`, liquidação, dados bancários ou integração financeira.

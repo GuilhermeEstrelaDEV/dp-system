@@ -2,7 +2,7 @@
 
 ## 1. Estado e finalidade
 
-**Status:** proposta técnica para revisão; não autoriza implementação funcional da ETP-013 nem resolve BDP-009.
+**Status:** arquitetura v1 aprovada pela resolução da BDP-009; implementação ainda não iniciada.
 
 Este documento define a arquitetura candidata para transportar identidade autenticada, restringir acesso por empresa, aplicar autorização deny-by-default, suportar segregação configurável e auditar operações críticas. Ele não atribui capacidades a cargos reais, não define alçadas e não cria workflow de aprovação.
 
@@ -246,19 +246,18 @@ Esses são contratos de análise, não endpoints autorizados. Códigos decisóri
 
 Cada incremento precisa preservar compatibilidade ou declarar migração de clientes. Nenhuma etapa pode habilitar ação decisória com policy ausente.
 
-## 13. Decisões humanas bloqueantes
+## 13. Decisões v1 e extensões futuras
 
-- modelo final de vínculo usuário–empresa e administração desses vínculos;
-- atribuição de capacidades por empresa e escopo sensível;
-- atores de cada etapa e quem pode criar/resolver/reabrir achados;
-- quantidade e ordem das etapas;
-- segregações obrigatórias e combinações proibidas;
-- alçadas e limites financeiros;
-- substituição, ausência e acesso emergencial;
-- efeitos de rejeição, reabertura e alteração posterior do cálculo;
+A resolução v1 aprovou RBAC empresarial híbrido, contexto de empresa ativa, duas etapas sequenciais, segregação, ausência de alçada financeira, substituição temporária, emergência auditada, `404` fora do escopo e visibilidade por capacidade.
+
+Permanecem fora da versão 1 e exigem decisão futura antes de implementação:
+
+- alçadas financeiras por valor, empresa ou tipo de folha;
+- níveis adicionais ou aprovação paralela;
+- delegação além da substituição temporária;
 - prazos, notificações e escalonamento;
 - tolerâncias de conciliação, se existirem;
-- visibilidade de valores por perfil;
-- convenção de `403` versus `404` para recursos fora do escopo.
+- alterações da matriz papel–capacidade v1;
+- retenção final de auditoria, vinculada à BDP-011 e Jurídico/DPO.
 
-Até a homologação, BDP-009 permanece pendente e a ETP-013 continua em fundação parcial.
+A BDP-009 foi resolvida para a versão 1 conforme [registro formal](../project-management/BDP-009_RESOLUTION_V1.md). A ETP-013 continua em fundação parcial até a implementação do [plano técnico](../project-management/ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md).

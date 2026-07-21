@@ -30,12 +30,12 @@ Os identificadores, relógio e `traceId` são fornecidos pela futura camada de a
 
 ## Dependências para o próximo incremento
 
-- decisão BDP-009 sobre atores, alçadas, substituições e segregação;
+- implementação da resolução v1 da BDP-009 para RBAC empresarial, workflow e segregação;
 - autenticação e autorização funcionais com contexto de empresa e usuário;
-- definição das etapas obrigatórias e critérios de bloqueio;
+- persistência configurável das duas etapas sequenciais e critérios v1;
 - revisão do modelo persistente e do contrato HTTP preliminar;
-- critérios de aceite validados por DP, Financeiro e Diretoria;
-- decisão explícita sobre tolerâncias de conciliação, caso existam.
+- critérios de aceite e segurança do plano técnico;
+- tolerâncias de conciliação permanecem fora da v1 até decisão explícita.
 
 BDP-006 permanece pendente para regras materiais de remuneração variável e não foi alterada por esta fundação.
 

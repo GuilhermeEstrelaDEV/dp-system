@@ -2,15 +2,15 @@
 
 ## 1. Finalidade e status
 
-**Status:** preparado para homologação; nenhuma alternativa foi aprovada e BDP-009 permanece `Pendente`.
+**Status:** homologado para a versão 1; decisões consolidadas em [BDP-009_RESOLUTION_V1.md](BDP-009_RESOLUTION_V1.md).
 
 Este pacote organiza decisões humanas necessárias para identidade empresarial, autorização, segregação e auditoria da ETP-013. As recomendações são técnicas, não vinculantes. Elas não atribuem cargos, não criam alçadas e não autorizam código, migration ou workflow funcional.
 
-Referências: [Especificação de identidade e autorização](../architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md), [ADR-007 proposta](../architecture/decisions/ADR-007-identity-authorization-context.md), [Especificação da ETP-013](ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md) e [Fundação neutra](../modules/PAYROLL_REVIEW_FOUNDATION.md).
+Referências: [Especificação de identidade e autorização](../architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md), [ADR-007 aceita](../architecture/decisions/ADR-007-identity-authorization-context.md), [Especificação da ETP-013](ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md) e [Fundação neutra](../modules/PAYROLL_REVIEW_FOUNDATION.md).
 
 ## 2. Como homologar
 
-Para cada tema, registrar na matriz da seção 13 a alternativa escolhida, ressalvas, evidência, responsáveis e data. Uma recomendação técnica só se torna decisão após aceite dos responsáveis de negócio e técnicos indicados. Divergências devem permanecer abertas; não se deve combinar alternativas implicitamente.
+As escolhas v1 foram registradas na matriz da seção 13 e consolidadas na resolução formal. O checklist e as perguntas permanecem como evidência do método e guia para revisões futuras. Extensões não descritas na resolução continuam sem aprovação.
 
 ## 3. Vínculo usuário–empresa
 
@@ -115,18 +115,18 @@ Expiração e revogação devem ser verificadas em cada request crítico; cache 
 
 ## 13. Matriz de decisão preenchível
 
-| Tema                              | Alternativa escolhida | Ressalvas/escopo | Evidência/anexo | DP  | Jurídico/DPO | Segurança | Arquitetura/Engenharia | Data | Status   |
-| --------------------------------- | --------------------- | ---------------- | --------------- | --- | ------------ | --------- | ---------------------- | ---- | -------- |
-| Vínculo usuário–empresa           |                       |                  |                 |     |              |           |                        |      | Pendente |
-| Escopo das permissões             |                       |                  |                 |     |              |           |                        |      | Pendente |
-| Fases/transições do workflow      |                       |                  |                 |     |              |           |                        |      | Pendente |
-| Segregação de funções             |                       |                  |                 |     |              |           |                        |      | Pendente |
-| Níveis de aprovação               |                       |                  |                 |     |              |           |                        |      | Pendente |
-| Alçadas                           |                       |                  |                 |     |              |           |                        |      | Pendente |
-| Substituição/delegação/emergência |                       |                  |                 |     |              |           |                        |      | Pendente |
-| `403` versus `404`                |                       |                  |                 |     |              |           |                        |      | Pendente |
-| Auditoria e retenção              |                       |                  |                 |     |              |           |                        |      | Pendente |
-| Visibilidade sensível             |                       |                  |                 |     |              |           |                        |      | Pendente |
+| Tema                              | Alternativa escolhida                         | Ressalvas/escopo                                           | Evidência/anexo            | Status       |
+| --------------------------------- | --------------------------------------------- | ---------------------------------------------------------- | -------------------------- | ------------ |
+| Vínculo usuário–empresa           | Assignment usuário–empresa–papel              | Usuário multiempresa; papel na empresa ativa               | `BDP-009_RESOLUTION_V1.md` | Resolvida v1 |
+| Escopo das permissões             | Híbrido                                       | Global só para plataforma; folha sempre empresarial        | `BDP-009_RESOLUTION_V1.md` | Resolvida v1 |
+| Fases/transições do workflow      | Sequencial                                    | `PREPARATION` até `CLOSED`; reabertura invalida aprovações | `BDP-009_RESOLUTION_V1.md` | Resolvida v1 |
+| Segregação de funções             | Preparador não aprova                         | Achado bloqueante exige validação por outro ator           | `BDP-009_RESOLUTION_V1.md` | Resolvida v1 |
+| Níveis de aprovação               | Duas etapas sequenciais                       | Configuráveis e extensíveis para N níveis                  | `BDP-009_RESOLUTION_V1.md` | Resolvida v1 |
+| Alçadas                           | Sem alçada financeira v1                      | Capacidade e papel empresarial                             | `BDP-009_RESOLUTION_V1.md` | Resolvida v1 |
+| Substituição/delegação/emergência | Substituição temporária e emergência auditada | Delegação não incluída na v1; grants expiráveis            | `BDP-009_RESOLUTION_V1.md` | Resolvida v1 |
+| `403` versus `404`                | `404` fora do escopo empresarial              | Tentativa registrada internamente                          | `BDP-009_RESOLUTION_V1.md` | Resolvida v1 |
+| Auditoria e retenção              | Eventos/campos obrigatórios append-only       | Retenção final vinculada à BDP-011/Jurídico                | `BDP-009_RESOLUTION_V1.md` | Resolvida v1 |
+| Visibilidade sensível             | Condicionada por capacidade                   | Projeção no backend; matriz configurável                   | `BDP-009_RESOLUTION_V1.md` | Resolvida v1 |
 
 ## 14. Checklist de homologação
 
@@ -185,7 +185,7 @@ Expiração e revogação devem ser verificadas em cada request crítico; cache 
 
 ## 16. Critérios mínimos para resolver BDP-009
 
-BDP-009 só pode mudar de `Pendente` quando:
+A BDP-009 foi marcada `Resolvida v1` porque as decisões homologadas atendem aos seguintes critérios para o recorte inicial:
 
 1. todos os temas da matriz tiverem decisão explícita, responsáveis, data e evidência;
 2. atores, fases, ordem, segregações, exceções e efeitos estiverem inequívocos;
@@ -236,4 +236,4 @@ Cada migration deve ser isolada, reversível quando viável e acompanhada por va
 
 ## 19. Resultado deste pacote
 
-O pacote reduz ambiguidades e prepara a homologação, mas não escolhe alternativas. BDP-009 permanece pendente e a ETP-013 continua em fundação parcial, sem implementação funcional autorizada.
+O pacote foi homologado para a versão 1. As alternativas escolhidas e seus limites estão consolidados em [Resolução da BDP-009](BDP-009_RESOLUTION_V1.md). A ETP-013 continua em fundação parcial até a execução do plano técnico.

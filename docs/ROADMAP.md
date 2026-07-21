@@ -82,13 +82,13 @@ As execuções consolidam lançamentos por contrato e rubrica, selecionam versõ
 
 **Status:** concluída.
 
-Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliações passam a ter registro administrativo demonstrativo por contrato ou execução. Não há cálculo, percentual, aprovação autenticada, desconto automático ou liquidação enquanto BDP-006 e BDP-009 estiverem pendentes. Consulte [Remuneração variável e conciliação](modules/VARIABLE_COMPENSATION.md).
+Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliações passam a ter registro administrativo demonstrativo por contrato ou execução. Não há cálculo, percentual, aprovação autenticada, desconto automático ou liquidação: BDP-006 permanece pendente e a resolução v1 da BDP-009 ainda não foi implementada. Consulte [Remuneração variável e conciliação](modules/VARIABLE_COMPENSATION.md).
 
 ## ETP-013 — Conferência e aprovação de folha
 
 **Status:** fundação técnica parcial; implementação funcional bloqueada.
 
-A etapa possui especificação documental para um workflow auditável de conferência, achados e aprovação antes do fechamento. Foi implementado apenas um domínio neutro para achados e histórico append-only, sem API, persistência, interface ou operação decisória. A arquitetura candidata de identidade, autorização empresarial, segregação configurável e auditoria foi especificada, mas não implementada. Um [pacote de decisão da BDP-009](project-management/BDP-009_DECISION_PACKAGE.md) organiza as alternativas e aguarda homologação. A implementação funcional permanece bloqueada pela BDP-009 e pelas decisões técnicas/humanas registradas. Consulte também [Especificação da ETP-013](project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md), [Fundação técnica de conferência](modules/PAYROLL_REVIEW_FOUNDATION.md) e [Identidade, autorização e auditoria](architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md).
+A etapa possui especificação e domínio neutro para achados/histórico append-only. A BDP-009 foi [resolvida para a versão 1](project-management/BDP-009_RESOLUTION_V1.md), com RBAC empresarial híbrido, duas etapas sequenciais, segregação, substituição, emergência, auditoria e visibilidade por capacidade. A implementação funcional ainda não começou e depende da infraestrutura de identidade/autorização e do [plano técnico executável](project-management/ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md). Consulte também [Especificação da ETP-013](project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md), [Fundação técnica](modules/PAYROLL_REVIEW_FOUNDATION.md) e [Identidade/autorização](architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md).
 
 ## Etapa 2 — Fundação técnica
 
