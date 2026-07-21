@@ -214,3 +214,7 @@ Quando autorizada, a implementação deve ser dividida em commits de banco, dom�
 O recorte preparatório implementa somente contratos imutáveis de achados e eventos append-only, com vínculo empresarial, justificativa, cronologia e unicidade técnicas. Não há ciclo persistente, identidade de ator, autorização, API, tela, fechamento ou decisão de aprovação. Consulte [Fundação técnica de conferência](../modules/PAYROLL_REVIEW_FOUNDATION.md).
 
 Esse recorte não satisfaz as condições da seção 12 e não altera BDP-006 ou BDP-009.
+
+## 15. Identidade, autorização e auditoria
+
+A arquitetura candidata para principal autenticado, empresa ativa, deny-by-default, capacidades, segregação configurável e `AuditLog` está documentada em [Especificação técnica de identidade, autorização e auditoria](../architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md). A proposta não foi implementada: o modelo usuário–empresa e as decisões humanas da BDP-009 ainda precisam de homologação.
