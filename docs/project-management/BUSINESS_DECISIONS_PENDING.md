@@ -58,6 +58,7 @@
 - A especificação propõe estrutura técnica, mas não autoriza schema, migration, API ou interface até esses pré-requisitos serem aprovados.
 - A arquitetura candidata de identidade/autorização não resolve BDP-009: ainda devem ser homologados atores, etapas, segregações, alçadas, substituições, emergência, efeitos de rejeição/reabertura e visibilidade de valores.
 - Também permanece pendente aprovar o modelo técnico de vínculo usuário–empresa, o contrato de empresa ativa e a convenção de resposta para recursos fora do escopo antes da migration de identidade empresarial.
+- O [pacote de decisão da BDP-009](BDP-009_DECISION_PACKAGE.md) apresenta alternativas e critérios de homologação, mas não registra escolha nem altera o status `Pendente`.
 
 ## Gestão
 

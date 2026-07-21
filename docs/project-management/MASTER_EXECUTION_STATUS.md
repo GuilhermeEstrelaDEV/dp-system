@@ -204,6 +204,7 @@
 - **Documentação técnica:** `docs/modules/PAYROLL_REVIEW_FOUNDATION.md`.
 - **Prontidão de identidade/autorização:** especificação técnica proposta em `docs/architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md` e ADR-007; nenhuma implementação foi iniciada porque não há principal autenticado, vínculo usuário–empresa, autorização aplicada ou writer de auditoria.
 - **Próximo passo técnico:** homologar o modelo de acesso empresarial e o ADR-007 antes de migration ou código transversal; BDP-009 continua bloqueando policies e operações decisórias.
+- **Pacote de decisão:** `docs/project-management/BDP-009_DECISION_PACKAGE.md` preparado com alternativas, matriz preenchível, checklist, perguntas, critérios mínimos, plano pós-aprovação e aceite futuro; aguarda homologação e não altera o status da BDP-009.
 
 ### ETP-014 a ETP-015
 
