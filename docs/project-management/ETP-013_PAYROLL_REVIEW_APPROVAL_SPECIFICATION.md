@@ -1,6 +1,6 @@
 # ETP-013 — Especificação de conferência e aprovação de folha
 
-**Status:** especificação mergeada em `develop`; implementação não iniciada nem autorizada por este documento.
+**Status:** especificação mergeada em `develop`; fundação técnica neutra iniciada, implementação funcional não autorizada por este documento.
 
 ## 1. Motivação e evidências
 
@@ -208,3 +208,9 @@ A integração da ETP-012, primeiro critério da especificação original, foi a
 ## 13. Entregáveis futuros previstos
 
 Quando autorizada, a implementação deve ser dividida em commits de banco, domínio/API, interface, testes e documentação. Esta especificação não cria código funcional, schema Prisma ou migration.
+
+## 14. Fundação técnica neutra
+
+O recorte preparatório implementa somente contratos imutáveis de achados e eventos append-only, com vínculo empresarial, justificativa, cronologia e unicidade técnicas. Não há ciclo persistente, identidade de ator, autorização, API, tela, fechamento ou decisão de aprovação. Consulte [Fundação técnica de conferência](../modules/PAYROLL_REVIEW_FOUNDATION.md).
+
+Esse recorte não satisfaz as condições da seção 12 e não altera BDP-006 ou BDP-009.

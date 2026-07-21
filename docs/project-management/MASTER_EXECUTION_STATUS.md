@@ -192,13 +192,16 @@
 
 ### ETP-013 — Conferência e aprovação de folha
 
-- **Status:** especificação mergeada em `develop`; implementação não iniciada.
+- **Status:** fundação técnica parcial; implementação funcional bloqueada.
 - **Especificação:** `docs/project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md`.
 - **Objetivo proposto:** workflow auditável de conferência, achados e decisões antes do fechamento.
 - **Dependência atendida:** ETP-012 mergeada pelo PR #26.
 - **Dependências bloqueantes:** BDP-009, identidade/autorização funcional ou recorte técnico aprovado, homologação dos estados, etapas, responsáveis e critérios de bloqueio, revisão do modelo de banco e contrato de API e validação dos critérios de aceite.
 - **Persistência:** apenas entidades candidatas foram descritas; não há schema ou migration da ETP-013.
 - **Pull Request e merge da especificação:** PR #27 mergeado em `develop` no commit `58341a5`.
+- **Fundação técnica:** contratos imutáveis para achados, severidade, estado e eventos append-only; invariantes de justificativa, cronologia, unicidade e isolamento por empresa; nenhum módulo NestJS, endpoint, persistência, interface ou decisão de aprovação.
+- **Testes da fundação:** testes unitários do domínio neutro; integração e frontend não se aplicam sem infraestrutura operacional.
+- **Documentação técnica:** `docs/modules/PAYROLL_REVIEW_FOUNDATION.md`.
 
 ### ETP-014 a ETP-015
 
