@@ -182,13 +182,24 @@
 
 ### ETP-012 — Remuneração variável e conciliação
 
-- **Status:** implementação concluída em `feature/variable-compensation`.
+- **Status:** concluída e mergeada em `develop`.
 - **Base:** `develop` em `1c7c97e`.
 - **Escopo documentado:** UC-09 e entidades `VariableCompensationEvent`, `SalaryAdvance`, `OffCyclePayment` e `PayrollReconciliation`.
 - **Migration:** `0009_variable_compensation`.
 - **Restrições:** sem fórmulas, percentuais, aprovação autenticada, geração automática de folha, pagamento real ou integrações; BDP-006 e BDP-009 permanecem pendentes.
 - **Entregas:** schema, migration, API, interface em `/folha/remuneracao-variavel`, testes e documentação.
+- **Pull Request e merge:** PR #26 mergeado em `develop` no commit `6fff6e2`.
 
-### ETP-013 a ETP-015
+### ETP-013 — Conferência e aprovação de folha
+
+- **Status:** especificação mergeada em `develop`; implementação não iniciada.
+- **Especificação:** `docs/project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md`.
+- **Objetivo proposto:** workflow auditável de conferência, achados e decisões antes do fechamento.
+- **Dependência atendida:** ETP-012 mergeada pelo PR #26.
+- **Dependências bloqueantes:** BDP-009, identidade/autorização funcional ou recorte técnico aprovado, homologação dos estados, etapas, responsáveis e critérios de bloqueio, revisão do modelo de banco e contrato de API e validação dos critérios de aceite.
+- **Persistência:** apenas entidades candidatas foram descritas; não há schema ou migration da ETP-013.
+- **Pull Request e merge da especificação:** PR #27 mergeado em `develop` no commit `58341a5`.
+
+### ETP-014 a ETP-015
 
 - **Status:** pendentes e sem escopo individual atribuído; devem ser planejadas exclusivamente a partir da documentação aprovada antes da implementação.

@@ -1,6 +1,6 @@
 # ETP-013 — Especificação de conferência e aprovação de folha
 
-**Status:** proposta para revisão; implementação não autorizada por este documento.
+**Status:** especificação mergeada em `develop`; implementação não iniciada nem autorizada por este documento.
 
 ## 1. Motivação e evidências
 
@@ -12,7 +12,7 @@ A ETP-013 não possuía escopo individual atribuído. Esta especificação prop�
 - a matriz de permissões separa preparação, conferência financeira e aprovação do fechamento;
 - o domínio determina que quem calcula não pode ser o único aprovador;
 - a ETP-011 já produz resultados e mensagens reproduzíveis;
-- a ETP-012 proposta registra conciliações, mas o PR #26 permanece aberto e ainda não integra `develop` na data desta especificação.
+- a ETP-012 registra conciliações administrativas e foi mergeada em `develop` pelo PR #26 após a publicação inicial desta especificação.
 
 ## 2. Objetivo proposto
 
@@ -32,7 +32,7 @@ O resultado esperado é distinguir claramente:
 
 - ETP-010: competências, execuções, mensagens e fechamento;
 - ETP-011: resultados por contrato e memória de cálculo;
-- ETP-012: conciliações administrativas, após o merge efetivo do PR #26;
+- ETP-012: conciliações administrativas, dependência técnica já integrada em `develop`;
 - BDP-009: definição de atores, alçadas e segregação de funções;
 - autenticação, autorização e identidade funcional para atribuir decisões a usuários reais.
 
@@ -197,14 +197,13 @@ O frontend não é fonte de autorização. A API deve aplicar empresa, papel, al
 
 ## 12. Critérios para autorizar implementação
 
-A ETP-013 somente deve avançar para código quando:
+A integração da ETP-012, primeiro critério da especificação original, foi atendida pelo merge do PR #26. A ETP-013 somente deve avançar para código quando as condições restantes forem atendidas:
 
-1. a ETP-012 estiver efetivamente mergeada em `develop`;
-2. BDP-009 tiver decisão aprovada para o recorte inicial;
-3. identidade/autorização funcional ou um recorte técnico explícito tiver sido aprovado;
-4. estados, etapas, responsáveis e critérios de bloqueio tiverem sido homologados;
-5. modelo de banco e contrato de API tiverem revisão arquitetural;
-6. critérios de aceite e amostras de conferência tiverem validação do DP/Financeiro/Diretoria.
+1. BDP-009 tiver decisão aprovada para o recorte inicial;
+2. identidade/autorização funcional ou um recorte técnico explícito tiver sido aprovado;
+3. estados, etapas, responsáveis e critérios de bloqueio tiverem sido homologados;
+4. modelo de banco e contrato de API tiverem revisão arquitetural;
+5. critérios de aceite e amostras de conferência tiverem validação do DP/Financeiro/Diretoria.
 
 ## 13. Entregáveis futuros previstos
 

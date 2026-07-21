@@ -84,6 +84,12 @@ As execuções consolidam lançamentos por contrato e rubrica, selecionam versõ
 
 Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliações passam a ter registro administrativo demonstrativo por contrato ou execução. Não há cálculo, percentual, aprovação autenticada, desconto automático ou liquidação enquanto BDP-006 e BDP-009 estiverem pendentes. Consulte [Remuneração variável e conciliação](modules/VARIABLE_COMPENSATION.md).
 
+## ETP-013 — Conferência e aprovação de folha
+
+**Status:** especificada; implementação não iniciada.
+
+A etapa possui especificação documental para um workflow auditável de conferência, achados e aprovação antes do fechamento. A implementação permanece bloqueada pela BDP-009, por identidade/autorização funcional ou recorte técnico expressamente aprovado e pela homologação dos estados, responsáveis e critérios de bloqueio. Consulte [Especificação da ETP-013](project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md).
+
 ## Etapa 2 — Fundação técnica
 
 Criar monorepo, ambientes, autenticação, autorização, auditoria, banco e pipeline de qualidade. Não inclui funcionalidade de DP.
