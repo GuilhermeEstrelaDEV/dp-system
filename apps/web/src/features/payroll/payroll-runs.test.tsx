@@ -31,6 +31,15 @@ describe('Payroll runs page', () => {
           status: 'COMPLETED',
           engineVersion: 'foundation-v1',
           parameterVersion: 'snapshot-v1',
+          employees: [
+            {
+              id: 'result-1',
+              employmentContractId: 'contract-1',
+              status: 'CALCULATED',
+              grossAmount: '1500.00',
+              netAmount: '1400.00',
+            },
+          ],
           messages: [
             {
               id: 'message-1',
@@ -50,6 +59,7 @@ describe('Payroll runs page', () => {
 
     expect((await screen.findAllByRole('listitem'))[0]).toHaveTextContent('Execução 1');
     expect(screen.getByText(/DEMONSTRATIVE_RUN/)).toBeInTheDocument();
+    expect(screen.getByText(/bruto 1500.00 · líquido 1400.00/)).toBeInTheDocument();
     expect(apiRequest).toHaveBeenCalledWith(
       '/payroll-runs?payrollPeriodId=period-1&page=1&pageSize=20&sortBy=createdAt&sortDirection=desc',
     );

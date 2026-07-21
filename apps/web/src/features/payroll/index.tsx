@@ -901,6 +901,18 @@ function PayrollRunsPanel() {
             <p>
               Motor {item.engineVersion} · parâmetros {item.parameterVersion ?? 'não informado'}
             </p>
+            {item.employees?.length ? (
+              <ul aria-label={`Resultados da execução ${item.sequence}`}>
+                {item.employees.map((employee) => (
+                  <li key={employee.id}>
+                    Contrato {employee.employmentContractId}: bruto {employee.grossAmount} · líquido{' '}
+                    {employee.netAmount} ({employee.status})
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Nenhum contrato calculado nesta execução.</p>
+            )}
             <ul aria-label={`Mensagens da execução ${item.sequence}`}>
               {item.messages.map((message) => (
                 <li key={message.id}>
