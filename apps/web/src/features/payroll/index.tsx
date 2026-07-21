@@ -13,6 +13,7 @@ import {
   type PayrollParameter,
 } from './payroll-parameters';
 import { payrollRubricsApi, type CreatePayrollRubric, type PayrollRubric } from './payroll-rubrics';
+import { VariableCompensationPanel } from '@/features/variable-compensation';
 
 const payrollPages = [
   ['competencias', 'Competências', '/folha/competencias', '/payroll-periods'],
@@ -21,6 +22,12 @@ const payrollPages = [
   ['lancamentos', 'Lançamentos', '/folha/lancamentos', '/payroll-inputs'],
   ['execucoes', 'Execuções', '/folha/execucoes', '/payroll-runs'],
   ['fechamentos', 'Fechamentos', '/folha/fechamentos', '/payroll-closures'],
+  [
+    'remuneracao-variavel',
+    'Remuneração variável',
+    '/folha/remuneracao-variavel',
+    '/variable-compensation/events',
+  ],
 ] as const;
 
 type Paginated<T> = { items: T[]; pagination: { page: number; totalPages: number } };
@@ -48,7 +55,8 @@ export function PayrollPage() {
       path !== '/folha/parametros' &&
       path !== '/folha/lancamentos' &&
       path !== '/folha/execucoes' &&
-      path !== '/folha/fechamentos',
+      path !== '/folha/fechamentos' &&
+      path !== '/folha/remuneracao-variavel',
     queryFn: () => apiRequest<Paginated<PayrollRecord>>(`${endpoint}?page=1&pageSize=20`),
   });
 
@@ -85,6 +93,8 @@ export function PayrollPage() {
         <PayrollRunsPanel />
       ) : path === '/folha/fechamentos' ? (
         <PayrollClosuresPanel />
+      ) : path === '/folha/remuneracao-variavel' ? (
+        <VariableCompensationPanel />
       ) : (
         <section className="mt-6" aria-labelledby="payroll-section-title">
           <h2 id="payroll-section-title">{String(label)}</h2>
