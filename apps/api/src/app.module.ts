@@ -29,6 +29,7 @@ import { PayrollParametersModule } from './modules/payroll-parameters/payroll-pa
 import { PayrollInputsModule } from './modules/payroll-inputs/payroll-inputs.module';
 import { PayrollRunsModule } from './modules/payroll-runs/payroll-runs.module';
 import { PayrollClosuresModule } from './modules/payroll-closures/payroll-closures.module';
+import { VariableCompensationModule } from './modules/variable-compensation/variable-compensation.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -70,6 +71,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PayrollInputsModule,
     PayrollRunsModule,
     PayrollClosuresModule,
+    VariableCompensationModule,
   ],
   providers: [
     AppLoggerService,
