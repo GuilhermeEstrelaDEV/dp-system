@@ -56,6 +56,8 @@
 - Tolerâncias de conciliação, prazos e escalonamentos não serão presumidos.
 - A implementação também depende de identidade e autorização funcionais para atribuir decisões e aplicar isolamento por empresa.
 - A especificação propõe estrutura técnica, mas não autoriza schema, migration, API ou interface até esses pré-requisitos serem aprovados.
+- A arquitetura candidata de identidade/autorização não resolve BDP-009: ainda devem ser homologados atores, etapas, segregações, alçadas, substituições, emergência, efeitos de rejeição/reabertura e visibilidade de valores.
+- Também permanece pendente aprovar o modelo técnico de vínculo usuário–empresa, o contrato de empresa ativa e a convenção de resposta para recursos fora do escopo antes da migration de identidade empresarial.
 
 ## Gestão
 

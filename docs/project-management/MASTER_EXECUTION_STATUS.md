@@ -202,6 +202,8 @@
 - **Fundação técnica:** contratos imutáveis para achados, severidade, estado e eventos append-only; invariantes de justificativa, cronologia, unicidade e isolamento por empresa; nenhum módulo NestJS, endpoint, persistência, interface ou decisão de aprovação.
 - **Testes da fundação:** testes unitários do domínio neutro; integração e frontend não se aplicam sem infraestrutura operacional.
 - **Documentação técnica:** `docs/modules/PAYROLL_REVIEW_FOUNDATION.md`.
+- **Prontidão de identidade/autorização:** especificação técnica proposta em `docs/architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md` e ADR-007; nenhuma implementação foi iniciada porque não há principal autenticado, vínculo usuário–empresa, autorização aplicada ou writer de auditoria.
+- **Próximo passo técnico:** homologar o modelo de acesso empresarial e o ADR-007 antes de migration ou código transversal; BDP-009 continua bloqueando policies e operações decisórias.
 
 ### ETP-014 a ETP-015
 
