@@ -250,39 +250,42 @@ model EmployeeContact {
 }
 
 model EmploymentContract {
-  id                      String                 @id @default(uuid()) @db.Uuid
-  employeeId              String                 @map("employee_id") @db.Uuid
-  companyId               String                 @map("company_id") @db.Uuid
-  branchId                String?                @map("branch_id") @db.Uuid
-  departmentId            String?                @map("department_id") @db.Uuid
-  positionId              String                 @map("position_id") @db.Uuid
-  costCenterId            String?                @map("cost_center_id") @db.Uuid
-  registrationNumber      String                 @map("registration_number") @db.VarChar(50)
-  contractType            String                 @map("contract_type") @db.VarChar(50)
-  employmentRegime        String                 @map("employment_regime") @db.VarChar(50)
-  startDate               DateTime               @map("start_date") @db.Date
-  endDate                 DateTime?              @map("end_date") @db.Date
-  weeklyHours             Int                    @map("weekly_hours")
-  status                  String                 @default("ACTIVE") @db.VarChar(20)
-  createdAt               DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt               DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
-  employee                Employee               @relation(fields: [employeeId], references: [id], onDelete: Restrict)
-  company                 Company                @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  branch                  Branch?                @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  department              Department?            @relation(fields: [departmentId], references: [id], onDelete: Restrict)
-  position                Position               @relation(fields: [positionId], references: [id], onDelete: Restrict)
-  costCenter              CostCenter?            @relation(fields: [costCenterId], references: [id], onDelete: Restrict)
-  history                 ContractHistory[]
-  admissionProcesses      AdmissionProcess[]
-  workScheduleAssignments ContractWorkSchedule[]
-  timeEntries             TimeEntry[]
-  timeBalanceEntries      TimeBalanceEntry[]
-  benefitEnrollments      BenefitEnrollment[]
-  vacationPeriods         VacationPeriod[]
-  vacationRequests        VacationRequest[]
-  leaveCases              LeaveCase[]
-  payrollInputs           PayrollInput[]
-  payrollRunEmployees     PayrollRunEmployee[]
+  id                         String                      @id @default(uuid()) @db.Uuid
+  employeeId                 String                      @map("employee_id") @db.Uuid
+  companyId                  String                      @map("company_id") @db.Uuid
+  branchId                   String?                     @map("branch_id") @db.Uuid
+  departmentId               String?                     @map("department_id") @db.Uuid
+  positionId                 String                      @map("position_id") @db.Uuid
+  costCenterId               String?                     @map("cost_center_id") @db.Uuid
+  registrationNumber         String                      @map("registration_number") @db.VarChar(50)
+  contractType               String                      @map("contract_type") @db.VarChar(50)
+  employmentRegime           String                      @map("employment_regime") @db.VarChar(50)
+  startDate                  DateTime                    @map("start_date") @db.Date
+  endDate                    DateTime?                   @map("end_date") @db.Date
+  weeklyHours                Int                         @map("weekly_hours")
+  status                     String                      @default("ACTIVE") @db.VarChar(20)
+  createdAt                  DateTime                    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime                    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employee                   Employee                    @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  company                    Company                     @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  branch                     Branch?                     @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  department                 Department?                 @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  position                   Position                    @relation(fields: [positionId], references: [id], onDelete: Restrict)
+  costCenter                 CostCenter?                 @relation(fields: [costCenterId], references: [id], onDelete: Restrict)
+  history                    ContractHistory[]
+  admissionProcesses         AdmissionProcess[]
+  workScheduleAssignments    ContractWorkSchedule[]
+  timeEntries                TimeEntry[]
+  timeBalanceEntries         TimeBalanceEntry[]
+  benefitEnrollments         BenefitEnrollment[]
+  vacationPeriods            VacationPeriod[]
+  vacationRequests           VacationRequest[]
+  leaveCases                 LeaveCase[]
+  payrollInputs              PayrollInput[]
+  payrollRunEmployees        PayrollRunEmployee[]
+  variableCompensationEvents VariableCompensationEvent[]
+  salaryAdvances             SalaryAdvance[]
+  offCyclePayments           OffCyclePayment[]
 
   @@unique([companyId, registrationNumber])
   @@index([employeeId, status])
@@ -699,19 +702,20 @@ model PayrollInput {
 }
 
 model PayrollRun {
-  id                String               @id @default(uuid()) @db.Uuid
-  payrollPeriodId   String               @map("payroll_period_id") @db.Uuid
+  id                String                  @id @default(uuid()) @db.Uuid
+  payrollPeriodId   String                  @map("payroll_period_id") @db.Uuid
   sequence          Int
-  status            String               @default("DRAFT") @db.VarChar(20)
-  engineVersion     String               @map("engine_version") @db.VarChar(50)
-  parameterVersion  String?              @map("parameter_version") @db.VarChar(50)
+  status            String                  @default("DRAFT") @db.VarChar(20)
+  engineVersion     String                  @map("engine_version") @db.VarChar(50)
+  parameterVersion  String?                 @map("parameter_version") @db.VarChar(50)
   parameterSnapshot Json?
-  startedAt         DateTime?            @map("started_at") @db.Timestamptz(6)
-  completedAt       DateTime?            @map("completed_at") @db.Timestamptz(6)
-  createdAt         DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  payrollPeriod     PayrollPeriod        @relation(fields: [payrollPeriodId], references: [id], onDelete: Restrict)
+  startedAt         DateTime?               @map("started_at") @db.Timestamptz(6)
+  completedAt       DateTime?               @map("completed_at") @db.Timestamptz(6)
+  createdAt         DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  payrollPeriod     PayrollPeriod           @relation(fields: [payrollPeriodId], references: [id], onDelete: Restrict)
   employees         PayrollRunEmployee[]
   messages          PayrollRunMessage[]
+  reconciliations   PayrollReconciliation[]
 
   @@unique([payrollPeriodId, sequence])
   @@index([payrollPeriodId, status])
@@ -781,6 +785,71 @@ model PayrollPeriodClosure {
 
   @@index([payrollPeriodId, occurredAt])
   @@map("payroll_period_closures")
+}
+
+model VariableCompensationEvent {
+  id                   String             @id @default(uuid()) @db.Uuid
+  employmentContractId String             @map("employment_contract_id") @db.Uuid
+  referencePeriod      DateTime           @map("reference_period") @db.Date
+  type                 String             @db.VarChar(50)
+  amount               Decimal            @db.Decimal(15, 2)
+  policyReference      String?            @map("policy_reference") @db.VarChar(500)
+  approvalStatus       String             @default("PENDING") @map("approval_status") @db.VarChar(30)
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employmentContract   EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+
+  @@index([employmentContractId, referencePeriod, approvalStatus])
+  @@map("variable_compensation_events")
+}
+
+model SalaryAdvance {
+  id                   String             @id @default(uuid()) @db.Uuid
+  employmentContractId String             @map("employment_contract_id") @db.Uuid
+  referencePeriod      DateTime           @map("reference_period") @db.Date
+  amount               Decimal            @db.Decimal(15, 2)
+  status               String             @default("PENDING") @db.VarChar(30)
+  paymentDate          DateTime?          @map("payment_date") @db.Date
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employmentContract   EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+
+  @@index([employmentContractId, referencePeriod])
+  @@map("salary_advances")
+}
+
+model OffCyclePayment {
+  id                   String             @id @default(uuid()) @db.Uuid
+  employmentContractId String             @map("employment_contract_id") @db.Uuid
+  referencePeriod      DateTime           @map("reference_period") @db.Date
+  amount               Decimal            @db.Decimal(15, 2)
+  reason               String             @db.VarChar(1000)
+  approvalStatus       String             @default("PENDING") @map("approval_status") @db.VarChar(30)
+  paidAt               DateTime?          @map("paid_at") @db.Timestamptz(6)
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employmentContract   EmploymentContract @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+
+  @@index([referencePeriod, approvalStatus])
+  @@index([employmentContractId])
+  @@map("off_cycle_payments")
+}
+
+model PayrollReconciliation {
+  id               String     @id @default(uuid()) @db.Uuid
+  payrollRunId     String     @map("payroll_run_id") @db.Uuid
+  type             String     @db.VarChar(50)
+  status           String     @default("OPEN") @db.VarChar(30)
+  differenceAmount Decimal    @map("difference_amount") @db.Decimal(15, 2)
+  notes            String?    @db.VarChar(1000)
+  resolvedBy       String?    @map("resolved_by") @db.Uuid
+  resolvedAt       DateTime?  @map("resolved_at") @db.Timestamptz(6)
+  createdAt        DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  payrollRun       PayrollRun @relation(fields: [payrollRunId], references: [id], onDelete: Restrict)
+
+  @@index([payrollRunId, status])
+  @@map("payroll_reconciliations")
 }
 
 model Benefit {

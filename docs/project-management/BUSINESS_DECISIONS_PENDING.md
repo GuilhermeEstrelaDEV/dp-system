@@ -53,6 +53,12 @@
 
 ## Gestão
 
+## Aplicação segura na ETP-012
+
+- BDP-006: tipos são classificações administrativas livres; nenhuma fórmula, percentual, elegibilidade ou regra de cálculo foi implementada.
+- BDP-009: estados iniciais não representam aprovação; atores, alçadas e segregação permanecem sem implementação até homologação.
+- Eventos não geram `payroll_inputs`, descontos, liquidação, transferência ou integração financeira automaticamente.
+
 - Cada decisão será atualizada para `Em análise`, `Aprovada` ou `Descartada`, com data, evidência e responsável.
 - A implementação do módulo relacionado deve referenciar o ID da decisão e não poderá assumir regra diferente sem nova decisão documentada.
 - Decisões aprovadas que alterem arquitetura, dados ou segurança exigem ADR correspondente.

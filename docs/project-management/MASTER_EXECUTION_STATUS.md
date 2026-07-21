@@ -180,17 +180,15 @@
 - **Interface:** resultados resumidos por contrato nas execuções de folha.
 - **Testes:** domínio decimal/agregação, orquestração, concorrência, competência fechada, versão vigente e natureza inválida, além da apresentação dos resultados no frontend.
 
-### ETP-012 a ETP-015
+### ETP-012 — Remuneração variável e conciliação
 
-- **Status:** pendentes; cada etapa será iniciada somente após o merge da anterior em `develop`.
-
-### Especificação da ETP-013 — Conferência e aprovação de folha
-
-- **Status:** proposta documental pronta para revisão; nenhum código funcional implementado.
-- **Branch:** `docs/etp-013-specification`.
+- **Status:** implementação concluída em `feature/variable-compensation`.
 - **Base:** `develop` em `1c7c97e`.
-- **Constatação:** a ETP-013 não possuía escopo individual atribuído.
-- **Objetivo proposto:** workflow auditável de conferência, achados e decisões antes do fechamento.
-- **Dependências bloqueantes:** merge efetivo da ETP-012/PR #26, BDP-009 e identidade/autorização funcional ou recorte técnico aprovado.
-- **Persistência:** apenas entidades candidatas foram descritas; não há alteração de Prisma ou migration.
-- **Próximo passo:** revisar a especificação com DP, Financeiro, Diretoria e arquitetura; resolver as decisões mínimas antes de autorizar implementação.
+- **Escopo documentado:** UC-09 e entidades `VariableCompensationEvent`, `SalaryAdvance`, `OffCyclePayment` e `PayrollReconciliation`.
+- **Migration:** `0009_variable_compensation`.
+- **Restrições:** sem fórmulas, percentuais, aprovação autenticada, geração automática de folha, pagamento real ou integrações; BDP-006 e BDP-009 permanecem pendentes.
+- **Entregas:** schema, migration, API, interface em `/folha/remuneracao-variavel`, testes e documentação.
+
+### ETP-013 a ETP-015
+
+- **Status:** pendentes e sem escopo individual atribuído; devem ser planejadas exclusivamente a partir da documentação aprovada antes da implementação.

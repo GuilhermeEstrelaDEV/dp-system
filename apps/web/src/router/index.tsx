@@ -63,6 +63,7 @@ export const appRoutes: RouteObject[] = [
       { path: 'folha/lancamentos', element: <PayrollPage /> },
       { path: 'folha/execucoes', element: <PayrollPage /> },
       { path: 'folha/fechamentos', element: <PayrollPage /> },
+      { path: 'folha/remuneracao-variavel', element: <PayrollPage /> },
       { path: 'desligamentos', element: <ModulePlaceholderPage /> },
       { path: 'documentos', element: <ModulePlaceholderPage /> },
       { path: 'relatorios', element: <ModulePlaceholderPage /> },

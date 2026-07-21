@@ -78,11 +78,11 @@ Competências, rubricas, parâmetros, lançamentos, execuções e fechamentos fo
 
 As execuções consolidam lançamentos por contrato e rubrica, selecionam versões vigentes e persistem totais e memória reproduzível com aritmética decimal determinística. Naturezas ou versões inválidas falham de forma bloqueante. Nenhuma regra legal, alíquota ou fórmula normativa foi presumida. Consulte [Cálculo configurável de folha](modules/PAYROLL_CALCULATION.md).
 
-## ETP-013 — Conferência e aprovação de folha
+## ETP-012 — Remuneração variável e conciliação
 
-**Status:** especificação proposta; implementação não iniciada.
+**Status:** concluída.
 
-A etapa individual não estava definida e recebeu uma proposta documental baseada no UC-08, no fluxo de folha e na matriz de permissões. A implementação depende do merge efetivo da ETP-012, da decisão BDP-009 e de identidade/autorização funcional ou recorte técnico expressamente aprovado. Consulte [Especificação da ETP-013](project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md).
+Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliações passam a ter registro administrativo demonstrativo por contrato ou execução. Não há cálculo, percentual, aprovação autenticada, desconto automático ou liquidação enquanto BDP-006 e BDP-009 estiverem pendentes. Consulte [Remuneração variável e conciliação](modules/VARIABLE_COMPENSATION.md).
 
 ## Etapa 2 — Fundação técnica
 

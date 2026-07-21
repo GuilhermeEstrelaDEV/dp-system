@@ -56,6 +56,8 @@ Benefícios usam valores decimais textuais e controles de vigência/adesão. Nã
 
 Férias e afastamentos usam datas administrativas configuráveis, sem cálculo legal. Não introduza prazo, pagamento, fracionamento obrigatório, dado médico, CID ou documento real sem fonte validada e decisão de DP/Jurídico; consulte [Férias e afastamentos](modules/VACATIONS_AND_LEAVES.md).
 
+Remuneração variável e conciliação registram somente eventos administrativos com texto decimal. Não implemente fórmula, percentual, elegibilidade, aprovação, desconto em folha, pagamento ou integração financeira sem resolver BDP-006 e BDP-009; consulte [Remuneração variável e conciliação](modules/VARIABLE_COMPENSATION.md).
+
 Folha usa configurações e versões demonstrativas, com valores monetários representados por texto decimal. Não inclua INSS, FGTS, IRRF, alíquotas, faixas, deduções, fórmulas ou qualquer regra legal sem fonte homologada; consulte [Fundação de folha](modules/PAYROLL_FOUNDATION.md).
 
 ## Git e commits
