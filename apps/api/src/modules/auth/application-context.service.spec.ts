@@ -23,6 +23,8 @@ describe('ApplicationContextService', () => {
         },
       ],
       companyRoles: [{ role: { permissions: [{ permission: { code: 'payroll.view' } }] } }],
+      substitutionsAsSubstitute: [],
+      emergencyAccesses: [],
     });
     await expect(
       service.resolve(
@@ -35,6 +37,9 @@ describe('ApplicationContextService', () => {
       permissions: ['payroll.view', 'platform.manage'],
       traceId: 'trace',
       sessionId: 'session',
+      ipAddress: 'unknown',
+      userAgent: null,
+      accessGrants: [],
     });
   });
 
@@ -46,7 +51,12 @@ describe('ApplicationContextService', () => {
   });
 
   it('hides a company when its active assignment cannot be resolved', async () => {
-    findFirst.mockResolvedValue({ roles: [], companyRoles: [] });
+    findFirst.mockResolvedValue({
+      roles: [],
+      companyRoles: [],
+      substitutionsAsSubstitute: [],
+      emergencyAccesses: [],
+    });
     await expect(
       service.resolve(
         { actorId: 'actor', activeCompanyId: 'company-b', sessionId: 'session' },

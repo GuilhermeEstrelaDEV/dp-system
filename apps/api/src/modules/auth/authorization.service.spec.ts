@@ -10,6 +10,9 @@ describe('AuthorizationService', () => {
     permissions: ['payroll.view'],
     traceId: 'trace',
     sessionId: 'session',
+    ipAddress: '127.0.0.1',
+    userAgent: 'test',
+    accessGrants: [],
   };
 
   it('authorizes an effective capability', () => {

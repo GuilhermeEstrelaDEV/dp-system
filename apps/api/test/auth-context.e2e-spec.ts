@@ -44,6 +44,8 @@ describe('authenticated company context integration', () => {
                     },
                   ]
                 : [],
+              substitutionsAsSubstitute: [],
+              emergencyAccesses: [],
             }
           : null,
     );
@@ -101,13 +103,16 @@ describe('authenticated company context integration', () => {
       .get('/api/v1/auth/me')
       .set('Authorization', `Bearer ${selection.body.data.accessToken}`)
       .set('x-correlation-id', 'trace-auth-2')
+      .set('user-agent', 'dp-system-test-agent')
       .expect(200);
     expect(context.body.data).toMatchObject({
       actorId: 'user-1',
       activeCompanyId: company.id,
       permissions: ['payroll.view'],
       traceId: 'trace-auth-2',
+      userAgent: 'dp-system-test-agent',
     });
+    expect(context.body.data.ipAddress).toEqual(expect.any(String));
     expect(context.body.data.sessionId).toEqual(expect.any(String));
     expect(prisma.auditLog.create).toHaveBeenCalled();
   });
@@ -124,5 +129,18 @@ describe('authenticated company context integration', () => {
 
   it('keeps legacy routes outside the incremental protection rollout', async () => {
     await request(app.getHttpServer()).get('/api/v1/health/live').expect(200);
+  });
+
+  it('denies new administrative routes when capability is absent', async () => {
+    const bootstrapToken = await login();
+    const selection = await request(app.getHttpServer())
+      .post('/api/v1/auth/context')
+      .set('Authorization', `Bearer ${bootstrapToken}`)
+      .send({ companyId: company.id })
+      .expect(201);
+    await request(app.getHttpServer())
+      .get('/api/v1/access-grants/substitutions')
+      .set('Authorization', `Bearer ${selection.body.data.accessToken}`)
+      .expect(403);
   });
 });

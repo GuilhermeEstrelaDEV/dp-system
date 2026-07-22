@@ -18,6 +18,8 @@ export async function createApplication(
   const app = await factory();
   const config = app.get(ConfigService);
   const logger = app.get(AppLoggerService);
+  if (config.getOrThrow<boolean>('app.trustProxy'))
+    app.getHttpAdapter().getInstance().set('trust proxy', 1);
   app.useLogger(logger);
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(json({ limit: config.getOrThrow<string>('app.bodyLimit') }));

@@ -14,6 +14,8 @@ export default () => ({
     rateLimitTtlMs: Number(process.env.RATE_LIMIT_TTL_MS ?? 60000),
     rateLimitMaxRequests: Number(process.env.RATE_LIMIT_MAX_REQUESTS ?? 100),
     logLevel: process.env.LOG_LEVEL ?? 'log',
+    trustProxy: process.env.TRUST_PROXY === 'true',
+    emergencyAccessMaxHours: Number(process.env.EMERGENCY_ACCESS_MAX_HOURS ?? 8),
   },
   database: {
     url: process.env.DATABASE_URL,
