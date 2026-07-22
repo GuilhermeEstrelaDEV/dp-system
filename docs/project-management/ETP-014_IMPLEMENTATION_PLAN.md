@@ -1,8 +1,8 @@
 # ETP-014 — Plano de implementação
 
-**Status:** `PLANNING — PHASE 1 COMPLETED; PHASE 2 NOT STARTED`
+**Status:** `IN PROGRESS — PHASE 1 COMPLETED; PHASE 2 READY FOR REVIEW`
 
-**Natureza:** plano documental; não autoriza implementação
+**Natureza:** plano incremental; somente a fase explicitamente autorizada pode ser implementada
 
 Este plano traduz a [resolução homologada da BDP-014 v1](BDP-014_RESOLUTION_V1.md) em incrementos pequenos. O [contrato canônico](../architecture/PAYROLL_PERIOD_CLOSURE_CANONICAL_CONTRACT.md) e o [inventário legado](../architecture/PAYROLL_CLOSURE_LEGACY_INVENTORY.md) são referências obrigatórias. Alteração material exige nova decisão versionada antes de código.
 
@@ -63,7 +63,7 @@ Consumidores desconhecidos das rotas legadas e necessidade futura de validar o d
 
 ## Fase 2 — Domínio de prontidão somente leitura
 
-**Status:** `NOT STARTED`.
+**Status:** `READY FOR REVIEW`.
 
 ### Objetivo
 
@@ -75,10 +75,10 @@ Fase 1 concluída; branch criada a partir de `develop`; contrato, execução ele
 
 ### Entregas
 
-- tipos compartilhados de readiness e códigos estáveis;
+- contrato tipado de readiness e códigos estáveis;
 - política de domínio pura;
 - query empresarial para competência, execução, ciclo, decisões, achados e mensagens;
-- endpoint candidato `GET /payroll-periods/:id/closure-readiness` protegido;
+- endpoint `GET /payroll-periods/:payrollPeriodId/closure-readiness` protegido;
 - documentação e inventário de rota atualizados.
 
 ### Fora do escopo
@@ -103,7 +103,7 @@ Somente `GET /payroll-periods/:id/closure-readiness`; nenhum comando de fechamen
 
 ### Aceite e gate
 
-Readiness reproduz as decisões homologadas e é estável diante do mesmo snapshot. Divergência bloqueia a Fase 3.
+Readiness reproduz as decisões homologadas e é estável diante do mesmo snapshot. A implementação está pronta para revisão; somente revisão e merge podem concluir a fase e liberar a avaliação do gate da Fase 3.
 
 ### Riscos
 
@@ -316,7 +316,7 @@ Exposição visual excessiva de evidências, estado desatualizado e bundle adici
 
 ```mermaid
 flowchart LR
-    F1[Fase 1: homologação COMPLETED] -->|início explicitamente autorizado| F2[Fase 2: readiness NOT STARTED]
+    F1[Fase 1: homologação COMPLETED] --> F2[Fase 2: readiness READY FOR REVIEW]
     F2 -->|matriz validada| F3[Fase 3: persistência]
     F3 -->|atomicidade comprovada| F4[Fase 4: fechamento]
     F4 -->|rollout estável| F5[Fase 5: reabertura]

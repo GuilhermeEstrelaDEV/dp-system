@@ -217,7 +217,7 @@
 
 ### ETP-014 — Fechamento de competência e integração operacional
 
-- **Status:** `PLANNING`; Fase 1 documental `COMPLETED`, Fase 2 `NOT STARTED`.
+- **Status:** `IN PROGRESS`; Fase 1 documental `COMPLETED`, Fase 2 `READY FOR REVIEW`, Fase 3 `NOT STARTED`.
 - **Especificação:** `docs/project-management/ETP-014_PAYROLL_PERIOD_CLOSURE_SPECIFICATION.md`.
 - **Objetivo proposto:** vincular o fechamento operacional da competência a uma execução e conferência encerrada, com prontidão explícita, RBAC, isolamento empresarial e auditoria atômica.
 - **Base reutilizável:** `PayrollPeriod`, `PayrollRun`, `PayrollPeriodClosure`, workflow da ETP-013, JWT, empresa ativa, RBAC, auditoria, substituição e acesso emergencial.
@@ -225,8 +225,9 @@
 - **Decisão de negócio:** BDP-014 `APPROVED — VERSION 1` em `docs/project-management/BDP-014_RESOLUTION_V1.md`; a proposta anterior está superseded e preservada como histórico.
 - **Arquitetura:** contrato em `docs/architecture/PAYROLL_PERIOD_CLOSURE_CANONICAL_CONTRACT.md` e legado em `docs/architecture/PAYROLL_CLOSURE_LEGACY_INVENTORY.md`.
 - **Plano incremental:** `docs/project-management/ETP-014_IMPLEMENTATION_PLAN.md`, com seis fases e gates explícitos.
-- **Gate:** Fase 2 somente leitura depende de autorização explícita; fases posteriores permanecem bloqueadas pelos critérios sequenciais do plano.
-- **Implementação:** não iniciada; nenhuma funcionalidade, entidade, endpoint ou interface foi alterada por esta especificação.
+- **Fase 2:** `GET /payroll-periods/:payrollPeriodId/closure-readiness` avalia execução canônica, review vigente, blockers e warnings no escopo da empresa ativa. Exige `payroll.period.close.readiness`, aplica deny-by-default e retorna `404` entre empresas.
+- **Limites da entrega:** somente leitura, sem migration, persistência de readiness, `AuditLog`, manifesto, lock, fechamento, reabertura, frontend ou alteração das rotas legadas. `payroll.period.close.view` e `payroll.period.close.readiness` foram cadastradas sem associação automática.
+- **Gate:** revisão e merge da Fase 2; a Fase 3 permanece bloqueada pelos critérios sequenciais do plano.
 
 ### ETP-015 a ETP-017 — propostas
 
