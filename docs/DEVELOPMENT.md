@@ -58,6 +58,12 @@ Férias e afastamentos usam datas administrativas configuráveis, sem cálculo l
 
 Remuneração variável e conciliação registram somente eventos administrativos com texto decimal. Não implemente fórmula, percentual, elegibilidade, aprovação, desconto em folha, pagamento ou integração financeira sem resolver BDP-006 e BDP-009; consulte [Remuneração variável e conciliação](modules/VARIABLE_COMPENSATION.md).
 
+## Autenticação e contexto empresarial
+
+As rotas de bootstrap de identidade estão sob `/api/v1/auth`. `JWT_SECRET` deve ter ao menos 32 caracteres e nunca ser versionado com valor de produção; `JWT_EXPIRES_IN` controla a expiração do token de acesso e usa `15m` por padrão.
+
+Senhas persistidas em `User.passwordHash` devem ser geradas pelo `PasswordHasherService` (`scrypt` com salt aleatório). O seed não cria usuário nem credencial padrão. Para acessar uma nova rota empresarial, aplique `JwtAuthGuard` e autorização por capability, valide novamente no caso de uso e derive a empresa exclusivamente de `principal.activeCompanyId`. Consulte [Identidade autenticada e RBAC empresarial](modules/IDENTITY_COMPANY_RBAC.md).
+
 Folha usa configurações e versões demonstrativas, com valores monetários representados por texto decimal. Não inclua INSS, FGTS, IRRF, alíquotas, faixas, deduções, fórmulas ou qualquer regra legal sem fonte homologada; consulte [Fundação de folha](modules/PAYROLL_FOUNDATION.md).
 
 ## Git e commits

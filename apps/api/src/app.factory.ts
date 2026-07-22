@@ -51,6 +51,7 @@ export async function createApplication(
         .setTitle('DP System API')
         .setDescription('Technical platform API documentation')
         .setVersion('1.0.0')
+        .addBearerAuth()
         .addServer('/api/v1')
         .build(),
     );
