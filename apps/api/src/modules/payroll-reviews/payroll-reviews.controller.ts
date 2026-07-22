@@ -6,6 +6,7 @@ import { CapabilitiesGuard } from '../auth/capabilities.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   CreatePayrollReviewFindingDto,
+  PayrollReviewDecisionDto,
   TransitionPayrollReviewFindingDto,
 } from './payroll-reviews.dto';
 import { PayrollReviewsService } from './payroll-reviews.service';
@@ -81,5 +82,52 @@ export class PayrollReviewsController {
     @CurrentPrincipal() principal: AuthenticatedPrincipal,
   ) {
     return this.service.reopenFinding(findingId, dto, principal);
+  }
+
+  @Post('payroll-reviews/:reviewCycleId/start')
+  @RequireCapabilities('payroll.review.submit')
+  startReview(
+    @Param('reviewCycleId') reviewCycleId: string,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.startReview(reviewCycleId, principal);
+  }
+
+  @Post('payroll-reviews/:reviewCycleId/submit')
+  @RequireCapabilities('payroll.review.submit')
+  submitReview(
+    @Param('reviewCycleId') reviewCycleId: string,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.submitReview(reviewCycleId, principal);
+  }
+
+  @Post('payroll-reviews/:reviewCycleId/approve')
+  @RequireCapabilities('payroll.review.approve')
+  approveReview(
+    @Param('reviewCycleId') reviewCycleId: string,
+    @Body() dto: PayrollReviewDecisionDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.approveReview(reviewCycleId, dto, principal);
+  }
+
+  @Post('payroll-reviews/:reviewCycleId/reject')
+  @RequireCapabilities('payroll.review.reject')
+  rejectReview(
+    @Param('reviewCycleId') reviewCycleId: string,
+    @Body() dto: PayrollReviewDecisionDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.rejectReview(reviewCycleId, dto, principal);
+  }
+
+  @Get('payroll-reviews/:reviewCycleId/history')
+  @RequireCapabilities('payroll.review.view')
+  history(
+    @Param('reviewCycleId') reviewCycleId: string,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.history(reviewCycleId, principal);
   }
 }
