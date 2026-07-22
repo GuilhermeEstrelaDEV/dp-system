@@ -2,7 +2,7 @@
 
 ## Estado
 
-**Em execução incremental.** BDP-009 v1 foi resolvida. Identidade, RBAC, autorização/auditoria transversal e persistência neutra de ciclos/achados foram implementados; o workflow decisório ainda não foi iniciado. Este plano não autoriza atalho de segurança nem mudança funcional fora das fases descritas.
+**Em execução incremental.** Identidade, RBAC, autorização/auditoria, persistência e workflow decisório v1 de backend foram implementados. Frontend, fechamento e reabertura permanecem pendentes.
 
 ## Princípios de execução
 
@@ -114,14 +114,16 @@
 
 ## Fase 5 — Workflow decisório v1
 
+**Estado:** concluída no recorte autorizado, sem `CLOSED` ou `REOPENED`. A migration `0013_payroll_review_workflow` adiciona etapas configuráveis, decisões append-only e estados até `APPROVED`/`REJECTED`.
+
 ### Backend
 
-- máquina de estados `PREPARATION`, `REVIEW`, `SUBMITTED`, `APPROVED`, `CLOSED`, `REOPENED`;
+- máquina de estados `OPEN`, `IN_REVIEW`, `SUBMITTED`, `APPROVED`, `REJECTED`;
 - duas etapas sequenciais configuradas por dados;
-- submissão, conferência, aprovação, rejeição, fechamento e reabertura;
+- início, submissão, aprovação e rejeição;
 - preparador impedido de aprovar;
 - aprovador impedido de alterar lançamentos da execução aprovada;
-- reabertura justificada invalida aprovações e exige nova submissão/aprovação;
+- rejeição justificada retorna a uma nova rodada de conferência e submissão;
 - arquitetura de etapas sem limite estrutural fixo em dois níveis.
 
 ### Testes

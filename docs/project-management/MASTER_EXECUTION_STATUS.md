@@ -192,13 +192,13 @@
 
 ### ETP-013 — Conferência e aprovação de folha
 
-- **Status:** fundação técnica parcial; persistência neutra e auditável implementada, workflow decisório não iniciado.
+- **Status:** backend funcional parcial; workflow decisório v1 implementado, sem frontend, fechamento ou reabertura.
 - **Especificação:** `docs/project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md`.
 - **Objetivo proposto:** workflow auditável de conferência, achados e decisões antes do fechamento.
 - **Dependência atendida:** ETP-012 mergeada pelo PR #26.
 - **Decisão de negócio:** BDP-009 resolvida para a versão 1 em `docs/project-management/BDP-009_RESOLUTION_V1.md`; ADR-007 aceita.
-- **Dependências bloqueantes restantes:** policies e configuração do workflow decisório v1, integração com fechamento e critérios de retenção vinculados à BDP-011.
-- **Persistência:** migrations `0010`, `0011` e `0012_payroll_review_persistence` implementam contexto empresarial, auditoria/grants e ciclos/achados/eventos append-only; decisões de aprovação ainda não existem.
+- **Dependências bloqueantes restantes:** frontend, integração futura com fechamento/reabertura e retenção vinculada à BDP-011.
+- **Persistência:** migrations `0010` a `0013_payroll_review_workflow` implementam contexto empresarial, auditoria/grants, ciclos/achados/eventos, etapas e decisões append-only.
 - **Pull Request e merge da especificação:** PR #27 mergeado em `develop` no commit `58341a5`.
 - **Fundação técnica:** contratos imutáveis para achados, severidade, estado e eventos append-only; invariantes de justificativa, cronologia, unicidade, coerência e isolamento por empresa; módulo NestJS e persistência neutra existem, sem interface ou decisão de aprovação.
 - **Testes da fundação:** domínio e serviço cobrem transições, referências, atomicidade, autorização e multiempresa; a regressão E2E preserva as APIs legadas. Frontend não se aplica neste recorte.
@@ -208,7 +208,8 @@
 - **Compatibilidade:** rotas legadas não receberam proteção global; sua migração exige inventário e testes próprios.
 - **Autorização transversal:** migration `0011_authorization_audit_foundation`, grants temporários/emergenciais, auditoria atômica e inventário documentados em `docs/architecture/AUDIT_AUTHORIZATION_FOUNDATION.md`.
 - **Fase 4:** APIs autenticadas abrem/consultam ciclos, criam/listam achados e resolvem/reabrem achados com capability, `404` empresarial e transação conjunta de estado, evento e `AuditLog`.
-- **Próximo passo técnico:** implementar a fase 5, workflow de submissão e decisão v1, sem antecipar frontend completo ou fechamento.
+- **Fase 5:** estados `OPEN`, `IN_REVIEW`, `SUBMITTED`, `APPROVED` e `REJECTED`; duas etapas sequenciais configuradas por dados; segregação de atores, bloqueio por achado e auditoria atômica.
+- **Próximo passo técnico:** implementar a fase 6 frontend sem antecipar `CLOSED`, reabertura ou alçadas.
 - **Pacote de decisão:** `docs/project-management/BDP-009_DECISION_PACKAGE.md` homologado para v1 e preservado como evidência das alternativas avaliadas.
 
 ### ETP-014 a ETP-015
