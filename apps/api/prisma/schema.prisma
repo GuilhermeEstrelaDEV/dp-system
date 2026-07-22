@@ -36,6 +36,7 @@ enum PayrollReviewCycleStatus {
   SUBMITTED
   APPROVED
   REJECTED
+  CLOSED
 }
 
 enum PayrollReviewFindingSeverity {
@@ -59,6 +60,9 @@ enum PayrollReviewEventType {
   REVIEW_REJECTED
   FINDING_BLOCKED
   FINDING_UNBLOCKED
+  REVIEW_CLOSED
+  REVIEW_REOPENED
+  APPROVALS_INVALIDATED
 }
 
 enum PayrollReviewDecisionType {
@@ -91,6 +95,7 @@ model User {
   payrollReviewFindingsResolved PayrollReviewFinding[] @relation("PayrollReviewFindingResolver")
   payrollReviewEvents PayrollReviewEvent[] @relation("PayrollReviewEventActor")
   payrollReviewDecisions PayrollReviewDecision[] @relation("PayrollReviewDecisionActor")
+  payrollReviewInvalidations PayrollReviewDecisionInvalidation[] @relation("PayrollReviewInvalidationActor")
 
   @@map("users")
 }
@@ -238,6 +243,7 @@ model Company {
   payrollReviewFindings   PayrollReviewFinding[]
   payrollReviewEvents     PayrollReviewEvent[]
   payrollReviewDecisions  PayrollReviewDecision[]
+  payrollReviewInvalidations PayrollReviewDecisionInvalidation[]
 
   @@index([status])
   @@map("companies")
@@ -921,6 +927,7 @@ model PayrollReviewCycle {
   createdAt   DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
   submissionNumber Int                 @default(0) @map("submission_number")
   currentApprovalStage Int             @default(0) @map("current_approval_stage")
+  reviewRound Int                      @default(1) @map("review_round")
   company     Company                  @relation(fields: [companyId], references: [id], onDelete: Restrict)
   payrollRun  PayrollRun               @relation(fields: [payrollRunId], references: [id], onDelete: Restrict)
   creator     User                     @relation("PayrollReviewCycleCreator", fields: [createdBy], references: [id], onDelete: Restrict)
@@ -928,6 +935,7 @@ model PayrollReviewCycle {
   events      PayrollReviewEvent[]
   approvalStages PayrollReviewApprovalStage[]
   decisions   PayrollReviewDecision[]
+  invalidations PayrollReviewDecisionInvalidation[]
 
   @@index([companyId, status])
   @@index([payrollRunId, status])
@@ -955,6 +963,7 @@ model PayrollReviewDecision {
   reviewCycleId    String                     @map("review_cycle_id") @db.Uuid
   approvalStageId  String                     @map("approval_stage_id") @db.Uuid
   submissionNumber Int                        @map("submission_number")
+  reviewRound      Int                        @default(1) @map("review_round")
   decision         PayrollReviewDecisionType
   actorId          String                     @map("actor_id") @db.Uuid
   reason           String?                    @db.VarChar(1000)
@@ -964,11 +973,33 @@ model PayrollReviewDecision {
   reviewCycle      PayrollReviewCycle         @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
   approvalStage    PayrollReviewApprovalStage @relation(fields: [approvalStageId], references: [id], onDelete: Restrict)
   actor            User                       @relation("PayrollReviewDecisionActor", fields: [actorId], references: [id], onDelete: Restrict)
+  invalidation     PayrollReviewDecisionInvalidation?
 
   @@unique([reviewCycleId, submissionNumber, approvalStageId])
   @@index([companyId, occurredAt])
   @@index([reviewCycleId, submissionNumber])
   @@map("payroll_review_decisions")
+}
+
+model PayrollReviewDecisionInvalidation {
+  id                 String                @id @default(uuid()) @db.Uuid
+  companyId          String                @map("company_id") @db.Uuid
+  reviewCycleId      String                @map("review_cycle_id") @db.Uuid
+  decisionId         String                @unique @map("decision_id") @db.Uuid
+  reviewRound        Int                   @map("review_round")
+  invalidatedAt      DateTime              @map("invalidated_at") @db.Timestamptz(6)
+  invalidatedBy      String                @map("invalidated_by") @db.Uuid
+  invalidationReason String                @map("invalidation_reason") @db.VarChar(1000)
+  causedByEventId    String                @map("caused_by_event_id") @db.Uuid
+  company            Company               @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  reviewCycle        PayrollReviewCycle    @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
+  decision           PayrollReviewDecision @relation(fields: [decisionId], references: [id], onDelete: Restrict)
+  actor              User                  @relation("PayrollReviewInvalidationActor", fields: [invalidatedBy], references: [id], onDelete: Restrict)
+  causedByEvent      PayrollReviewEvent     @relation(fields: [causedByEventId], references: [id], onDelete: Restrict)
+
+  @@index([reviewCycleId, reviewRound])
+  @@index([companyId, invalidatedAt])
+  @@map("payroll_review_decision_invalidations")
 }
 
 model PayrollReviewFinding {
@@ -1023,6 +1054,7 @@ model PayrollReviewEvent {
   reviewCycle   PayrollReviewCycle     @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
   finding       PayrollReviewFinding?  @relation(fields: [findingId], references: [id], onDelete: Restrict)
   actor         User                   @relation("PayrollReviewEventActor", fields: [actorId], references: [id], onDelete: Restrict)
+  causedInvalidations PayrollReviewDecisionInvalidation[]
 
   @@index([companyId, occurredAt])
   @@index([reviewCycleId, occurredAt])

@@ -25,6 +25,8 @@ const permissions = [
   ['payroll.review.submit', 'Submit payroll review cycles'],
   ['payroll.review.approve', 'Approve configured payroll review stages'],
   ['payroll.review.reject', 'Reject submitted payroll review cycles'],
+  ['payroll.review.close', 'Close approved payroll review cycles'],
+  ['payroll.review.reopen', 'Reopen approved or closed payroll review cycles'],
 ] as const;
 
 async function main() {
