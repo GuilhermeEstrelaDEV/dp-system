@@ -30,6 +30,27 @@ enum AccessGrantStatus {
   EXPIRED
 }
 
+enum PayrollReviewCycleStatus {
+  OPEN
+}
+
+enum PayrollReviewFindingSeverity {
+  INFORMATIONAL
+  BLOCKING
+}
+
+enum PayrollReviewFindingStatus {
+  OPEN
+  RESOLVED
+}
+
+enum PayrollReviewEventType {
+  REVIEW_CYCLE_OPENED
+  FINDING_OPENED
+  FINDING_RESOLVED
+  FINDING_REOPENED
+}
+
 model User {
   id            String         @id @default(uuid()) @db.Uuid
   email         String         @unique @db.VarChar(254)
@@ -50,6 +71,10 @@ model User {
   emergencyAccesses EmergencyAccess[] @relation("EmergencyBeneficiary")
   emergencyAccessesGranted EmergencyAccess[] @relation("EmergencyGrantor")
   emergencyAccessesRevoked EmergencyAccess[] @relation("EmergencyRevoker")
+  payrollReviewCyclesCreated PayrollReviewCycle[] @relation("PayrollReviewCycleCreator")
+  payrollReviewFindingsCreated PayrollReviewFinding[] @relation("PayrollReviewFindingCreator")
+  payrollReviewFindingsResolved PayrollReviewFinding[] @relation("PayrollReviewFindingResolver")
+  payrollReviewEvents PayrollReviewEvent[] @relation("PayrollReviewEventActor")
 
   @@map("users")
 }
@@ -193,6 +218,9 @@ model Company {
   auditLogs               AuditLog[]
   temporarySubstitutions  TemporarySubstitution[]
   emergencyAccesses       EmergencyAccess[]
+  payrollReviewCycles     PayrollReviewCycle[]
+  payrollReviewFindings   PayrollReviewFinding[]
+  payrollReviewEvents     PayrollReviewEvent[]
 
   @@index([status])
   @@map("companies")
@@ -390,6 +418,7 @@ model EmploymentContract {
   variableCompensationEvents VariableCompensationEvent[]
   salaryAdvances             SalaryAdvance[]
   offCyclePayments           OffCyclePayment[]
+  payrollReviewFindings      PayrollReviewFinding[]
 
   @@unique([companyId, registrationNumber])
   @@index([employeeId, status])
@@ -820,6 +849,8 @@ model PayrollRun {
   employees         PayrollRunEmployee[]
   messages          PayrollRunMessage[]
   reconciliations   PayrollReconciliation[]
+  reviewCycles      PayrollReviewCycle[]
+  reviewFindings    PayrollReviewFinding[]
 
   @@unique([payrollPeriodId, sequence])
   @@index([payrollPeriodId, status])
@@ -856,10 +887,90 @@ model PayrollCalculationItem {
   payrollRunEmployee     PayrollRunEmployee    @relation(fields: [payrollRunEmployeeId], references: [id], onDelete: Restrict)
   payrollRubric          PayrollRubric         @relation(fields: [payrollRubricId], references: [id], onDelete: Restrict)
   payrollRubricVersion   PayrollRubricVersion? @relation(fields: [payrollRubricVersionId], references: [id], onDelete: Restrict)
+  payrollReviewFindings  PayrollReviewFinding[]
 
   @@index([payrollRunEmployeeId])
   @@index([payrollRubricId])
   @@map("payroll_calculation_items")
+}
+
+model PayrollReviewCycle {
+  id          String                   @id @default(uuid()) @db.Uuid
+  companyId   String                   @map("company_id") @db.Uuid
+  payrollRunId String                  @map("payroll_run_id") @db.Uuid
+  status      PayrollReviewCycleStatus @default(OPEN)
+  createdBy   String                   @map("created_by") @db.Uuid
+  traceId     String                   @map("trace_id") @db.VarChar(100)
+  createdAt   DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  company     Company                  @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  payrollRun  PayrollRun               @relation(fields: [payrollRunId], references: [id], onDelete: Restrict)
+  creator     User                     @relation("PayrollReviewCycleCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  findings    PayrollReviewFinding[]
+  events      PayrollReviewEvent[]
+
+  @@index([companyId, status])
+  @@index([payrollRunId, status])
+  @@map("payroll_review_cycles")
+}
+
+model PayrollReviewFinding {
+  id                       String                       @id @default(uuid()) @db.Uuid
+  reviewCycleId            String                       @map("review_cycle_id") @db.Uuid
+  companyId                String                       @map("company_id") @db.Uuid
+  payrollRunId             String                       @map("payroll_run_id") @db.Uuid
+  payrollCalculationItemId String?                      @map("payroll_calculation_item_id") @db.Uuid
+  employmentContractId     String?                      @map("employment_contract_id") @db.Uuid
+  severity                 PayrollReviewFindingSeverity
+  status                   PayrollReviewFindingStatus   @default(OPEN)
+  code                     String                       @db.VarChar(100)
+  title                    String                       @db.VarChar(200)
+  description              String                       @db.VarChar(2000)
+  createdBy                String                       @map("created_by") @db.Uuid
+  createdAt                DateTime                     @default(now()) @map("created_at") @db.Timestamptz(6)
+  resolvedBy               String?                      @map("resolved_by") @db.Uuid
+  resolvedAt               DateTime?                    @map("resolved_at") @db.Timestamptz(6)
+  resolutionReason         String?                      @map("resolution_reason") @db.VarChar(1000)
+  traceId                  String                       @map("trace_id") @db.VarChar(100)
+  reviewCycle              PayrollReviewCycle           @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
+  company                  Company                      @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  payrollRun               PayrollRun                   @relation(fields: [payrollRunId], references: [id], onDelete: Restrict)
+  payrollCalculationItem   PayrollCalculationItem?      @relation(fields: [payrollCalculationItemId], references: [id], onDelete: Restrict)
+  employmentContract       EmploymentContract?          @relation(fields: [employmentContractId], references: [id], onDelete: Restrict)
+  creator                  User                         @relation("PayrollReviewFindingCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  resolver                 User?                        @relation("PayrollReviewFindingResolver", fields: [resolvedBy], references: [id], onDelete: Restrict)
+  events                   PayrollReviewEvent[]
+
+  @@index([companyId, status])
+  @@index([payrollRunId, status])
+  @@index([reviewCycleId, status])
+  @@index([employmentContractId])
+  @@index([payrollCalculationItemId])
+  @@map("payroll_review_findings")
+}
+
+model PayrollReviewEvent {
+  id            String                 @id @default(uuid()) @db.Uuid
+  companyId     String                 @map("company_id") @db.Uuid
+  reviewCycleId String                 @map("review_cycle_id") @db.Uuid
+  findingId     String?                @map("finding_id") @db.Uuid
+  actorId       String                 @map("actor_id") @db.Uuid
+  traceId       String                 @map("trace_id") @db.VarChar(100)
+  eventType     PayrollReviewEventType @map("event_type")
+  reason        String?                @db.VarChar(1000)
+  previousState Json?                  @map("previous_state")
+  nextState     Json                   @map("next_state")
+  occurredAt    DateTime               @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  metadata      Json?
+  company       Company                @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  reviewCycle   PayrollReviewCycle     @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
+  finding       PayrollReviewFinding?  @relation(fields: [findingId], references: [id], onDelete: Restrict)
+  actor         User                   @relation("PayrollReviewEventActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([companyId, occurredAt])
+  @@index([reviewCycleId, occurredAt])
+  @@index([findingId, occurredAt])
+  @@index([traceId])
+  @@map("payroll_review_events")
 }
 
 model PayrollRunMessage {

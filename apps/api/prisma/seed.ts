@@ -17,6 +17,11 @@ const permissions = [
   ['platform.manage', 'Manage platform resources'],
   ['delegation.manage', 'Manage temporary substitutions'],
   ['emergency_access.manage', 'Manage audited emergency access'],
+  ['payroll.review.view', 'View payroll review cycles and findings'],
+  ['payroll.review.create', 'Open payroll review cycles'],
+  ['payroll.review.finding.create', 'Create payroll review findings'],
+  ['payroll.review.finding.resolve', 'Resolve payroll review findings'],
+  ['payroll.review.finding.reopen', 'Reopen payroll review findings'],
 ] as const;
 
 async function main() {

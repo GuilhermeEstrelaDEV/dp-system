@@ -192,22 +192,23 @@
 
 ### ETP-013 — Conferência e aprovação de folha
 
-- **Status:** fundação técnica parcial; identidade, RBAC e autorização/auditoria transversal implementados, workflow funcional não iniciado.
+- **Status:** fundação técnica parcial; persistência neutra e auditável implementada, workflow decisório não iniciado.
 - **Especificação:** `docs/project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md`.
 - **Objetivo proposto:** workflow auditável de conferência, achados e decisões antes do fechamento.
 - **Dependência atendida:** ETP-012 mergeada pelo PR #26.
 - **Decisão de negócio:** BDP-009 resolvida para a versão 1 em `docs/project-management/BDP-009_RESOLUTION_V1.md`; ADR-007 aceita.
-- **Dependências bloqueantes restantes:** implementação de identidade/autorização funcional e RBAC empresarial, auditoria transacional, migrations revisadas, contratos HTTP e critérios de retenção vinculados à BDP-011.
-- **Persistência:** migration `0010_identity_company_rbac` implementa assignment usuário–empresa–papel e contexto empresarial mínimo no `AuditLog`; ainda não há persistência de ciclos, achados ou decisões.
+- **Dependências bloqueantes restantes:** policies e configuração do workflow decisório v1, integração com fechamento e critérios de retenção vinculados à BDP-011.
+- **Persistência:** migrations `0010`, `0011` e `0012_payroll_review_persistence` implementam contexto empresarial, auditoria/grants e ciclos/achados/eventos append-only; decisões de aprovação ainda não existem.
 - **Pull Request e merge da especificação:** PR #27 mergeado em `develop` no commit `58341a5`.
-- **Fundação técnica:** contratos imutáveis para achados, severidade, estado e eventos append-only; invariantes de justificativa, cronologia, unicidade e isolamento por empresa; nenhum módulo NestJS, endpoint, persistência, interface ou decisão de aprovação.
-- **Testes da fundação:** testes unitários do domínio neutro; integração e frontend não se aplicam sem infraestrutura operacional.
+- **Fundação técnica:** contratos imutáveis para achados, severidade, estado e eventos append-only; invariantes de justificativa, cronologia, unicidade, coerência e isolamento por empresa; módulo NestJS e persistência neutra existem, sem interface ou decisão de aprovação.
+- **Testes da fundação:** domínio e serviço cobrem transições, referências, atomicidade, autorização e multiempresa; a regressão E2E preserva as APIs legadas. Frontend não se aplica neste recorte.
 - **Documentação técnica:** `docs/modules/PAYROLL_REVIEW_FOUNDATION.md`.
-- **Prontidão de identidade/autorização:** arquitetura v1 aprovada em `docs/architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md` e ADR-007; nenhuma implementação foi iniciada porque ainda não há principal autenticado, vínculo usuário–empresa, autorização aplicada ou writer de auditoria.
+- **Prontidão de identidade/autorização:** arquitetura v1 aprovada em `docs/architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md` e ADR-007; principal autenticado, vínculo usuário–empresa, autorização e writer transacional já foram implementados.
 - **Fundação funcional:** login JWT, principal tipado, seleção validada de empresa, capabilities efetivas, autorização opt-in e isolamento reutilizável estão documentados em `docs/modules/IDENTITY_COMPANY_RBAC.md`.
 - **Compatibilidade:** rotas legadas não receberam proteção global; sua migração exige inventário e testes próprios.
 - **Autorização transversal:** migration `0011_authorization_audit_foundation`, grants temporários/emergenciais, auditoria atômica e inventário documentados em `docs/architecture/AUDIT_AUTHORIZATION_FOUNDATION.md`.
-- **Próximo passo técnico:** revisar e implementar a fase 4, persistência neutra de ciclos, achados e eventos, sem habilitar decisões antes das policies do workflow.
+- **Fase 4:** APIs autenticadas abrem/consultam ciclos, criam/listam achados e resolvem/reabrem achados com capability, `404` empresarial e transação conjunta de estado, evento e `AuditLog`.
+- **Próximo passo técnico:** implementar a fase 5, workflow de submissão e decisão v1, sem antecipar frontend completo ou fechamento.
 - **Pacote de decisão:** `docs/project-management/BDP-009_DECISION_PACKAGE.md` homologado para v1 e preservado como evidência das alternativas avaliadas.
 
 ### ETP-014 a ETP-015

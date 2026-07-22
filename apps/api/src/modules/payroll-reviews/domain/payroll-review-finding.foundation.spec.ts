@@ -167,4 +167,20 @@ describe('PayrollReviewFindingFoundation', () => {
       }),
     ).toThrow(new PayrollReviewFindingInvariantError('occurredAt must be a valid date'));
   });
+
+  it('rejects persisted status and history inconsistencies', () => {
+    const opened = open();
+    expect(() =>
+      foundation.assertCoherence({ ...opened.finding, status: 'RESOLVED' }, opened.history),
+    ).toThrow(new PayrollReviewFindingInvariantError('Finding status must match its latest event'));
+    expect(() =>
+      foundation.assertCoherence(opened.finding, [...opened.history, opened.history[0]!]),
+    ).toThrow(new PayrollReviewFindingInvariantError('Finding event id must be unique'));
+    expect(() =>
+      foundation.assertCoherence(opened.finding, [
+        opened.history[0]!,
+        { ...opened.history[0]!, id: 'event-2', occurredAt: new Date('2026-07-21T11:59:00Z') },
+      ]),
+    ).toThrow(new PayrollReviewFindingInvariantError('Finding events must be chronological'));
+  });
 });

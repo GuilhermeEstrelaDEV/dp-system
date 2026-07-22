@@ -2,7 +2,7 @@
 
 ## Estado
 
-**Em execução incremental.** BDP-009 v1 foi resolvida. Login JWT, contexto empresarial, RBAC por empresa e primitives opt-in de autorização foram implementados; o workflow funcional ainda não foi iniciado. Este plano não autoriza atalho de segurança nem mudança funcional fora das fases descritas.
+**Em execução incremental.** BDP-009 v1 foi resolvida. Identidade, RBAC, autorização/auditoria transversal e persistência neutra de ciclos/achados foram implementados; o workflow decisório ainda não foi iniciado. Este plano não autoriza atalho de segurança nem mudança funcional fora das fases descritas.
 
 ## Princípios de execução
 
@@ -87,14 +87,14 @@
 
 ## Fase 4 — Persistência neutra da conferência
 
+**Estado:** concluída no recorte neutro pela migration `0012_payroll_review_persistence`. Não inclui etapas, decisões, submissão, aprovação, rejeição, arquivamento ou fechamento.
+
 ### Migration candidata 0012
 
-- ciclo de conferência e versão do workflow;
-- etapas configuráveis com ordem, capacidade requerida e papel configurado;
+- ciclo de conferência `OPEN`;
 - achados e eventos append-only;
-- decisões por etapa e invalidação explícita;
 - participantes/atores preservados;
-- idempotência e unicidade do ciclo ativo;
+- unicidade do ciclo ativo;
 - FKs `RESTRICT`, timestamps com timezone e índices empresariais.
 
 ### Backend
@@ -102,7 +102,7 @@
 - repositórios/ports sem HTTP no domínio;
 - abertura e consulta de ciclo;
 - criação, resolução e reabertura de achados;
-- validação final distinta para achado `BLOCKING` resolvido pelo autor;
+- coerência entre estado e último evento, referências e cronologia;
 - nenhuma submissão/decisão antes das policies da fase 5.
 
 ### Testes

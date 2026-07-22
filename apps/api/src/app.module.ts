@@ -28,6 +28,7 @@ import { PayrollRubricsModule } from './modules/payroll-rubrics/payroll-rubrics.
 import { PayrollParametersModule } from './modules/payroll-parameters/payroll-parameters.module';
 import { PayrollInputsModule } from './modules/payroll-inputs/payroll-inputs.module';
 import { PayrollRunsModule } from './modules/payroll-runs/payroll-runs.module';
+import { PayrollReviewsModule } from './modules/payroll-reviews/payroll-reviews.module';
 import { PayrollClosuresModule } from './modules/payroll-closures/payroll-closures.module';
 import { VariableCompensationModule } from './modules/variable-compensation/variable-compensation.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -70,6 +71,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PayrollParametersModule,
     PayrollInputsModule,
     PayrollRunsModule,
+    PayrollReviewsModule,
     PayrollClosuresModule,
     VariableCompensationModule,
   ],
