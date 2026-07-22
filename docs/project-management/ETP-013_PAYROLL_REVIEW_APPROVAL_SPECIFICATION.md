@@ -1,6 +1,6 @@
 # ETP-013 — Especificação de conferência e aprovação de folha
 
-**Status:** especificação e BDP-009 v1 aprovadas; fundação técnica neutra existente, implementação funcional não iniciada.
+**Status:** especificação e BDP-009 v1 aprovadas; persistência neutra de ciclos e achados existente, workflow decisório não iniciado.
 
 ## 1. Motivação e evidências
 

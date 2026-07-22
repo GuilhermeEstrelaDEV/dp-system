@@ -86,9 +86,9 @@ Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliaçõe
 
 ## ETP-013 — Conferência e aprovação de folha
 
-**Status:** fundação técnica parcial; identidade, RBAC, autorização e auditoria transversal implementados, workflow funcional ainda não iniciado.
+**Status:** fundação técnica parcial; persistência neutra de ciclos e achados implementada, workflow decisório ainda não iniciado.
 
-A etapa possui especificação e domínio neutro para achados/histórico append-only. BDP-009 v1 está resolvida. Login JWT, contexto empresarial, RBAC, auditoria transacional, substituição temporária e emergência restrita estão implementados sem workflow e sem guard global legado. O próximo incremento é a persistência neutra da conferência prevista na fase 4 do [plano técnico](project-management/ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md). Consulte [Fundação transversal](architecture/AUDIT_AUTHORIZATION_FOUNDATION.md) e [Inventário de rotas](architecture/API_ROUTE_AUTHORIZATION_INVENTORY.md).
+A etapa possui especificação, identidade/RBAC e persistência neutra auditável. Ciclos `OPEN`, achados `OPEN/RESOLVED` e eventos append-only existem sob isolamento empresarial e capabilities configuráveis. Não existe submissão, aprovação, rejeição, fechamento ou reabertura da execução. O próximo incremento é o workflow decisório da fase 5 do [plano técnico](project-management/ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md). Consulte [Fundação de conferência](modules/PAYROLL_REVIEW_FOUNDATION.md), [Fundação transversal](architecture/AUDIT_AUTHORIZATION_FOUNDATION.md) e [Inventário de rotas](architecture/API_ROUTE_AUTHORIZATION_INVENTORY.md).
 
 ## Etapa 2 — Fundação técnica
 

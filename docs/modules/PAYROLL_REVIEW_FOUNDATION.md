@@ -1,44 +1,49 @@
-# Fundação técnica de conferência de folha
+# Fundação de conferência de folha
 
 ## Estado
 
-Esta entrega inicia somente a fundação técnica neutra da ETP-013. A etapa continua parcial e bloqueada; não existe workflow operacional, aprovação, rejeição, permissão, endpoint, tela ou persistência de conferência.
+A fase 4 da ETP-013 implementa a persistência neutra de ciclos e achados. A etapa permanece **parcial**: não há submissão, aprovação, rejeição, fechamento, reabertura de execução de folha, níveis ou alçadas neste incremento.
 
-## Recorte implementado
+## Modelo persistente
 
-O domínio isolado em `apps/api/src/modules/payroll-reviews/domain` define:
+- `PayrollReviewCycle` liga uma execução `COMPLETED` à empresa ativa, ator, trace e estado técnico único `OPEN`.
+- `PayrollReviewFinding` registra severidade `INFORMATIONAL` ou `BLOCKING`, estado `OPEN` ou `RESOLVED`, código técnico, título, descrição e referências opcionais a contrato e item calculado.
+- `PayrollReviewEvent` registra `REVIEW_CYCLE_OPENED`, `FINDING_OPENED`, `FINDING_RESOLVED` e `FINDING_REOPENED`.
+- `PayrollReviewEvent` é append-only: não existem operações de alteração/exclusão e uma trigger do PostgreSQL rejeita `UPDATE` e `DELETE`.
 
-- severidades técnicas `INFORMATIONAL` e `BLOCKING`, já previstas na especificação;
-- estados de achado `OPEN` e `RESOLVED`;
-- eventos append-only `OPENED`, `RESOLVED` e `REOPENED`;
-- referências opcionais a contrato e item calculado;
-- vínculo obrigatório com empresa e execução de folha;
-- justificativa obrigatória para resolver ou reabrir;
-- ordem cronológica, unicidade de evento e isolamento empresarial no histórico;
-- transformações imutáveis que não alteram snapshots ou eventos anteriores.
+Todas as FKs usam `RESTRICT`. Um índice parcial impede dois ciclos `OPEN` para a mesma execução. Contrato e item opcionais são validados contra a empresa ativa e a própria execução antes da escrita.
 
-Os identificadores, relógio e `traceId` são fornecidos pela futura camada de aplicação. A fundação não identifica o ator e não concede capacidade de ação.
+## Invariantes
 
-## Limites deliberados
+- apenas execução concluída e pertencente à empresa ativa pode receber ciclo;
+- recursos de outra empresa são indistinguíveis de inexistentes (`404`);
+- resolução só parte de `OPEN`, reabertura só parte de `RESOLVED`, ambas com motivo;
+- estado atual deve corresponder ao último evento, com IDs únicos e cronologia não decrescente;
+- transformações do domínio retornam objetos e históricos imutáveis;
+- ciclo/achado, evento e `AuditLog` são gravados na mesma transação.
 
-- O domínio não foi registrado como módulo NestJS e não expõe endpoints.
-- Não há DTO HTTP operacional, feature flag, tela ou integração com fechamento.
-- Não há schema Prisma ou migration: ciclo, ator, workflow e unicidade persistente ainda dependem de decisões abertas.
-- Não há gravação em `AuditLog`; a infraestrutura atual não propaga identidade funcional aos módulos. O contrato de evento preserva `traceId` para futura integração auditável.
-- O vínculo `companyId` protege transições de domínio, mas a futura aplicação ainda deverá confirmar que execução, contrato e item pertencem à mesma empresa.
-- Nenhum status representa submissão, aprovação, rejeição ou decisão financeira.
+## Autorização
 
-## Dependências para o próximo incremento
+As capabilities são cadastradas pelo seed, sem associação automática a papéis:
 
-- implementação da resolução v1 da BDP-009 para RBAC empresarial, workflow e segregação;
-- autenticação e autorização funcionais com contexto de empresa e usuário;
-- persistência configurável das duas etapas sequenciais e critérios v1;
-- revisão do modelo persistente e do contrato HTTP preliminar;
-- critérios de aceite e segurança do plano técnico;
-- tolerâncias de conciliação permanecem fora da v1 até decisão explícita.
+- `payroll.review.view`;
+- `payroll.review.create`;
+- `payroll.review.finding.create`;
+- `payroll.review.finding.resolve`;
+- `payroll.review.finding.reopen`.
 
-BDP-006 permanece pendente para regras materiais de remuneração variável e não foi alterada por esta fundação.
+As rotas exigem JWT, empresa ativa e capability no guard, repetindo a policy no serviço. Não existe capability de arquivamento porque `ARCHIVED` não foi aprovado para este recorte.
 
-## Testes
+## APIs
 
-Os testes unitários cobrem abertura neutra, resolução/reabertura append-only, imutabilidade, isolamento por empresa, justificativa, transições estruturais, unicidade, integridade e cronologia do histórico. Testes de integração e frontend não se aplicam enquanto não houver persistência, API ou interface operacional.
+- `POST /api/v1/payroll-runs/:payrollRunId/reviews`;
+- `GET /api/v1/payroll-runs/:payrollRunId/reviews`;
+- `GET /api/v1/payroll-reviews/:reviewCycleId`;
+- `POST /api/v1/payroll-reviews/:reviewCycleId/findings`;
+- `GET /api/v1/payroll-reviews/:reviewCycleId/findings`;
+- `POST /api/v1/payroll-review-findings/:findingId/resolve`;
+- `POST /api/v1/payroll-review-findings/:findingId/reopen`.
+
+## Limites e próximo incremento
+
+O catálogo de códigos/categorias continua técnico e não contém tolerâncias, fórmulas ou regras legais. Não há frontend nesta fase. A fase seguinte deve implementar o workflow de submissão e decisão conforme a BDP-009 v1, mantendo segregação, configuração por dados e auditoria atômica.
