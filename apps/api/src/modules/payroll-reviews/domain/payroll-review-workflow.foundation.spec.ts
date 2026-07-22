@@ -55,8 +55,21 @@ describe('PayrollReviewWorkflowFoundation', () => {
       'SUBMITTED',
       'APPROVED',
       'REJECTED',
+      'CLOSED',
     ];
-    expect(statuses).not.toContain('CLOSED');
     expect(statuses).not.toContain('REOPENED');
+  });
+
+  it('closes only eligible approvals and reopens approved or closed cycles with reason', () => {
+    expect(workflow.close('APPROVED', true, 0)).toBe('CLOSED');
+    expect(workflow.reopen('APPROVED', 'Correction')).toBe('IN_REVIEW');
+    expect(workflow.reopen('CLOSED', 'Correction')).toBe('IN_REVIEW');
+    expect(() => workflow.close('SUBMITTED', true, 0)).toThrow(PayrollReviewWorkflowInvariantError);
+    expect(() => workflow.close('APPROVED', false, 0)).toThrow(PayrollReviewWorkflowInvariantError);
+    expect(() => workflow.close('APPROVED', true, 1)).toThrow(PayrollReviewWorkflowInvariantError);
+    expect(() => workflow.reopen('IN_REVIEW', 'Correction')).toThrow(
+      PayrollReviewWorkflowInvariantError,
+    );
+    expect(() => workflow.reopen('CLOSED', ' ')).toThrow(PayrollReviewWorkflowInvariantError);
   });
 });

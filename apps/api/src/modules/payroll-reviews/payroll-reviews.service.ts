@@ -23,6 +23,7 @@ import {
 import {
   CreatePayrollReviewFindingDto,
   PayrollReviewDecisionDto,
+  ReopenPayrollReviewDto,
   TransitionPayrollReviewFindingDto,
 } from './payroll-reviews.dto';
 
@@ -35,6 +36,8 @@ const CAPABILITIES = {
   submit: 'payroll.review.submit',
   approve: 'payroll.review.approve',
   reject: 'payroll.review.reject',
+  close: 'payroll.review.close',
+  reopen: 'payroll.review.reopen',
 } as const;
 
 @Injectable()
@@ -147,8 +150,8 @@ export class PayrollReviewsService {
         where: { id: reviewCycleId, companyId: principal.activeCompanyId! },
       });
       if (!cycle) throw new NotFoundException('Ciclo de conferência não encontrado');
-      if (cycle.status === 'APPROVED') {
-        throw new ConflictException('Ciclo aprovado não aceita novos achados');
+      if (cycle.status === 'APPROVED' || cycle.status === 'CLOSED') {
+        throw new ConflictException('Ciclo aprovado ou fechado não aceita novos achados');
       }
       await this.validateReferences(tx, cycle.companyId, cycle.payrollRunId, dto);
       const now = new Date();
@@ -290,6 +293,7 @@ export class PayrollReviewsService {
         const approvals = cycle.decisions.filter(
           (decision) =>
             decision.submissionNumber === cycle.submissionNumber &&
+            decision.reviewRound === cycle.reviewRound &&
             decision.decision === 'APPROVED',
         );
         if (approvals.some((decision) => decision.actorId === principal.actorId)) {
@@ -304,6 +308,7 @@ export class PayrollReviewsService {
             reviewCycleId: cycle.id,
             approvalStageId: stage.id,
             submissionNumber: cycle.submissionNumber,
+            reviewRound: cycle.reviewRound,
             decision: 'APPROVED',
             actorId: principal.actorId,
             reason: dto.reason?.trim(),
@@ -356,6 +361,7 @@ export class PayrollReviewsService {
             reviewCycleId: cycle.id,
             approvalStageId: stage.id,
             submissionNumber: cycle.submissionNumber,
+            reviewRound: cycle.reviewRound,
             decision: 'REJECTED',
             actorId: principal.actorId,
             reason: reason.trim(),
@@ -393,10 +399,126 @@ export class PayrollReviewsService {
           include: { actor: { select: { id: true, displayName: true } } },
           orderBy: { occurredAt: 'asc' },
         },
+        invalidations: { orderBy: { invalidatedAt: 'asc' } },
       },
     });
     if (!cycle) throw new NotFoundException('Ciclo de conferência não encontrado');
     return { ...cycle, currentState: cycle.status, timeline: cycle.events };
+  }
+
+  async closeReview(reviewCycleId: string, principal: AuthenticatedPrincipal) {
+    this.authorize(principal, CAPABILITIES.close);
+    return this.withWorkflowErrors(() =>
+      this.audit.transaction(async (tx) => {
+        const cycle = await tx.payrollReviewCycle.findFirst({
+          where: { id: reviewCycleId, companyId: principal.activeCompanyId! },
+          include: {
+            approvalStages: true,
+            decisions: { where: { reviewRound: { gt: 0 } }, include: { invalidation: true } },
+          },
+        });
+        if (!cycle) throw new NotFoundException('Ciclo de conferência não encontrado');
+        const approvals = cycle.decisions.filter(
+          (decision) =>
+            decision.reviewRound === cycle.reviewRound &&
+            decision.submissionNumber === cycle.submissionNumber &&
+            decision.decision === 'APPROVED' &&
+            !decision.invalidation,
+        );
+        const blocking = await tx.payrollReviewFinding.count({
+          where: { reviewCycleId: cycle.id, severity: 'BLOCKING', status: 'OPEN' },
+        });
+        const nextStatus = this.workflow.close(
+          cycle.status,
+          approvals.length === cycle.approvalStages.length,
+          blocking,
+        );
+        const now = new Date();
+        const updated = await tx.payrollReviewCycle.update({
+          where: { id: cycle.id },
+          data: { status: nextStatus, traceId: principal.traceId },
+        });
+        await this.appendWorkflowEventAndAudit(tx, principal, cycle, updated, {
+          eventType: 'REVIEW_CLOSED',
+          occurredAt: now,
+          metadata: { round: cycle.reviewRound },
+        });
+        return updated;
+      }),
+    );
+  }
+
+  async reopenReview(
+    reviewCycleId: string,
+    dto: ReopenPayrollReviewDto,
+    principal: AuthenticatedPrincipal,
+  ) {
+    this.authorize(principal, CAPABILITIES.reopen);
+    return this.withWorkflowErrors(() =>
+      this.audit.transaction(async (tx) => {
+        const cycle = await tx.payrollReviewCycle.findFirst({
+          where: { id: reviewCycleId, companyId: principal.activeCompanyId! },
+          include: {
+            decisions: {
+              where: { decision: 'APPROVED' },
+              include: { invalidation: true },
+            },
+          },
+        });
+        if (!cycle) throw new NotFoundException('Ciclo de conferência não encontrado');
+        const nextStatus = this.workflow.reopen(cycle.status, dto.reason);
+        const now = new Date();
+        const invalidationEventId = randomUUID();
+        const validApprovals = cycle.decisions.filter(
+          (decision) => decision.reviewRound === cycle.reviewRound && !decision.invalidation,
+        );
+        await tx.payrollReviewEvent.create({
+          data: {
+            id: invalidationEventId,
+            companyId: cycle.companyId,
+            reviewCycleId: cycle.id,
+            actorId: principal.actorId,
+            traceId: principal.traceId,
+            eventType: 'APPROVALS_INVALIDATED',
+            reason: dto.reason.trim(),
+            previousState: { validApprovals: validApprovals.length },
+            nextState: { validApprovals: 0 },
+            occurredAt: now,
+            metadata: { round: cycle.reviewRound },
+          },
+        });
+        if (validApprovals.length) {
+          await tx.payrollReviewDecisionInvalidation.createMany({
+            data: validApprovals.map((decision) => ({
+              companyId: cycle.companyId,
+              reviewCycleId: cycle.id,
+              decisionId: decision.id,
+              reviewRound: cycle.reviewRound,
+              invalidatedAt: now,
+              invalidatedBy: principal.actorId,
+              invalidationReason: dto.reason.trim(),
+              causedByEventId: invalidationEventId,
+            })),
+          });
+        }
+        const updated = await tx.payrollReviewCycle.update({
+          where: { id: cycle.id },
+          data: {
+            status: nextStatus,
+            reviewRound: { increment: 1 },
+            currentApprovalStage: 0,
+            traceId: principal.traceId,
+          },
+        });
+        await this.appendWorkflowEventAndAudit(tx, principal, cycle, updated, {
+          eventType: 'REVIEW_REOPENED',
+          reason: dto.reason.trim(),
+          occurredAt: now,
+          metadata: { round: cycle.reviewRound + 1 },
+        });
+        return updated;
+      }),
+    );
   }
 
   private async transitionCycle(
@@ -449,7 +571,13 @@ export class PayrollReviewsService {
     previous: { id: string; companyId: string; status: string },
     next: { status: string },
     input: {
-      eventType: 'REVIEW_STARTED' | 'REVIEW_SUBMITTED' | 'REVIEW_APPROVED' | 'REVIEW_REJECTED';
+      eventType:
+        | 'REVIEW_STARTED'
+        | 'REVIEW_SUBMITTED'
+        | 'REVIEW_APPROVED'
+        | 'REVIEW_REJECTED'
+        | 'REVIEW_CLOSED'
+        | 'REVIEW_REOPENED';
       reason?: string;
       occurredAt: Date;
       metadata: Prisma.InputJsonObject;
@@ -518,8 +646,11 @@ export class PayrollReviewsService {
           },
         });
         if (!persisted) throw new NotFoundException('Achado de conferência não encontrado');
-        if (persisted.reviewCycle.status === 'APPROVED') {
-          throw new ConflictException('Ciclo aprovado não aceita alterações em achados');
+        if (
+          persisted.reviewCycle.status === 'APPROVED' ||
+          persisted.reviewCycle.status === 'CLOSED'
+        ) {
+          throw new ConflictException('Ciclo aprovado ou fechado não aceita alterações');
         }
         const finding = this.toDomainFinding(persisted);
         const history = persisted.events

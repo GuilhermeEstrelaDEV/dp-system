@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   CreatePayrollReviewFindingDto,
   PayrollReviewDecisionDto,
+  ReopenPayrollReviewDto,
   TransitionPayrollReviewFindingDto,
 } from './payroll-reviews.dto';
 import { PayrollReviewsService } from './payroll-reviews.service';
@@ -129,5 +130,24 @@ export class PayrollReviewsController {
     @CurrentPrincipal() principal: AuthenticatedPrincipal,
   ) {
     return this.service.history(reviewCycleId, principal);
+  }
+
+  @Post('payroll-reviews/:reviewCycleId/close')
+  @RequireCapabilities('payroll.review.close')
+  closeReview(
+    @Param('reviewCycleId') reviewCycleId: string,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.closeReview(reviewCycleId, principal);
+  }
+
+  @Post('payroll-reviews/:reviewCycleId/reopen')
+  @RequireCapabilities('payroll.review.reopen')
+  reopenReview(
+    @Param('reviewCycleId') reviewCycleId: string,
+    @Body() dto: ReopenPayrollReviewDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.reopenReview(reviewCycleId, dto, principal);
   }
 }

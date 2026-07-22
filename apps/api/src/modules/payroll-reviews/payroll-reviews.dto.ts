@@ -51,3 +51,11 @@ export class PayrollReviewDecisionDto {
   @MaxLength(1000)
   reason?: string;
 }
+
+export class ReopenPayrollReviewDto {
+  @IsString()
+  @IsNotEmpty()
+  @Matches(/\S/)
+  @MaxLength(1000)
+  reason!: string;
+}
