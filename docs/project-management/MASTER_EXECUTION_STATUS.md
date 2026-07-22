@@ -212,11 +212,21 @@
 - **Fechamento/reabertura:** migration `0014` adiciona `CLOSED`, rodadas explícitas e invalidações append-only; reabertura retorna a `IN_REVIEW` e exige novo ciclo decisório.
 - **Frontend funcional:** login, encerramento local, seleção de empresa, contexto tipado, cliente HTTP com Bearer e correlation ID, rotas protegidas, lista/detalhe de execuções, ciclos, achados, workflow e timeline. Visibilidade usa capabilities; a autorização permanece exclusivamente no backend.
 - **Encerramento:** rastreabilidade, métricas, limitações e débitos estão em `docs/project-management/ETP-013_FINAL_REPORT.md`.
-- **Próximo passo:** especificar a ETP-014 proposta antes de implementar.
+- **Próximo passo:** homologar as decisões da ETP-014 antes de implementar.
 - **Pacote de decisão:** `docs/project-management/BDP-009_DECISION_PACKAGE.md` homologado para v1 e preservado como evidência das alternativas avaliadas.
 
-### ETP-014 a ETP-017 — propostas
+### ETP-014 — Fechamento de competência e integração operacional
+
+- **Status:** `PLANNING`; descoberta e especificação exclusivamente documentais.
+- **Especificação:** `docs/project-management/ETP-014_PAYROLL_PERIOD_CLOSURE_SPECIFICATION.md`.
+- **Objetivo proposto:** vincular o fechamento operacional da competência a uma execução e conferência encerrada, com prontidão explícita, RBAC, isolamento empresarial e auditoria atômica.
+- **Base reutilizável:** `PayrollPeriod`, `PayrollRun`, `PayrollPeriodClosure`, workflow da ETP-013, JWT, empresa ativa, RBAC, auditoria, substituição e acesso emergencial.
+- **Lacuna crítica:** `payroll-periods` e `payroll-closures` hoje alteram o mesmo estado por superfícies e validações diferentes; a porta canônica e a compatibilidade precisam ser aprovadas.
+- **Gate:** decisões D-014-01 a D-014-10, matriz de capabilities, efeitos da reabertura e modelo de evidência homologados antes de código ou migration.
+- **Implementação:** não iniciada; nenhuma funcionalidade, entidade, endpoint ou interface foi alterada por esta especificação.
+
+### ETP-015 a ETP-017 — propostas
 
 - **Status:** não iniciadas; títulos propostos, sem especificação aprovada.
-- **Proposta:** ETP-014 fechamento de competência; ETP-015 integrações/automações; ETP-016 relatórios/inteligência; ETP-017 hardening/observabilidade/performance.
+- **Proposta:** ETP-015 integrações/automações; ETP-016 relatórios/inteligência; ETP-017 hardening/observabilidade/performance.
 - **Gate:** especificação, análise das BDPs e aprovação antes de código.

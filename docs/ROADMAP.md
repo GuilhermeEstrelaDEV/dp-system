@@ -90,9 +90,15 @@ Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliaçõe
 
 A etapa possui workflow auditável até `CLOSED`. Reabertura autorizada invalida aprovações por registros append-only, cria nova rodada e retorna a `IN_REVIEW`. Backend e frontend v1 foram encerrados em 22/07/2026; integração ampla com fechamento e hardening são iniciativas posteriores. Consulte o [relatório final](project-management/ETP-013_FINAL_REPORT.md).
 
+## ETP-014 — Fechamento de competência e integração operacional
+
+**Status:** `PLANNING`.
+
+A iniciativa está exclusivamente em descoberta e especificação. O objetivo proposto é integrar o fechamento de `PayrollPeriod` à execução e ao ciclo de conferência encerrado, com autorização, isolamento empresarial e auditoria atômica. A implementação permanece bloqueada pelas decisões operacionais registradas na [especificação da ETP-014](project-management/ETP-014_PAYROLL_PERIOD_CLOSURE_SPECIFICATION.md); este status não autoriza código ou migration.
+
 ## Próximas iniciativas propostas
 
-ETP-014 e ETP-015 eram placeholders sem escopo e ETP-016/017 não existiam. Propõem-se, sem autorização de implementação: **ETP-014 — Fechamento de competência e integração operacional**; **ETP-015 — Integrações, notificações e automações**; **ETP-016 — Relatórios, dashboards e inteligência operacional**; e **ETP-017 — Hardening, observabilidade e performance**. Cada iniciativa requer especificação, análise das BDPs relacionadas e aprovação.
+ETP-015 era placeholder sem escopo e ETP-016/017 não existiam. Permanecem propostas, sem autorização de implementação: **ETP-015 — Integrações, notificações e automações**; **ETP-016 — Relatórios, dashboards e inteligência operacional**; e **ETP-017 — Hardening, observabilidade e performance**. Cada iniciativa requer especificação, análise das BDPs relacionadas e aprovação.
 
 ## Etapa 2 — Fundação técnica
 

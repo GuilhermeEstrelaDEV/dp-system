@@ -17,6 +17,7 @@
 | BDP-011 | Definir retenção documental, acesso a dados médicos, descarte, exportação e política LGPD.                        | Segurança, auditoria e armazenamento de documentos.       | Crítica    | Diretoria, Jurídico/DPO e DP     | Pendente     |
 | BDP-012 | Definir organização raiz e regra definitiva de unicidade fiscal entre empresas do mesmo grupo.                    | Isolamento multiempresa e evolução de dados.              | Alta       | Administração e TI               | Pendente     |
 | BDP-013 | Confirmar hierarquia, vigência e eventual obrigatoriedade de filial para departamentos.                           | Estrutura organizacional e vínculos futuros.              | Alta       | RH e Departamento Pessoal        | Pendente     |
+| BDP-014 | Homologar critérios, evidência canônica, autorização e efeitos da reabertura no fechamento de competência.        | ETP-014, integração operacional e auditoria.              | Crítica    | DP, Financeiro, Segurança e TI   | Pendente     |
 
 ## Aplicação segura na ETP-005
 
@@ -59,6 +60,15 @@
 - A versão 1 não possui alçada financeira por valor; extensões por valor, empresa, tipo de folha ou níveis adicionais exigem nova decisão/versionamento.
 - A resolução v1 foi implementada no backend e frontend, incluindo fechamento e reabertura. A ETP-013 v1 foi encerrada em 22/07/2026; integração geral e retenção vinculada à BDP-011 são posteriores.
 - Retenção de auditoria continua dependente de validação Jurídico/DPO e BDP-011; isso não reabre as decisões de autorização v1, mas bloqueia a política final de retenção.
+
+## Impacto na especificação da ETP-014
+
+- BDP-014 consolida as decisões D-014-01 a D-014-10 da [especificação](ETP-014_PAYROLL_PERIOD_CLOSURE_SPECIFICATION.md); nenhuma alternativa foi escolhida nesta fase documental.
+- A implementação depende da escolha do serviço/API canônico, da execução e conferência que fundamentam o fechamento e dos efeitos da reabertura.
+- Capabilities próprias, concessões e operações bloqueadas por competência fechada precisam de homologação; permanece deny-by-default e sem associação automática a papéis.
+- BDP-006 continua pendente: nenhuma regra material de remuneração variável será presumida como bloqueio de fechamento.
+- BDP-011 continua pendente: a trilha deve ser preservada, mas retenção e descarte não serão automatizados sem decisão Jurídico/DPO.
+- Até a resolução formal da BDP-014, a ETP-014 permanece em `PLANNING`, sem autorização para schema, migration, API ou frontend.
 
 ## Gestão
 
