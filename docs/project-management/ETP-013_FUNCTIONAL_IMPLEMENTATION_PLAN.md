@@ -2,7 +2,7 @@
 
 ## Estado
 
-**Em execução incremental.** Identidade, RBAC, autorização/auditoria, persistência e workflow decisório v1 de backend foram implementados. Frontend, fechamento e reabertura permanecem pendentes.
+**Backend v1 concluído no recorte aprovado.** Identidade, RBAC, auditoria, persistência, decisões, fechamento e reabertura controlada foram implementados. Frontend permanece pendente.
 
 ## Princípios de execução
 
@@ -148,6 +148,8 @@
 Testes cobrem contexto empresarial, troca de empresa, ações permitidas/negadas, justificativas, timeline, reabertura e ausência de vazamento entre caches.
 
 ## Fase 7 — Fechamento e endurecimento
+
+**Estado:** fechamento/reabertura do ciclo concluídos pela migration `0014_payroll_review_close_reopen`; integração com fechamento de competência e endurecimento global continuam pendentes.
 
 - integrar `CLOSED` ao fechamento de competência sem duplicar domínio;
 - ativar deny-by-default global somente após inventário completo;

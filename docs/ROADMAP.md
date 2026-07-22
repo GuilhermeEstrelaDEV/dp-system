@@ -86,9 +86,9 @@ Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliaçõe
 
 ## ETP-013 — Conferência e aprovação de folha
 
-**Status:** backend do workflow decisório v1 implementado; frontend, fechamento e reabertura permanecem pendentes.
+**Status:** backend do workflow decisório v1 concluído, incluindo fechamento e reabertura controlada; frontend pendente.
 
-A etapa possui identidade/RBAC, persistência auditável e workflow `OPEN → IN_REVIEW → SUBMITTED → APPROVED|REJECTED`. A aprovação v1 usa duas etapas sequenciais configuradas por dados, exige atores distintos e preserva decisões/eventos. Achados bloqueantes abertos impedem submissão. Não existe `CLOSED`, reabertura, frontend ou integração com fechamento. O próximo incremento é a experiência frontend da fase 6, antes do endurecimento da fase 7. Consulte [Conferência de folha](modules/PAYROLL_REVIEW_FOUNDATION.md), [Fundação transversal](architecture/AUDIT_AUTHORIZATION_FOUNDATION.md) e [Inventário de rotas](architecture/API_ROUTE_AUTHORIZATION_INVENTORY.md).
+A etapa possui workflow auditável até `CLOSED`. Reabertura autorizada de `APPROVED` ou `CLOSED` invalida aprovações por registros append-only, cria nova rodada e retorna a `IN_REVIEW`. O backend v1 está funcionalmente concluído no recorte aprovado; frontend e integração ampla com fechamento de competência permanecem futuros. Consulte [Conferência de folha](modules/PAYROLL_REVIEW_FOUNDATION.md).
 
 ## Etapa 2 — Fundação técnica
 
