@@ -212,12 +212,12 @@
 - **Fechamento/reabertura:** migration `0014` adiciona `CLOSED`, rodadas explícitas e invalidações append-only; reabertura retorna a `IN_REVIEW` e exige novo ciclo decisório.
 - **Frontend funcional:** login, encerramento local, seleção de empresa, contexto tipado, cliente HTTP com Bearer e correlation ID, rotas protegidas, lista/detalhe de execuções, ciclos, achados, workflow e timeline. Visibilidade usa capabilities; a autorização permanece exclusivamente no backend.
 - **Encerramento:** rastreabilidade, métricas, limitações e débitos estão em `docs/project-management/ETP-013_FINAL_REPORT.md`.
-- **Próximo passo:** iniciar a Fase 2 somente após autorização explícita, preservando o recorte de readiness sem mutação.
+- **Próximo passo da ETP-013:** integração operacional ocorre na ETP-014 sem reabrir o escopo concluído da ETP-013.
 - **Pacote de decisão:** `docs/project-management/BDP-009_DECISION_PACKAGE.md` homologado para v1 e preservado como evidência das alternativas avaliadas.
 
 ### ETP-014 — Fechamento de competência e integração operacional
 
-- **Status:** `IN PROGRESS`; Fase 1 documental `COMPLETED`, Fase 2 `READY FOR REVIEW`, Fase 3 `NOT STARTED`.
+- **Status:** `IN PROGRESS`; Fases 1 e 2 `COMPLETED`, Fase 3 `READY FOR REVIEW`, Fase 4 `NOT STARTED`.
 - **Especificação:** `docs/project-management/ETP-014_PAYROLL_PERIOD_CLOSURE_SPECIFICATION.md`.
 - **Objetivo proposto:** vincular o fechamento operacional da competência a uma execução e conferência encerrada, com prontidão explícita, RBAC, isolamento empresarial e auditoria atômica.
 - **Base reutilizável:** `PayrollPeriod`, `PayrollRun`, `PayrollPeriodClosure`, workflow da ETP-013, JWT, empresa ativa, RBAC, auditoria, substituição e acesso emergencial.
@@ -227,7 +227,11 @@
 - **Plano incremental:** `docs/project-management/ETP-014_IMPLEMENTATION_PLAN.md`, com seis fases e gates explícitos.
 - **Fase 2:** `GET /payroll-periods/:payrollPeriodId/closure-readiness` avalia execução canônica, review vigente, blockers e warnings no escopo da empresa ativa. Exige `payroll.period.close.readiness`, aplica deny-by-default e retorna `404` entre empresas.
 - **Limites da entrega:** somente leitura, sem migration, persistência de readiness, `AuditLog`, manifesto, lock, fechamento, reabertura, frontend ou alteração das rotas legadas. `payroll.period.close.view` e `payroll.period.close.readiness` foram cadastradas sem associação automática.
-- **Gate:** revisão e merge da Fase 2; a Fase 3 permanece bloqueada pelos critérios sequenciais do plano.
+- **Fase 3:** migration `0015_payroll_period_closure_persistence`, agregado `PayrollPeriodClosureVersion`, manifesto SHA-256, eventos e acknowledgements append-only, idempotência persistente, versão otimista e composição interna com `AuditLog`.
+- **Banco:** 15 migrations; índice parcial garante uma versão ativa, trigger valida escopo empresa–competência–execução–review e quatro triggers protegem evidências/idempotência.
+- **Capabilities:** conjunto final de cinco códigos cadastrado no seed, com zero associação automática a papéis.
+- **Limites da Fase 3:** nenhum endpoint novo, fechamento/reabertura operacional, lock, adaptação legada ou frontend.
+- **Gate:** revisão e merge da Fase 3; a Fase 4 permanece `NOT STARTED`.
 
 ### ETP-015 a ETP-017 — propostas
 

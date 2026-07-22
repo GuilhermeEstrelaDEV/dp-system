@@ -4,7 +4,7 @@
 
 **Decisão de negócio:** [BDP-014 v1](../project-management/BDP-014_RESOLUTION_V1.md)
 
-**Implementação:** Fase 2 somente leitura `READY FOR REVIEW`; comandos não iniciados
+**Implementação:** Fase 2 `COMPLETED`; Fase 3 persistente `READY FOR REVIEW`; comandos não iniciados
 
 ## 1. Agregado
 
@@ -211,4 +211,4 @@ As rotas inventariadas em [PAYROLL_CLOSURE_LEGACY_INVENTORY.md](PAYROLL_CLOSURE_
 - sem estado adicional além dos cinco avaliados;
 - sem regra legal ou cálculo novo.
 
-A Fase 2 concretiza somente a consulta, DTO, política e as capabilities `view`/`readiness`, sem assignments. Os comandos, persistência, migration, manifesto, histórico, legado e frontend continuam não implementados.
+As Fases 2 e 3 concretizam a consulta e sua fundação persistente interna. A migration 0015 adiciona `PayrollPeriodClosureVersion`, manifesto, eventos, acknowledgements e idempotência, preservando a tabela legada `payroll_period_closures`. O manifesto usa `sha256-canonical-json-v1`, e evidências são append-only no PostgreSQL. Os comandos públicos, locks operacionais, histórico HTTP, adaptação do legado e frontend continuam não implementados.

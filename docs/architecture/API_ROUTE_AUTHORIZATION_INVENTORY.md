@@ -24,6 +24,13 @@
 
 Não há rota administrativa da plataforma protegida nesta fase; capabilities globais continuam disponíveis apenas como fundação.
 
+## ETP-014 Fase 3
+
+A persistência de fechamento permanece exclusivamente interna. Nenhuma rota pública de `close`,
+`reopen`, `history`, manifesto ou acknowledgement foi adicionada. As rotas homônimas existentes em
+`payroll-periods` e `payroll-closures` continuam classificadas como legado e não foram adaptadas. As
+capabilities `execute`, `reopen` e `history` estão apenas no catálogo, sem assignments.
+
 ## Encerramento da ETP-013 v1
 
 As quatorze rotas de payroll review foram revisadas em 22/07/2026. Métodos, capabilities, DTOs e consumo pelo frontend estão compatíveis. Famílias marcadas como legadas permanecem fora do encerramento e exigem migração incremental própria.

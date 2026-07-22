@@ -1,6 +1,6 @@
 # ETP-014 — Plano de implementação
 
-**Status:** `IN PROGRESS — PHASE 1 COMPLETED; PHASE 2 READY FOR REVIEW`
+**Status:** `IN PROGRESS — PHASES 1-2 COMPLETED; PHASE 3 READY FOR REVIEW`
 
 **Natureza:** plano incremental; somente a fase explicitamente autorizada pode ser implementada
 
@@ -63,7 +63,7 @@ Consumidores desconhecidos das rotas legadas e necessidade futura de validar o d
 
 ## Fase 2 — Domínio de prontidão somente leitura
 
-**Status:** `READY FOR REVIEW`.
+**Status:** `COMPLETED` após revisão e merge do PR #43 em 22/07/2026.
 
 ### Objetivo
 
@@ -103,7 +103,7 @@ Somente `GET /payroll-periods/:id/closure-readiness`; nenhum comando de fechamen
 
 ### Aceite e gate
 
-Readiness reproduz as decisões homologadas e é estável diante do mesmo snapshot. A implementação está pronta para revisão; somente revisão e merge podem concluir a fase e liberar a avaliação do gate da Fase 3.
+Readiness reproduz as decisões homologadas e é estável diante do mesmo snapshot. Critério atendido e Fase 3 liberada após merge do PR #43.
 
 ### Riscos
 
@@ -111,7 +111,7 @@ Consultas extensas, N+1 e eventual incompatibilidade entre o modelo atual e a re
 
 ## Fase 3 — Persistência e auditoria
 
-**Status:** `NOT STARTED — BLOCKED BY PHASE 2`.
+**Status:** `READY FOR REVIEW`.
 
 ### Objetivo
 
@@ -121,7 +121,7 @@ Representar versões operacionais, idempotência e manifesto/evidência sem ativ
 
 Modelo e retenção mínima aprovados; readiness validada; ADR aceita.
 
-### Entregas candidatas
+### Entregas
 
 - evolução de `PayrollPeriodClosure` ou modelo substituto aprovado;
 - referências a empresa, execução, ciclo, rodada e ator;
@@ -154,7 +154,7 @@ Nenhum endpoint mutável. O histórico poderá permanecer interno até sua autor
 
 ### Aceite e gate
 
-Migration reversível operacionalmente, histórico preservado e writer comprovadamente atômico. Falha bloqueia a Fase 4.
+Migration aditiva validada em PostgreSQL 16, histórico legado preservado, evidências protegidas por triggers e writer comprovadamente atômico. A fase permanece pronta para revisão; somente merge libera a Fase 4.
 
 ### Riscos
 
@@ -316,9 +316,9 @@ Exposição visual excessiva de evidências, estado desatualizado e bundle adici
 
 ```mermaid
 flowchart LR
-    F1[Fase 1: homologação COMPLETED] --> F2[Fase 2: readiness READY FOR REVIEW]
-    F2 -->|matriz validada| F3[Fase 3: persistência]
-    F3 -->|atomicidade comprovada| F4[Fase 4: fechamento]
+    F1[Fase 1: homologação COMPLETED] --> F2[Fase 2: readiness COMPLETED]
+    F2 --> F3[Fase 3: persistência READY FOR REVIEW]
+    F3 -->|revisão e merge| F4[Fase 4: fechamento NOT STARTED]
     F4 -->|rollout estável| F5[Fase 5: reabertura]
     F5 -->|histórico íntegro| F6[Fase 6: frontend e E2E]
 ```

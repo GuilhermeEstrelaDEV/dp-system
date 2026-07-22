@@ -8,7 +8,7 @@
 
 **Decisão homologada:** [BDP-014 — Resolução v1](BDP-014_RESOLUTION_V1.md)
 
-**Próximo gate:** revisão e merge da Fase 2 somente leitura do [plano](ETP-014_IMPLEMENTATION_PLAN.md)
+**Próximo gate:** revisão e merge da Fase 3 persistente do [plano](ETP-014_IMPLEMENTATION_PLAN.md)
 
 ## 1. Objetivo
 
@@ -252,7 +252,7 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 
 **Aceite:** resolução, contrato, inventário e plano publicados; a ETP-014 permanece `PLANNING`.
 
-### Fase 2 — Domínio e prontidão somente leitura — `READY FOR REVIEW`
+### Fase 2 — Domínio e prontidão somente leitura — `COMPLETED`
 
 - criar políticas puras e contratos de prontidão;
 - consolidar leitura empresarial sem mutar estado;
@@ -353,4 +353,4 @@ As escolhas finais e suas regras vinculantes estão na [resolução v1](BDP-014_
 
 ## 14. Estado desta especificação
 
-A ETP-014 está `IN PROGRESS`. BDP-014 está `APPROVED — VERSION 1`, a Fase 1 documental está `COMPLETED`, a Fase 2 somente leitura está `READY FOR REVIEW` e a Fase 3 está `NOT STARTED`. O endpoint canônico e seus limites estão documentados em [PAYROLL_PERIOD_CLOSURE_READINESS](../modules/PAYROLL_PERIOD_CLOSURE_READINESS.md). A fase não cria schema, migration, fechamento, reabertura, manifesto, interface nem alteração do legado.
+A ETP-014 está `IN PROGRESS`. BDP-014 está `APPROVED — VERSION 1`, as Fases 1 e 2 estão `COMPLETED`, a Fase 3 está `READY FOR REVIEW` e a Fase 4 está `NOT STARTED`. O endpoint somente leitura permanece documentado em [PAYROLL_PERIOD_CLOSURE_READINESS](../modules/PAYROLL_PERIOD_CLOSURE_READINESS.md), e a nova fundação em [PAYROLL_PERIOD_CLOSURE_PERSISTENCE](../modules/PAYROLL_PERIOD_CLOSURE_PERSISTENCE.md). Não há fechamento, reabertura, frontend ou alteração do legado nesta fase.
