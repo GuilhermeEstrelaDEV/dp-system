@@ -1,6 +1,6 @@
 # ETP-013 — Especificação de conferência e aprovação de folha
 
-**Status:** especificação mergeada em `develop`; fundação técnica neutra iniciada, implementação funcional não autorizada por este documento.
+**Status:** especificação e BDP-009 v1 aprovadas; fundação técnica neutra existente, implementação funcional não iniciada.
 
 ## 1. Motivação e evidências
 
@@ -22,8 +22,8 @@ O resultado esperado é distinguir claramente:
 
 1. execução calculada;
 2. conferência operacional pelo DP;
-3. conferência de pagamento pelo Financeiro;
-4. decisão de fechamento pelo aprovador autorizado;
+3. conferência operacional por assignment empresarial autorizado;
+4. aprovação final pelo assignment empresarial autorizado;
 5. retorno para ajustes quando houver pendência.
 
 ## 3. Dependências
@@ -85,25 +85,15 @@ Estas regras derivam da documentação atual, mas os nomes finais dos estados de
 - toda devolução, rejeição, reabertura ou resolução exige justificativa;
 - snapshots de cálculo, parâmetros e checklist não podem ser alterados retroativamente.
 
-## 6. Pendências de negócio
+## 6. Decisões de negócio v1
 
-BDP-009 é bloqueante para implementação do workflow definitivo. Devem ser definidos antes do código funcional:
+BDP-009 foi resolvida para a versão 1: RBAC por empresa, modelo híbrido de capacidades, workflow sequencial em duas etapas, preparador impedido de aprovar, validação distinta de achado bloqueante, ausência de alçada financeira, substituição temporária, acesso emergencial auditado, `404` fora do escopo e visibilidade por capacidade. Consulte [Resolução da BDP-009](BDP-009_RESOLUTION_V1.md).
 
-- quais perfis participam de cada etapa por empresa;
-- quais etapas são obrigatórias e em qual ordem;
-- alçadas por valor, empresa, tipo de folha ou exceção;
-- quantidade mínima de aprovadores;
-- regra para substituição, ausência e acesso emergencial;
-- quem pode resolver achados bloqueantes;
-- tratamento de aprovação após reabertura;
-- prazos, notificações e escalonamento;
-- visibilidade de valores sensíveis por perfil.
-
-Também permanece pendente definir se tolerâncias de conciliação existirão. Nenhum valor padrão deve ser criado sem fonte homologada.
+Prazos, notificações, escalonamento, tolerâncias de conciliação, alçadas financeiras, níveis adicionais e delegação permanecem fora da versão 1. Nenhum padrão deve ser criado sem nova decisão homologada.
 
 ## 7. Possíveis alterações no banco
 
-Não há migration nesta especificação. Para a implementação, avaliar uma migration somente após aprovação de BDP-009, com entidades candidatas:
+Não há migration nesta especificação. As migrations candidatas devem seguir o [plano técnico](ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md) após revisão arquitetural, com entidades candidatas:
 
 - `PayrollReviewCycle`: execução, status, versão do checklist, abertura e conclusão;
 - `PayrollReviewFinding`: ciclo, referência opcional ao contrato/item, severidade, descrição e estado;
@@ -151,15 +141,16 @@ Em `/folha/conferencia`:
 
 ## 10. Permissões
 
-Mapeamento inicial baseado em `PERMISSIONS.md`, sujeito à BDP-009:
+Mapeamento v1 baseado na resolução da BDP-009. Os códigos são configuráveis no banco e não entram nas regras de domínio:
 
-| Capacidade                   | DP                       | Financeiro         | Diretor          | Administrador          | Auditor         |
-| ---------------------------- | ------------------------ | ------------------ | ---------------- | ---------------------- | --------------- |
-| Abrir/preparar conferência   | Sim                      | Não                | Não              | Excepcional            | Leitura         |
-| Registrar achado operacional | Sim                      | Leitura            | Leitura          | Excepcional            | Leitura         |
-| Conferir pagamento           | Leitura                  | Sim                | Leitura          | Excepcional            | Leitura         |
-| Aprovar fechamento           | Não como único aprovador | Conforme pagamento | Conforme alçada  | Somente regra aprovada | Leitura         |
-| Consultar histórico          | Conforme empresa         | Conforme empresa   | Conforme empresa | Conforme autorização   | Sim, sem edição |
+| Ação                      | Papel candidato v1                        | Capacidade candidata                                | Restrição                                    |
+| ------------------------- | ----------------------------------------- | --------------------------------------------------- | -------------------------------------------- |
+| Preparar/registrar achado | `PAYROLL_ANALYST` ou `PAYROLL_SUPERVISOR` | `payroll.edit`                                      | empresa ativa e assignment vigente           |
+| Conferência operacional   | `PAYROLL_ANALYST` ou `PAYROLL_SUPERVISOR` | `payroll.review`                                    | ator distinto quando exigido pela segregação |
+| Submeter                  | assignment configurado                    | `payroll.submit`                                    | preparador preservado no histórico           |
+| Aprovação final           | `HR_MANAGER`                              | `payroll.approve`                                   | não pode ser o preparador                    |
+| Rejeitar/reabrir/fechar   | assignment configurado                    | `payroll.reject`, `payroll.reopen`, `payroll.close` | justificativa, policy e auditoria            |
+| Consultar auditoria       | `AUDITOR` ou assignment configurado       | `payroll.audit`                                     | visibilidade condicionada por capacidade     |
 
 O frontend não é fonte de autorização. A API deve aplicar empresa, papel, alçada e segregação.
 
@@ -197,13 +188,12 @@ O frontend não é fonte de autorização. A API deve aplicar empresa, papel, al
 
 ## 12. Critérios para autorizar implementação
 
-A integração da ETP-012, primeiro critério da especificação original, foi atendida pelo merge do PR #26. A ETP-013 somente deve avançar para código quando as condições restantes forem atendidas:
+A integração da ETP-012 e a resolução v1 da BDP-009 foram atendidas. A ETP-013 somente deve avançar para código funcional conforme o plano técnico e quando as condições restantes forem atendidas:
 
-1. BDP-009 tiver decisão aprovada para o recorte inicial;
-2. identidade/autorização funcional ou um recorte técnico explícito tiver sido aprovado;
-3. estados, etapas, responsáveis e critérios de bloqueio tiverem sido homologados;
-4. modelo de banco e contrato de API tiverem revisão arquitetural;
-5. critérios de aceite e amostras de conferência tiverem validação do DP/Financeiro/Diretoria.
+1. identidade/autorização funcional e RBAC empresarial estiverem implementados;
+2. modelo de banco e contrato de API tiverem revisão arquitetural;
+3. critérios de retenção/auditoria aplicáveis estiverem validados;
+4. critérios de aceite e amostras de conferência tiverem validação dos responsáveis.
 
 ## 13. Entregáveis futuros previstos
 

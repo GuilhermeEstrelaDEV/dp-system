@@ -155,6 +155,6 @@ Ambientes terão contêineres separados para web, API, worker futuro, PostgreSQL
 - [ADR-004 — Compatibilidade de runtime para Prisma](decisions/ADR-004-prisma-runtime-compatibility.md)
 - [ADR-005 — Serviços técnicos da plataforma](decisions/ADR-005-technical-platform-services.md)
 - [ADR-006 — Terminologia de filiais](decisions/ADR-006-branches-terminology.md)
-- [ADR-007 — Contexto de identidade e autorização empresarial (proposta)](decisions/ADR-007-identity-authorization-context.md)
+- [ADR-007 — Contexto de identidade e autorização empresarial](decisions/ADR-007-identity-authorization-context.md)
 
 Novas decisões que afetem estrutura, segurança, persistência, integração ou estratégia de implantação devem gerar ADR em `docs/architecture/decisions/` antes da implementação.

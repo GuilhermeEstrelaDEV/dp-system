@@ -2,21 +2,21 @@
 
 **Status geral:** Pendente. Estas decisões não bloqueiam a ETP-002, mas devem ser resolvidas antes dos incrementos de domínio afetados.
 
-| ID      | Descrição                                                                                                         | Impacto                                                   | Prioridade | Responsável pela validação       | Status   |
-| ------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ---------- | -------------------------------- | -------- |
-| BDP-001 | Confirmar a fonte oficial de CPF, data de nascimento, endereço, dados bancários e dependentes.                    | Migração de colaboradores, documentos, LGPD e eSocial.    | Crítica    | Coordenação de DP                | Pendente |
-| BDP-002 | Confirmar se `N.SETOR` e `N.CARGO` são as fontes canônicas de setor e cargo.                                      | Migração de estrutura e histórico contratual.             | Alta       | Coordenação de DP e RH           | Pendente |
-| BDP-003 | Definir a diferença e a prioridade entre Código ADM, código do funcionário no ADM, matrícula e registro contábil. | Unicidade, importação e integração com sistemas externos. | Crítica    | DP e TI/fornecedor ADM           | Pendente |
-| BDP-004 | Definir a fonte oficial do salário, sua vigência e o tratamento de reajustes.                                     | Histórico contratual, folha e auditoria.                  | Crítica    | DP e Financeiro                  | Pendente |
-| BDP-005 | Confirmar a empresa de cada vínculo e a regra para marcadores múltiplos da planilha.                              | Isolamento multiempresa, folha e eSocial.                 | Crítica    | DP e Administração               | Pendente |
-| BDP-006 | Homologar regras de comissão, prêmio, adicional, quinquênio, descontos e pagamentos por fora.                     | Motor de folha e remuneração variável.                    | Alta       | DP, Financeiro e Diretoria       | Pendente |
-| BDP-007 | Definir políticas de jornada, banco de horas, compensação, fonte de ponto e exceções.                             | Jornada, folha e relatórios.                              | Alta       | DP, Gestores e Jurídico/Contábil | Pendente |
-| BDP-008 | Definir regras de VT/VR, benefícios, elegibilidade, descontos e documentos de recusa.                             | Benefícios e eventos de folha.                            | Alta       | RH e DP                          | Pendente |
-| BDP-009 | Definir alçadas de aprovação para folha, rescisão, parâmetros legais e acessos emergenciais.                      | Permissões, segregação de funções e auditoria.            | Crítica    | Diretoria, DP e Financeiro       | Pendente |
-| BDP-010 | Confirmar fornecedores, formatos e responsabilidades para ponto, contabilidade, assinatura e eSocial.             | Adaptadores de integração e cronograma.                   | Média      | TI, DP e fornecedores            | Pendente |
-| BDP-011 | Definir retenção documental, acesso a dados médicos, descarte, exportação e política LGPD.                        | Segurança, auditoria e armazenamento de documentos.       | Crítica    | Diretoria, Jurídico/DPO e DP     | Pendente |
-| BDP-012 | Definir organização raiz e regra definitiva de unicidade fiscal entre empresas do mesmo grupo.                    | Isolamento multiempresa e evolução de dados.              | Alta       | Administração e TI               | Pendente |
-| BDP-013 | Confirmar hierarquia, vigência e eventual obrigatoriedade de filial para departamentos.                           | Estrutura organizacional e vínculos futuros.              | Alta       | RH e Departamento Pessoal        | Pendente |
+| ID      | Descrição                                                                                                         | Impacto                                                   | Prioridade | Responsável pela validação       | Status       |
+| ------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ---------- | -------------------------------- | ------------ |
+| BDP-001 | Confirmar a fonte oficial de CPF, data de nascimento, endereço, dados bancários e dependentes.                    | Migração de colaboradores, documentos, LGPD e eSocial.    | Crítica    | Coordenação de DP                | Pendente     |
+| BDP-002 | Confirmar se `N.SETOR` e `N.CARGO` são as fontes canônicas de setor e cargo.                                      | Migração de estrutura e histórico contratual.             | Alta       | Coordenação de DP e RH           | Pendente     |
+| BDP-003 | Definir a diferença e a prioridade entre Código ADM, código do funcionário no ADM, matrícula e registro contábil. | Unicidade, importação e integração com sistemas externos. | Crítica    | DP e TI/fornecedor ADM           | Pendente     |
+| BDP-004 | Definir a fonte oficial do salário, sua vigência e o tratamento de reajustes.                                     | Histórico contratual, folha e auditoria.                  | Crítica    | DP e Financeiro                  | Pendente     |
+| BDP-005 | Confirmar a empresa de cada vínculo e a regra para marcadores múltiplos da planilha.                              | Isolamento multiempresa, folha e eSocial.                 | Crítica    | DP e Administração               | Pendente     |
+| BDP-006 | Homologar regras de comissão, prêmio, adicional, quinquênio, descontos e pagamentos por fora.                     | Motor de folha e remuneração variável.                    | Alta       | DP, Financeiro e Diretoria       | Pendente     |
+| BDP-007 | Definir políticas de jornada, banco de horas, compensação, fonte de ponto e exceções.                             | Jornada, folha e relatórios.                              | Alta       | DP, Gestores e Jurídico/Contábil | Pendente     |
+| BDP-008 | Definir regras de VT/VR, benefícios, elegibilidade, descontos e documentos de recusa.                             | Benefícios e eventos de folha.                            | Alta       | RH e DP                          | Pendente     |
+| BDP-009 | Definir alçadas de aprovação para folha, rescisão, parâmetros legais e acessos emergenciais.                      | Permissões, segregação de funções e auditoria.            | Crítica    | Diretoria, DP e Financeiro       | Resolvida v1 |
+| BDP-010 | Confirmar fornecedores, formatos e responsabilidades para ponto, contabilidade, assinatura e eSocial.             | Adaptadores de integração e cronograma.                   | Média      | TI, DP e fornecedores            | Pendente     |
+| BDP-011 | Definir retenção documental, acesso a dados médicos, descarte, exportação e política LGPD.                        | Segurança, auditoria e armazenamento de documentos.       | Crítica    | Diretoria, Jurídico/DPO e DP     | Pendente     |
+| BDP-012 | Definir organização raiz e regra definitiva de unicidade fiscal entre empresas do mesmo grupo.                    | Isolamento multiempresa e evolução de dados.              | Alta       | Administração e TI               | Pendente     |
+| BDP-013 | Confirmar hierarquia, vigência e eventual obrigatoriedade de filial para departamentos.                           | Estrutura organizacional e vínculos futuros.              | Alta       | RH e Departamento Pessoal        | Pendente     |
 
 ## Aplicação segura na ETP-005
 
@@ -52,13 +52,13 @@
 
 ## Impacto na especificação da ETP-013
 
-- BDP-009 bloqueia o workflow definitivo de conferência e aprovação: atores, etapas, alçadas, substituições e segregação precisam de decisão formal.
+- BDP-009 foi resolvida para a versão 1 em [registro formal](BDP-009_RESOLUTION_V1.md): RBAC empresarial híbrido, workflow sequencial em duas etapas, segregação, substituição, emergência, `404`, auditoria e visibilidade por capacidade.
 - Tolerâncias de conciliação, prazos e escalonamentos não serão presumidos.
 - A implementação também depende de identidade e autorização funcionais para atribuir decisões e aplicar isolamento por empresa.
 - A especificação propõe estrutura técnica, mas não autoriza schema, migration, API ou interface até esses pré-requisitos serem aprovados.
-- A arquitetura candidata de identidade/autorização não resolve BDP-009: ainda devem ser homologados atores, etapas, segregações, alçadas, substituições, emergência, efeitos de rejeição/reabertura e visibilidade de valores.
-- Também permanece pendente aprovar o modelo técnico de vínculo usuário–empresa, o contrato de empresa ativa e a convenção de resposta para recursos fora do escopo antes da migration de identidade empresarial.
-- O [pacote de decisão da BDP-009](BDP-009_DECISION_PACKAGE.md) apresenta alternativas e critérios de homologação, mas não registra escolha nem altera o status `Pendente`.
+- A versão 1 não possui alçada financeira por valor; extensões por valor, empresa, tipo de folha ou níveis adicionais exigem nova decisão/versionamento.
+- A resolução não implementa identidade, autorização ou workflow; o [plano técnico](ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md) continua obrigatório antes da operação funcional.
+- Retenção de auditoria continua dependente de validação Jurídico/DPO e BDP-011; isso não reabre as decisões de autorização v1, mas bloqueia a política final de retenção.
 
 ## Gestão
 
