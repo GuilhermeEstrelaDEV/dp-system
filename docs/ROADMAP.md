@@ -94,7 +94,7 @@ A etapa possui workflow auditável até `CLOSED`. Reabertura autorizada invalida
 
 **Status:** `PLANNING`.
 
-A iniciativa está exclusivamente em descoberta e especificação. O objetivo proposto é integrar o fechamento de `PayrollPeriod` à execução e ao ciclo de conferência encerrado, com autorização, isolamento empresarial e auditoria atômica. A implementação permanece bloqueada pelas decisões operacionais registradas na [especificação da ETP-014](project-management/ETP-014_PAYROLL_PERIOD_CLOSURE_SPECIFICATION.md); este status não autoriza código ou migration.
+A iniciativa está exclusivamente em descoberta, especificação e homologação. O objetivo proposto é integrar o fechamento de `PayrollPeriod` à execução e ao ciclo de conferência encerrado, com autorização, isolamento empresarial e auditoria atômica. A [proposta de resolução da BDP-014](project-management/BDP-014_RESOLUTION_PROPOSAL.md) e o [plano incremental](project-management/ETP-014_IMPLEMENTATION_PLAN.md) aguardam aprovação explícita; a ETP-014 permanece `PLANNING` e este status não autoriza código ou migration.
 
 ## Próximas iniciativas propostas
 

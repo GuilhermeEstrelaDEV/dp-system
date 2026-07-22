@@ -6,7 +6,7 @@
 
 **Dependência concluída:** ETP-013 — `COMPLETED — VERSION 1`
 
-**Gate de implementação:** homologação das decisões listadas neste documento e aprovação formal do escopo
+**Gate de implementação:** homologação da [proposta de resolução da BDP-014](BDP-014_RESOLUTION_PROPOSAL.md) e aprovação formal do escopo
 
 ## 1. Objetivo
 
@@ -316,7 +316,7 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 | D-014-09 | Definir conteúdo e retenção da evidência operacional, observando a BDP-011                                    | Jurídico/DPO, Segurança e DP  | auditoria              |
 | D-014-10 | Definir se remuneração variável pendente bloqueia fechamento sem decidir suas regras materiais                | DP e Financeiro               | integração ETP-012     |
 
-As decisões devem registrar alternativa escolhida, aprovador, data, versão e evidência. Até lá, esta especificação não autoriza código, migration, endpoint ou interface.
+As alternativas e recomendações não vinculantes estão detalhadas na [proposta de resolução da BDP-014](BDP-014_RESOLUTION_PROPOSAL.md). As decisões devem registrar alternativa escolhida, aprovador, data, versão e evidência. Até lá, esta especificação não autoriza código, migration, endpoint ou interface.
 
 ## 12. Riscos e dependências
 
@@ -351,4 +351,4 @@ As decisões devem registrar alternativa escolhida, aprovador, data, versão e e
 
 ## 14. Estado desta especificação
 
-A ETP-014 está em `PLANNING`. O projeto possui fundações reutilizáveis suficientes para a iniciativa, mas D-014-01 a D-014-10 impedem a implementação sem suposições. Esta entrega não cria nem altera código, schema, migration, entidade, endpoint ou interface.
+A ETP-014 está em `PLANNING`. O projeto possui fundações reutilizáveis suficientes para a iniciativa, e a BDP-014 possui uma proposta `PENDING APPROVAL`, mas D-014-01 a D-014-10 continuam sem homologação. O [plano de implementação](ETP-014_IMPLEMENTATION_PLAN.md) permanece bloqueado. Esta entrega não cria nem altera código, schema, migration, entidade, endpoint ou interface.
