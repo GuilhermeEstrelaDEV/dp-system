@@ -212,19 +212,20 @@
 - **Fechamento/reabertura:** migration `0014` adiciona `CLOSED`, rodadas explícitas e invalidações append-only; reabertura retorna a `IN_REVIEW` e exige novo ciclo decisório.
 - **Frontend funcional:** login, encerramento local, seleção de empresa, contexto tipado, cliente HTTP com Bearer e correlation ID, rotas protegidas, lista/detalhe de execuções, ciclos, achados, workflow e timeline. Visibilidade usa capabilities; a autorização permanece exclusivamente no backend.
 - **Encerramento:** rastreabilidade, métricas, limitações e débitos estão em `docs/project-management/ETP-013_FINAL_REPORT.md`.
-- **Próximo passo:** homologar as decisões da ETP-014 antes de implementar.
+- **Próximo passo:** iniciar a Fase 2 somente após autorização explícita, preservando o recorte de readiness sem mutação.
 - **Pacote de decisão:** `docs/project-management/BDP-009_DECISION_PACKAGE.md` homologado para v1 e preservado como evidência das alternativas avaliadas.
 
 ### ETP-014 — Fechamento de competência e integração operacional
 
-- **Status:** `PLANNING`; descoberta, especificação e proposta de homologação exclusivamente documentais.
+- **Status:** `PLANNING`; Fase 1 documental `COMPLETED`, Fase 2 `NOT STARTED`.
 - **Especificação:** `docs/project-management/ETP-014_PAYROLL_PERIOD_CLOSURE_SPECIFICATION.md`.
 - **Objetivo proposto:** vincular o fechamento operacional da competência a uma execução e conferência encerrada, com prontidão explícita, RBAC, isolamento empresarial e auditoria atômica.
 - **Base reutilizável:** `PayrollPeriod`, `PayrollRun`, `PayrollPeriodClosure`, workflow da ETP-013, JWT, empresa ativa, RBAC, auditoria, substituição e acesso emergencial.
-- **Lacuna crítica:** `payroll-periods` e `payroll-closures` hoje alteram o mesmo estado por superfícies e validações diferentes; a porta canônica e a compatibilidade precisam ser aprovadas.
-- **Proposta de decisão:** `docs/project-management/BDP-014_RESOLUTION_PROPOSAL.md`, status `PENDING APPROVAL`; recomenda contrato canônico, evidência, blockers, reabertura, idempotência, capabilities e imutabilidade sem torná-los vinculantes.
+- **Lacuna crítica:** `payroll-periods` e `payroll-closures` hoje alteram o mesmo estado por superfícies e validações diferentes; o legado foi inventariado e deverá delegar progressivamente ao contrato canônico sem remoção incidental.
+- **Decisão de negócio:** BDP-014 `APPROVED — VERSION 1` em `docs/project-management/BDP-014_RESOLUTION_V1.md`; a proposta anterior está superseded e preservada como histórico.
+- **Arquitetura:** contrato em `docs/architecture/PAYROLL_PERIOD_CLOSURE_CANONICAL_CONTRACT.md` e legado em `docs/architecture/PAYROLL_CLOSURE_LEGACY_INVENTORY.md`.
 - **Plano incremental:** `docs/project-management/ETP-014_IMPLEMENTATION_PLAN.md`, com seis fases e gates explícitos.
-- **Gate:** decisões D-014-01 a D-014-10, matriz de capabilities, efeitos da reabertura e modelo de evidência homologados antes de código ou migration.
+- **Gate:** Fase 2 somente leitura depende de autorização explícita; fases posteriores permanecem bloqueadas pelos critérios sequenciais do plano.
 - **Implementação:** não iniciada; nenhuma funcionalidade, entidade, endpoint ou interface foi alterada por esta especificação.
 
 ### ETP-015 a ETP-017 — propostas

@@ -6,7 +6,9 @@
 
 **Dependência concluída:** ETP-013 — `COMPLETED — VERSION 1`
 
-**Gate de implementação:** homologação da [proposta de resolução da BDP-014](BDP-014_RESOLUTION_PROPOSAL.md) e aprovação formal do escopo
+**Decisão homologada:** [BDP-014 — Resolução v1](BDP-014_RESOLUTION_V1.md)
+
+**Próximo gate:** autorização explícita para iniciar a Fase 2 somente leitura do [plano](ETP-014_IMPLEMENTATION_PLAN.md)
 
 ## 1. Objetivo
 
@@ -242,15 +244,15 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 
 ## 9. Estratégia incremental de implementação
 
-### Fase 0 — Homologação e contrato canônico
+### Fase 1 — Homologação e contrato canônico — `COMPLETED`
 
-- resolver D-014-01 a D-014-10;
-- aprovar matriz de capabilities e inventário de mutações bloqueadas;
-- aprovar modelo de dados e compatibilidade das rotas.
+- D-014-01 a D-014-10 resolvidas na BDP-014 v1;
+- matriz de capabilities e mutações bloqueadas homologada;
+- contrato canônico e compatibilidade legada documentados, sem modelo físico implementado.
 
-**Aceite:** registro formal das decisões, ADR quando aplicável e especificação promovida de `PLANNING` para autorizada.
+**Aceite:** resolução, contrato, inventário e plano publicados; a ETP-014 permanece `PLANNING`.
 
-### Fase 1 — Domínio e prontidão somente leitura
+### Fase 2 — Domínio e prontidão somente leitura — `NOT STARTED`
 
 - criar políticas puras e contratos de prontidão;
 - consolidar leitura empresarial sem mutar estado;
@@ -258,7 +260,7 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 
 **Aceite:** testes unitários de todas as combinações aprovadas e integração multiempresa/deny-by-default.
 
-### Fase 2 — Persistência e auditoria
+### Fase 3 — Persistência e auditoria
 
 - executar a migration aprovada, se necessária;
 - implementar repositório e trilha append-only;
@@ -266,7 +268,7 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 
 **Aceite:** constraints, rollback transacional, integridade referencial e imutabilidade testados.
 
-### Fase 3 — Fechamento operacional
+### Fase 4 — Fechamento operacional
 
 - implementar o comando canônico de fechamento;
 - aplicar capability, isolamento, lock/idempotência e auditoria atômica;
@@ -274,7 +276,7 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 
 **Aceite:** fluxos válidos, todas as recusas, concorrência, rollback, auditoria e `404` empresarial cobertos.
 
-### Fase 4 — Reabertura controlada
+### Fase 5 — Reabertura controlada
 
 - implementar somente os efeitos homologados;
 - preservar e relacionar decisões/eventos anteriores;
@@ -282,7 +284,7 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 
 **Aceite:** justificativa, autorização, efeitos sobre conferência/execução, idempotência e histórico validados.
 
-### Fase 5 — Interface e validação ponta a ponta
+### Fase 6 — Interface e validação ponta a ponta
 
 - implementar prontidão, ações, confirmação e timeline;
 - cobrir capabilities, erros HTTP, acessibilidade e duplo envio;
@@ -301,22 +303,22 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 - **E2E:** fechamento a partir de conferência `CLOSED`, reabertura conforme política e isolamento entre duas empresas.
 - **Regressão:** execução, conferência, achados, aprovações, fechamento/reabertura do review e rotas mantidas durante compatibilidade.
 
-## 11. Decisões pendentes
+## 11. Decisões homologadas para a versão 1
 
-| ID       | Decisão humana necessária                                                                                     | Responsáveis sugeridos        | Bloqueia               |
-| -------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------- | ---------------------- |
-| D-014-01 | Escolher API/serviço canônico e política de compatibilidade das duas superfícies atuais                       | Produto e Arquitetura         | backend                |
-| D-014-02 | Definir qual execução fundamenta o fechamento: selecionada, última concluída ou outra regra                   | DP e Produto                  | domínio/API            |
-| D-014-03 | Definir a correspondência obrigatória entre execução e ciclo `CLOSED`, inclusive diante de execução posterior | DP e Produto                  | domínio                |
-| D-014-04 | Homologar blockers além de erros técnicos e achados já resolvidos pelo fechamento da conferência              | DP, Financeiro e Produto      | prontidão              |
-| D-014-05 | Definir os efeitos da reabertura sobre review, aprovações, execução e novos insumos                           | DP, Financeiro e Segurança    | reabertura             |
-| D-014-06 | Definir motivo obrigatório, idempotência e resposta para repetição de comandos                                | Produto e Arquitetura         | contratos/persistência |
-| D-014-07 | Aprovar capabilities, concessões e uso por substituição/emergência                                            | Segurança, DP e Diretoria     | RBAC                   |
-| D-014-08 | Aprovar o inventário de operações proibidas quando a competência estiver fechada                              | DP e responsáveis dos módulos | integração interna     |
-| D-014-09 | Definir conteúdo e retenção da evidência operacional, observando a BDP-011                                    | Jurídico/DPO, Segurança e DP  | auditoria              |
-| D-014-10 | Definir se remuneração variável pendente bloqueia fechamento sem decidir suas regras materiais                | DP e Financeiro               | integração ETP-012     |
+| ID       | Decisão homologada                                                             | Responsáveis de referência    | Aplicação              |
+| -------- | ------------------------------------------------------------------------------ | ----------------------------- | ---------------------- |
+| D-014-01 | Competência é canônica; `/payroll-closures` é compatibilidade temporária       | Produto e Arquitetura         | backend                |
+| D-014-02 | Execução explícita, `COMPLETED`, de maior sequência válida e não invalidada    | DP e Produto                  | domínio/API            |
+| D-014-03 | Review `CLOSED` correspondente, vigente e sem decisão inválida não substituída | DP e Produto                  | domínio                |
+| D-014-04 | Blockers e warnings da v1 seguem o catálogo da resolução                       | DP, Financeiro e Produto      | prontidão              |
+| D-014-05 | Reabertura independente, nova versão e novo ciclo completo para reclose        | DP, Financeiro e Segurança    | reabertura             |
+| D-014-06 | Chave obrigatória, lock, versão otimista, constraints e transação atômica      | Produto e Arquitetura         | contratos/persistência |
+| D-014-07 | Cinco capabilities empresariais, deny-by-default e sem assignment automático   | Segurança, DP e Diretoria     | RBAC                   |
+| D-014-08 | Competência fechada é imutável conforme inventário homologado                  | DP e responsáveis dos módulos | integração interna     |
+| D-014-09 | Manifesto mínimo imutável; retenção temporal continua na BDP-011               | Jurídico/DPO, Segurança e DP  | auditoria              |
+| D-014-10 | Remuneração variável pendente é warning com reconhecimento, sem alçada         | DP e Financeiro               | integração ETP-012     |
 
-As alternativas e recomendações não vinculantes estão detalhadas na [proposta de resolução da BDP-014](BDP-014_RESOLUTION_PROPOSAL.md). As decisões devem registrar alternativa escolhida, aprovador, data, versão e evidência. Até lá, esta especificação não autoriza código, migration, endpoint ou interface.
+As escolhas finais e suas regras vinculantes estão na [resolução v1](BDP-014_RESOLUTION_V1.md); a [proposta](BDP-014_RESOLUTION_PROPOSAL.md) preserva as alternativas rejeitadas. A homologação não inicia automaticamente as fases técnicas.
 
 ## 12. Riscos e dependências
 
@@ -351,4 +353,4 @@ As alternativas e recomendações não vinculantes estão detalhadas na [propost
 
 ## 14. Estado desta especificação
 
-A ETP-014 está em `PLANNING`. O projeto possui fundações reutilizáveis suficientes para a iniciativa, e a BDP-014 possui uma proposta `PENDING APPROVAL`, mas D-014-01 a D-014-10 continuam sem homologação. O [plano de implementação](ETP-014_IMPLEMENTATION_PLAN.md) permanece bloqueado. Esta entrega não cria nem altera código, schema, migration, entidade, endpoint ou interface.
+A ETP-014 está em `PLANNING`. BDP-014 está `APPROVED — VERSION 1`, a Fase 1 documental está `COMPLETED` e a Fase 2 está `NOT STARTED`. O [contrato canônico](../architecture/PAYROLL_PERIOD_CLOSURE_CANONICAL_CONTRACT.md), o [inventário legado](../architecture/PAYROLL_CLOSURE_LEGACY_INVENTORY.md) e o [plano](ETP-014_IMPLEMENTATION_PLAN.md) orientam os próximos incrementos. Esta entrega não cria nem altera código, schema, migration, entidade, endpoint ou interface.
