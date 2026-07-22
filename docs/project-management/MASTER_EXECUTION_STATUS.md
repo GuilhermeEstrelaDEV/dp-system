@@ -192,19 +192,21 @@
 
 ### ETP-013 — Conferência e aprovação de folha
 
-- **Status:** fundação técnica parcial; implementação funcional bloqueada.
+- **Status:** fundação técnica parcial; identidade e RBAC empresarial implementados, workflow funcional não iniciado.
 - **Especificação:** `docs/project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md`.
 - **Objetivo proposto:** workflow auditável de conferência, achados e decisões antes do fechamento.
 - **Dependência atendida:** ETP-012 mergeada pelo PR #26.
 - **Decisão de negócio:** BDP-009 resolvida para a versão 1 em `docs/project-management/BDP-009_RESOLUTION_V1.md`; ADR-007 aceita.
 - **Dependências bloqueantes restantes:** implementação de identidade/autorização funcional e RBAC empresarial, auditoria transacional, migrations revisadas, contratos HTTP e critérios de retenção vinculados à BDP-011.
-- **Persistência:** apenas entidades candidatas foram descritas; não há schema ou migration da ETP-013.
+- **Persistência:** migration `0010_identity_company_rbac` implementa assignment usuário–empresa–papel e contexto empresarial mínimo no `AuditLog`; ainda não há persistência de ciclos, achados ou decisões.
 - **Pull Request e merge da especificação:** PR #27 mergeado em `develop` no commit `58341a5`.
 - **Fundação técnica:** contratos imutáveis para achados, severidade, estado e eventos append-only; invariantes de justificativa, cronologia, unicidade e isolamento por empresa; nenhum módulo NestJS, endpoint, persistência, interface ou decisão de aprovação.
 - **Testes da fundação:** testes unitários do domínio neutro; integração e frontend não se aplicam sem infraestrutura operacional.
 - **Documentação técnica:** `docs/modules/PAYROLL_REVIEW_FOUNDATION.md`.
 - **Prontidão de identidade/autorização:** arquitetura v1 aprovada em `docs/architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md` e ADR-007; nenhuma implementação foi iniciada porque ainda não há principal autenticado, vínculo usuário–empresa, autorização aplicada ou writer de auditoria.
-- **Próximo passo técnico:** executar incrementalmente `docs/project-management/ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md`, iniciando por identidade funcional e RBAC empresarial; nenhuma implementação foi iniciada nesta atualização.
+- **Fundação funcional:** login JWT, principal tipado, seleção validada de empresa, capabilities efetivas, autorização opt-in e isolamento reutilizável estão documentados em `docs/modules/IDENTITY_COMPANY_RBAC.md`.
+- **Compatibilidade:** rotas legadas não receberam proteção global; sua migração exige inventário e testes próprios.
+- **Próximo passo técnico:** concluir a fase transversal de autorização e auditoria, incluindo IP/user-agent, atomicidade e inventário de rotas, antes da persistência neutra do workflow.
 - **Pacote de decisão:** `docs/project-management/BDP-009_DECISION_PACKAGE.md` homologado para v1 e preservado como evidência das alternativas avaliadas.
 
 ### ETP-014 a ETP-015

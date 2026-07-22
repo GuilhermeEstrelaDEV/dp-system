@@ -207,4 +207,4 @@ Esse recorte não satisfaz as condições da seção 12 e não altera BDP-006 ou
 
 ## 15. Identidade, autorização e auditoria
 
-A arquitetura candidata para principal autenticado, empresa ativa, deny-by-default, capacidades, segregação configurável e `AuditLog` está documentada em [Especificação técnica de identidade, autorização e auditoria](../architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md). A proposta não foi implementada: o modelo usuário–empresa e as decisões humanas da BDP-009 ainda precisam de homologação.
+A arquitetura para principal autenticado, empresa ativa, deny-by-default, capacidades, segregação configurável e `AuditLog` está documentada em [Especificação técnica de identidade, autorização e auditoria](../architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md). A primeira fundação funcional de identidade e RBAC empresarial está implementada e descrita em [Identidade autenticada e RBAC empresarial](../modules/IDENTITY_COMPANY_RBAC.md). BDP-009 está homologada para a versão 1; o workflow, a auditoria completa e as demais fases continuam pendentes.

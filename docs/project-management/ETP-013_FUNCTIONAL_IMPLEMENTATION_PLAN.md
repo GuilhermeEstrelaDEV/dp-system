@@ -2,7 +2,7 @@
 
 ## Estado
 
-**Planejado; implementação não iniciada.** BDP-009 v1 foi resolvida, porém identidade/autorização e persistência ainda não existem. Este plano não autoriza atalho de segurança nem mudança funcional fora das fases descritas.
+**Em execução incremental.** BDP-009 v1 foi resolvida. Login JWT, contexto empresarial, RBAC por empresa e primitives opt-in de autorização foram implementados; o workflow funcional ainda não foi iniciado. Este plano não autoriza atalho de segurança nem mudança funcional fora das fases descritas.
 
 ## Princípios de execução
 
@@ -15,6 +15,8 @@
 - migrations e commits são pequenos, revisáveis e cobertos por testes.
 
 ## Fase 1 — Identidade funcional
+
+**Estado:** concluída no recorte de token de acesso. Refresh, logout e revogação permanecem para um incremento de sessão dedicado; nenhum endpoint parcial foi exposto.
 
 ### Entregas
 
@@ -31,6 +33,8 @@
 - nenhuma credencial em logs.
 
 ## Fase 2 — RBAC empresarial
+
+**Estado:** concluída para assignments ativos/vigentes, resolução híbrida de capabilities e troca validada de empresa. Seeds de matriz e administração de assignments permanecem deliberadamente fora deste incremento.
 
 ### Migration candidata 0010
 
@@ -55,6 +59,8 @@
 - spoofing de empresa/permissão rejeitado.
 
 ## Fase 3 — Autorização e auditoria transversais
+
+**Estado:** parcial. Guard, decorator, policy de aplicação, `404` empresarial e writer mínimo existem. IP/user-agent, atomicidade transacional, substituição, emergência e migração progressiva das rotas permanecem pendentes.
 
 ### Migration candidata 0011
 
