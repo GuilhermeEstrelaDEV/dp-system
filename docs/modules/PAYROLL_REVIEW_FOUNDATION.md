@@ -2,7 +2,7 @@
 
 ## Estado
 
-O backend do workflow decisório v1 está funcionalmente concluído, incluindo fechamento e reabertura controlada. A ETP-013 permanece parcial sem frontend e integração geral de fechamento.
+O workflow decisório v1 possui backend e frontend funcionais, incluindo fechamento e reabertura controlada. A ETP-013 permanece parcial quanto à integração geral de fechamento e ao endurecimento global previsto na fase 7.
 
 ## Modelo persistente
 
@@ -68,4 +68,14 @@ As rotas exigem JWT, empresa ativa e capability no guard, repetindo a policy no 
 
 ## Limites e próximo incremento
 
-O catálogo continua sem tolerâncias, fórmulas ou regras legais. As duas etapas usam a capability configurável `payroll.review.approve`; a matriz de assignments define seus detentores. Não há frontend, `CLOSED`, reabertura, delegação dentro do workflow ou alçada financeira.
+O catálogo continua sem tolerâncias, fórmulas ou regras legais. As duas etapas usam a capability configurável `payroll.review.approve`; a matriz de assignments define seus detentores. Não há delegação dentro do workflow ou alçada financeira.
+
+## Frontend funcional v1
+
+- `/login` autentica por `POST /api/v1/auth/login`; o token de acesso permanece em `sessionStorage` e o logout é exclusivamente local;
+- `/selecionar-empresa` lista assignments disponíveis e obtém um novo token com empresa ativa por `POST /api/v1/auth/context`;
+- `/folha/conferencia` lista execuções por competência e `/folha/execucoes/:runId` apresenta seus ciclos;
+- `/folha/conferencia/:reviewId` apresenta estado, rodada, etapas, achados, ações e timeline;
+- botões são exibidos por capability apenas para experiência visual; todas as decisões continuam validadas pela API;
+- respostas `400`, `401`, `403`, `404`, `409` e `500` são normalizadas com correlation ID visível quando disponível;
+- troca de empresa e encerramento local limpam o cache do TanStack Query para evitar mistura de contextos.

@@ -1,4 +1,5 @@
 import type { RefObject } from 'react';
+import { useAuth } from '@/features/auth/AuthContext';
 
 interface HeaderProps {
   readonly isMobileMenuOpen: boolean;
@@ -15,6 +16,8 @@ export function Header({
   onMobileMenuToggle,
   onSidebarToggle,
 }: HeaderProps) {
+  const auth = useAuth();
+  const company = auth.companies.find((item) => item.id === auth.activeCompanyId);
   return (
     <header className="flex min-h-16 items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 sm:px-6">
       <div className="flex min-w-0 items-center gap-3">
@@ -47,9 +50,15 @@ export function Header({
           Portal de Departamento Pessoal
         </span>
       </div>
-      <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">
-        Ambiente demonstrativo
-      </span>
+      <div className="flex items-center gap-2">
+        <span className="hidden text-sm sm:inline">{company?.tradeName}</span>
+        <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">
+          Ambiente demonstrativo
+        </span>
+        <button type="button" className="rounded border px-2 py-1 text-xs" onClick={auth.logout}>
+          Sair
+        </button>
+      </div>
     </header>
   );
 }

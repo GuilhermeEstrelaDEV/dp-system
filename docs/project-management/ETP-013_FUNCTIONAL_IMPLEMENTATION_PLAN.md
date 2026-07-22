@@ -2,7 +2,7 @@
 
 ## Estado
 
-**Backend v1 concluído no recorte aprovado.** Identidade, RBAC, auditoria, persistência, decisões, fechamento e reabertura controlada foram implementados. Frontend permanece pendente.
+**Backend e frontend v1 concluídos no recorte aprovado.** Identidade, RBAC, auditoria, persistência, decisões, fechamento, reabertura controlada e experiência web foram implementados. A fase 7 permanece parcial.
 
 ## Princípios de execução
 
@@ -136,6 +136,8 @@
 - policies futuras não alteram histórico anterior.
 
 ## Fase 6 — Frontend
+
+**Estado:** concluída no recorte funcional v1. O frontend não replica regras decisórias e não substitui autorização do backend.
 
 - sessão e seleção de empresa entre assignments ativos;
 - limpeza de caches ao trocar empresa;

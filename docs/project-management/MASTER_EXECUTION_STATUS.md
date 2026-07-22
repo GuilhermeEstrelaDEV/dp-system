@@ -192,16 +192,16 @@
 
 ### ETP-013 — Conferência e aprovação de folha
 
-- **Status:** backend v1 funcionalmente concluído; frontend pendente.
+- **Status:** backend e frontend funcional v1 concluídos no recorte aprovado; endurecimento e integração ampla pendentes.
 - **Especificação:** `docs/project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md`.
 - **Objetivo proposto:** workflow auditável de conferência, achados e decisões antes do fechamento.
 - **Dependência atendida:** ETP-012 mergeada pelo PR #26.
 - **Decisão de negócio:** BDP-009 resolvida para a versão 1 em `docs/project-management/BDP-009_RESOLUTION_V1.md`; ADR-007 aceita.
-- **Dependências bloqueantes restantes:** frontend, integração ampla com fechamento de competência e retenção vinculada à BDP-011.
+- **Dependências bloqueantes restantes:** integração ampla com fechamento de competência e retenção vinculada à BDP-011.
 - **Persistência:** migrations `0010` a `0013_payroll_review_workflow` implementam contexto empresarial, auditoria/grants, ciclos/achados/eventos, etapas e decisões append-only.
 - **Pull Request e merge da especificação:** PR #27 mergeado em `develop` no commit `58341a5`.
 - **Fundação técnica:** contratos imutáveis para achados, severidade, estado e eventos append-only; invariantes de justificativa, cronologia, unicidade, coerência e isolamento por empresa; módulo NestJS e persistência neutra existem, sem interface ou decisão de aprovação.
-- **Testes da fundação:** domínio e serviço cobrem transições, referências, atomicidade, autorização e multiempresa; a regressão E2E preserva as APIs legadas. Frontend não se aplica neste recorte.
+- **Testes:** domínio e serviço cobrem transições, referências, atomicidade, autorização e multiempresa; o frontend cobre sessão, empresa ativa, guards visuais, erros HTTP, ciclos, achados, decisões, fechamento, reabertura e timeline com rede simulada.
 - **Documentação técnica:** `docs/modules/PAYROLL_REVIEW_FOUNDATION.md`.
 - **Prontidão de identidade/autorização:** arquitetura v1 aprovada em `docs/architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md` e ADR-007; principal autenticado, vínculo usuário–empresa, autorização e writer transacional já foram implementados.
 - **Fundação funcional:** login JWT, principal tipado, seleção validada de empresa, capabilities efetivas, autorização opt-in e isolamento reutilizável estão documentados em `docs/modules/IDENTITY_COMPANY_RBAC.md`.
@@ -210,7 +210,8 @@
 - **Fase 4:** APIs autenticadas abrem/consultam ciclos, criam/listam achados e resolvem/reabrem achados com capability, `404` empresarial e transação conjunta de estado, evento e `AuditLog`.
 - **Fase 5:** estados `OPEN`, `IN_REVIEW`, `SUBMITTED`, `APPROVED` e `REJECTED`; duas etapas sequenciais configuradas por dados; segregação de atores, bloqueio por achado e auditoria atômica.
 - **Fechamento/reabertura:** migration `0014` adiciona `CLOSED`, rodadas explícitas e invalidações append-only; reabertura retorna a `IN_REVIEW` e exige novo ciclo decisório.
-- **Próximo passo técnico:** implementar a fase 6 frontend.
+- **Frontend funcional:** login, encerramento local, seleção de empresa, contexto tipado, cliente HTTP com Bearer e correlation ID, rotas protegidas, lista/detalhe de execuções, ciclos, achados, workflow e timeline. Visibilidade usa capabilities; a autorização permanece exclusivamente no backend.
+- **Próximo passo técnico:** executar a fase 7 de integração com fechamento de competência e endurecimento, sem ampliar o escopo da BDP-009 v1.
 - **Pacote de decisão:** `docs/project-management/BDP-009_DECISION_PACKAGE.md` homologado para v1 e preservado como evidência das alternativas avaliadas.
 
 ### ETP-014 a ETP-015
