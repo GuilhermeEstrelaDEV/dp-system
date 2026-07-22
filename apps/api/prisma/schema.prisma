@@ -32,6 +32,10 @@ enum AccessGrantStatus {
 
 enum PayrollReviewCycleStatus {
   OPEN
+  IN_REVIEW
+  SUBMITTED
+  APPROVED
+  REJECTED
 }
 
 enum PayrollReviewFindingSeverity {
@@ -49,6 +53,17 @@ enum PayrollReviewEventType {
   FINDING_OPENED
   FINDING_RESOLVED
   FINDING_REOPENED
+  REVIEW_STARTED
+  REVIEW_SUBMITTED
+  REVIEW_APPROVED
+  REVIEW_REJECTED
+  FINDING_BLOCKED
+  FINDING_UNBLOCKED
+}
+
+enum PayrollReviewDecisionType {
+  APPROVED
+  REJECTED
 }
 
 model User {
@@ -75,6 +90,7 @@ model User {
   payrollReviewFindingsCreated PayrollReviewFinding[] @relation("PayrollReviewFindingCreator")
   payrollReviewFindingsResolved PayrollReviewFinding[] @relation("PayrollReviewFindingResolver")
   payrollReviewEvents PayrollReviewEvent[] @relation("PayrollReviewEventActor")
+  payrollReviewDecisions PayrollReviewDecision[] @relation("PayrollReviewDecisionActor")
 
   @@map("users")
 }
@@ -221,6 +237,7 @@ model Company {
   payrollReviewCycles     PayrollReviewCycle[]
   payrollReviewFindings   PayrollReviewFinding[]
   payrollReviewEvents     PayrollReviewEvent[]
+  payrollReviewDecisions  PayrollReviewDecision[]
 
   @@index([status])
   @@map("companies")
@@ -902,15 +919,56 @@ model PayrollReviewCycle {
   createdBy   String                   @map("created_by") @db.Uuid
   traceId     String                   @map("trace_id") @db.VarChar(100)
   createdAt   DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  submissionNumber Int                 @default(0) @map("submission_number")
+  currentApprovalStage Int             @default(0) @map("current_approval_stage")
   company     Company                  @relation(fields: [companyId], references: [id], onDelete: Restrict)
   payrollRun  PayrollRun               @relation(fields: [payrollRunId], references: [id], onDelete: Restrict)
   creator     User                     @relation("PayrollReviewCycleCreator", fields: [createdBy], references: [id], onDelete: Restrict)
   findings    PayrollReviewFinding[]
   events      PayrollReviewEvent[]
+  approvalStages PayrollReviewApprovalStage[]
+  decisions   PayrollReviewDecision[]
 
   @@index([companyId, status])
   @@index([payrollRunId, status])
   @@map("payroll_review_cycles")
+}
+
+model PayrollReviewApprovalStage {
+  id                 String             @id @default(uuid()) @db.Uuid
+  reviewCycleId      String             @map("review_cycle_id") @db.Uuid
+  sequence           Int
+  code               String             @db.VarChar(100)
+  requiredCapability String             @map("required_capability") @db.VarChar(100)
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  reviewCycle        PayrollReviewCycle @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
+  decisions          PayrollReviewDecision[]
+
+  @@unique([reviewCycleId, sequence])
+  @@index([reviewCycleId])
+  @@map("payroll_review_approval_stages")
+}
+
+model PayrollReviewDecision {
+  id               String                     @id @default(uuid()) @db.Uuid
+  companyId        String                     @map("company_id") @db.Uuid
+  reviewCycleId    String                     @map("review_cycle_id") @db.Uuid
+  approvalStageId  String                     @map("approval_stage_id") @db.Uuid
+  submissionNumber Int                        @map("submission_number")
+  decision         PayrollReviewDecisionType
+  actorId          String                     @map("actor_id") @db.Uuid
+  reason           String?                    @db.VarChar(1000)
+  traceId          String                     @map("trace_id") @db.VarChar(100)
+  occurredAt       DateTime                   @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  company          Company                    @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  reviewCycle      PayrollReviewCycle         @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
+  approvalStage    PayrollReviewApprovalStage @relation(fields: [approvalStageId], references: [id], onDelete: Restrict)
+  actor            User                       @relation("PayrollReviewDecisionActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@unique([reviewCycleId, submissionNumber, approvalStageId])
+  @@index([companyId, occurredAt])
+  @@index([reviewCycleId, submissionNumber])
+  @@map("payroll_review_decisions")
 }
 
 model PayrollReviewFinding {
