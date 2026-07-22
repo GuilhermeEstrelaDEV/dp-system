@@ -20,6 +20,9 @@ const principal: AuthenticatedPrincipal = {
     'payroll.review.finding.create',
     'payroll.review.finding.resolve',
     'payroll.review.finding.reopen',
+    'payroll.review.submit',
+    'payroll.review.approve',
+    'payroll.review.reject',
   ],
   traceId: 'trace-1',
   sessionId: 'session-1',
@@ -35,6 +38,8 @@ const cycle = {
   createdBy: principal.actorId,
   traceId: principal.traceId,
   createdAt: new Date('2026-01-01T00:00:00Z'),
+  submissionNumber: 0,
+  currentApprovalStage: 0,
 };
 
 function finding(status: 'OPEN' | 'RESOLVED' = 'OPEN') {
@@ -84,14 +89,22 @@ function finding(status: 'OPEN' | 'RESOLVED' = 'OPEN') {
           ]
         : []),
     ],
+    reviewCycle: { status: 'OPEN' as const },
   };
 }
 
 describe('PayrollReviewsService', () => {
   const tx = {
     payrollRun: { findFirst: jest.fn() },
-    payrollReviewCycle: { create: jest.fn(), findFirst: jest.fn() },
-    payrollReviewFinding: { create: jest.fn(), findFirst: jest.fn(), update: jest.fn() },
+    payrollReviewCycle: { create: jest.fn(), findFirst: jest.fn(), update: jest.fn() },
+    payrollReviewApprovalStage: { createMany: jest.fn() },
+    payrollReviewDecision: { create: jest.fn() },
+    payrollReviewFinding: {
+      create: jest.fn(),
+      findFirst: jest.fn(),
+      update: jest.fn(),
+      count: jest.fn(),
+    },
     payrollReviewEvent: { create: jest.fn() },
     payrollRunEmployee: { findFirst: jest.fn() },
     payrollCalculationItem: { findFirst: jest.fn() },
@@ -252,10 +265,10 @@ describe('PayrollReviewsService', () => {
     await expect(
       service.reopenFinding('finding', { reason: 'New evidence' }, principal),
     ).resolves.toEqual(expect.objectContaining({ status: 'OPEN' }));
-    expect(tx.payrollReviewEvent.create).toHaveBeenNthCalledWith(1, {
+    expect(tx.payrollReviewEvent.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ eventType: 'FINDING_RESOLVED', reason: 'Reviewed' }),
     });
-    expect(tx.payrollReviewEvent.create).toHaveBeenNthCalledWith(2, {
+    expect(tx.payrollReviewEvent.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ eventType: 'FINDING_REOPENED', reason: 'New evidence' }),
     });
   });
@@ -278,5 +291,150 @@ describe('PayrollReviewsService', () => {
     const rollback = new Error('transaction rolled back');
     audit.transaction.mockRejectedValue(rollback);
     await expect(service.openCycle(cycle.payrollRunId, principal)).rejects.toBe(rollback);
+  });
+
+  it('starts and submits only without open blocking findings', async () => {
+    tx.payrollReviewCycle.findFirst
+      .mockResolvedValueOnce(cycle)
+      .mockResolvedValueOnce({ ...cycle, status: 'IN_REVIEW' });
+    tx.payrollReviewFinding.count.mockResolvedValue(0);
+    tx.payrollReviewCycle.update.mockImplementation(({ data }: { data: object }) => ({
+      ...cycle,
+      ...data,
+    }));
+    tx.payrollReviewEvent.create.mockResolvedValue({});
+    await expect(service.startReview(cycle.id, principal)).resolves.toEqual(
+      expect.objectContaining({ status: 'IN_REVIEW' }),
+    );
+    await expect(service.submitReview(cycle.id, principal)).resolves.toEqual(
+      expect.objectContaining({ status: 'SUBMITTED', submissionNumber: 1 }),
+    );
+    expect(audit.append).toHaveBeenCalledTimes(2);
+
+    tx.payrollReviewCycle.findFirst.mockResolvedValue({ ...cycle, status: 'IN_REVIEW' });
+    tx.payrollReviewFinding.count.mockResolvedValue(1);
+    await expect(service.submitReview(cycle.id, principal)).rejects.toBeInstanceOf(
+      ConflictException,
+    );
+  });
+
+  it('completes two approval stages with distinct non-preparer actors', async () => {
+    const stages = [
+      { id: 'stage-1', sequence: 1, requiredCapability: 'payroll.review.approve' },
+      { id: 'stage-2', sequence: 2, requiredCapability: 'payroll.review.approve' },
+    ];
+    const first = { ...principal, actorId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' };
+    const second = { ...principal, actorId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' };
+    tx.payrollReviewCycle.findFirst
+      .mockResolvedValueOnce({
+        ...cycle,
+        status: 'SUBMITTED',
+        submissionNumber: 1,
+        approvalStages: stages,
+        decisions: [],
+      })
+      .mockResolvedValueOnce({
+        ...cycle,
+        status: 'SUBMITTED',
+        submissionNumber: 1,
+        currentApprovalStage: 1,
+        approvalStages: stages,
+        decisions: [{ submissionNumber: 1, decision: 'APPROVED', actorId: first.actorId }],
+      });
+    tx.payrollReviewDecision.create.mockResolvedValue({});
+    tx.payrollReviewEvent.create.mockResolvedValue({});
+    tx.payrollReviewCycle.update.mockImplementation(({ data }: { data: object }) => ({
+      ...cycle,
+      ...data,
+    }));
+    await expect(service.approveReview(cycle.id, {}, first)).resolves.toEqual(
+      expect.objectContaining({ status: 'SUBMITTED', currentApprovalStage: 1 }),
+    );
+    await expect(service.approveReview(cycle.id, {}, second)).resolves.toEqual(
+      expect.objectContaining({ status: 'APPROVED', currentApprovalStage: 2 }),
+    );
+    expect(tx.payrollReviewDecision.create).toHaveBeenCalledTimes(2);
+    expect(audit.append).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects duplicate approval, preparer approval and rejection without reason', async () => {
+    const stage = { id: 'stage-1', sequence: 1, requiredCapability: 'payroll.review.approve' };
+    tx.payrollReviewCycle.findFirst.mockResolvedValueOnce({
+      ...cycle,
+      status: 'SUBMITTED',
+      submissionNumber: 1,
+      approvalStages: [stage],
+      decisions: [],
+    });
+    await expect(service.approveReview(cycle.id, {}, principal)).rejects.toBeInstanceOf(
+      ConflictException,
+    );
+    tx.payrollReviewCycle.findFirst.mockResolvedValueOnce({
+      ...cycle,
+      status: 'APPROVED',
+      approvalStages: [stage],
+      decisions: [],
+    });
+    await expect(
+      service.approveReview(cycle.id, {}, { ...principal, actorId: 'other' }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    tx.payrollReviewCycle.findFirst.mockResolvedValueOnce({
+      ...cycle,
+      status: 'SUBMITTED',
+      submissionNumber: 1,
+      approvalStages: [stage],
+    });
+    await expect(service.rejectReview(cycle.id, {}, principal)).rejects.toBeInstanceOf(
+      ConflictException,
+    );
+  });
+
+  it('rejects submitted review atomically and supports a new review round', async () => {
+    const stage = { id: 'stage-1', sequence: 1, requiredCapability: 'payroll.review.approve' };
+    tx.payrollReviewCycle.findFirst
+      .mockResolvedValueOnce({
+        ...cycle,
+        status: 'SUBMITTED',
+        submissionNumber: 1,
+        approvalStages: [stage],
+      })
+      .mockResolvedValueOnce({ ...cycle, status: 'REJECTED', submissionNumber: 1 });
+    tx.payrollReviewDecision.create.mockResolvedValue({});
+    tx.payrollReviewEvent.create.mockResolvedValue({});
+    tx.payrollReviewCycle.update.mockImplementation(({ data }: { data: object }) => ({
+      ...cycle,
+      ...data,
+    }));
+    await expect(
+      service.rejectReview(cycle.id, { reason: 'Correct values' }, principal),
+    ).resolves.toEqual(expect.objectContaining({ status: 'REJECTED' }));
+    await expect(service.startReview(cycle.id, principal)).resolves.toEqual(
+      expect.objectContaining({ status: 'IN_REVIEW' }),
+    );
+    expect(tx.payrollReviewDecision.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ decision: 'REJECTED', reason: 'Correct values' }),
+    });
+  });
+
+  it('fails closed for workflow capabilities, cross-company resources and rollback', async () => {
+    await expect(
+      service.submitReview(cycle.id, { ...principal, permissions: [] }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    tx.payrollReviewCycle.findFirst.mockResolvedValue(null);
+    await expect(service.startReview(cycle.id, principal)).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+    const rollback = new Error('decision transaction rolled back');
+    audit.transaction.mockRejectedValue(rollback);
+    await expect(
+      service.approveReview(
+        cycle.id,
+        {},
+        {
+          ...principal,
+          actorId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+        },
+      ),
+    ).rejects.toBe(rollback);
   });
 });

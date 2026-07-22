@@ -43,3 +43,11 @@ export class TransitionPayrollReviewFindingDto {
   @MaxLength(1000)
   reason!: string;
 }
+
+export class PayrollReviewDecisionDto {
+  @IsOptional()
+  @IsString()
+  @Matches(/\S/)
+  @MaxLength(1000)
+  reason?: string;
+}

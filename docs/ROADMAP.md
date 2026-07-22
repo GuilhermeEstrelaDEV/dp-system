@@ -86,9 +86,9 @@ Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliaçõe
 
 ## ETP-013 — Conferência e aprovação de folha
 
-**Status:** fundação técnica parcial; persistência neutra de ciclos e achados implementada, workflow decisório ainda não iniciado.
+**Status:** backend do workflow decisório v1 implementado; frontend, fechamento e reabertura permanecem pendentes.
 
-A etapa possui especificação, identidade/RBAC e persistência neutra auditável. Ciclos `OPEN`, achados `OPEN/RESOLVED` e eventos append-only existem sob isolamento empresarial e capabilities configuráveis. Não existe submissão, aprovação, rejeição, fechamento ou reabertura da execução. O próximo incremento é o workflow decisório da fase 5 do [plano técnico](project-management/ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md). Consulte [Fundação de conferência](modules/PAYROLL_REVIEW_FOUNDATION.md), [Fundação transversal](architecture/AUDIT_AUTHORIZATION_FOUNDATION.md) e [Inventário de rotas](architecture/API_ROUTE_AUTHORIZATION_INVENTORY.md).
+A etapa possui identidade/RBAC, persistência auditável e workflow `OPEN → IN_REVIEW → SUBMITTED → APPROVED|REJECTED`. A aprovação v1 usa duas etapas sequenciais configuradas por dados, exige atores distintos e preserva decisões/eventos. Achados bloqueantes abertos impedem submissão. Não existe `CLOSED`, reabertura, frontend ou integração com fechamento. O próximo incremento é a experiência frontend da fase 6, antes do endurecimento da fase 7. Consulte [Conferência de folha](modules/PAYROLL_REVIEW_FOUNDATION.md), [Fundação transversal](architecture/AUDIT_AUTHORIZATION_FOUNDATION.md) e [Inventário de rotas](architecture/API_ROUTE_AUTHORIZATION_INVENTORY.md).
 
 ## Etapa 2 — Fundação técnica
 
