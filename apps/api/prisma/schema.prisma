@@ -19,6 +19,11 @@ enum RefreshTokenStatus {
   EXPIRED
 }
 
+enum UserCompanyRoleStatus {
+  ACTIVE
+  INACTIVE
+}
+
 model User {
   id            String         @id @default(uuid()) @db.Uuid
   email         String         @unique @db.VarChar(254)
@@ -31,6 +36,7 @@ model User {
   roles         UserRole[]
   refreshTokens RefreshToken[]
   auditLogs     AuditLog[]
+  companyRoles  UserCompanyRole[]
 
   @@map("users")
 }
@@ -44,6 +50,7 @@ model Role {
   updatedAt   DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
   users       UserRole[]
   permissions RolePermission[]
+  companyUsers UserCompanyRole[]
 
   @@map("roles")
 }
@@ -81,6 +88,25 @@ model RolePermission {
   @@map("role_permissions")
 }
 
+model UserCompanyRole {
+  id        String                @id @default(uuid()) @db.Uuid
+  userId    String                @map("user_id") @db.Uuid
+  companyId String                @map("company_id") @db.Uuid
+  roleId    String                @map("role_id") @db.Uuid
+  status    UserCompanyRoleStatus @default(ACTIVE)
+  validFrom DateTime              @default(now()) @map("valid_from") @db.Timestamptz(6)
+  validTo   DateTime?             @map("valid_to") @db.Timestamptz(6)
+  createdAt DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Restrict)
+  company   Company               @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  role      Role                  @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@index([userId, companyId, status])
+  @@index([companyId, roleId, status])
+  @@map("user_company_roles")
+}
+
 model RefreshToken {
   id        String             @id @default(uuid()) @db.Uuid
   userId    String             @map("user_id") @db.Uuid
@@ -99,6 +125,7 @@ model RefreshToken {
 model AuditLog {
   id          String   @id @default(uuid()) @db.Uuid
   actorUserId String?  @map("actor_user_id") @db.Uuid
+  companyId   String?  @map("company_id") @db.Uuid
   entityType  String   @map("entity_type") @db.VarChar(100)
   entityId    String   @map("entity_id") @db.VarChar(100)
   action      String   @db.VarChar(50)
@@ -106,10 +133,12 @@ model AuditLog {
   metadata    Json?
   occurredAt  DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
   actorUser   User?    @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  company     Company? @relation(fields: [companyId], references: [id], onDelete: Restrict)
 
   @@index([entityType, entityId, occurredAt])
   @@index([actorUserId, occurredAt])
   @@index([traceId])
+  @@index([companyId, occurredAt])
   @@map("audit_logs")
 }
 
@@ -140,6 +169,8 @@ model Company {
   payrollRubricCategories PayrollRubricCategory[]
   payrollRubrics          PayrollRubric[]
   payrollParameters       PayrollParameter[]
+  userRoles               UserCompanyRole[]
+  auditLogs               AuditLog[]
 
   @@index([status])
   @@map("companies")
