@@ -24,6 +24,12 @@ enum UserCompanyRoleStatus {
   INACTIVE
 }
 
+enum AccessGrantStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
 model User {
   id            String         @id @default(uuid()) @db.Uuid
   email         String         @unique @db.VarChar(254)
@@ -37,6 +43,13 @@ model User {
   refreshTokens RefreshToken[]
   auditLogs     AuditLog[]
   companyRoles  UserCompanyRole[]
+  substitutionsAsHolder TemporarySubstitution[] @relation("SubstitutionHolder")
+  substitutionsAsSubstitute TemporarySubstitution[] @relation("SubstitutionSubstitute")
+  substitutionsGranted TemporarySubstitution[] @relation("SubstitutionGrantor")
+  substitutionsRevoked TemporarySubstitution[] @relation("SubstitutionRevoker")
+  emergencyAccesses EmergencyAccess[] @relation("EmergencyBeneficiary")
+  emergencyAccessesGranted EmergencyAccess[] @relation("EmergencyGrantor")
+  emergencyAccessesRevoked EmergencyAccess[] @relation("EmergencyRevoker")
 
   @@map("users")
 }
@@ -126,11 +139,17 @@ model AuditLog {
   id          String   @id @default(uuid()) @db.Uuid
   actorUserId String?  @map("actor_user_id") @db.Uuid
   companyId   String?  @map("company_id") @db.Uuid
+  sessionId   String?  @map("session_id") @db.VarChar(100)
   entityType  String   @map("entity_type") @db.VarChar(100)
   entityId    String   @map("entity_id") @db.VarChar(100)
   action      String   @db.VarChar(50)
   traceId     String   @map("trace_id") @db.VarChar(100)
   metadata    Json?
+  previousState Json?  @map("previous_state")
+  nextState     Json?  @map("next_state")
+  reason        String? @db.VarChar(1000)
+  ipAddress     String? @map("ip_address") @db.VarChar(64)
+  userAgent     String? @map("user_agent") @db.VarChar(512)
   occurredAt  DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
   actorUser   User?    @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
   company     Company? @relation(fields: [companyId], references: [id], onDelete: Restrict)
@@ -139,6 +158,7 @@ model AuditLog {
   @@index([actorUserId, occurredAt])
   @@index([traceId])
   @@index([companyId, occurredAt])
+  @@index([sessionId, occurredAt])
   @@map("audit_logs")
 }
 
@@ -171,9 +191,62 @@ model Company {
   payrollParameters       PayrollParameter[]
   userRoles               UserCompanyRole[]
   auditLogs               AuditLog[]
+  temporarySubstitutions  TemporarySubstitution[]
+  emergencyAccesses       EmergencyAccess[]
 
   @@index([status])
   @@map("companies")
+}
+
+model TemporarySubstitution {
+  id             String            @id @default(uuid()) @db.Uuid
+  companyId      String            @map("company_id") @db.Uuid
+  holderUserId   String            @map("holder_user_id") @db.Uuid
+  substituteUserId String          @map("substitute_user_id") @db.Uuid
+  grantedByUserId String           @map("granted_by_user_id") @db.Uuid
+  revokedByUserId String?          @map("revoked_by_user_id") @db.Uuid
+  capabilities   String[]
+  startsAt       DateTime          @map("starts_at") @db.Timestamptz(6)
+  expiresAt      DateTime          @map("expires_at") @db.Timestamptz(6)
+  reason         String            @db.VarChar(1000)
+  status         AccessGrantStatus @default(ACTIVE)
+  revokedAt      DateTime?         @map("revoked_at") @db.Timestamptz(6)
+  revocationReason String?         @map("revocation_reason") @db.VarChar(1000)
+  createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company        Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  holder         User              @relation("SubstitutionHolder", fields: [holderUserId], references: [id], onDelete: Restrict)
+  substitute     User              @relation("SubstitutionSubstitute", fields: [substituteUserId], references: [id], onDelete: Restrict)
+  grantedBy      User              @relation("SubstitutionGrantor", fields: [grantedByUserId], references: [id], onDelete: Restrict)
+  revokedBy      User?             @relation("SubstitutionRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([companyId, substituteUserId, status, startsAt, expiresAt])
+  @@index([companyId, holderUserId, status])
+  @@map("temporary_substitutions")
+}
+
+model EmergencyAccess {
+  id              String            @id @default(uuid()) @db.Uuid
+  companyId       String            @map("company_id") @db.Uuid
+  beneficiaryUserId String          @map("beneficiary_user_id") @db.Uuid
+  grantedByUserId String            @map("granted_by_user_id") @db.Uuid
+  revokedByUserId String?           @map("revoked_by_user_id") @db.Uuid
+  capabilities    String[]
+  startsAt        DateTime          @default(now()) @map("starts_at") @db.Timestamptz(6)
+  expiresAt       DateTime          @map("expires_at") @db.Timestamptz(6)
+  reason          String            @db.VarChar(1000)
+  status          AccessGrantStatus @default(ACTIVE)
+  revokedAt       DateTime?         @map("revoked_at") @db.Timestamptz(6)
+  revocationReason String?          @map("revocation_reason") @db.VarChar(1000)
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company         Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  beneficiary     User              @relation("EmergencyBeneficiary", fields: [beneficiaryUserId], references: [id], onDelete: Restrict)
+  grantedBy       User              @relation("EmergencyGrantor", fields: [grantedByUserId], references: [id], onDelete: Restrict)
+  revokedBy       User?             @relation("EmergencyRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([companyId, beneficiaryUserId, status, startsAt, expiresAt])
+  @@map("emergency_accesses")
 }
 
 model Branch {
