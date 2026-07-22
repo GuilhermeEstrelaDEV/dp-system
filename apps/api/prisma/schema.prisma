@@ -70,45 +70,77 @@ enum PayrollReviewDecisionType {
   REJECTED
 }
 
+enum PayrollPeriodClosureStatus {
+  OPEN
+  CLOSING
+  CLOSED
+  REOPENING
+}
+
+enum PayrollPeriodClosureEventType {
+  PERIOD_READINESS_EVALUATED
+  PERIOD_CLOSURE_STARTED
+  PERIOD_CLOSED
+  PERIOD_REOPENING_STARTED
+  PERIOD_REOPENED
+  CLOSURE_EVIDENCE_INVALIDATED
+  VARIABLE_PAY_WARNING_ACKNOWLEDGED
+}
+
+enum PayrollPeriodClosureOperationType {
+  CLOSE
+  REOPEN
+}
+
+enum PayrollPeriodClosureIdempotencyStatus {
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
 model User {
-  id            String         @id @default(uuid()) @db.Uuid
-  email         String         @unique @db.VarChar(254)
-  displayName   String         @map("display_name") @db.VarChar(160)
-  passwordHash  String?        @map("password_hash") @db.VarChar(255)
-  status        UserStatus     @default(ACTIVE)
-  mfaEnabled    Boolean        @default(false) @map("mfa_enabled")
-  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  roles         UserRole[]
-  refreshTokens RefreshToken[]
-  auditLogs     AuditLog[]
-  companyRoles  UserCompanyRole[]
-  substitutionsAsHolder TemporarySubstitution[] @relation("SubstitutionHolder")
-  substitutionsAsSubstitute TemporarySubstitution[] @relation("SubstitutionSubstitute")
-  substitutionsGranted TemporarySubstitution[] @relation("SubstitutionGrantor")
-  substitutionsRevoked TemporarySubstitution[] @relation("SubstitutionRevoker")
-  emergencyAccesses EmergencyAccess[] @relation("EmergencyBeneficiary")
-  emergencyAccessesGranted EmergencyAccess[] @relation("EmergencyGrantor")
-  emergencyAccessesRevoked EmergencyAccess[] @relation("EmergencyRevoker")
-  payrollReviewCyclesCreated PayrollReviewCycle[] @relation("PayrollReviewCycleCreator")
-  payrollReviewFindingsCreated PayrollReviewFinding[] @relation("PayrollReviewFindingCreator")
-  payrollReviewFindingsResolved PayrollReviewFinding[] @relation("PayrollReviewFindingResolver")
-  payrollReviewEvents PayrollReviewEvent[] @relation("PayrollReviewEventActor")
-  payrollReviewDecisions PayrollReviewDecision[] @relation("PayrollReviewDecisionActor")
-  payrollReviewInvalidations PayrollReviewDecisionInvalidation[] @relation("PayrollReviewInvalidationActor")
+  id                                       String                                       @id @default(uuid()) @db.Uuid
+  email                                    String                                       @unique @db.VarChar(254)
+  displayName                              String                                       @map("display_name") @db.VarChar(160)
+  passwordHash                             String?                                      @map("password_hash") @db.VarChar(255)
+  status                                   UserStatus                                   @default(ACTIVE)
+  mfaEnabled                               Boolean                                      @default(false) @map("mfa_enabled")
+  createdAt                                DateTime                                     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                                DateTime                                     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  roles                                    UserRole[]
+  refreshTokens                            RefreshToken[]
+  auditLogs                                AuditLog[]
+  companyRoles                             UserCompanyRole[]
+  substitutionsAsHolder                    TemporarySubstitution[]                      @relation("SubstitutionHolder")
+  substitutionsAsSubstitute                TemporarySubstitution[]                      @relation("SubstitutionSubstitute")
+  substitutionsGranted                     TemporarySubstitution[]                      @relation("SubstitutionGrantor")
+  substitutionsRevoked                     TemporarySubstitution[]                      @relation("SubstitutionRevoker")
+  emergencyAccesses                        EmergencyAccess[]                            @relation("EmergencyBeneficiary")
+  emergencyAccessesGranted                 EmergencyAccess[]                            @relation("EmergencyGrantor")
+  emergencyAccessesRevoked                 EmergencyAccess[]                            @relation("EmergencyRevoker")
+  payrollReviewCyclesCreated               PayrollReviewCycle[]                         @relation("PayrollReviewCycleCreator")
+  payrollReviewFindingsCreated             PayrollReviewFinding[]                       @relation("PayrollReviewFindingCreator")
+  payrollReviewFindingsResolved            PayrollReviewFinding[]                       @relation("PayrollReviewFindingResolver")
+  payrollReviewEvents                      PayrollReviewEvent[]                         @relation("PayrollReviewEventActor")
+  payrollReviewDecisions                   PayrollReviewDecision[]                      @relation("PayrollReviewDecisionActor")
+  payrollReviewInvalidations               PayrollReviewDecisionInvalidation[]          @relation("PayrollReviewInvalidationActor")
+  payrollPeriodClosureVersionsCreated      PayrollPeriodClosureVersion[]                @relation("PayrollPeriodClosureVersionCreator")
+  payrollPeriodClosureManifestsCreated     PayrollPeriodClosureManifest[]               @relation("PayrollPeriodClosureManifestCreator")
+  payrollPeriodClosureEvents               PayrollPeriodClosureEvent[]                  @relation("PayrollPeriodClosureEventActor")
+  payrollPeriodClosureWarningsAcknowledged PayrollPeriodClosureWarningAcknowledgement[] @relation("PayrollPeriodClosureWarningActor")
 
   @@map("users")
 }
 
 model Role {
-  id          String           @id @default(uuid()) @db.Uuid
-  code        String           @unique @db.VarChar(50)
-  name        String           @db.VarChar(100)
-  description String?          @db.VarChar(255)
-  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
-  users       UserRole[]
-  permissions RolePermission[]
+  id           String            @id @default(uuid()) @db.Uuid
+  code         String            @unique @db.VarChar(50)
+  name         String            @db.VarChar(100)
+  description  String?           @db.VarChar(255)
+  createdAt    DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  users        UserRole[]
+  permissions  RolePermission[]
   companyUsers UserCompanyRole[]
 
   @@map("roles")
@@ -182,23 +214,23 @@ model RefreshToken {
 }
 
 model AuditLog {
-  id          String   @id @default(uuid()) @db.Uuid
-  actorUserId String?  @map("actor_user_id") @db.Uuid
-  companyId   String?  @map("company_id") @db.Uuid
-  sessionId   String?  @map("session_id") @db.VarChar(100)
-  entityType  String   @map("entity_type") @db.VarChar(100)
-  entityId    String   @map("entity_id") @db.VarChar(100)
-  action      String   @db.VarChar(50)
-  traceId     String   @map("trace_id") @db.VarChar(100)
-  metadata    Json?
-  previousState Json?  @map("previous_state")
-  nextState     Json?  @map("next_state")
-  reason        String? @db.VarChar(1000)
-  ipAddress     String? @map("ip_address") @db.VarChar(64)
-  userAgent     String? @map("user_agent") @db.VarChar(512)
-  occurredAt  DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
-  actorUser   User?    @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
-  company     Company? @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  id            String   @id @default(uuid()) @db.Uuid
+  actorUserId   String?  @map("actor_user_id") @db.Uuid
+  companyId     String?  @map("company_id") @db.Uuid
+  sessionId     String?  @map("session_id") @db.VarChar(100)
+  entityType    String   @map("entity_type") @db.VarChar(100)
+  entityId      String   @map("entity_id") @db.VarChar(100)
+  action        String   @db.VarChar(50)
+  traceId       String   @map("trace_id") @db.VarChar(100)
+  metadata      Json?
+  previousState Json?    @map("previous_state")
+  nextState     Json?    @map("next_state")
+  reason        String?  @db.VarChar(1000)
+  ipAddress     String?  @map("ip_address") @db.VarChar(64)
+  userAgent     String?  @map("user_agent") @db.VarChar(512)
+  occurredAt    DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  actorUser     User?    @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  company       Company? @relation(fields: [companyId], references: [id], onDelete: Restrict)
 
   @@index([entityType, entityId, occurredAt])
   @@index([actorUserId, occurredAt])
@@ -209,67 +241,72 @@ model AuditLog {
 }
 
 model Company {
-  id                      String                  @id @default(uuid()) @db.Uuid
-  legalName               String                  @map("legal_name") @db.VarChar(160)
-  tradeName               String                  @map("trade_name") @db.VarChar(160)
-  taxId                   String                  @unique @map("tax_id") @db.VarChar(20)
-  status                  String                  @default("ACTIVE") @db.VarChar(20)
-  createdAt               DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt               DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
-  branches                Branch[]
-  departments             Department[]
-  positions               Position[]
-  costCenters             CostCenter[]
-  employmentContracts     EmploymentContract[]
-  admissionProcesses      AdmissionProcess[]
-  checklistTemplates      ChecklistTemplate[]
-  workSchedules           WorkSchedule[]
-  holidays                Holiday[]
-  timeEntries             TimeEntry[]
-  timeBalanceClosings     TimeBalanceClosing[]
-  benefits                Benefit[]
-  collectiveVacations     CollectiveVacation[]
-  leaveTypes              LeaveType[]
-  payrollCalendars        PayrollCalendar[]
-  payrollPeriods          PayrollPeriod[]
-  payrollRubricCategories PayrollRubricCategory[]
-  payrollRubrics          PayrollRubric[]
-  payrollParameters       PayrollParameter[]
-  userRoles               UserCompanyRole[]
-  auditLogs               AuditLog[]
-  temporarySubstitutions  TemporarySubstitution[]
-  emergencyAccesses       EmergencyAccess[]
-  payrollReviewCycles     PayrollReviewCycle[]
-  payrollReviewFindings   PayrollReviewFinding[]
-  payrollReviewEvents     PayrollReviewEvent[]
-  payrollReviewDecisions  PayrollReviewDecision[]
-  payrollReviewInvalidations PayrollReviewDecisionInvalidation[]
+  id                                          String                                       @id @default(uuid()) @db.Uuid
+  legalName                                   String                                       @map("legal_name") @db.VarChar(160)
+  tradeName                                   String                                       @map("trade_name") @db.VarChar(160)
+  taxId                                       String                                       @unique @map("tax_id") @db.VarChar(20)
+  status                                      String                                       @default("ACTIVE") @db.VarChar(20)
+  createdAt                                   DateTime                                     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                                   DateTime                                     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  branches                                    Branch[]
+  departments                                 Department[]
+  positions                                   Position[]
+  costCenters                                 CostCenter[]
+  employmentContracts                         EmploymentContract[]
+  admissionProcesses                          AdmissionProcess[]
+  checklistTemplates                          ChecklistTemplate[]
+  workSchedules                               WorkSchedule[]
+  holidays                                    Holiday[]
+  timeEntries                                 TimeEntry[]
+  timeBalanceClosings                         TimeBalanceClosing[]
+  benefits                                    Benefit[]
+  payrollPeriodClosureVersions                PayrollPeriodClosureVersion[]
+  payrollPeriodClosureManifests               PayrollPeriodClosureManifest[]
+  payrollPeriodClosureEvents                  PayrollPeriodClosureEvent[]
+  payrollPeriodClosureWarningAcknowledgements PayrollPeriodClosureWarningAcknowledgement[]
+  payrollPeriodClosureIdempotencies           PayrollPeriodClosureIdempotency[]
+  collectiveVacations                         CollectiveVacation[]
+  leaveTypes                                  LeaveType[]
+  payrollCalendars                            PayrollCalendar[]
+  payrollPeriods                              PayrollPeriod[]
+  payrollRubricCategories                     PayrollRubricCategory[]
+  payrollRubrics                              PayrollRubric[]
+  payrollParameters                           PayrollParameter[]
+  userRoles                                   UserCompanyRole[]
+  auditLogs                                   AuditLog[]
+  temporarySubstitutions                      TemporarySubstitution[]
+  emergencyAccesses                           EmergencyAccess[]
+  payrollReviewCycles                         PayrollReviewCycle[]
+  payrollReviewFindings                       PayrollReviewFinding[]
+  payrollReviewEvents                         PayrollReviewEvent[]
+  payrollReviewDecisions                      PayrollReviewDecision[]
+  payrollReviewInvalidations                  PayrollReviewDecisionInvalidation[]
 
   @@index([status])
   @@map("companies")
 }
 
 model TemporarySubstitution {
-  id             String            @id @default(uuid()) @db.Uuid
-  companyId      String            @map("company_id") @db.Uuid
-  holderUserId   String            @map("holder_user_id") @db.Uuid
-  substituteUserId String          @map("substitute_user_id") @db.Uuid
-  grantedByUserId String           @map("granted_by_user_id") @db.Uuid
-  revokedByUserId String?          @map("revoked_by_user_id") @db.Uuid
-  capabilities   String[]
-  startsAt       DateTime          @map("starts_at") @db.Timestamptz(6)
-  expiresAt      DateTime          @map("expires_at") @db.Timestamptz(6)
-  reason         String            @db.VarChar(1000)
-  status         AccessGrantStatus @default(ACTIVE)
-  revokedAt      DateTime?         @map("revoked_at") @db.Timestamptz(6)
-  revocationReason String?         @map("revocation_reason") @db.VarChar(1000)
-  createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt      DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company        Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  holder         User              @relation("SubstitutionHolder", fields: [holderUserId], references: [id], onDelete: Restrict)
-  substitute     User              @relation("SubstitutionSubstitute", fields: [substituteUserId], references: [id], onDelete: Restrict)
-  grantedBy      User              @relation("SubstitutionGrantor", fields: [grantedByUserId], references: [id], onDelete: Restrict)
-  revokedBy      User?             @relation("SubstitutionRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+  id               String            @id @default(uuid()) @db.Uuid
+  companyId        String            @map("company_id") @db.Uuid
+  holderUserId     String            @map("holder_user_id") @db.Uuid
+  substituteUserId String            @map("substitute_user_id") @db.Uuid
+  grantedByUserId  String            @map("granted_by_user_id") @db.Uuid
+  revokedByUserId  String?           @map("revoked_by_user_id") @db.Uuid
+  capabilities     String[]
+  startsAt         DateTime          @map("starts_at") @db.Timestamptz(6)
+  expiresAt        DateTime          @map("expires_at") @db.Timestamptz(6)
+  reason           String            @db.VarChar(1000)
+  status           AccessGrantStatus @default(ACTIVE)
+  revokedAt        DateTime?         @map("revoked_at") @db.Timestamptz(6)
+  revocationReason String?           @map("revocation_reason") @db.VarChar(1000)
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company          Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  holder           User              @relation("SubstitutionHolder", fields: [holderUserId], references: [id], onDelete: Restrict)
+  substitute       User              @relation("SubstitutionSubstitute", fields: [substituteUserId], references: [id], onDelete: Restrict)
+  grantedBy        User              @relation("SubstitutionGrantor", fields: [grantedByUserId], references: [id], onDelete: Restrict)
+  revokedBy        User?             @relation("SubstitutionRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
 
   @@index([companyId, substituteUserId, status, startsAt, expiresAt])
   @@index([companyId, holderUserId, status])
@@ -277,24 +314,24 @@ model TemporarySubstitution {
 }
 
 model EmergencyAccess {
-  id              String            @id @default(uuid()) @db.Uuid
-  companyId       String            @map("company_id") @db.Uuid
-  beneficiaryUserId String          @map("beneficiary_user_id") @db.Uuid
-  grantedByUserId String            @map("granted_by_user_id") @db.Uuid
-  revokedByUserId String?           @map("revoked_by_user_id") @db.Uuid
-  capabilities    String[]
-  startsAt        DateTime          @default(now()) @map("starts_at") @db.Timestamptz(6)
-  expiresAt       DateTime          @map("expires_at") @db.Timestamptz(6)
-  reason          String            @db.VarChar(1000)
-  status          AccessGrantStatus @default(ACTIVE)
-  revokedAt       DateTime?         @map("revoked_at") @db.Timestamptz(6)
-  revocationReason String?          @map("revocation_reason") @db.VarChar(1000)
-  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company         Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  beneficiary     User              @relation("EmergencyBeneficiary", fields: [beneficiaryUserId], references: [id], onDelete: Restrict)
-  grantedBy       User              @relation("EmergencyGrantor", fields: [grantedByUserId], references: [id], onDelete: Restrict)
-  revokedBy       User?             @relation("EmergencyRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+  id                String            @id @default(uuid()) @db.Uuid
+  companyId         String            @map("company_id") @db.Uuid
+  beneficiaryUserId String            @map("beneficiary_user_id") @db.Uuid
+  grantedByUserId   String            @map("granted_by_user_id") @db.Uuid
+  revokedByUserId   String?           @map("revoked_by_user_id") @db.Uuid
+  capabilities      String[]
+  startsAt          DateTime          @default(now()) @map("starts_at") @db.Timestamptz(6)
+  expiresAt         DateTime          @map("expires_at") @db.Timestamptz(6)
+  reason            String            @db.VarChar(1000)
+  status            AccessGrantStatus @default(ACTIVE)
+  revokedAt         DateTime?         @map("revoked_at") @db.Timestamptz(6)
+  revocationReason  String?           @map("revocation_reason") @db.VarChar(1000)
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company           Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  beneficiary       User              @relation("EmergencyBeneficiary", fields: [beneficiaryUserId], references: [id], onDelete: Restrict)
+  grantedBy         User              @relation("EmergencyGrantor", fields: [grantedByUserId], references: [id], onDelete: Restrict)
+  revokedBy         User?             @relation("EmergencyRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
 
   @@index([companyId, beneficiaryUserId, status, startsAt, expiresAt])
   @@map("emergency_accesses")
@@ -729,24 +766,26 @@ model PayrollCalendar {
 }
 
 model PayrollPeriod {
-  id                String                 @id @default(uuid()) @db.Uuid
-  companyId         String                 @map("company_id") @db.Uuid
-  payrollCalendarId String                 @map("payroll_calendar_id") @db.Uuid
-  referenceDate     DateTime               @map("reference_date") @db.Date
-  type              String                 @default("REGULAR") @db.VarChar(30)
-  status            String                 @default("OPEN") @db.VarChar(20)
-  engineVersion     String                 @default("foundation-1") @map("engine_version") @db.VarChar(50)
-  parameterVersion  String?                @map("parameter_version") @db.VarChar(50)
-  openedAt          DateTime               @default(now()) @map("opened_at") @db.Timestamptz(6)
-  closedAt          DateTime?              @map("closed_at") @db.Timestamptz(6)
-  reopenedAt        DateTime?              @map("reopened_at") @db.Timestamptz(6)
-  createdAt         DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
-  company           Company                @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  payrollCalendar   PayrollCalendar        @relation(fields: [payrollCalendarId], references: [id], onDelete: Restrict)
-  inputs            PayrollInput[]
-  runs              PayrollRun[]
-  closureHistory    PayrollPeriodClosure[]
+  id                   String                            @id @default(uuid()) @db.Uuid
+  companyId            String                            @map("company_id") @db.Uuid
+  payrollCalendarId    String                            @map("payroll_calendar_id") @db.Uuid
+  referenceDate        DateTime                          @map("reference_date") @db.Date
+  type                 String                            @default("REGULAR") @db.VarChar(30)
+  status               String                            @default("OPEN") @db.VarChar(20)
+  engineVersion        String                            @default("foundation-1") @map("engine_version") @db.VarChar(50)
+  parameterVersion     String?                           @map("parameter_version") @db.VarChar(50)
+  openedAt             DateTime                          @default(now()) @map("opened_at") @db.Timestamptz(6)
+  closedAt             DateTime?                         @map("closed_at") @db.Timestamptz(6)
+  reopenedAt           DateTime?                         @map("reopened_at") @db.Timestamptz(6)
+  createdAt            DateTime                          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime                          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  company              Company                           @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  payrollCalendar      PayrollCalendar                   @relation(fields: [payrollCalendarId], references: [id], onDelete: Restrict)
+  inputs               PayrollInput[]
+  runs                 PayrollRun[]
+  closureHistory       PayrollPeriodClosure[]
+  closureVersions      PayrollPeriodClosureVersion[]
+  closureIdempotencies PayrollPeriodClosureIdempotency[]
 
   @@unique([companyId, referenceDate, type])
   @@index([payrollCalendarId, referenceDate])
@@ -858,22 +897,23 @@ model PayrollInput {
 }
 
 model PayrollRun {
-  id                String                  @id @default(uuid()) @db.Uuid
-  payrollPeriodId   String                  @map("payroll_period_id") @db.Uuid
+  id                String                        @id @default(uuid()) @db.Uuid
+  payrollPeriodId   String                        @map("payroll_period_id") @db.Uuid
   sequence          Int
-  status            String                  @default("DRAFT") @db.VarChar(20)
-  engineVersion     String                  @map("engine_version") @db.VarChar(50)
-  parameterVersion  String?                 @map("parameter_version") @db.VarChar(50)
+  status            String                        @default("DRAFT") @db.VarChar(20)
+  engineVersion     String                        @map("engine_version") @db.VarChar(50)
+  parameterVersion  String?                       @map("parameter_version") @db.VarChar(50)
   parameterSnapshot Json?
-  startedAt         DateTime?               @map("started_at") @db.Timestamptz(6)
-  completedAt       DateTime?               @map("completed_at") @db.Timestamptz(6)
-  createdAt         DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
-  payrollPeriod     PayrollPeriod           @relation(fields: [payrollPeriodId], references: [id], onDelete: Restrict)
+  startedAt         DateTime?                     @map("started_at") @db.Timestamptz(6)
+  completedAt       DateTime?                     @map("completed_at") @db.Timestamptz(6)
+  createdAt         DateTime                      @default(now()) @map("created_at") @db.Timestamptz(6)
+  payrollPeriod     PayrollPeriod                 @relation(fields: [payrollPeriodId], references: [id], onDelete: Restrict)
   employees         PayrollRunEmployee[]
   messages          PayrollRunMessage[]
   reconciliations   PayrollReconciliation[]
   reviewCycles      PayrollReviewCycle[]
   reviewFindings    PayrollReviewFinding[]
+  closureVersions   PayrollPeriodClosureVersion[]
 
   @@unique([payrollPeriodId, sequence])
   @@index([payrollPeriodId, status])
@@ -899,17 +939,17 @@ model PayrollRunEmployee {
 }
 
 model PayrollCalculationItem {
-  id                     String                @id @default(uuid()) @db.Uuid
-  payrollRunEmployeeId   String                @map("payroll_run_employee_id") @db.Uuid
-  payrollRubricId        String                @map("payroll_rubric_id") @db.Uuid
-  payrollRubricVersionId String?               @map("payroll_rubric_version_id") @db.Uuid
-  baseAmount             Decimal               @default(0) @map("base_amount") @db.Decimal(15, 2)
-  amount                 Decimal               @default(0) @db.Decimal(15, 2)
-  calculationMemory      Json?                 @map("calculation_memory")
-  createdAt              DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
-  payrollRunEmployee     PayrollRunEmployee    @relation(fields: [payrollRunEmployeeId], references: [id], onDelete: Restrict)
-  payrollRubric          PayrollRubric         @relation(fields: [payrollRubricId], references: [id], onDelete: Restrict)
-  payrollRubricVersion   PayrollRubricVersion? @relation(fields: [payrollRubricVersionId], references: [id], onDelete: Restrict)
+  id                     String                 @id @default(uuid()) @db.Uuid
+  payrollRunEmployeeId   String                 @map("payroll_run_employee_id") @db.Uuid
+  payrollRubricId        String                 @map("payroll_rubric_id") @db.Uuid
+  payrollRubricVersionId String?                @map("payroll_rubric_version_id") @db.Uuid
+  baseAmount             Decimal                @default(0) @map("base_amount") @db.Decimal(15, 2)
+  amount                 Decimal                @default(0) @db.Decimal(15, 2)
+  calculationMemory      Json?                  @map("calculation_memory")
+  createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  payrollRunEmployee     PayrollRunEmployee     @relation(fields: [payrollRunEmployeeId], references: [id], onDelete: Restrict)
+  payrollRubric          PayrollRubric          @relation(fields: [payrollRubricId], references: [id], onDelete: Restrict)
+  payrollRubricVersion   PayrollRubricVersion?  @relation(fields: [payrollRubricVersionId], references: [id], onDelete: Restrict)
   payrollReviewFindings  PayrollReviewFinding[]
 
   @@index([payrollRunEmployeeId])
@@ -918,24 +958,25 @@ model PayrollCalculationItem {
 }
 
 model PayrollReviewCycle {
-  id          String                   @id @default(uuid()) @db.Uuid
-  companyId   String                   @map("company_id") @db.Uuid
-  payrollRunId String                  @map("payroll_run_id") @db.Uuid
-  status      PayrollReviewCycleStatus @default(OPEN)
-  createdBy   String                   @map("created_by") @db.Uuid
-  traceId     String                   @map("trace_id") @db.VarChar(100)
-  createdAt   DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
-  submissionNumber Int                 @default(0) @map("submission_number")
-  currentApprovalStage Int             @default(0) @map("current_approval_stage")
-  reviewRound Int                      @default(1) @map("review_round")
-  company     Company                  @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  payrollRun  PayrollRun               @relation(fields: [payrollRunId], references: [id], onDelete: Restrict)
-  creator     User                     @relation("PayrollReviewCycleCreator", fields: [createdBy], references: [id], onDelete: Restrict)
-  findings    PayrollReviewFinding[]
-  events      PayrollReviewEvent[]
-  approvalStages PayrollReviewApprovalStage[]
-  decisions   PayrollReviewDecision[]
-  invalidations PayrollReviewDecisionInvalidation[]
+  id                   String                              @id @default(uuid()) @db.Uuid
+  companyId            String                              @map("company_id") @db.Uuid
+  payrollRunId         String                              @map("payroll_run_id") @db.Uuid
+  status               PayrollReviewCycleStatus            @default(OPEN)
+  createdBy            String                              @map("created_by") @db.Uuid
+  traceId              String                              @map("trace_id") @db.VarChar(100)
+  createdAt            DateTime                            @default(now()) @map("created_at") @db.Timestamptz(6)
+  submissionNumber     Int                                 @default(0) @map("submission_number")
+  currentApprovalStage Int                                 @default(0) @map("current_approval_stage")
+  reviewRound          Int                                 @default(1) @map("review_round")
+  company              Company                             @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  payrollRun           PayrollRun                          @relation(fields: [payrollRunId], references: [id], onDelete: Restrict)
+  creator              User                                @relation("PayrollReviewCycleCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  findings             PayrollReviewFinding[]
+  events               PayrollReviewEvent[]
+  approvalStages       PayrollReviewApprovalStage[]
+  decisions            PayrollReviewDecision[]
+  invalidations        PayrollReviewDecisionInvalidation[]
+  closureVersions      PayrollPeriodClosureVersion[]
 
   @@index([companyId, status])
   @@index([payrollRunId, status])
@@ -943,13 +984,13 @@ model PayrollReviewCycle {
 }
 
 model PayrollReviewApprovalStage {
-  id                 String             @id @default(uuid()) @db.Uuid
-  reviewCycleId      String             @map("review_cycle_id") @db.Uuid
+  id                 String                  @id @default(uuid()) @db.Uuid
+  reviewCycleId      String                  @map("review_cycle_id") @db.Uuid
   sequence           Int
-  code               String             @db.VarChar(100)
-  requiredCapability String             @map("required_capability") @db.VarChar(100)
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  reviewCycle        PayrollReviewCycle @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
+  code               String                  @db.VarChar(100)
+  requiredCapability String                  @map("required_capability") @db.VarChar(100)
+  createdAt          DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  reviewCycle        PayrollReviewCycle      @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
   decisions          PayrollReviewDecision[]
 
   @@unique([reviewCycleId, sequence])
@@ -958,21 +999,21 @@ model PayrollReviewApprovalStage {
 }
 
 model PayrollReviewDecision {
-  id               String                     @id @default(uuid()) @db.Uuid
-  companyId        String                     @map("company_id") @db.Uuid
-  reviewCycleId    String                     @map("review_cycle_id") @db.Uuid
-  approvalStageId  String                     @map("approval_stage_id") @db.Uuid
-  submissionNumber Int                        @map("submission_number")
-  reviewRound      Int                        @default(1) @map("review_round")
+  id               String                             @id @default(uuid()) @db.Uuid
+  companyId        String                             @map("company_id") @db.Uuid
+  reviewCycleId    String                             @map("review_cycle_id") @db.Uuid
+  approvalStageId  String                             @map("approval_stage_id") @db.Uuid
+  submissionNumber Int                                @map("submission_number")
+  reviewRound      Int                                @default(1) @map("review_round")
   decision         PayrollReviewDecisionType
-  actorId          String                     @map("actor_id") @db.Uuid
-  reason           String?                    @db.VarChar(1000)
-  traceId          String                     @map("trace_id") @db.VarChar(100)
-  occurredAt       DateTime                   @default(now()) @map("occurred_at") @db.Timestamptz(6)
-  company          Company                    @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  reviewCycle      PayrollReviewCycle         @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
-  approvalStage    PayrollReviewApprovalStage @relation(fields: [approvalStageId], references: [id], onDelete: Restrict)
-  actor            User                       @relation("PayrollReviewDecisionActor", fields: [actorId], references: [id], onDelete: Restrict)
+  actorId          String                             @map("actor_id") @db.Uuid
+  reason           String?                            @db.VarChar(1000)
+  traceId          String                             @map("trace_id") @db.VarChar(100)
+  occurredAt       DateTime                           @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  company          Company                            @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  reviewCycle      PayrollReviewCycle                 @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
+  approvalStage    PayrollReviewApprovalStage         @relation(fields: [approvalStageId], references: [id], onDelete: Restrict)
+  actor            User                               @relation("PayrollReviewDecisionActor", fields: [actorId], references: [id], onDelete: Restrict)
   invalidation     PayrollReviewDecisionInvalidation?
 
   @@unique([reviewCycleId, submissionNumber, approvalStageId])
@@ -995,7 +1036,7 @@ model PayrollReviewDecisionInvalidation {
   reviewCycle        PayrollReviewCycle    @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
   decision           PayrollReviewDecision @relation(fields: [decisionId], references: [id], onDelete: Restrict)
   actor              User                  @relation("PayrollReviewInvalidationActor", fields: [invalidatedBy], references: [id], onDelete: Restrict)
-  causedByEvent      PayrollReviewEvent     @relation(fields: [causedByEventId], references: [id], onDelete: Restrict)
+  causedByEvent      PayrollReviewEvent    @relation(fields: [causedByEventId], references: [id], onDelete: Restrict)
 
   @@index([reviewCycleId, reviewRound])
   @@index([companyId, invalidatedAt])
@@ -1038,22 +1079,22 @@ model PayrollReviewFinding {
 }
 
 model PayrollReviewEvent {
-  id            String                 @id @default(uuid()) @db.Uuid
-  companyId     String                 @map("company_id") @db.Uuid
-  reviewCycleId String                 @map("review_cycle_id") @db.Uuid
-  findingId     String?                @map("finding_id") @db.Uuid
-  actorId       String                 @map("actor_id") @db.Uuid
-  traceId       String                 @map("trace_id") @db.VarChar(100)
-  eventType     PayrollReviewEventType @map("event_type")
-  reason        String?                @db.VarChar(1000)
-  previousState Json?                  @map("previous_state")
-  nextState     Json                   @map("next_state")
-  occurredAt    DateTime               @default(now()) @map("occurred_at") @db.Timestamptz(6)
-  metadata      Json?
-  company       Company                @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  reviewCycle   PayrollReviewCycle     @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
-  finding       PayrollReviewFinding?  @relation(fields: [findingId], references: [id], onDelete: Restrict)
-  actor         User                   @relation("PayrollReviewEventActor", fields: [actorId], references: [id], onDelete: Restrict)
+  id                  String                              @id @default(uuid()) @db.Uuid
+  companyId           String                              @map("company_id") @db.Uuid
+  reviewCycleId       String                              @map("review_cycle_id") @db.Uuid
+  findingId           String?                             @map("finding_id") @db.Uuid
+  actorId             String                              @map("actor_id") @db.Uuid
+  traceId             String                              @map("trace_id") @db.VarChar(100)
+  eventType           PayrollReviewEventType              @map("event_type")
+  reason              String?                             @db.VarChar(1000)
+  previousState       Json?                               @map("previous_state")
+  nextState           Json                                @map("next_state")
+  occurredAt          DateTime                            @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  metadata            Json?
+  company             Company                             @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  reviewCycle         PayrollReviewCycle                  @relation(fields: [reviewCycleId], references: [id], onDelete: Restrict)
+  finding             PayrollReviewFinding?               @relation(fields: [findingId], references: [id], onDelete: Restrict)
+  actor               User                                @relation("PayrollReviewEventActor", fields: [actorId], references: [id], onDelete: Restrict)
   causedInvalidations PayrollReviewDecisionInvalidation[]
 
   @@index([companyId, occurredAt])
@@ -1090,6 +1131,130 @@ model PayrollPeriodClosure {
 
   @@index([payrollPeriodId, occurredAt])
   @@map("payroll_period_closures")
+}
+
+model PayrollPeriodClosureVersion {
+  id                       String                                       @id @default(uuid()) @db.Uuid
+  companyId                String                                       @map("company_id") @db.Uuid
+  payrollPeriodId          String                                       @map("payroll_period_id") @db.Uuid
+  version                  Int
+  status                   PayrollPeriodClosureStatus                   @default(OPEN)
+  selectedPayrollRunId     String?                                      @map("selected_payroll_run_id") @db.Uuid
+  linkedReviewCycleId      String?                                      @map("linked_review_cycle_id") @db.Uuid
+  linkedReviewRound        Int?                                         @map("linked_review_round")
+  consistencyToken         String                                       @map("consistency_token") @db.VarChar(100)
+  optimisticVersion        Int                                          @default(1) @map("optimistic_version")
+  previousClosureVersionId String?                                      @map("previous_closure_version_id") @db.Uuid
+  supersededAt             DateTime?                                    @map("superseded_at") @db.Timestamptz(6)
+  createdBy                String                                       @map("created_by") @db.Uuid
+  createdAt                DateTime                                     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                DateTime                                     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  closedAt                 DateTime?                                    @map("closed_at") @db.Timestamptz(6)
+  reopenedAt               DateTime?                                    @map("reopened_at") @db.Timestamptz(6)
+  company                  Company                                      @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  payrollPeriod            PayrollPeriod                                @relation(fields: [payrollPeriodId], references: [id], onDelete: Restrict)
+  selectedPayrollRun       PayrollRun?                                  @relation(fields: [selectedPayrollRunId], references: [id], onDelete: Restrict)
+  linkedReviewCycle        PayrollReviewCycle?                          @relation(fields: [linkedReviewCycleId], references: [id], onDelete: Restrict)
+  previousClosureVersion   PayrollPeriodClosureVersion?                 @relation("PayrollPeriodClosureVersionChain", fields: [previousClosureVersionId], references: [id], onDelete: Restrict)
+  nextClosureVersions      PayrollPeriodClosureVersion[]                @relation("PayrollPeriodClosureVersionChain")
+  creator                  User                                         @relation("PayrollPeriodClosureVersionCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  manifests                PayrollPeriodClosureManifest[]
+  events                   PayrollPeriodClosureEvent[]
+  warningAcknowledgements  PayrollPeriodClosureWarningAcknowledgement[]
+
+  @@unique([companyId, payrollPeriodId, version])
+  @@index([companyId, status])
+  @@index([payrollPeriodId, createdAt])
+  @@index([selectedPayrollRunId])
+  @@index([linkedReviewCycleId])
+  @@map("payroll_period_closure_versions")
+}
+
+model PayrollPeriodClosureManifest {
+  id                     String                      @id @default(uuid()) @db.Uuid
+  companyId              String                      @map("company_id") @db.Uuid
+  payrollPeriodClosureId String                      @map("payroll_period_closure_id") @db.Uuid
+  manifestVersion        Int                         @map("manifest_version")
+  payload                Json
+  payloadHash            String                      @map("payload_hash") @db.Char(64)
+  hashAlgorithmVersion   String                      @map("hash_algorithm_version") @db.VarChar(50)
+  createdAt              DateTime                    @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdBy              String                      @map("created_by") @db.Uuid
+  traceId                String                      @map("trace_id") @db.VarChar(100)
+  sessionId              String?                     @map("session_id") @db.VarChar(100)
+  ipAddress              String?                     @map("ip_address") @db.VarChar(64)
+  userAgent              String?                     @map("user_agent") @db.VarChar(512)
+  company                Company                     @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  payrollPeriodClosure   PayrollPeriodClosureVersion @relation(fields: [payrollPeriodClosureId], references: [id], onDelete: Restrict)
+  creator                User                        @relation("PayrollPeriodClosureManifestCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+
+  @@unique([payrollPeriodClosureId, manifestVersion])
+  @@index([companyId, createdAt])
+  @@index([payloadHash])
+  @@map("payroll_period_closure_manifests")
+}
+
+model PayrollPeriodClosureEvent {
+  id                     String                        @id @default(uuid()) @db.Uuid
+  companyId              String                        @map("company_id") @db.Uuid
+  payrollPeriodClosureId String                        @map("payroll_period_closure_id") @db.Uuid
+  eventType              PayrollPeriodClosureEventType @map("event_type")
+  payload                Json
+  actorUserId            String                        @map("actor_user_id") @db.Uuid
+  traceId                String                        @map("trace_id") @db.VarChar(100)
+  sessionId              String?                       @map("session_id") @db.VarChar(100)
+  ipAddress              String?                       @map("ip_address") @db.VarChar(64)
+  userAgent              String?                       @map("user_agent") @db.VarChar(512)
+  createdAt              DateTime                      @default(now()) @map("created_at") @db.Timestamptz(6)
+  company                Company                       @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  payrollPeriodClosure   PayrollPeriodClosureVersion   @relation(fields: [payrollPeriodClosureId], references: [id], onDelete: Restrict)
+  actor                  User                          @relation("PayrollPeriodClosureEventActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([companyId, createdAt])
+  @@index([payrollPeriodClosureId, createdAt])
+  @@index([traceId])
+  @@map("payroll_period_closure_events")
+}
+
+model PayrollPeriodClosureWarningAcknowledgement {
+  id                     String                      @id @default(uuid()) @db.Uuid
+  companyId              String                      @map("company_id") @db.Uuid
+  payrollPeriodClosureId String                      @map("payroll_period_closure_id") @db.Uuid
+  warningCode            String                      @map("warning_code") @db.VarChar(100)
+  acknowledgementPayload Json                        @map("acknowledgement_payload")
+  acknowledgedBy         String                      @map("acknowledged_by") @db.Uuid
+  acknowledgedAt         DateTime                    @default(now()) @map("acknowledged_at") @db.Timestamptz(6)
+  traceId                String                      @map("trace_id") @db.VarChar(100)
+  sessionId              String?                     @map("session_id") @db.VarChar(100)
+  ipAddress              String?                     @map("ip_address") @db.VarChar(64)
+  userAgent              String?                     @map("user_agent") @db.VarChar(512)
+  company                Company                     @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  payrollPeriodClosure   PayrollPeriodClosureVersion @relation(fields: [payrollPeriodClosureId], references: [id], onDelete: Restrict)
+  actor                  User                        @relation("PayrollPeriodClosureWarningActor", fields: [acknowledgedBy], references: [id], onDelete: Restrict)
+
+  @@unique([payrollPeriodClosureId, warningCode])
+  @@index([companyId, acknowledgedAt])
+  @@map("payroll_period_closure_warning_acknowledgements")
+}
+
+model PayrollPeriodClosureIdempotency {
+  id                 String                                @id @default(uuid()) @db.Uuid
+  companyId          String                                @map("company_id") @db.Uuid
+  payrollPeriodId    String                                @map("payroll_period_id") @db.Uuid
+  operationType      PayrollPeriodClosureOperationType     @map("operation_type")
+  idempotencyKeyHash String                                @map("idempotency_key_hash") @db.Char(64)
+  requestFingerprint String                                @map("request_fingerprint") @db.Char(64)
+  responseReference  String?                               @map("response_reference") @db.VarChar(200)
+  status             PayrollPeriodClosureIdempotencyStatus @default(IN_PROGRESS)
+  failureCode        String?                               @map("failure_code") @db.VarChar(100)
+  createdAt          DateTime                              @default(now()) @map("created_at") @db.Timestamptz(6)
+  completedAt        DateTime?                             @map("completed_at") @db.Timestamptz(6)
+  company            Company                               @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  payrollPeriod      PayrollPeriod                         @relation(fields: [payrollPeriodId], references: [id], onDelete: Restrict)
+
+  @@unique([companyId, payrollPeriodId, operationType, idempotencyKeyHash])
+  @@index([companyId, status, createdAt])
+  @@map("payroll_period_closure_idempotencies")
 }
 
 model VariableCompensationEvent {
