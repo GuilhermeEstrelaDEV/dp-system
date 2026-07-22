@@ -1,6 +1,6 @@
 # ETP-013 — Especificação de conferência e aprovação de folha
 
-**Status:** backend v1 funcionalmente concluído, incluindo fechamento, reabertura e invalidação append-only; frontend pendente.
+**Status:** backend e frontend funcional v1 concluídos, incluindo fechamento, reabertura e invalidação append-only; integração ampla e endurecimento permanecem pendentes.
 
 ## 1. Motivação e evidências
 

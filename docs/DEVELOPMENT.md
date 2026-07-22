@@ -44,6 +44,8 @@ Execute `pnpm dev` para iniciar as aplicações em desenvolvimento. Consulte `do
 
 O application shell e sua configuração de navegação estão documentados em [Application Shell](frontend/APPLICATION_SHELL.md). Mantenha caminhos, rótulos, ícones e breadcrumbs centralizados nessa configuração; telas demonstrativas devem identificar todo conteúdo fictício de modo visível.
 
+Copie `apps/web/.env.example` para `apps/web/.env.local` quando precisar alterar a API local. `VITE_API_URL` deve apontar para a raiz `/api` (o cliente acrescenta `/v1`). A sessão funcional usa `sessionStorage`, envia Bearer token e `x-correlation-id`, e deve ser encerrada localmente enquanto não houver logout no backend. Nunca trate os guards visuais ou as capabilities mantidas no navegador como autorização real.
+
 Os cadastros organizacionais usam TanStack Query, React Hook Form, Zod e `@hookform/resolvers`. Execute as migrations antes de testar a API contra uma base local.
 
 Os módulos de colaboradores e contratos tratam apenas dados mínimos demonstrativos. Não inclua CPF, endereço, documentos, banco, saúde ou remuneração em fixtures, testes, logs ou telas; consulte [Colaboradores e contratos](modules/EMPLOYEES_AND_CONTRACTS.md) para o recorte LGPD e as decisões pendentes.
