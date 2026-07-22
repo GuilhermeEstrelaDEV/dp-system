@@ -15,6 +15,8 @@ const roles = [
 const permissions = [
   ['platform.read', 'View platform resources'],
   ['platform.manage', 'Manage platform resources'],
+  ['delegation.manage', 'Manage temporary substitutions'],
+  ['emergency_access.manage', 'Manage audited emergency access'],
 ] as const;
 
 async function main() {

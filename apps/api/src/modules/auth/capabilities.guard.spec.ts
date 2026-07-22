@@ -11,6 +11,9 @@ describe('CapabilitiesGuard', () => {
     permissions: ['payroll.view'],
     traceId: 'trace',
     sessionId: 'session',
+    ipAddress: '127.0.0.1',
+    userAgent: 'test',
+    accessGrants: [],
   };
 
   function context(): ExecutionContext {
@@ -21,21 +24,23 @@ describe('CapabilitiesGuard', () => {
     } as unknown as ExecutionContext;
   }
 
-  it('denies by default when capability metadata is absent', () => {
+  it('denies by default when capability metadata is absent', async () => {
     const reflector = { getAllAndOverride: jest.fn().mockReturnValue(undefined) };
     const guard = new CapabilitiesGuard(
       reflector as unknown as Reflector,
       new AuthorizationService(),
+      { append: jest.fn() } as never,
     );
-    expect(guard.canActivate(context())).toBe(false);
+    await expect(guard.canActivate(context())).resolves.toBe(false);
   });
 
-  it('allows a declared effective capability', () => {
+  it('allows a declared effective capability', async () => {
     const reflector = { getAllAndOverride: jest.fn().mockReturnValue(['payroll.view']) };
     const guard = new CapabilitiesGuard(
       reflector as unknown as Reflector,
       new AuthorizationService(),
+      { append: jest.fn() } as never,
     );
-    expect(guard.canActivate(context())).toBe(true);
+    await expect(guard.canActivate(context())).resolves.toBe(true);
   });
 });

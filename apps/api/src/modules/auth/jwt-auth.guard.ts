@@ -19,6 +19,8 @@ export class JwtAuthGuard implements CanActivate {
     request.principal = await this.contexts.resolve(
       identity,
       request.correlationId ?? 'missing-trace-id',
+      request.ip || request.socket.remoteAddress || 'unknown',
+      request.header('user-agent') ?? null,
     );
     return true;
   }

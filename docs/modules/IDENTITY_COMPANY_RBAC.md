@@ -43,5 +43,5 @@ As APIs existentes permanecem inalteradas até inventário e migração coberta 
 - nenhum papel é codificado em regras;
 - nenhum seed de atribuição ou credencial foi criado;
 - não há refresh/logout, delegação, substituição ou acesso emergencial;
-- a auditoria transversal ainda precisa incluir IP, user-agent, metadata allowlisted e atomicidade com cada caso de uso;
-- a próxima etapa é endurecer autorização/auditoria transversal antes de persistir o workflow da ETP-013.
+- auditoria transversal, IP, user-agent, metadata allowlisted, substituição e emergência estão descritos em [Fundação transversal](../architecture/AUDIT_AUTHORIZATION_FOUNDATION.md);
+- a próxima etapa é revisar e implementar a persistência neutra do workflow da ETP-013.

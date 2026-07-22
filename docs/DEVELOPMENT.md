@@ -64,6 +64,8 @@ As rotas de bootstrap de identidade estão sob `/api/v1/auth`. `JWT_SECRET` deve
 
 Senhas persistidas em `User.passwordHash` devem ser geradas pelo `PasswordHasherService` (`scrypt` com salt aleatório). O seed não cria usuário nem credencial padrão. Para acessar uma nova rota empresarial, aplique `JwtAuthGuard` e autorização por capability, valide novamente no caso de uso e derive a empresa exclusivamente de `principal.activeCompanyId`. Consulte [Identidade autenticada e RBAC empresarial](modules/IDENTITY_COMPANY_RBAC.md).
 
+`TRUST_PROXY` permanece `false` salvo implantação atrás de proxy controlado. `EMERGENCY_ACCESS_MAX_HOURS` define o teto técnico de acesso emergencial entre 1 e 24 horas. Escritas críticas devem usar `AuditWriterService.transaction`; metadata fora da allowlist ou com campos sensíveis é rejeitada. Consulte [Fundação transversal](architecture/AUDIT_AUTHORIZATION_FOUNDATION.md).
+
 Folha usa configurações e versões demonstrativas, com valores monetários representados por texto decimal. Não inclua INSS, FGTS, IRRF, alíquotas, faixas, deduções, fórmulas ou qualquer regra legal sem fonte homologada; consulte [Fundação de folha](modules/PAYROLL_FOUNDATION.md).
 
 ## Git e commits

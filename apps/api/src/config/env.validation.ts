@@ -25,6 +25,8 @@ export function validateEnvironment(config: Record<string, unknown>) {
     RATE_LIMIT_TTL_MS: Joi.number().integer().min(1000).default(60000),
     RATE_LIMIT_MAX_REQUESTS: Joi.number().integer().min(10).default(100),
     LOG_LEVEL: Joi.string().valid('error', 'warn', 'log', 'debug', 'verbose').default('log'),
+    TRUST_PROXY: Joi.boolean().default(false),
+    EMERGENCY_ACCESS_MAX_HOURS: Joi.number().integer().min(1).max(24).default(8),
   });
 
   const { error, value } = schema.validate(config, {

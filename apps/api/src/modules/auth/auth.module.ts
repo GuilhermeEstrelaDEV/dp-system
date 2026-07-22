@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, type JwtModuleOptions } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
+import { AccessGrantsController } from './access-grants.controller';
+import { AccessGrantsService } from './access-grants.service';
 import { ApplicationContextService } from './application-context.service';
 import { AuthService } from './auth.service';
 import { AuditWriterService } from './audit-writer.service';
@@ -26,9 +28,10 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
       }),
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, AccessGrantsController],
   providers: [
     ApplicationContextService,
+    AccessGrantsService,
     AuthService,
     AuditWriterService,
     AuthorizationService,

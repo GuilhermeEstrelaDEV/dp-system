@@ -192,7 +192,7 @@
 
 ### ETP-013 — Conferência e aprovação de folha
 
-- **Status:** fundação técnica parcial; identidade e RBAC empresarial implementados, workflow funcional não iniciado.
+- **Status:** fundação técnica parcial; identidade, RBAC e autorização/auditoria transversal implementados, workflow funcional não iniciado.
 - **Especificação:** `docs/project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md`.
 - **Objetivo proposto:** workflow auditável de conferência, achados e decisões antes do fechamento.
 - **Dependência atendida:** ETP-012 mergeada pelo PR #26.
@@ -206,7 +206,8 @@
 - **Prontidão de identidade/autorização:** arquitetura v1 aprovada em `docs/architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md` e ADR-007; nenhuma implementação foi iniciada porque ainda não há principal autenticado, vínculo usuário–empresa, autorização aplicada ou writer de auditoria.
 - **Fundação funcional:** login JWT, principal tipado, seleção validada de empresa, capabilities efetivas, autorização opt-in e isolamento reutilizável estão documentados em `docs/modules/IDENTITY_COMPANY_RBAC.md`.
 - **Compatibilidade:** rotas legadas não receberam proteção global; sua migração exige inventário e testes próprios.
-- **Próximo passo técnico:** concluir a fase transversal de autorização e auditoria, incluindo IP/user-agent, atomicidade e inventário de rotas, antes da persistência neutra do workflow.
+- **Autorização transversal:** migration `0011_authorization_audit_foundation`, grants temporários/emergenciais, auditoria atômica e inventário documentados em `docs/architecture/AUDIT_AUTHORIZATION_FOUNDATION.md`.
+- **Próximo passo técnico:** revisar e implementar a fase 4, persistência neutra de ciclos, achados e eventos, sem habilitar decisões antes das policies do workflow.
 - **Pacote de decisão:** `docs/project-management/BDP-009_DECISION_PACKAGE.md` homologado para v1 e preservado como evidência das alternativas avaliadas.
 
 ### ETP-014 a ETP-015

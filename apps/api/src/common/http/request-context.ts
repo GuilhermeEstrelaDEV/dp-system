@@ -6,6 +6,13 @@ export interface AuthenticatedPrincipal {
   permissions: readonly string[];
   traceId: string;
   sessionId: string;
+  ipAddress: string;
+  userAgent: string | null;
+  accessGrants: readonly {
+    id: string;
+    type: 'SUBSTITUTION' | 'EMERGENCY';
+    capabilities: readonly string[];
+  }[];
 }
 
 export type RequestWithContext = Request & {
