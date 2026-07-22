@@ -47,6 +47,7 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
     AuthorizationService,
     CapabilitiesGuard,
     JwtAuthGuard,
+    JwtStrategy,
   ],
 })
 export class AuthModule {}

@@ -66,6 +66,34 @@ export class PayrollReviewFindingInvariantError extends Error {
 }
 
 export class PayrollReviewFindingFoundation {
+  assertCoherence(
+    finding: PayrollReviewFinding,
+    history: readonly PayrollReviewFindingEvent[],
+  ): void {
+    if (history.length === 0) {
+      throw new PayrollReviewFindingInvariantError('Finding history cannot be empty');
+    }
+    const uniqueIds = new Set<string>();
+    let previousOccurredAt = Number.NEGATIVE_INFINITY;
+    for (const event of history) {
+      if (event.findingId !== finding.id || event.companyId !== finding.companyId) {
+        throw new PayrollReviewFindingInvariantError('Finding history has a foreign event');
+      }
+      if (uniqueIds.has(event.id)) {
+        throw new PayrollReviewFindingInvariantError('Finding event id must be unique');
+      }
+      uniqueIds.add(event.id);
+      if (event.occurredAt.getTime() < previousOccurredAt) {
+        throw new PayrollReviewFindingInvariantError('Finding events must be chronological');
+      }
+      previousOccurredAt = event.occurredAt.getTime();
+    }
+    const expectedStatus = history.at(-1)?.type === 'RESOLVED' ? 'RESOLVED' : 'OPEN';
+    if (finding.status !== expectedStatus) {
+      throw new PayrollReviewFindingInvariantError('Finding status must match its latest event');
+    }
+  }
+
   open(command: OpenPayrollReviewFinding): PayrollReviewFindingChange {
     const findingId = this.required(command.findingId, 'findingId');
     const companyId = this.required(command.companyId, 'companyId');
@@ -148,9 +176,7 @@ export class PayrollReviewFindingFoundation {
     occurredAt: Date,
   ): void {
     const nextOccurredAt = this.validDate(occurredAt, 'occurredAt');
-    if (history.length === 0) {
-      throw new PayrollReviewFindingInvariantError('Finding history cannot be empty');
-    }
+    this.assertCoherence(finding, history);
     for (const event of history) {
       if (event.findingId !== finding.id || event.companyId !== finding.companyId) {
         throw new PayrollReviewFindingInvariantError('Finding history has a foreign event');
