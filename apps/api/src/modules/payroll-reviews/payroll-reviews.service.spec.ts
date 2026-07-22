@@ -23,6 +23,8 @@ const principal: AuthenticatedPrincipal = {
     'payroll.review.submit',
     'payroll.review.approve',
     'payroll.review.reject',
+    'payroll.review.close',
+    'payroll.review.reopen',
   ],
   traceId: 'trace-1',
   sessionId: 'session-1',
@@ -40,6 +42,7 @@ const cycle = {
   createdAt: new Date('2026-01-01T00:00:00Z'),
   submissionNumber: 0,
   currentApprovalStage: 0,
+  reviewRound: 1,
 };
 
 function finding(status: 'OPEN' | 'RESOLVED' = 'OPEN') {
@@ -99,6 +102,7 @@ describe('PayrollReviewsService', () => {
     payrollReviewCycle: { create: jest.fn(), findFirst: jest.fn(), update: jest.fn() },
     payrollReviewApprovalStage: { createMany: jest.fn() },
     payrollReviewDecision: { create: jest.fn() },
+    payrollReviewDecisionInvalidation: { createMany: jest.fn() },
     payrollReviewFinding: {
       create: jest.fn(),
       findFirst: jest.fn(),
@@ -436,5 +440,58 @@ describe('PayrollReviewsService', () => {
         },
       ),
     ).rejects.toBe(rollback);
+  });
+
+  it('closes an approved cycle only with complete valid approvals and no blocking finding', async () => {
+    tx.payrollReviewCycle.findFirst.mockResolvedValue({
+      ...cycle,
+      status: 'APPROVED',
+      submissionNumber: 1,
+      approvalStages: [{ id: 's1' }, { id: 's2' }],
+      decisions: [
+        { reviewRound: 1, submissionNumber: 1, decision: 'APPROVED', invalidation: null },
+        { reviewRound: 1, submissionNumber: 1, decision: 'APPROVED', invalidation: null },
+      ],
+    });
+    tx.payrollReviewFinding.count.mockResolvedValue(0);
+    tx.payrollReviewCycle.update.mockImplementation(({ data }: { data: object }) => ({
+      ...cycle,
+      ...data,
+    }));
+    tx.payrollReviewEvent.create.mockResolvedValue({});
+    await expect(service.closeReview(cycle.id, principal)).resolves.toEqual(
+      expect.objectContaining({ status: 'CLOSED' }),
+    );
+    expect(audit.append).toHaveBeenCalledWith(expect.any(Object), tx);
+  });
+
+  it('reopens approved and closed cycles, invalidates approvals and starts a new round', async () => {
+    for (const status of ['APPROVED', 'CLOSED'] as const) {
+      jest.clearAllMocks();
+      audit.transaction.mockImplementation((work: (client: typeof tx) => Promise<unknown>) =>
+        work(tx),
+      );
+      tx.payrollReviewCycle.findFirst.mockResolvedValue({
+        ...cycle,
+        status,
+        decisions: [{ id: 'decision-1', reviewRound: 1, invalidation: null }],
+      });
+      tx.payrollReviewEvent.create.mockResolvedValue({});
+      tx.payrollReviewDecisionInvalidation.createMany.mockResolvedValue({ count: 1 });
+      tx.payrollReviewCycle.update.mockResolvedValue({
+        ...cycle,
+        status: 'IN_REVIEW',
+        reviewRound: 2,
+      });
+      await expect(
+        service.reopenReview(cycle.id, { reason: 'Correction required' }, principal),
+      ).resolves.toEqual(expect.objectContaining({ status: 'IN_REVIEW', reviewRound: 2 }));
+      expect(tx.payrollReviewDecisionInvalidation.createMany).toHaveBeenCalledWith({
+        data: [expect.objectContaining({ decisionId: 'decision-1', reviewRound: 1 })],
+      });
+      expect(tx.payrollReviewEvent.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ eventType: 'APPROVALS_INVALIDATED' }),
+      });
+    }
   });
 });

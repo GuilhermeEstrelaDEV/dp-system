@@ -4,6 +4,7 @@ export const PAYROLL_REVIEW_CYCLE_STATUSES = [
   'SUBMITTED',
   'APPROVED',
   'REJECTED',
+  'CLOSED',
 ] as const;
 
 export type PayrollReviewCycleStatus = (typeof PAYROLL_REVIEW_CYCLE_STATUSES)[number];
@@ -48,5 +49,21 @@ export class PayrollReviewWorkflowFoundation {
       throw new PayrollReviewWorkflowInvariantError('Rejection reason is required');
     }
     return 'REJECTED';
+  }
+
+  close(status: PayrollReviewCycleStatus, approvalsComplete: boolean, blocking: number): 'CLOSED' {
+    if (status !== 'APPROVED' || !approvalsComplete || blocking > 0) {
+      throw new PayrollReviewWorkflowInvariantError('Review is not eligible for closing');
+    }
+    return 'CLOSED';
+  }
+
+  reopen(status: PayrollReviewCycleStatus, reason: string): 'IN_REVIEW' {
+    if (status !== 'APPROVED' && status !== 'CLOSED') {
+      throw new PayrollReviewWorkflowInvariantError('Only APPROVED or CLOSED reviews can reopen');
+    }
+    if (!reason.trim())
+      throw new PayrollReviewWorkflowInvariantError('Reopening reason is required');
+    return 'IN_REVIEW';
   }
 }

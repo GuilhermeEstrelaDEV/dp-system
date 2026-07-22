@@ -192,12 +192,12 @@
 
 ### ETP-013 — Conferência e aprovação de folha
 
-- **Status:** backend funcional parcial; workflow decisório v1 implementado, sem frontend, fechamento ou reabertura.
+- **Status:** backend v1 funcionalmente concluído; frontend pendente.
 - **Especificação:** `docs/project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md`.
 - **Objetivo proposto:** workflow auditável de conferência, achados e decisões antes do fechamento.
 - **Dependência atendida:** ETP-012 mergeada pelo PR #26.
 - **Decisão de negócio:** BDP-009 resolvida para a versão 1 em `docs/project-management/BDP-009_RESOLUTION_V1.md`; ADR-007 aceita.
-- **Dependências bloqueantes restantes:** frontend, integração futura com fechamento/reabertura e retenção vinculada à BDP-011.
+- **Dependências bloqueantes restantes:** frontend, integração ampla com fechamento de competência e retenção vinculada à BDP-011.
 - **Persistência:** migrations `0010` a `0013_payroll_review_workflow` implementam contexto empresarial, auditoria/grants, ciclos/achados/eventos, etapas e decisões append-only.
 - **Pull Request e merge da especificação:** PR #27 mergeado em `develop` no commit `58341a5`.
 - **Fundação técnica:** contratos imutáveis para achados, severidade, estado e eventos append-only; invariantes de justificativa, cronologia, unicidade, coerência e isolamento por empresa; módulo NestJS e persistência neutra existem, sem interface ou decisão de aprovação.
@@ -209,7 +209,8 @@
 - **Autorização transversal:** migration `0011_authorization_audit_foundation`, grants temporários/emergenciais, auditoria atômica e inventário documentados em `docs/architecture/AUDIT_AUTHORIZATION_FOUNDATION.md`.
 - **Fase 4:** APIs autenticadas abrem/consultam ciclos, criam/listam achados e resolvem/reabrem achados com capability, `404` empresarial e transação conjunta de estado, evento e `AuditLog`.
 - **Fase 5:** estados `OPEN`, `IN_REVIEW`, `SUBMITTED`, `APPROVED` e `REJECTED`; duas etapas sequenciais configuradas por dados; segregação de atores, bloqueio por achado e auditoria atômica.
-- **Próximo passo técnico:** implementar a fase 6 frontend sem antecipar `CLOSED`, reabertura ou alçadas.
+- **Fechamento/reabertura:** migration `0014` adiciona `CLOSED`, rodadas explícitas e invalidações append-only; reabertura retorna a `IN_REVIEW` e exige novo ciclo decisório.
+- **Próximo passo técnico:** implementar a fase 6 frontend.
 - **Pacote de decisão:** `docs/project-management/BDP-009_DECISION_PACKAGE.md` homologado para v1 e preservado como evidência das alternativas avaliadas.
 
 ### ETP-014 a ETP-015

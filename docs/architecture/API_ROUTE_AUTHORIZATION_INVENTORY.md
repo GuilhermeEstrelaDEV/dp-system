@@ -18,7 +18,7 @@
 | Vacations/leaves      | férias, afastamentos e tipos                                         | Ainda legada              | Exige migração por caso de uso         |
 | Payroll configuration | competências, rubricas e parâmetros                                  | Ainda legada              | Não migrada para evitar quebra         |
 | Payroll operation     | lançamentos, execuções e fechamentos                                 | Ainda legada              | Prioridade para fase do workflow       |
-| Payroll review        | doze rotas de ciclos, achados, workflow e histórico                  | Autenticada e empresarial | JWT, capability, policy e `404`        |
+| Payroll review        | quatorze rotas incluindo fechamento, reabertura e histórico          | Autenticada e empresarial | JWT, capability, policy e `404`        |
 | Variable compensation | todas sob `/variable-compensation`                                   | Ainda legada              | BDP-006 continua pendente              |
 
 Não há rota administrativa da plataforma protegida nesta fase; capabilities globais continuam disponíveis apenas como fundação.

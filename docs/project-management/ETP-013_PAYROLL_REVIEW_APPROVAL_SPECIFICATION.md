@@ -1,6 +1,6 @@
 # ETP-013 — Especificação de conferência e aprovação de folha
 
-**Status:** especificação e BDP-009 v1 aprovadas; backend de persistência e workflow decisório implementado, entrega funcional ainda parcial.
+**Status:** backend v1 funcionalmente concluído, incluindo fechamento, reabertura e invalidação append-only; frontend pendente.
 
 ## 1. Motivação e evidências
 
