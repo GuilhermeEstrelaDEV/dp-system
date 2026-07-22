@@ -60,7 +60,7 @@
 
 ## Fase 3 — Autorização e auditoria transversais
 
-**Estado:** parcial. Guard, decorator, policy de aplicação, `404` empresarial e writer mínimo existem. IP/user-agent, atomicidade transacional, substituição, emergência e migração progressiva das rotas permanecem pendentes.
+**Estado:** concluída no recorte transversal. Guard, decorator, policy de aplicação, `404` empresarial, auditoria transacional, IP/user-agent, allowlist, substituição, emergência e inventário existem. A migração das rotas legadas seguirá progressivamente; retenção permanece na BDP-011.
 
 ### Migration candidata 0011
 

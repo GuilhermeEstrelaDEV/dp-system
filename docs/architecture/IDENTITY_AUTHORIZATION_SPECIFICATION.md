@@ -2,7 +2,7 @@
 
 ## 1. Estado e finalidade
 
-**Status:** arquitetura v1 aprovada pela resolução da BDP-009; implementação ainda não iniciada.
+**Status:** arquitetura v1 aprovada; identidade, RBAC e infraestrutura transversal implementados incrementalmente, workflow ainda pendente.
 
 Este documento define a arquitetura candidata para transportar identidade autenticada, restringir acesso por empresa, aplicar autorização deny-by-default, suportar segregação configurável e auditar operações críticas. Ele não atribui capacidades a cargos reais, não define alçadas e não cria workflow de aprovação.
 

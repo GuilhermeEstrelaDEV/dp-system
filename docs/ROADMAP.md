@@ -86,9 +86,9 @@ Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliaçõe
 
 ## ETP-013 — Conferência e aprovação de folha
 
-**Status:** fundação técnica parcial; identidade e RBAC empresarial implementados, workflow funcional ainda não iniciado.
+**Status:** fundação técnica parcial; identidade, RBAC, autorização e auditoria transversal implementados, workflow funcional ainda não iniciado.
 
-A etapa possui especificação e domínio neutro para achados/histórico append-only. A BDP-009 foi [resolvida para a versão 1](project-management/BDP-009_RESOLUTION_V1.md). A primeira fundação funcional entrega login JWT, contexto tipado, assignment usuário–empresa–papel e autorização opt-in por capability, sem workflow de conferência e sem proteger globalmente APIs legadas. O próximo incremento deve concluir o endurecimento transversal de autorização e auditoria previsto no [plano técnico executável](project-management/ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md). Consulte também [Especificação da ETP-013](project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md), [Fundação técnica](modules/PAYROLL_REVIEW_FOUNDATION.md), [Identidade e RBAC](modules/IDENTITY_COMPANY_RBAC.md) e [Identidade/autorização](architecture/IDENTITY_AUTHORIZATION_SPECIFICATION.md).
+A etapa possui especificação e domínio neutro para achados/histórico append-only. BDP-009 v1 está resolvida. Login JWT, contexto empresarial, RBAC, auditoria transacional, substituição temporária e emergência restrita estão implementados sem workflow e sem guard global legado. O próximo incremento é a persistência neutra da conferência prevista na fase 4 do [plano técnico](project-management/ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md). Consulte [Fundação transversal](architecture/AUDIT_AUTHORIZATION_FOUNDATION.md) e [Inventário de rotas](architecture/API_ROUTE_AUTHORIZATION_INVENTORY.md).
 
 ## Etapa 2 — Fundação técnica
 

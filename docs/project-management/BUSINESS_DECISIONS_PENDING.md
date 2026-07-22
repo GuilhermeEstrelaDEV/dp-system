@@ -57,7 +57,7 @@
 - A implementação também depende de identidade e autorização funcionais para atribuir decisões e aplicar isolamento por empresa.
 - A especificação propõe estrutura técnica, mas não autoriza schema, migration, API ou interface até esses pré-requisitos serem aprovados.
 - A versão 1 não possui alçada financeira por valor; extensões por valor, empresa, tipo de folha ou níveis adicionais exigem nova decisão/versionamento.
-- A resolução não implementa o workflow. A fundação de identidade e RBAC empresarial já existe, mas autorização/auditoria transversal e as fases restantes do [plano técnico](ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md) continuam obrigatórias antes da operação funcional.
+- A resolução não implementa o workflow. Identidade, RBAC e autorização/auditoria transversal já existem; persistência e fases decisórias restantes do [plano técnico](ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md) continuam obrigatórias antes da operação funcional. A retenção da auditoria permanece vinculada à BDP-011.
 - Retenção de auditoria continua dependente de validação Jurídico/DPO e BDP-011; isso não reabre as decisões de autorização v1, mas bloqueia a política final de retenção.
 
 ## Gestão
