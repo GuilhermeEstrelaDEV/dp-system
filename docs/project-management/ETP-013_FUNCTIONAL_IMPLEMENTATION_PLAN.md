@@ -2,7 +2,7 @@
 
 ## Estado
 
-**Backend e frontend v1 concluídos no recorte aprovado.** Identidade, RBAC, auditoria, persistência, decisões, fechamento, reabertura controlada e experiência web foram implementados. A fase 7 permanece parcial.
+**COMPLETED — VERSION 1 em 22/07/2026.** Identidade, RBAC, auditoria, persistência, decisões, fechamento, reabertura e frontend foram implementados. Os itens da antiga fase 7 são iniciativas posteriores no [relatório final](ETP-013_FINAL_REPORT.md).
 
 ## Princípios de execução
 
@@ -177,6 +177,6 @@ Testes cobrem contexto empresarial, troca de empresa, ações permitidas/negadas
 
 Antes do primeiro commit funcional, revisar e aprovar os schemas candidatos, estratégia de migração de `UserRole`, contrato de empresa ativa, seeds papel–capacidade, inventário de rotas públicas e critérios de retenção vinculados à BDP-011. Qualquer lacuna de segurança falha fechada e bloqueia a fase correspondente.
 
-## Definição de concluído futura
+## Definição de concluído
 
-A ETP-013 só poderá ser marcada concluída após todas as fases aplicáveis, validações globais, cobertura, testes negativos multiempresa, auditoria atômica, homologação dos atores v1 e documentação operacional. A resolução da BDP-009 isoladamente não conclui a etapa.
+A ETP-013 v1 atende as fases aplicáveis, validações globais, cobertura, testes negativos multiempresa, auditoria atômica, BDP-009 v1 e documentação operacional. Integração ampla, retenção e hardening não integravam o recorte aprovado e seguem como iniciativas futuras.

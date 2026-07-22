@@ -23,6 +23,10 @@
 
 Não há rota administrativa da plataforma protegida nesta fase; capabilities globais continuam disponíveis apenas como fundação.
 
+## Encerramento da ETP-013 v1
+
+As quatorze rotas de payroll review foram revisadas em 22/07/2026. Métodos, capabilities, DTOs e consumo pelo frontend estão compatíveis. Famílias marcadas como legadas permanecem fora do encerramento e exigem migração incremental própria.
+
 ## Estratégia progressiva
 
 1. definir capability e sensibilidade de cada caso de uso;
