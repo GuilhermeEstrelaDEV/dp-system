@@ -1,5 +1,14 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import type { AuthenticatedPrincipal } from '../../common/http/request-context';
+import { CurrentPrincipal, RequireCapabilities } from '../auth/auth.decorators';
+import { CapabilitiesGuard } from '../auth/capabilities.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {
+  PayrollPeriodClosureReadinessQueryDto,
+  PayrollPeriodClosureReadinessResponseDto,
+} from './payroll-period-readiness.dto';
+import { PayrollPeriodReadinessService } from './payroll-period-readiness.service';
 import {
   CreatePayrollPeriodDto,
   PayrollPeriodQueryDto,
@@ -10,12 +19,27 @@ import { PayrollPeriodsService } from './payroll-periods.service';
 @ApiTags('payroll-periods')
 @Controller('payroll-periods')
 export class PayrollPeriodsController {
-  constructor(private readonly service: PayrollPeriodsService) {}
+  constructor(
+    private readonly service: PayrollPeriodsService,
+    private readonly readinessService: PayrollPeriodReadinessService,
+  ) {}
   @Get() list(@Query() q: PayrollPeriodQueryDto) {
     return this.service.list(q);
   }
   @Get(':id') find(@Param('id') id: string) {
     return this.service.find(id);
+  }
+  @Get(':payrollPeriodId/closure-readiness')
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: PayrollPeriodClosureReadinessResponseDto })
+  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
+  @RequireCapabilities('payroll.period.close.readiness')
+  readiness(
+    @Param('payrollPeriodId') payrollPeriodId: string,
+    @Query() query: PayrollPeriodClosureReadinessQueryDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.readinessService.evaluate(payrollPeriodId, query.payrollRunId, principal);
   }
   @Post() create(@Body() dto: CreatePayrollPeriodDto) {
     return this.service.create(dto);
