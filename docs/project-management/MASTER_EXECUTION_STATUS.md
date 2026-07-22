@@ -217,11 +217,13 @@
 
 ### ETP-014 — Fechamento de competência e integração operacional
 
-- **Status:** `PLANNING`; descoberta e especificação exclusivamente documentais.
+- **Status:** `PLANNING`; descoberta, especificação e proposta de homologação exclusivamente documentais.
 - **Especificação:** `docs/project-management/ETP-014_PAYROLL_PERIOD_CLOSURE_SPECIFICATION.md`.
 - **Objetivo proposto:** vincular o fechamento operacional da competência a uma execução e conferência encerrada, com prontidão explícita, RBAC, isolamento empresarial e auditoria atômica.
 - **Base reutilizável:** `PayrollPeriod`, `PayrollRun`, `PayrollPeriodClosure`, workflow da ETP-013, JWT, empresa ativa, RBAC, auditoria, substituição e acesso emergencial.
 - **Lacuna crítica:** `payroll-periods` e `payroll-closures` hoje alteram o mesmo estado por superfícies e validações diferentes; a porta canônica e a compatibilidade precisam ser aprovadas.
+- **Proposta de decisão:** `docs/project-management/BDP-014_RESOLUTION_PROPOSAL.md`, status `PENDING APPROVAL`; recomenda contrato canônico, evidência, blockers, reabertura, idempotência, capabilities e imutabilidade sem torná-los vinculantes.
+- **Plano incremental:** `docs/project-management/ETP-014_IMPLEMENTATION_PLAN.md`, com seis fases e gates explícitos.
 - **Gate:** decisões D-014-01 a D-014-10, matriz de capabilities, efeitos da reabertura e modelo de evidência homologados antes de código ou migration.
 - **Implementação:** não iniciada; nenhuma funcionalidade, entidade, endpoint ou interface foi alterada por esta especificação.
 
