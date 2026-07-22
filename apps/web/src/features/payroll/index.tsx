@@ -21,6 +21,7 @@ const payrollPages = [
   ['parametros', 'Parâmetros', '/folha/parametros', '/payroll-parameters'],
   ['lancamentos', 'Lançamentos', '/folha/lancamentos', '/payroll-inputs'],
   ['execucoes', 'Execuções', '/folha/execucoes', '/payroll-runs'],
+  ['conferencia', 'Conferência', '/folha/conferencia', '/payroll-reviews'],
   ['fechamentos', 'Fechamentos', '/folha/fechamentos', '/payroll-closures'],
   [
     'remuneracao-variavel',
