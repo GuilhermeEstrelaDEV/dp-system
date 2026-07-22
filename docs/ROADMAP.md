@@ -92,9 +92,9 @@ A etapa possui workflow auditável até `CLOSED`. Reabertura autorizada invalida
 
 ## ETP-014 — Fechamento de competência e integração operacional
 
-**Status:** `PLANNING`.
+**Status:** `IN PROGRESS`.
 
-A iniciativa permanece `PLANNING`. A [BDP-014 v1](project-management/BDP-014_RESOLUTION_V1.md) foi homologada e a Fase 1 exclusivamente documental está `COMPLETED`, com [contrato canônico](architecture/PAYROLL_PERIOD_CLOSURE_CANONICAL_CONTRACT.md), [inventário legado](architecture/PAYROLL_CLOSURE_LEGACY_INVENTORY.md) e [plano incremental](project-management/ETP-014_IMPLEMENTATION_PLAN.md). A Fase 2 de readiness está `NOT STARTED`; nenhuma implementação, migration, capability ou interface foi iniciada.
+A iniciativa está `IN PROGRESS`. A [BDP-014 v1](project-management/BDP-014_RESOLUTION_V1.md) foi homologada e a Fase 1 documental está `COMPLETED`. A Fase 2 de [readiness somente leitura](modules/PAYROLL_PERIOD_CLOSURE_READINESS.md) está `READY FOR REVIEW`: consulta canônica, política pura, blockers, warnings e capabilities sem assignments foram implementados sem migration, mutação, fechamento, reabertura ou interface. A Fase 3 permanece `NOT STARTED`.
 
 ## Próximas iniciativas propostas
 

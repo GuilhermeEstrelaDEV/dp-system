@@ -16,7 +16,8 @@
 | Time management       | jornadas, feriados, marcações e saldos                               | Ainda legada              | Exige inventário por operação          |
 | Benefits              | todas sob `/benefits`                                                | Ainda legada              | Exige visibilidade por capability      |
 | Vacations/leaves      | férias, afastamentos e tipos                                         | Ainda legada              | Exige migração por caso de uso         |
-| Payroll configuration | competências, rubricas e parâmetros                                  | Ainda legada              | Não migrada para evitar quebra         |
+| Payroll readiness     | `GET /payroll-periods/:payrollPeriodId/closure-readiness`            | Autenticada e empresarial | JWT, capability, serviço e `404`       |
+| Payroll configuration | demais rotas de competências, rubricas e parâmetros                  | Ainda legada              | Não migrada para evitar quebra         |
 | Payroll operation     | lançamentos, execuções e fechamentos                                 | Ainda legada              | Prioridade para fase do workflow       |
 | Payroll review        | quatorze rotas incluindo fechamento, reabertura e histórico          | Autenticada e empresarial | JWT, capability, policy e `404`        |
 | Variable compensation | todas sob `/variable-compensation`                                   | Ainda legada              | BDP-006 continua pendente              |

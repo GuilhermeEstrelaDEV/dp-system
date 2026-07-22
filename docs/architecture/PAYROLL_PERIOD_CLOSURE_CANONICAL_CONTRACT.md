@@ -4,7 +4,7 @@
 
 **Decisão de negócio:** [BDP-014 v1](../project-management/BDP-014_RESOLUTION_V1.md)
 
-**Implementação:** não iniciada
+**Implementação:** Fase 2 somente leitura `READY FOR REVIEW`; comandos não iniciados
 
 ## 1. Agregado
 
@@ -78,9 +78,9 @@ Motivo é obrigatório. O comando cria nova versão operacional e invalida somen
 
 ### Readiness
 
-`GET /payroll-periods/:id/closure-readiness?payrollRunId=:runId`
+`GET /payroll-periods/:payrollPeriodId/closure-readiness?payrollRunId=:runId`
 
-Retorna estado atual, versão, execução/ciclo candidatos, `ready`, `blockers`, `warnings` e versão do contrato de readiness. Não persiste avaliação na v1; logs técnicos não são eventos de domínio.
+Implementado na Fase 2. Retorna estado atual, token observado, execução/ciclo candidatos, `isReady`, `blockers`, `warnings`, reconhecimentos futuros, trace e verificações indisponíveis. Não persiste avaliação; logs técnicos não são eventos de domínio.
 
 ### Histórico
 
@@ -97,29 +97,29 @@ Retorna versões operacionais, eventos, referências de manifesto, atores e moti
 Códigos candidatos estáveis:
 
 - `PERIOD_ALREADY_CLOSED`;
-- `PERIOD_TRANSITION_IN_PROGRESS`;
+- `CLOSURE_IN_PROGRESS`;
 - `PAYROLL_RUN_NOT_FOUND`;
 - `PAYROLL_RUN_NOT_COMPLETED`;
 - `PAYROLL_RUN_NOT_CANONICAL`;
-- `PAYROLL_RUN_INVALIDATED`;
-- `PAYROLL_RUN_BLOCKING_ERROR`;
+- `PAYROLL_RUN_CANCELLED_OR_INVALIDATED`;
+- `PAYROLL_RUN_AMBIGUOUS`;
 - `REVIEW_CYCLE_NOT_FOUND`;
-- `REVIEW_CYCLE_MISMATCH`;
+- `REVIEW_CYCLE_RUN_MISMATCH`;
 - `REVIEW_CYCLE_NOT_CLOSED`;
-- `REVIEW_ROUND_STALE`;
+- `REVIEW_ROUND_OUTDATED`;
 - `REVIEW_DECISIONS_INVALID`;
-- `BLOCKING_FINDING_OPEN`;
-- `CLOSURE_SCOPE_MISMATCH`;
+- `OPEN_BLOCKING_FINDINGS`;
+- `COMPANY_PERIOD_RUN_REVIEW_MISMATCH`;
 - `REQUIRED_TOTALS_UNAVAILABLE`;
-- `CONCURRENT_OPERATION`.
+- `CONCURRENT_OPERATION_DETECTED`.
 
-Os nomes são contratos candidatos e podem receber ajuste puramente terminológico antes da Fase 2, sem mudar a decisão material.
+Na Fase 2 os nomes foram estabilizados conforme a lista operacional de [readiness](../modules/PAYROLL_PERIOD_CLOSURE_READINESS.md), preservando a decisão material. Códigos sem fonte atual não são simulados.
 
 ## 7. Warnings v1
 
 - `VARIABLE_PAY_PENDING`;
-- `EXTERNAL_INTEGRATION_PENDING`;
-- `NON_CRITICAL_OPERATIONAL_ALERT`;
+- `EXTERNAL_INTEGRATIONS_PENDING`;
+- `NON_CRITICAL_OPERATIONAL_ALERTS`;
 - `AUXILIARY_INFORMATION_INCOMPLETE`.
 
 Cada warning informa código, mensagem, referências mínimas e `requiresAcknowledgement`. `VARIABLE_PAY_PENDING` sempre exige reconhecimento na v1. Warning não pode ser convertido em blocker sem nova decisão versionada.
@@ -211,4 +211,4 @@ As rotas inventariadas em [PAYROLL_CLOSURE_LEGACY_INVENTORY.md](PAYROLL_CLOSURE_
 - sem estado adicional além dos cinco avaliados;
 - sem regra legal ou cálculo novo.
 
-Este documento consolida arquitetura e contrato, mas não cria endpoint, DTO, enum, capability, seed, migration ou código.
+A Fase 2 concretiza somente a consulta, DTO, política e as capabilities `view`/`readiness`, sem assignments. Os comandos, persistência, migration, manifesto, histórico, legado e frontend continuam não implementados.
