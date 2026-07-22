@@ -1,6 +1,10 @@
 # BDP-014 — Proposta de resolução para fechamento de competência
 
-**Status:** `PENDING APPROVAL`
+**Status:** `SUPERSEDED BY BDP-014_RESOLUTION_V1`
+
+**Documento vinculante:** [BDP-014 — Resolução v1](BDP-014_RESOLUTION_V1.md)
+
+> Este conteúdo é preservado como histórico das alternativas analisadas. Recomendações, matrizes pendentes e menções a `PENDING APPROVAL` abaixo retratam o estado anterior à homologação de 22/07/2026 e não substituem a resolução v1.
 
 **Natureza:** proposta não vinculante para homologação
 

@@ -1,10 +1,10 @@
-# ETP-014 — Plano de implementação proposto
+# ETP-014 — Plano de implementação
 
-**Status:** `BLOCKED — BDP-014 PENDING APPROVAL`
+**Status:** `PLANNING — PHASE 1 COMPLETED; PHASE 2 NOT STARTED`
 
 **Natureza:** plano documental; não autoriza implementação
 
-Este plano traduz a [proposta de resolução da BDP-014](BDP-014_RESOLUTION_PROPOSAL.md) em incrementos pequenos. Qualquer divergência entre a proposta e a homologação deverá atualizar este plano antes de código.
+Este plano traduz a [resolução homologada da BDP-014 v1](BDP-014_RESOLUTION_V1.md) em incrementos pequenos. O [contrato canônico](../architecture/PAYROLL_PERIOD_CLOSURE_CANONICAL_CONTRACT.md) e o [inventário legado](../architecture/PAYROLL_CLOSURE_LEGACY_INVENTORY.md) são referências obrigatórias. Alteração material exige nova decisão versionada antes de código.
 
 ## Princípios comuns
 
@@ -17,25 +17,28 @@ Este plano traduz a [proposta de resolução da BDP-014](BDP-014_RESOLUTION_PROP
 - nenhuma fórmula, alçada, tolerância ou integração não homologada;
 - cada fase possui PR, validações e gate próprios.
 
-## Fase 1 — Contrato canônico e homologação
+## Fase 1 — Homologação e contrato canônico
+
+**Status:** `COMPLETED` em 22/07/2026, exclusivamente documental.
 
 ### Objetivo
 
-Formalizar a BDP-014, o contrato HTTP, o modelo de dados candidato, a janela de compatibilidade e o inventário de comandos afetados.
+Homologar a BDP-014, consolidar o contrato canônico, inventariar os fluxos legados e definir a estratégia de compatibilidade sem alteração funcional.
 
 ### Pré-requisitos
 
-- revisão de DP, Financeiro, Segurança e responsáveis técnicos;
-- resolução explícita de D-014-01 a D-014-10.
+- proposta BDP-014 revisada;
+- decisões D-014-01 a D-014-10 explicitamente fornecidas para homologação.
 
 ### Entregas
 
-- resolução formal versionada da BDP-014;
-- ADR para contrato canônico, compatibilidade, lock e manifesto;
-- OpenAPI candidata e códigos de erro documentados;
-- matriz final de capabilities/concessões;
-- inventário completo de consumidores e operações bloqueadas;
-- plano de rollout e rollback das rotas legadas.
+- BDP-014 `APPROVED — VERSION 1`;
+- contrato canônico e códigos de erro documentados;
+- estados e eventos candidatos consolidados sem implementação;
+- inventário dos dois fluxos, consumidores e divergências;
+- estratégia e critérios de compatibilidade/descontinuação;
+- capabilities e matriz de imutabilidade homologadas;
+- plano de seis fases atualizado.
 
 ### Fora do escopo
 
@@ -48,17 +51,19 @@ Qualquer alteração funcional, migration, seed, endpoint ativo ou interface.
 
 ### Testes mínimos
 
-Revisão de consistência documental, exemplos de contrato e rastreabilidade decisão–requisito–teste.
+Revisão de consistência documental, links e rastreabilidade decisão–contrato–fase.
 
 ### Aceite e gate
 
-Todos os aprovadores, data, versão e ressalvas registrados; ADR aceita. Sem isso, a Fase 2 permanece bloqueada.
+Resolução v1, contrato, inventário, roadmap e status mestre consistentes. Critério atendido; a Fase 2 está especificada, mas não foi iniciada por esta entrega.
 
 ### Riscos
 
-Consumidores desconhecidos das rotas legadas e homologação parcial incompatível.
+Consumidores desconhecidos das rotas legadas e necessidade futura de validar o desenho físico em PostgreSQL/Prisma.
 
 ## Fase 2 — Domínio de prontidão somente leitura
+
+**Status:** `NOT STARTED`.
 
 ### Objetivo
 
@@ -66,7 +71,7 @@ Calcular readiness determinística, separando blockers e warnings, sem fechar ou
 
 ### Pré-requisitos
 
-Contrato, execução elegível, vínculo com review, blockers e capabilities homologados.
+Fase 1 concluída; branch criada a partir de `develop`; contrato, execução elegível, vínculo com review, blockers e capabilities lidos da resolução v1.
 
 ### Entregas
 
@@ -84,6 +89,10 @@ Mutação, histórico novo, manifesto persistido e frontend funcional.
 
 Nenhuma, salvo evidência técnica posterior de índice indispensável; nesse caso, a mudança exige revisão separada.
 
+### Endpoints candidatos
+
+Somente `GET /payroll-periods/:id/closure-readiness`; nenhum comando de fechamento ou reabertura.
+
 ### Testes mínimos
 
 - matriz integral de blockers/warnings;
@@ -98,9 +107,11 @@ Readiness reproduz as decisões homologadas e é estável diante do mesmo snapsh
 
 ### Riscos
 
-Consultas extensas, N+1 e regras homologadas ainda não representáveis no modelo atual.
+Consultas extensas, N+1 e eventual incompatibilidade entre o modelo atual e a regra de execução canônica.
 
 ## Fase 3 — Persistência e auditoria
+
+**Status:** `NOT STARTED — BLOCKED BY PHASE 2`.
 
 ### Objetivo
 
@@ -151,6 +162,8 @@ Backfill sem contexto completo, tamanho do manifesto e limites do lock via Prism
 
 ## Fase 4 — Fechamento operacional
 
+**Status:** `NOT STARTED — BLOCKED BY PHASE 3`.
+
 ### Objetivo
 
 Ativar o comando canônico de fechamento com revalidação, idempotência, concorrência, RBAC e auditoria.
@@ -177,6 +190,10 @@ Reabertura, frontend, notificação, integração externa e alçada financeira.
 
 Nenhuma além da Fase 3, salvo constraint comprovadamente ausente e revisada.
 
+### Endpoints candidatos
+
+`POST /payroll-periods/:id/close`; adaptadores legados poderão delegar ao mesmo caso de uso sem contrato alternativo.
+
 ### Testes mínimos
 
 - todos os blockers e warnings reconhecidos;
@@ -195,6 +212,8 @@ Somente uma transição efetiva por versão; nenhuma rota contorna a política. 
 Bypass por outro módulo, deadlock, timeout e consumidor legado com contrato diferente.
 
 ## Fase 5 — Reabertura controlada
+
+**Status:** `NOT STARTED — BLOCKED BY PHASE 4`.
 
 ### Objetivo
 
@@ -222,6 +241,10 @@ Reversão automática de exportações, integrações, pagamentos ou notificaç�
 
 Nenhuma se a versão operacional da Fase 3 suportar a transição; qualquer lacuna exige revisão do modelo antes do código.
 
+### Endpoints candidatos
+
+`POST /payroll-periods/:id/reopen`; a reabertura de review continua no contrato independente da ETP-013.
+
 ### Testes mínimos
 
 - somente `CLOSED -> OPEN`, motivo obrigatório e capability;
@@ -240,6 +263,8 @@ Histórico anterior permanece íntegro e nenhum novo fechamento reutiliza evidê
 Interpretação incorreta de que review histórico foi invalidado e existência de integração irreversível não inventariada.
 
 ## Fase 6 — Frontend e validação ponta a ponta
+
+**Status:** `NOT STARTED — BLOCKED BY PHASE 5`.
 
 ### Objetivo
 
@@ -291,7 +316,7 @@ Exposição visual excessiva de evidências, estado desatualizado e bundle adici
 
 ```mermaid
 flowchart LR
-    F1[Fase 1: homologação] -->|BDP-014 aprovada| F2[Fase 2: readiness]
+    F1[Fase 1: homologação COMPLETED] -->|início explicitamente autorizado| F2[Fase 2: readiness NOT STARTED]
     F2 -->|matriz validada| F3[Fase 3: persistência]
     F3 -->|atomicidade comprovada| F4[Fase 4: fechamento]
     F4 -->|rollout estável| F5[Fase 5: reabertura]
