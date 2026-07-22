@@ -2,7 +2,7 @@
 
 ## Estado
 
-O workflow decisório v1 possui backend e frontend funcionais, incluindo fechamento e reabertura controlada. A ETP-013 permanece parcial quanto à integração geral de fechamento e ao endurecimento global previsto na fase 7.
+O workflow decisório v1 possui backend e frontend funcionais, incluindo fechamento e reabertura controlada. A ETP-013 está **COMPLETED — VERSION 1** desde 22/07/2026. Integração geral de fechamento e hardening são iniciativas posteriores.
 
 ## Modelo persistente
 

@@ -192,12 +192,12 @@
 
 ### ETP-013 — Conferência e aprovação de folha
 
-- **Status:** backend e frontend funcional v1 concluídos no recorte aprovado; endurecimento e integração ampla pendentes.
+- **Status:** **COMPLETED — VERSION 1** em 22/07/2026.
 - **Especificação:** `docs/project-management/ETP-013_PAYROLL_REVIEW_APPROVAL_SPECIFICATION.md`.
 - **Objetivo proposto:** workflow auditável de conferência, achados e decisões antes do fechamento.
 - **Dependência atendida:** ETP-012 mergeada pelo PR #26.
 - **Decisão de negócio:** BDP-009 resolvida para a versão 1 em `docs/project-management/BDP-009_RESOLUTION_V1.md`; ADR-007 aceita.
-- **Dependências bloqueantes restantes:** integração ampla com fechamento de competência e retenção vinculada à BDP-011.
+- **Dependências bloqueantes restantes da v1:** nenhuma. Integração ampla e retenção vinculada à BDP-011 são posteriores.
 - **Persistência:** migrations `0010` a `0013_payroll_review_workflow` implementam contexto empresarial, auditoria/grants, ciclos/achados/eventos, etapas e decisões append-only.
 - **Pull Request e merge da especificação:** PR #27 mergeado em `develop` no commit `58341a5`.
 - **Fundação técnica:** contratos imutáveis para achados, severidade, estado e eventos append-only; invariantes de justificativa, cronologia, unicidade, coerência e isolamento por empresa; módulo NestJS e persistência neutra existem, sem interface ou decisão de aprovação.
@@ -211,9 +211,12 @@
 - **Fase 5:** estados `OPEN`, `IN_REVIEW`, `SUBMITTED`, `APPROVED` e `REJECTED`; duas etapas sequenciais configuradas por dados; segregação de atores, bloqueio por achado e auditoria atômica.
 - **Fechamento/reabertura:** migration `0014` adiciona `CLOSED`, rodadas explícitas e invalidações append-only; reabertura retorna a `IN_REVIEW` e exige novo ciclo decisório.
 - **Frontend funcional:** login, encerramento local, seleção de empresa, contexto tipado, cliente HTTP com Bearer e correlation ID, rotas protegidas, lista/detalhe de execuções, ciclos, achados, workflow e timeline. Visibilidade usa capabilities; a autorização permanece exclusivamente no backend.
-- **Próximo passo técnico:** executar a fase 7 de integração com fechamento de competência e endurecimento, sem ampliar o escopo da BDP-009 v1.
+- **Encerramento:** rastreabilidade, métricas, limitações e débitos estão em `docs/project-management/ETP-013_FINAL_REPORT.md`.
+- **Próximo passo:** especificar a ETP-014 proposta antes de implementar.
 - **Pacote de decisão:** `docs/project-management/BDP-009_DECISION_PACKAGE.md` homologado para v1 e preservado como evidência das alternativas avaliadas.
 
-### ETP-014 a ETP-015
+### ETP-014 a ETP-017 — propostas
 
-- **Status:** pendentes e sem escopo individual atribuído; devem ser planejadas exclusivamente a partir da documentação aprovada antes da implementação.
+- **Status:** não iniciadas; títulos propostos, sem especificação aprovada.
+- **Proposta:** ETP-014 fechamento de competência; ETP-015 integrações/automações; ETP-016 relatórios/inteligência; ETP-017 hardening/observabilidade/performance.
+- **Gate:** especificação, análise das BDPs e aprovação antes de código.

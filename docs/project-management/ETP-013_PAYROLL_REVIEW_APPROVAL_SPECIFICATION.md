@@ -1,6 +1,6 @@
 # ETP-013 — Especificação de conferência e aprovação de folha
 
-**Status:** backend e frontend funcional v1 concluídos, incluindo fechamento, reabertura e invalidação append-only; integração ampla e endurecimento permanecem pendentes.
+**Status:** **COMPLETED — VERSION 1** em 22/07/2026. Integração ampla e endurecimento são iniciativas posteriores.
 
 ## 1. Motivação e evidências
 

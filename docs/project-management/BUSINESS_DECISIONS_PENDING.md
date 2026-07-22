@@ -57,7 +57,7 @@
 - A implementação também depende de identidade e autorização funcionais para atribuir decisões e aplicar isolamento por empresa.
 - A especificação propõe estrutura técnica, mas não autoriza schema, migration, API ou interface até esses pré-requisitos serem aprovados.
 - A versão 1 não possui alçada financeira por valor; extensões por valor, empresa, tipo de folha ou níveis adicionais exigem nova decisão/versionamento.
-- A resolução v1 foi implementada no backend, incluindo fechamento e reabertura controlada. Frontend, integração geral com fechamento e retenção da auditoria vinculada à BDP-011 permanecem pendentes.
+- A resolução v1 foi implementada no backend e frontend, incluindo fechamento e reabertura. A ETP-013 v1 foi encerrada em 22/07/2026; integração geral e retenção vinculada à BDP-011 são posteriores.
 - Retenção de auditoria continua dependente de validação Jurídico/DPO e BDP-011; isso não reabre as decisões de autorização v1, mas bloqueia a política final de retenção.
 
 ## Gestão

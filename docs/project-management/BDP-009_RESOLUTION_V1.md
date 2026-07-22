@@ -2,7 +2,7 @@
 
 ## Status
 
-**Resolvida para a versão 1.** Esta resolução define governança e arquitetura para liberar o planejamento técnico da ETP-013. Ela não implementa autenticação, autorização ou workflow e não declara a ETP-013 concluída.
+**Resolvida e implementada para a versão 1.** Este registro governou a ETP-013, formalmente concluída em 22/07/2026. As evidências estão no [relatório final](ETP-013_FINAL_REPORT.md).
 
 ## Decisões aprovadas
 
@@ -110,14 +110,14 @@ Capacidades candidatas v1:
 
 Os catálogos são iniciais e configuráveis. A atribuição final deve ser persistida e seedada de forma revisável; nomes não entram em regras de domínio.
 
-## Condições técnicas ainda necessárias
+## Condições técnicas atendidas e limites futuros
 
-A BDP-009 está resolvida para v1, mas a ETP-013 funcional ainda depende de:
+A BDP-009 v1 foi materializada por:
 
-- implementação de autenticação funcional, sessão e revogação;
+- autenticação por access token e encerramento local; refresh, revogação persistente e logout de backend permanecem futuros;
 - migration do RBAC empresarial e auditoria;
 - principal/contexto, guards, policies e deny-by-default progressivo;
 - modelo persistente do workflow e contratos HTTP revisados;
-- implementação e testes conforme [Plano técnico da ETP-013](ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md).
+- implementação de backend, frontend e testes conforme [Plano técnico da ETP-013](ETP-013_FUNCTIONAL_IMPLEMENTATION_PLAN.md).
 
 Decisões futuras sobre alçadas financeiras, níveis adicionais e novas policies exigem nova versão desta resolução e, quando arquitetural, novo ADR ou revisão explícita.

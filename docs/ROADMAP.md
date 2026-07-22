@@ -86,9 +86,13 @@ Eventos de comissão/prêmio, adiantamentos, pagamentos externos e conciliaçõe
 
 ## ETP-013 — Conferência e aprovação de folha
 
-**Status:** backend e frontend funcional v1 concluídos no recorte aprovado; integração ampla com fechamento de competência e endurecimento global permanecem pendentes.
+**Status:** **COMPLETED — VERSION 1**.
 
-A etapa possui workflow auditável até `CLOSED`. Reabertura autorizada de `APPROVED` ou `CLOSED` invalida aprovações por registros append-only, cria nova rodada e retorna a `IN_REVIEW`. O frontend consome os contratos existentes para autenticação, contexto empresarial, achados, decisões e histórico, mantendo a API como autoridade. A integração ampla com fechamento de competência e o endurecimento global permanecem futuros. Consulte [Conferência de folha](modules/PAYROLL_REVIEW_FOUNDATION.md).
+A etapa possui workflow auditável até `CLOSED`. Reabertura autorizada invalida aprovações por registros append-only, cria nova rodada e retorna a `IN_REVIEW`. Backend e frontend v1 foram encerrados em 22/07/2026; integração ampla com fechamento e hardening são iniciativas posteriores. Consulte o [relatório final](project-management/ETP-013_FINAL_REPORT.md).
+
+## Próximas iniciativas propostas
+
+ETP-014 e ETP-015 eram placeholders sem escopo e ETP-016/017 não existiam. Propõem-se, sem autorização de implementação: **ETP-014 — Fechamento de competência e integração operacional**; **ETP-015 — Integrações, notificações e automações**; **ETP-016 — Relatórios, dashboards e inteligência operacional**; e **ETP-017 — Hardening, observabilidade e performance**. Cada iniciativa requer especificação, análise das BDPs relacionadas e aprovação.
 
 ## Etapa 2 — Fundação técnica
 
