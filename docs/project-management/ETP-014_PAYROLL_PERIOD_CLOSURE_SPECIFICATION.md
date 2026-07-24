@@ -1,6 +1,6 @@
 # ETP-014 — Fechamento de Competência e Integração Operacional
 
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETED`
 
 **Natureza:** especificação vinculante e registro incremental da implementação
 
@@ -8,7 +8,7 @@
 
 **Decisão homologada:** [BDP-014 — Resolução v1](BDP-014_RESOLUTION_V1.md)
 
-**Próximo gate:** revisão e merge da Fase 5 de reabertura controlada do [plano](ETP-014_IMPLEMENTATION_PLAN.md)
+**Aceitação final:** Fases 1 a 6 concluídas e integradas conforme o [plano](ETP-014_IMPLEMENTATION_PLAN.md)
 
 ## 1. Objetivo
 
@@ -260,7 +260,7 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 
 **Aceite:** testes unitários de todas as combinações aprovadas e integração multiempresa/deny-by-default.
 
-### Fase 3 — Persistência e auditoria
+### Fase 3 — Persistência e auditoria — `COMPLETED`
 
 - executar a migration aprovada, se necessária;
 - implementar repositório e trilha append-only;
@@ -268,7 +268,7 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 
 **Aceite:** constraints, rollback transacional, integridade referencial e imutabilidade testados.
 
-### Fase 4 — Fechamento operacional
+### Fase 4 — Fechamento operacional — `COMPLETED`
 
 - implementar o comando canônico de fechamento;
 - aplicar capability, isolamento, lock/idempotência e auditoria atômica;
@@ -276,7 +276,7 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 
 **Aceite:** fluxos válidos, todas as recusas, concorrência, rollback, auditoria e `404` empresarial cobertos.
 
-### Fase 5 — Reabertura controlada
+### Fase 5 — Reabertura controlada — `COMPLETED`
 
 - implementar somente os efeitos homologados;
 - preservar e relacionar decisões/eventos anteriores;
@@ -284,7 +284,7 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 
 **Aceite:** justificativa, autorização, efeitos sobre conferência/execução, idempotência e histórico validados.
 
-### Fase 6 — Interface e validação ponta a ponta
+### Fase 6 — Interface e validação ponta a ponta — `COMPLETED`
 
 - implementar prontidão, ações, confirmação e timeline;
 - cobrir capabilities, erros HTTP, acessibilidade e duplo envio;
@@ -353,8 +353,7 @@ As escolhas finais e suas regras vinculantes estão na [resolução v1](BDP-014_
 
 ## 14. Estado desta especificação
 
-A ETP-014 está `IN PROGRESS`. BDP-014 está `APPROVED — VERSION 1`, as Fases 1 a 4 estão
-`COMPLETED` e a Fase 5 está `READY FOR REVIEW`. Readiness, persistência e o
-[fechamento operacional](../modules/PAYROLL_PERIOD_OPERATIONAL_CLOSURE.md) usam o contrato canônico.
-Não há reabertura, frontend, histórico público separado ou adaptação das demais rotas legadas nesta
-fase. A Fase 6 permanece `NOT STARTED`.
+A ETP-014 está `COMPLETED`. BDP-014 está `APPROVED — VERSION 1` e as Fases 1 a 6 estão
+`COMPLETED`. Readiness, persistência, [fechamento operacional](../modules/PAYROLL_PERIOD_OPERATIONAL_CLOSURE.md),
+reabertura controlada, histórico público e frontend usam o contrato canônico. A família
+`/payroll-closures` e as demais APIs legadas permanecem débito separado, sem reabrir a ETP-014.

@@ -35,6 +35,11 @@ capabilities `execute`, `reopen` e `history` estão apenas no catálogo, sem ass
 ## ETP-014 Fase 4
 
 A Fase 4 tornou canônica a URI homologada `POST /payroll-periods/:payrollPeriodId/close`. Ela exige
+JWT, empresa ativa, `payroll.period.close.execute`, `Idempotency-Key`, readiness transacional e
+auditoria atômica. Não foram adicionadas rotas públicas de `reopen`, `history` ou manifesto. As
+demais escritas históricas, especialmente `/payroll-closures`, continuam legadas e não foram
+redirecionadas. `reopen` e `history` permaneciam somente no catálogo, sem assignments naquele
+incremento.
 
 ## ETP-014 Fase 5
 
@@ -44,10 +49,6 @@ A Fase 4 tornou canônica a URI homologada `POST /payroll-periods/:payrollPeriod
 
 A rota exige `Idempotency-Key` e DTO canônico. Não existe associação automática da capability a
 papéis nem autorização por nome fixo de papel.
-JWT, empresa ativa, `payroll.period.close.execute`, `Idempotency-Key`, readiness transacional e
-auditoria atômica. Não foram adicionadas rotas públicas de `reopen`, `history` ou manifesto. As
-demais escritas históricas, especialmente `/payroll-closures`, continuam legadas e não foram
-redirecionadas. `reopen` e `history` permanecem somente no catálogo, sem assignments.
 
 ## Encerramento da ETP-013 v1
 
@@ -62,6 +63,14 @@ As quatorze rotas de payroll review foram revisadas em 22/07/2026. Métodos, cap
 5. repetir autorização no serviço e auditar escritas na mesma transação;
 6. adicionar testes `401`, `403`, `404`, multiempresa e regressão;
 7. somente após todo o inventário sair de “ainda legada”, avaliar guard global.
-   A Fase 6 adiciona quatro `GET` sob `/payroll-periods/:payrollPeriodId/history`, todos protegidos por
-   JWT, empresa ativa e `payroll.period.close.history`, com `404` entre empresas. Nenhuma capability é
-   associada automaticamente a papel.
+
+## ETP-014 Fase 6
+
+A Fase 6 adicionou quatro `GET` sob `/payroll-periods/:payrollPeriodId/history`, todos protegidos por
+JWT, empresa ativa e `payroll.period.close.history`, com `404` entre empresas. Nenhuma capability é
+associada automaticamente a papel.
+
+## Continuidade
+
+O [inventário completo](LEGACY_API_AUTHORIZATION_ROUTE_INVENTORY.md) registra os 163 handlers e o
+estado de prontidão para uma decisão futura. A iniciativa continua sem aprovação ou implementação.

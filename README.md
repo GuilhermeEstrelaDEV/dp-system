@@ -4,7 +4,7 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Fase atual: **ETP-009 em implementação — férias e afastamentos**.
+Estado atual: **ETP-014 concluída — próxima iniciativa em descoberta, sem implementação aprovada**.
 
 ## Topologia planejada
 
