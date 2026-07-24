@@ -26,6 +26,9 @@ function periodRecord() {
     referenceDate: new Date('2026-07-01T00:00:00.000Z'),
     status: 'OPEN',
     updatedAt: new Date('2026-07-20T11:00:00.000Z'),
+    closureVersions: [] as Array<{
+      previousClosureVersion: { selectedPayrollRun: { sequence: number } | null } | null;
+    }>,
     runs: [
       {
         id: runId,
@@ -184,5 +187,15 @@ describe('PayrollPeriodReadinessService', () => {
       'salaryAdvance',
       'offCyclePayment',
     ]);
+  });
+
+  it('does not reuse the run selected by the superseded closure after reopening', async () => {
+    const record = periodRecord();
+    record.closureVersions = [{ previousClosureVersion: { selectedPayrollRun: { sequence: 1 } } }];
+    prisma.payrollPeriod.findFirst.mockResolvedValue(record);
+    const result = await service.evaluate(periodId, undefined, principal);
+    expect(result.selectedPayrollRun).toBeNull();
+    expect(result.isReady).toBe(false);
+    expect(result.blockers.map((blocker) => blocker.code)).toContain('PAYROLL_RUN_NOT_FOUND');
   });
 });
