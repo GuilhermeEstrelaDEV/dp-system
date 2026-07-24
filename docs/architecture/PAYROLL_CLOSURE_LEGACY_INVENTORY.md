@@ -113,3 +113,11 @@ Durante a compatibilidade, as rotas legadas devem aplicar a mesma autenticação
 ## 10. Limite desta entrega
 
 Este inventário não altera controller, serviço, DTO, entidade, rota, frontend ou teste. A fonte normativa para o destino é o [contrato canônico](PAYROLL_PERIOD_CLOSURE_CANONICAL_CONTRACT.md).
+
+## 11. Situação após a Fase 4
+
+A URI homologada `POST /payroll-periods/:id/close` passou a executar o comando canônico autenticado
+da Fase 4. Isso elimina o bypass do fechamento por essa URI, mas altera deliberadamente seu contrato
+de entrada e resposta conforme a BDP-014. `validate`, `open`, `reopen` e toda a família
+`/payroll-closures` permanecem inalterados e ainda não delegam ao orquestrador. Seus consumidores,
+telemetria e janela de migração continuam pendentes; nenhuma remoção ou redirecionamento ocorreu.

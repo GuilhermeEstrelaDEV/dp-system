@@ -1,14 +1,14 @@
 # ETP-014 — Fechamento de Competência e Integração Operacional
 
-**Status:** `PLANNING`
+**Status:** `IN PROGRESS`
 
-**Natureza desta entrega:** especificação documental, sem autorização para implementação
+**Natureza:** especificação vinculante e registro incremental da implementação
 
 **Dependência concluída:** ETP-013 — `COMPLETED — VERSION 1`
 
 **Decisão homologada:** [BDP-014 — Resolução v1](BDP-014_RESOLUTION_V1.md)
 
-**Próximo gate:** revisão e merge da Fase 3 persistente do [plano](ETP-014_IMPLEMENTATION_PLAN.md)
+**Próximo gate:** revisão e merge da Fase 4 operacional do [plano](ETP-014_IMPLEMENTATION_PLAN.md)
 
 ## 1. Objetivo
 
@@ -353,4 +353,8 @@ As escolhas finais e suas regras vinculantes estão na [resolução v1](BDP-014_
 
 ## 14. Estado desta especificação
 
-A ETP-014 está `IN PROGRESS`. BDP-014 está `APPROVED — VERSION 1`, as Fases 1 e 2 estão `COMPLETED`, a Fase 3 está `READY FOR REVIEW` e a Fase 4 está `NOT STARTED`. O endpoint somente leitura permanece documentado em [PAYROLL_PERIOD_CLOSURE_READINESS](../modules/PAYROLL_PERIOD_CLOSURE_READINESS.md), e a nova fundação em [PAYROLL_PERIOD_CLOSURE_PERSISTENCE](../modules/PAYROLL_PERIOD_CLOSURE_PERSISTENCE.md). Não há fechamento, reabertura, frontend ou alteração do legado nesta fase.
+A ETP-014 está `IN PROGRESS`. BDP-014 está `APPROVED — VERSION 1`, as Fases 1 a 3 estão
+`COMPLETED` e a Fase 4 está `READY FOR REVIEW`. Readiness, persistência e o
+[fechamento operacional](../modules/PAYROLL_PERIOD_OPERATIONAL_CLOSURE.md) usam o contrato canônico.
+Não há reabertura, frontend, histórico público separado ou adaptação das demais rotas legadas nesta
+fase. A Fase 5 permanece `NOT STARTED`.

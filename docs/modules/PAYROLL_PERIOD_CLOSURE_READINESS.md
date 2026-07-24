@@ -122,5 +122,5 @@ capability e a operação OpenAPI.
 
 ## Gate seguinte
 
-A Fase 2 foi concluída após revisão e merge. A Fase 3 usa esta consulta como fonte de avaliação, mas
-não como autorização para fechamento; o comando operacional permanece exclusivo da Fase 4.
+A Fase 2 foi concluída após revisão e merge. A Fase 4 reutiliza esta política com o mesmo cliente
+transacional, depois do lock. Uma resposta GET anterior nunca autoriza o fechamento.

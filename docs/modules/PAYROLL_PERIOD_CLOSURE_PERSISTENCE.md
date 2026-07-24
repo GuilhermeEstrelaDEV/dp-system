@@ -1,7 +1,7 @@
 # Persistência e auditoria do fechamento de competência
 
 **ETP:** 014 — Fase 3  
-**Status:** `READY FOR REVIEW`  
+**Status:** `COMPLETED` após merge do PR #44
 **Migration:** `0015_payroll_period_closure_persistence`
 
 ## Objetivo e limites
@@ -85,5 +85,6 @@ Testes unitários cobrem canonicalização, hash, minimização, idempotência, 
 transação e falhas. Testes em PostgreSQL 16 cobrem unicidades, índice ativo, escopo, append-only,
 idempotência finalizada e rollback conjunto de evento e `AuditLog`.
 
-A Fase 4 deverá reexecutar readiness dentro da transação, aplicar lock e habilitar o comando canônico.
+A Fase 4 reexecuta readiness dentro da transação, aplica advisory transaction lock e habilita o
+[comando canônico](PAYROLL_PERIOD_OPERATIONAL_CLOSURE.md).
 A Fase 5 cuidará da reabertura e da superação/ligação das versões. Nenhum desses fluxos está operacional.

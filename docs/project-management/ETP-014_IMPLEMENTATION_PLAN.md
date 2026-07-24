@@ -1,6 +1,6 @@
 # ETP-014 — Plano de implementação
 
-**Status:** `IN PROGRESS — PHASES 1-2 COMPLETED; PHASE 3 READY FOR REVIEW`
+**Status:** `IN PROGRESS — PHASES 1-3 COMPLETED; PHASE 4 READY FOR REVIEW`
 
 **Natureza:** plano incremental; somente a fase explicitamente autorizada pode ser implementada
 
@@ -111,7 +111,7 @@ Consultas extensas, N+1 e eventual incompatibilidade entre o modelo atual e a re
 
 ## Fase 3 — Persistência e auditoria
 
-**Status:** `READY FOR REVIEW`.
+**Status:** `COMPLETED` após merge do PR #44.
 
 ### Objetivo
 
@@ -154,7 +154,8 @@ Nenhum endpoint mutável. O histórico poderá permanecer interno até sua autor
 
 ### Aceite e gate
 
-Migration aditiva validada em PostgreSQL 16, histórico legado preservado, evidências protegidas por triggers e writer comprovadamente atômico. A fase permanece pronta para revisão; somente merge libera a Fase 4.
+Migration aditiva validada em PostgreSQL 16, histórico legado preservado, evidências protegidas por
+triggers e writer comprovadamente atômico. O merge do PR #44 liberou a Fase 4.
 
 ### Riscos
 
@@ -162,7 +163,7 @@ Backfill sem contexto completo, tamanho do manifesto e limites do lock via Prism
 
 ## Fase 4 — Fechamento operacional
 
-**Status:** `NOT STARTED — BLOCKED BY PHASE 3`.
+**Status:** `READY FOR REVIEW`.
 
 ### Objetivo
 
@@ -179,8 +180,8 @@ Fases 1 a 3 aceitas; capabilities cadastradas sem assignments automáticos; plan
 - lock, versão otimista e revalidação dentro da transação;
 - manifesto, evento e `AuditLog` atômicos;
 - bloqueio dos comandos homologados para competência fechada;
-- adaptação das escritas legadas para delegação canônica;
-- telemetria mínima de conflito e replay sem dados sensíveis.
+- resposta mínima segura para conflito e replay sem dados sensíveis;
+- demais escritas legadas preservadas para a fase futura de compatibilidade.
 
 ### Fora do escopo
 
@@ -205,7 +206,8 @@ Nenhuma além da Fase 3, salvo constraint comprovadamente ausente e revisada.
 
 ### Aceite e gate
 
-Somente uma transição efetiva por versão; nenhuma rota contorna a política. Estabilização e decisão de rollout liberam a Fase 5.
+O comando canônico produz somente uma transição efetiva por versão. Advisory lock, replay e rollback
+foram cobertos em PostgreSQL real. A fase aguarda revisão; merge e estabilização liberam a Fase 5.
 
 ### Riscos
 
@@ -317,8 +319,8 @@ Exposição visual excessiva de evidências, estado desatualizado e bundle adici
 ```mermaid
 flowchart LR
     F1[Fase 1: homologação COMPLETED] --> F2[Fase 2: readiness COMPLETED]
-    F2 --> F3[Fase 3: persistência READY FOR REVIEW]
-    F3 -->|revisão e merge| F4[Fase 4: fechamento NOT STARTED]
+    F2 --> F3[Fase 3: persistência COMPLETED]
+    F3 --> F4[Fase 4: fechamento READY FOR REVIEW]
     F4 -->|rollout estável| F5[Fase 5: reabertura]
     F5 -->|histórico íntegro| F6[Fase 6: frontend e E2E]
 ```
