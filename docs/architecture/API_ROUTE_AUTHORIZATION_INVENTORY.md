@@ -62,3 +62,6 @@ As quatorze rotas de payroll review foram revisadas em 22/07/2026. Métodos, cap
 5. repetir autorização no serviço e auditar escritas na mesma transação;
 6. adicionar testes `401`, `403`, `404`, multiempresa e regressão;
 7. somente após todo o inventário sair de “ainda legada”, avaliar guard global.
+   A Fase 6 adiciona quatro `GET` sob `/payroll-periods/:payrollPeriodId/history`, todos protegidos por
+   JWT, empresa ativa e `payroll.period.close.history`, com `404` entre empresas. Nenhuma capability é
+   associada automaticamente a papel.

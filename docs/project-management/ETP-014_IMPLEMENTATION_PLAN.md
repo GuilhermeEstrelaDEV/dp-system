@@ -1,6 +1,6 @@
 # ETP-014 — Plano de implementação
 
-**Status:** `IN PROGRESS — PHASES 1-4 COMPLETED; PHASE 5 READY FOR REVIEW`
+**Status:** `READY FOR FINAL ACCEPTANCE — PHASES 1-5 COMPLETED; PHASE 6 READY FOR REVIEW`
 
 **Natureza:** plano incremental; somente a fase explicitamente autorizada pode ser implementada
 
@@ -215,7 +215,7 @@ Bypass por outro módulo, deadlock, timeout e consumidor legado com contrato dif
 
 ## Fase 5 — Reabertura controlada
 
-**Status:** `READY FOR REVIEW`.
+**Status:** `COMPLETED`.
 
 ### Objetivo
 
@@ -266,7 +266,7 @@ Interpretação incorreta de que review histórico foi invalidado e existência 
 
 ## Fase 6 — Frontend e validação ponta a ponta
 
-**Status:** `NOT STARTED — BLOCKED BY PHASE 5 REVIEW`.
+**Status:** `READY FOR REVIEW`.
 
 ### Objetivo
 
@@ -321,8 +321,8 @@ flowchart LR
     F1[Fase 1: homologação COMPLETED] --> F2[Fase 2: readiness COMPLETED]
     F2 --> F3[Fase 3: persistência COMPLETED]
     F3 --> F4[Fase 4: fechamento COMPLETED]
-    F4 --> F5[Fase 5: reabertura READY FOR REVIEW]
-    F5 -->|histórico íntegro| F6[Fase 6: frontend e E2E]
+    F4 --> F5[Fase 5: reabertura COMPLETED]
+    F5 --> F6[Fase 6: frontend e E2E READY FOR REVIEW]
 ```
 
 Nenhuma fase pode antecipar regra, migration ou contrato pertencente ao gate seguinte.

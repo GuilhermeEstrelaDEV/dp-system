@@ -217,7 +217,7 @@
 
 ### ETP-014 — Fechamento de competência e integração operacional
 
-- **Status:** `IN PROGRESS`; Fases 1 a 4 `COMPLETED`, Fase 5 `READY FOR REVIEW`, Fase 6 `NOT STARTED`.
+- **Status:** `READY FOR FINAL ACCEPTANCE`; Fases 1 a 5 `COMPLETED`, Fase 6 `READY FOR REVIEW`.
 - **Especificação:** `docs/project-management/ETP-014_PAYROLL_PERIOD_CLOSURE_SPECIFICATION.md`.
 - **Objetivo proposto:** vincular o fechamento operacional da competência a uma execução e conferência encerrada, com prontidão explícita, RBAC, isolamento empresarial e auditoria atômica.
 - **Base reutilizável:** `PayrollPeriod`, `PayrollRun`, `PayrollPeriodClosure`, workflow da ETP-013, JWT, empresa ativa, RBAC, auditoria, substituição e acesso emergencial.
@@ -242,7 +242,10 @@
 - **Fase 5:** a URI única `POST /payroll-periods/:payrollPeriodId/reopen` agora delega ao fluxo
   canônico autenticado, idempotente e transacional; preserva evidências, supera a versão fechada,
   cria sucessora `OPEN` vazia e bloqueia readiness até nova execução e novo review.
-- **Gate:** revisão e merge da Fase 5; a Fase 6 permanece `NOT STARTED`.
+- **Fase 6:** histórico, detalhe, eventos e manifesto seguro são consultas públicas protegidas por
+  `payroll.period.close.history`; o frontend apresenta versões, timeline, evidências, readiness e
+  ações canônicas condicionadas por capability.
+- **Gate:** revisão e merge da Fase 6 para aceite final da ETP-014.
 
 ### ETP-015 a ETP-017 — propostas
 

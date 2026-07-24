@@ -4,7 +4,11 @@
 
 **Decisão de negócio:** [BDP-014 v1](../project-management/BDP-014_RESOLUTION_V1.md)
 
-**Implementação:** Fases 2 a 4 `COMPLETED`; Fase 5 `READY FOR REVIEW`
+**Implementação:** Fases 2 a 5 `COMPLETED`; Fase 6 `READY FOR REVIEW`
+
+As consultas de histórico, versão, eventos e manifesto seguro exigem
+`payroll.period.close.history`. São projeções somente leitura, empresariais e deny-by-default; não
+expõem o payload bruto do manifesto.
 
 ## 1. Agregado
 
