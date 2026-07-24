@@ -119,5 +119,12 @@ Este inventário não altera controller, serviço, DTO, entidade, rota, frontend
 A URI homologada `POST /payroll-periods/:id/close` passou a executar o comando canônico autenticado
 da Fase 4. Isso elimina o bypass do fechamento por essa URI, mas altera deliberadamente seu contrato
 de entrada e resposta conforme a BDP-014. `validate`, `open`, `reopen` e toda a família
+
+## 12. Conversão autorizada na Fase 5
+
+`POST /payroll-periods/:id/reopen` deixou de ser uma implementação legada. A URI foi preservada como
+`POST /payroll-periods/:payrollPeriodId/reopen`, e o handler passou a delegar exclusivamente ao fluxo
+canônico de reabertura controlada. A mudança de nome do parâmetro não altera a URI. Essa conversão foi
+expressamente autorizada para resolver a colisão; nenhuma outra rota legada foi adaptada ou removida.
 `/payroll-closures` permanecem inalterados e ainda não delegam ao orquestrador. Seus consumidores,
 telemetria e janela de migração continuam pendentes; nenhuma remoção ou redirecionamento ocorreu.

@@ -4,7 +4,6 @@ import { PrismaService } from '../../prisma/prisma.service';
 import {
   CreatePayrollPeriodDto,
   PayrollPeriodQueryDto,
-  ReopenPayrollPeriodDto,
   UpdatePayrollPeriodDto,
 } from './payroll-periods.dto';
 
@@ -102,27 +101,6 @@ export class PayrollPeriodsService {
         },
       });
       return period;
-    });
-  }
-  async reopen(id: string, dto: ReopenPayrollPeriodDto) {
-    const period = await this.find(id);
-    if (period.status !== 'CLOSED')
-      throw new ConflictException('Somente competências fechadas podem ser reabertas');
-    return this.prisma.$transaction(async (tx) => {
-      const updated = await tx.payrollPeriod.update({
-        where: { id },
-        data: { status: 'OPEN', reopenedAt: new Date() },
-      });
-      await tx.payrollPeriodClosure.create({
-        data: {
-          payrollPeriodId: id,
-          action: 'REOPENED',
-          reason: dto.reason,
-          engineVersion: period.engineVersion,
-          parameterVersion: period.parameterVersion,
-        },
-      });
-      return updated;
     });
   }
   private duplicate(error: unknown): never {

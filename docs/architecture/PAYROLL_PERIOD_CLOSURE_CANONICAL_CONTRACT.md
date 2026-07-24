@@ -4,7 +4,7 @@
 
 **Decisão de negócio:** [BDP-014 v1](../project-management/BDP-014_RESOLUTION_V1.md)
 
-**Implementação:** Fases 2 e 3 `COMPLETED`; Fase 4 `READY FOR REVIEW`
+**Implementação:** Fases 2 a 4 `COMPLETED`; Fase 5 `READY FOR REVIEW`
 
 ## 1. Agregado
 
@@ -212,6 +212,14 @@ As rotas inventariadas em [PAYROLL_CLOSURE_LEGACY_INVENTORY.md](PAYROLL_CLOSURE_
 - sem regra legal ou cálculo novo.
 
 As Fases 2 e 3 concretizam a consulta e sua fundação persistente interna. A Fase 4 implementa
+
+### Reabertura canônica
+
+`POST /payroll-periods/:payrollPeriodId/reopen` exige capability
+`payroll.period.close.reopen`, `Idempotency-Key`, motivo, token de consistência e versão esperada. A
+operação preserva a evidência anterior, registra invalidação operacional append-only e cria nova
+versão `OPEN` sem execução ou review. A URI anterior foi preservada, mas o contrato legado foi
+substituído sem fallback.
 `POST /payroll-periods/:id/close` com readiness transacional, advisory lock, idempotência, manifesto,
 eventos e auditoria atômica. A migration 0015 adiciona `PayrollPeriodClosureVersion`, manifesto,
 eventos, acknowledgements e idempotência, preservando a tabela legada

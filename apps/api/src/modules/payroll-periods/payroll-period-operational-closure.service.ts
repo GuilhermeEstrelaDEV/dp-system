@@ -194,14 +194,25 @@ export class PayrollPeriodOperationalClosureService {
             readiness.acknowledgementsRequired,
           );
           const active = await this.repository.getActive(scope.companyId, scope.id, tx);
-          if (active) {
+          const isReopenedVersion = Boolean(
+            active &&
+            active.status === 'OPEN' &&
+            active.previousClosureVersionId &&
+            !active.selectedPayrollRunId &&
+            !active.linkedReviewCycleId,
+          );
+          if (active && !isReopenedVersion) {
             throw new PayrollPeriodClosureHttpException(
               'PERIOD_ALREADY_CLOSED',
               'An operational closure version already exists',
               HttpStatus.CONFLICT,
             );
           }
-          if (dto.expectedClosureVersion !== undefined && dto.expectedClosureVersion !== 0) {
+          const expectedBusinessVersion = active?.version ?? 0;
+          if (
+            dto.expectedClosureVersion !== undefined &&
+            dto.expectedClosureVersion !== expectedBusinessVersion
+          ) {
             throw new PayrollPeriodClosureHttpException(
               'OPTIMISTIC_VERSION_CONFLICT',
               'Expected closure version does not match',
@@ -219,19 +230,36 @@ export class PayrollPeriodOperationalClosureService {
           );
           if (!review) throw new NotFoundException('Evidência de conferência não encontrada');
 
-          const closure = await this.repository.createVersion(tx, {
-            id: randomUUID(),
-            companyId: scope.companyId,
-            payrollPeriodId: scope.id,
-            selectedPayrollRunId: run.id,
-            linkedReviewCycleId: review.id,
-            linkedReviewRound: review.reviewRound,
-            consistencyToken: dto.expectedConsistencyToken,
-            createdBy: principal.actorId,
-          });
-          await this.assertOptimisticUpdate(tx, closure.id, scope.companyId, 1, {
-            status: 'CLOSING',
-          });
+          const closure =
+            active ??
+            (await this.repository.createVersion(tx, {
+              id: randomUUID(),
+              companyId: scope.companyId,
+              payrollPeriodId: scope.id,
+              selectedPayrollRunId: run.id,
+              linkedReviewCycleId: review.id,
+              linkedReviewRound: review.reviewRound,
+              consistencyToken: dto.expectedConsistencyToken,
+              createdBy: principal.actorId,
+            }));
+          const startingOptimisticVersion = closure.optimisticVersion ?? 1;
+          await this.assertOptimisticUpdate(
+            tx,
+            closure.id,
+            scope.companyId,
+            startingOptimisticVersion,
+            {
+              status: 'CLOSING',
+              ...(active
+                ? {
+                    selectedPayrollRunId: run.id,
+                    linkedReviewCycleId: review.id,
+                    linkedReviewRound: review.reviewRound,
+                    consistencyToken: dto.expectedConsistencyToken,
+                  }
+                : {}),
+            },
+          );
           await this.appendEvent(
             tx,
             scope.companyId,
@@ -322,10 +350,16 @@ export class PayrollPeriodOperationalClosureService {
             },
             select: { updatedAt: true },
           });
-          await this.assertOptimisticUpdate(tx, closure.id, scope.companyId, 2, {
-            status: 'CLOSED',
-            closedAt: now,
-          });
+          await this.assertOptimisticUpdate(
+            tx,
+            closure.id,
+            scope.companyId,
+            startingOptimisticVersion + 1,
+            {
+              status: 'CLOSED',
+              closedAt: now,
+            },
+          );
           await this.appendEvent(
             tx,
             scope.companyId,

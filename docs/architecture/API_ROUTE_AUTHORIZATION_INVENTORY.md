@@ -35,6 +35,15 @@ capabilities `execute`, `reopen` e `history` estão apenas no catálogo, sem ass
 ## ETP-014 Fase 4
 
 A Fase 4 tornou canônica a URI homologada `POST /payroll-periods/:payrollPeriodId/close`. Ela exige
+
+## ETP-014 Fase 5
+
+| Método | Rota                                       | Autenticação        | Capability                    | Isolamento            |
+| ------ | ------------------------------------------ | ------------------- | ----------------------------- | --------------------- |
+| POST   | `/payroll-periods/:payrollPeriodId/reopen` | JWT + empresa ativa | `payroll.period.close.reopen` | `404` fora da empresa |
+
+A rota exige `Idempotency-Key` e DTO canônico. Não existe associação automática da capability a
+papéis nem autorização por nome fixo de papel.
 JWT, empresa ativa, `payroll.period.close.execute`, `Idempotency-Key`, readiness transacional e
 auditoria atômica. Não foram adicionadas rotas públicas de `reopen`, `history` ou manifesto. As
 demais escritas históricas, especialmente `/payroll-closures`, continuam legadas e não foram

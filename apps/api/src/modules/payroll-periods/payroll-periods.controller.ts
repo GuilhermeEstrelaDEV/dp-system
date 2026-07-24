@@ -38,10 +38,12 @@ import {
   ClosePayrollPeriodResponseDto,
 } from './payroll-period-operational-closure.dto';
 import { PayrollPeriodOperationalClosureService } from './payroll-period-operational-closure.service';
+import { ReopenPayrollPeriodResponseDto } from './payroll-period-controlled-reopening.dto';
+import { PayrollPeriodControlledReopeningService } from './payroll-period-controlled-reopening.service';
 import {
   CreatePayrollPeriodDto,
   PayrollPeriodQueryDto,
-  ReopenPayrollPeriodDto,
+  ControlledReopenPayrollPeriodDto,
   UpdatePayrollPeriodDto,
 } from './payroll-periods.dto';
 import { PayrollPeriodsService } from './payroll-periods.service';
@@ -52,6 +54,7 @@ export class PayrollPeriodsController {
     private readonly service: PayrollPeriodsService,
     private readonly readinessService: PayrollPeriodReadinessService,
     private readonly operationalClosureService: PayrollPeriodOperationalClosureService,
+    private readonly controlledReopeningService: PayrollPeriodControlledReopeningService,
   ) {}
   @Get() list(@Query() q: PayrollPeriodQueryDto) {
     return this.service.list(q);
@@ -115,7 +118,35 @@ export class PayrollPeriodsController {
     response.status(result.idempotentReplay ? HttpStatus.OK : HttpStatus.CREATED);
     return result;
   }
-  @Post(':id/reopen') reopen(@Param('id') id: string, @Body() dto: ReopenPayrollPeriodDto) {
-    return this.service.reopen(id, dto);
+  @Post(':payrollPeriodId/reopen')
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: true,
+    description: 'UUID unique within company, payroll period and REOPEN operation.',
+  })
+  @ApiCreatedResponse({ type: ReopenPayrollPeriodResponseDto })
+  @ApiOkResponse({ type: ReopenPayrollPeriodResponseDto, description: 'Idempotent replay.' })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ description: 'Period missing or outside the active company.' })
+  @ApiConflictResponse({ description: 'State, evidence, idempotency or concurrency conflict.' })
+  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
+  @RequireCapabilities('payroll.period.close.reopen')
+  async reopen(
+    @Param('payrollPeriodId') payrollPeriodId: string,
+    @Body() dto: ControlledReopenPayrollPeriodDto,
+    @Headers('idempotency-key') idempotencyKey: string | undefined,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = await this.controlledReopeningService.reopen(
+      payrollPeriodId,
+      dto,
+      idempotencyKey,
+      principal,
+    );
+    response.status(result.idempotentReplay ? HttpStatus.OK : HttpStatus.CREATED);
+    return result;
   }
 }

@@ -19,6 +19,15 @@ const readinessPeriodSelect = {
   referenceDate: true,
   status: true,
   updatedAt: true,
+  closureVersions: {
+    where: { supersededAt: null },
+    take: 1,
+    select: {
+      previousClosureVersion: {
+        select: { selectedPayrollRun: { select: { sequence: true } } },
+      },
+    },
+  },
   runs: {
     orderBy: { sequence: 'desc' },
     select: {
@@ -192,7 +201,13 @@ export class PayrollPeriodReadinessService {
       status: period.status,
       updatedAt: period.updatedAt,
       pendingVariablePayItems,
-      runs: period.runs.map((run) => this.toRunSnapshot(period.companyId, run)),
+      runs: period.runs
+        .filter((run) => {
+          const previousSequence =
+            period.closureVersions?.[0]?.previousClosureVersion?.selectedPayrollRun?.sequence;
+          return previousSequence === undefined || run.sequence > previousSequence;
+        })
+        .map((run) => this.toRunSnapshot(period.companyId, run)),
     };
   }
 

@@ -6,6 +6,7 @@ import { CapabilitiesGuard } from '../auth/capabilities.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PayrollPeriodReadinessService } from './payroll-period-readiness.service';
 import { PayrollPeriodOperationalClosureService } from './payroll-period-operational-closure.service';
+import { PayrollPeriodControlledReopeningService } from './payroll-period-controlled-reopening.service';
 import { PayrollPeriodsController } from './payroll-periods.controller';
 import { PayrollPeriodsService } from './payroll-periods.service';
 
@@ -19,6 +20,7 @@ describe('PayrollPeriodsController readiness contract', () => {
         { provide: PayrollPeriodsService, useValue: {} },
         { provide: PayrollPeriodReadinessService, useValue: { evaluate: jest.fn() } },
         { provide: PayrollPeriodOperationalClosureService, useValue: { close: jest.fn() } },
+        { provide: PayrollPeriodControlledReopeningService, useValue: { reopen: jest.fn() } },
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -74,5 +76,25 @@ describe('PayrollPeriodsController readiness contract', () => {
     expect(operation?.responses['201']).toBeDefined();
     expect(operation?.responses['409']).toBeDefined();
     expect(operation?.responses['422']).toBeDefined();
+  });
+
+  it('declares one authenticated canonical reopen operation', () => {
+    expect(
+      Reflect.getMetadata(REQUIRED_CAPABILITIES, PayrollPeriodsController.prototype.reopen),
+    ).toEqual(['payroll.period.close.reopen']);
+    const document = SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder().setTitle('test').build(),
+    );
+    const paths = Object.keys(document.paths).filter((path) => path.endsWith('/reopen'));
+    expect(paths).toEqual(['/payroll-periods/{payrollPeriodId}/reopen']);
+    const operation = document.paths[paths[0]!]?.post;
+    expect(operation?.parameters).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'Idempotency-Key', in: 'header', required: true }),
+      ]),
+    );
+    expect(operation?.responses['201']).toBeDefined();
+    expect(operation?.responses['409']).toBeDefined();
   });
 });
