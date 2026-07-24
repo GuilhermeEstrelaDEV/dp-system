@@ -87,4 +87,4 @@ idempotência finalizada e rollback conjunto de evento e `AuditLog`.
 
 A Fase 4 reexecuta readiness dentro da transação, aplica advisory transaction lock e habilita o
 [comando canônico](PAYROLL_PERIOD_OPERATIONAL_CLOSURE.md).
-A Fase 5 cuidará da reabertura e da superação/ligação das versões. Nenhum desses fluxos está operacional.
+A Fase 5 implementa a reabertura e a superação/ligação das versões usando integralmente a migration 0015. Manifestos, eventos e acknowledgements permanecem append-only; não foi necessária migration 0016.

@@ -2,7 +2,7 @@
 
 **ETP:** 014 — Fase 4
 
-**Status:** `READY FOR REVIEW`
+**Status:** `COMPLETED`
 
 **Migration:** nenhuma; reutiliza `0015_payroll_period_closure_persistence`
 
@@ -119,8 +119,8 @@ legadas, inclusive `/payroll-closures`, `validate`, `open` e `reopen`, não fora
 removidas ou refatoradas; seus consumidores continuam sendo dívida explícita de compatibilidade.
 
 Não há endpoint novo de reabertura, histórico ou manifesto, frontend, scheduler, notificação,
-integração externa, alçada, retenção, exportação ou processamento assíncrono. A Fase 5 permanece
-`NOT STARTED`.
+integração externa, alçada, retenção, exportação ou processamento assíncrono. A Fase 5 está
+`READY FOR REVIEW` e reutiliza o mesmo lock e persistência.
 
 ## Verificação
 

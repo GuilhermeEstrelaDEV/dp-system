@@ -123,4 +123,8 @@ capability e a operação OpenAPI.
 ## Gate seguinte
 
 A Fase 2 foi concluída após revisão e merge. A Fase 4 reutiliza esta política com o mesmo cliente
+
+Após reabertura, a mesma política desconsidera a execução vinculada ao predecessor e todas as
+execuções anteriores. Ela permanece somente leitura e apresenta blockers até existir nova execução e
+novo review completos.
 transacional, depois do lock. Uma resposta GET anterior nunca autoriza o fechamento.

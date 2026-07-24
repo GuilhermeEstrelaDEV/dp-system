@@ -8,7 +8,7 @@
 
 **Decisão homologada:** [BDP-014 — Resolução v1](BDP-014_RESOLUTION_V1.md)
 
-**Próximo gate:** revisão e merge da Fase 4 operacional do [plano](ETP-014_IMPLEMENTATION_PLAN.md)
+**Próximo gate:** revisão e merge da Fase 5 de reabertura controlada do [plano](ETP-014_IMPLEMENTATION_PLAN.md)
 
 ## 1. Objetivo
 
@@ -318,7 +318,7 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 | D-014-09 | Manifesto mínimo imutável; retenção temporal continua na BDP-011               | Jurídico/DPO, Segurança e DP  | auditoria              |
 | D-014-10 | Remuneração variável pendente é warning com reconhecimento, sem alçada         | DP e Financeiro               | integração ETP-012     |
 
-As escolhas finais e suas regras vinculantes estão na [resolução v1](BDP-014_RESOLUTION_V1.md); a [proposta](BDP-014_RESOLUTION_PROPOSAL.md) preserva as alternativas rejeitadas. A homologação não inicia automaticamente as fases técnicas.
+As escolhas finais e suas regras vinculantes estão na [resolução v1](BDP-014_RESOLUTION_V1.md); a [proposta](BDP-014_RESOLUTION_PROPOSAL.md) preserva as alternativas rejeitadas. A homologação não inicia automaticamente as fases técnicas. A Fase 5 preserva a URI pública de reabertura e substitui o comportamento legado pelo contrato canônico autorizado.
 
 ## 12. Riscos e dependências
 
@@ -353,8 +353,8 @@ As escolhas finais e suas regras vinculantes estão na [resolução v1](BDP-014_
 
 ## 14. Estado desta especificação
 
-A ETP-014 está `IN PROGRESS`. BDP-014 está `APPROVED — VERSION 1`, as Fases 1 a 3 estão
-`COMPLETED` e a Fase 4 está `READY FOR REVIEW`. Readiness, persistência e o
+A ETP-014 está `IN PROGRESS`. BDP-014 está `APPROVED — VERSION 1`, as Fases 1 a 4 estão
+`COMPLETED` e a Fase 5 está `READY FOR REVIEW`. Readiness, persistência e o
 [fechamento operacional](../modules/PAYROLL_PERIOD_OPERATIONAL_CLOSURE.md) usam o contrato canônico.
 Não há reabertura, frontend, histórico público separado ou adaptação das demais rotas legadas nesta
-fase. A Fase 5 permanece `NOT STARTED`.
+fase. A Fase 6 permanece `NOT STARTED`.
