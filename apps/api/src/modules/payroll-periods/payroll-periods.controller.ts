@@ -43,7 +43,7 @@ import { PayrollPeriodControlledReopeningService } from './payroll-period-contro
 import {
   CreatePayrollPeriodDto,
   PayrollPeriodQueryDto,
-  ReopenPayrollPeriodDto,
+  ControlledReopenPayrollPeriodDto,
   UpdatePayrollPeriodDto,
 } from './payroll-periods.dto';
 import { PayrollPeriodsService } from './payroll-periods.service';
@@ -135,7 +135,7 @@ export class PayrollPeriodsController {
   @RequireCapabilities('payroll.period.close.reopen')
   async reopen(
     @Param('payrollPeriodId') payrollPeriodId: string,
-    @Body() dto: ReopenPayrollPeriodDto,
+    @Body() dto: ControlledReopenPayrollPeriodDto,
     @Headers('idempotency-key') idempotencyKey: string | undefined,
     @CurrentPrincipal() principal: AuthenticatedPrincipal,
     @Res({ passthrough: true }) response: Response,

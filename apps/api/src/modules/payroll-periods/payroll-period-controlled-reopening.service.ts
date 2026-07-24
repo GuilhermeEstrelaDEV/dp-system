@@ -15,7 +15,7 @@ import {
 } from './payroll-period-closure.errors';
 import { PayrollPeriodClosureRepository } from './payroll-period-closure.repository';
 import type { ReopenPayrollPeriodResponseDto } from './payroll-period-controlled-reopening.dto';
-import type { ReopenPayrollPeriodDto } from './payroll-periods.dto';
+import type { ControlledReopenPayrollPeriodDto } from './payroll-periods.dto';
 
 const REOPEN_CAPABILITY = 'payroll.period.close.reopen';
 
@@ -31,7 +31,7 @@ export class PayrollPeriodControlledReopeningService {
 
   async reopen(
     payrollPeriodId: string,
-    dto: ReopenPayrollPeriodDto,
+    dto: ControlledReopenPayrollPeriodDto,
     idempotencyKey: string | undefined,
     principal: AuthenticatedPrincipal,
   ): Promise<ReopenPayrollPeriodResponseDto> {

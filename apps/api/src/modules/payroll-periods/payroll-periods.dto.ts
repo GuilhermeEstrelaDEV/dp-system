@@ -36,7 +36,7 @@ export class UpdatePayrollPeriodDto {
   @IsOptional() @IsString() @MaxLength(30) type?: string;
 }
 
-export class ReopenPayrollPeriodDto {
+export class ControlledReopenPayrollPeriodDto {
   @ApiProperty({ maxLength: 1000 })
   @IsString()
   @IsNotEmpty()
