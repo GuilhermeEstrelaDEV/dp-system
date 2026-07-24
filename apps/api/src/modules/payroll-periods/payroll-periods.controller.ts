@@ -1,5 +1,29 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import type { Response } from 'express';
+import {
+  ApiBearerAuth,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiHeader,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { CurrentPrincipal, RequireCapabilities } from '../auth/auth.decorators';
 import { CapabilitiesGuard } from '../auth/capabilities.guard';
@@ -9,6 +33,11 @@ import {
   PayrollPeriodClosureReadinessResponseDto,
 } from './payroll-period-readiness.dto';
 import { PayrollPeriodReadinessService } from './payroll-period-readiness.service';
+import {
+  ClosePayrollPeriodCommandDto,
+  ClosePayrollPeriodResponseDto,
+} from './payroll-period-operational-closure.dto';
+import { PayrollPeriodOperationalClosureService } from './payroll-period-operational-closure.service';
 import {
   CreatePayrollPeriodDto,
   PayrollPeriodQueryDto,
@@ -22,6 +51,7 @@ export class PayrollPeriodsController {
   constructor(
     private readonly service: PayrollPeriodsService,
     private readonly readinessService: PayrollPeriodReadinessService,
+    private readonly operationalClosureService: PayrollPeriodOperationalClosureService,
   ) {}
   @Get() list(@Query() q: PayrollPeriodQueryDto) {
     return this.service.list(q);
@@ -53,8 +83,37 @@ export class PayrollPeriodsController {
   @Post(':id/validate') validate(@Param('id') id: string) {
     return this.service.validate(id);
   }
-  @Post(':id/close') close(@Param('id') id: string) {
-    return this.service.close(id);
+  @Post(':payrollPeriodId/close')
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: true,
+    description: 'UUID unique within company, payroll period and CLOSE operation.',
+  })
+  @ApiCreatedResponse({ type: ClosePayrollPeriodResponseDto })
+  @ApiOkResponse({ type: ClosePayrollPeriodResponseDto, description: 'Idempotent replay.' })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ description: 'Period missing or outside the active company.' })
+  @ApiConflictResponse({ description: 'Idempotency, consistency or concurrency conflict.' })
+  @ApiUnprocessableEntityResponse({ description: 'Readiness or acknowledgement not met.' })
+  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
+  @RequireCapabilities('payroll.period.close.execute')
+  async close(
+    @Param('payrollPeriodId') payrollPeriodId: string,
+    @Body() dto: ClosePayrollPeriodCommandDto,
+    @Headers('idempotency-key') idempotencyKey: string | undefined,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = await this.operationalClosureService.close(
+      payrollPeriodId,
+      dto,
+      idempotencyKey,
+      principal,
+    );
+    response.status(result.idempotentReplay ? HttpStatus.OK : HttpStatus.CREATED);
+    return result;
   }
   @Post(':id/reopen') reopen(@Param('id') id: string, @Body() dto: ReopenPayrollPeriodDto) {
     return this.service.reopen(id, dto);
