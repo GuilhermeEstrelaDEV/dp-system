@@ -1,7 +1,8 @@
 # Reabertura controlada de competência
 
 **ETP:** 014 — Fase 5  
-**Status:** `READY FOR REVIEW`  
+**Status:** `COMPLETED`
+
 **Decisão:** BDP-014 `APPROVED — VERSION 1`
 
 ## Contrato canônico

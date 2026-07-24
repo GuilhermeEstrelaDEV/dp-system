@@ -92,15 +92,13 @@ A etapa possui workflow auditável até `CLOSED`. Reabertura autorizada invalida
 
 ## ETP-014 — Fechamento de competência e integração operacional
 
-**Status:** `IN PROGRESS`.
+**Status:** `COMPLETED`.
 
-A iniciativa está `IN PROGRESS`. A [BDP-014 v1](project-management/BDP-014_RESOLUTION_V1.md) foi
-homologada, e as Fases 1 a 5 estão `COMPLETED`. A Fase 6 de histórico público e
-[frontend](modules/PAYROLL_PERIOD_FRONTEND.md) está `READY FOR REVIEW`:
-o comando canônico reavalia readiness sob advisory lock, aplica idempotência e versão otimista e
-confirma estado, manifesto SHA-256, eventos append-only e auditoria na mesma transação. Não há
-reabertura, frontend, histórico público separado nem redirecionamento das demais rotas legadas; a
-A ETP-014 está `READY FOR FINAL ACCEPTANCE` após revisão da Fase 6.
+A [BDP-014 v1](project-management/BDP-014_RESOLUTION_V1.md) está homologada, e as Fases 1 a 6 estão
+`COMPLETED`. O contrato canônico cobre readiness, fechamento, reabertura controlada, histórico
+público e [frontend](modules/PAYROLL_PERIOD_FRONTEND.md), com advisory lock, idempotência, versão
+otimista, manifesto SHA-256, eventos append-only e auditoria transacional. A ETP-014 foi oficialmente
+concluída após a Final Acceptance.
 
 ## Próximas iniciativas propostas
 

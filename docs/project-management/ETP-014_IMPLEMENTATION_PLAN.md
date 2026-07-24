@@ -1,6 +1,6 @@
 # ETP-014 — Plano de implementação
 
-**Status:** `READY FOR FINAL ACCEPTANCE — PHASES 1-5 COMPLETED; PHASE 6 READY FOR REVIEW`
+**Status:** `COMPLETED — PHASES 1-6 COMPLETED`
 
 **Natureza:** plano incremental; somente a fase explicitamente autorizada pode ser implementada
 
@@ -266,7 +266,7 @@ Interpretação incorreta de que review histórico foi invalidado e existência 
 
 ## Fase 6 — Frontend e validação ponta a ponta
 
-**Status:** `READY FOR REVIEW`.
+**Status:** `COMPLETED`.
 
 ### Objetivo
 
@@ -308,7 +308,7 @@ Os quatro contratos canônicos homologados: readiness, close, reopen e history.
 
 ### Aceite e encerramento
 
-Critérios globais da especificação atendidos, cobertura sem regressão, documentação operacional e inventário de rotas atualizados. Somente então a ETP-014 poderá ser candidata a `COMPLETED`.
+Critérios globais da especificação atendidos, cobertura sem regressão, documentação operacional e inventário de rotas atualizados. A Final Acceptance confirmou a ETP-014 como `COMPLETED`.
 
 ### Riscos
 
@@ -322,7 +322,7 @@ flowchart LR
     F2 --> F3[Fase 3: persistência COMPLETED]
     F3 --> F4[Fase 4: fechamento COMPLETED]
     F4 --> F5[Fase 5: reabertura COMPLETED]
-    F5 --> F6[Fase 6: frontend e E2E READY FOR REVIEW]
+    F5 --> F6[Fase 6: frontend e E2E COMPLETED]
 ```
 
 Nenhuma fase pode antecipar regra, migration ou contrato pertencente ao gate seguinte.

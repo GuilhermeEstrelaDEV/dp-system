@@ -1,7 +1,7 @@
 # Histórico público de fechamento de competência
 
 **ETP:** 014 — Fase 6  
-**Status:** `READY FOR REVIEW`
+**Status:** `COMPLETED`
 
 Quatro endpoints somente leitura expõem versões, detalhes, eventos e uma projeção segura do manifesto:
 

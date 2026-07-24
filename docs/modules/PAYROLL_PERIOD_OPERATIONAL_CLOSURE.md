@@ -120,7 +120,7 @@ removidas ou refatoradas; seus consumidores continuam sendo dívida explícita d
 
 Não há endpoint novo de reabertura, histórico ou manifesto, frontend, scheduler, notificação,
 integração externa, alçada, retenção, exportação ou processamento assíncrono. A Fase 5 está
-`READY FOR REVIEW` e reutiliza o mesmo lock e persistência.
+`COMPLETED` e reutiliza o mesmo lock e persistência.
 
 ## Verificação
 

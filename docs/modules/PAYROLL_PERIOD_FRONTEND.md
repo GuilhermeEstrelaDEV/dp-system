@@ -1,7 +1,7 @@
 # Frontend de fechamento de competência
 
 **ETP:** 014 — Fase 6  
-**Status:** `READY FOR REVIEW`
+**Status:** `COMPLETED`
 
 A tela de competências liga ao Histórico de Fechamentos. Rotas protegidas por
 `payroll.period.close.history` mostram versões atuais e históricas, badges, predecessores,
