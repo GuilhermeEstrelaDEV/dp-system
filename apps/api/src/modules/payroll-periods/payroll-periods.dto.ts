@@ -3,10 +3,13 @@ import {
   IsDateString,
   IsIn,
   IsNotEmpty,
+  IsInt,
+  IsISO8601,
   IsOptional,
   IsString,
   IsUUID,
   MaxLength,
+  Matches,
   Min,
 } from 'class-validator';
 
@@ -34,5 +37,25 @@ export class UpdatePayrollPeriodDto {
 }
 
 export class ReopenPayrollPeriodDto {
-  @IsString() @IsNotEmpty() @MaxLength(1000) reason!: string;
+  @ApiProperty({ maxLength: 1000 })
+  @IsString()
+  @IsNotEmpty()
+  @Matches(/\S/, { message: 'reason must contain non-whitespace characters' })
+  @MaxLength(1000)
+  reason!: string;
+
+  @ApiProperty({ format: 'date-time' })
+  @IsISO8601({ strict: true })
+  expectedConsistencyToken!: string;
+
+  @ApiProperty({ minimum: 1 })
+  @IsInt()
+  @Min(1)
+  expectedClosureVersion!: number;
+
+  @ApiPropertyOptional({ maxLength: 1000 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  note?: string;
 }

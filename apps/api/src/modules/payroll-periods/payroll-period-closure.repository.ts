@@ -5,9 +5,9 @@ export interface CreateClosureVersionRecord {
   readonly id: string;
   readonly companyId: string;
   readonly payrollPeriodId: string;
-  readonly selectedPayrollRunId: string;
-  readonly linkedReviewCycleId: string;
-  readonly linkedReviewRound: number;
+  readonly selectedPayrollRunId?: string;
+  readonly linkedReviewCycleId?: string;
+  readonly linkedReviewRound?: number;
   readonly consistencyToken: string;
   readonly createdBy: string;
   readonly previousClosureVersionId?: string;
