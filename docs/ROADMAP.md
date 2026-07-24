@@ -95,12 +95,12 @@ A etapa possui workflow auditável até `CLOSED`. Reabertura autorizada invalida
 **Status:** `IN PROGRESS`.
 
 A iniciativa está `IN PROGRESS`. A [BDP-014 v1](project-management/BDP-014_RESOLUTION_V1.md) foi
-homologada, e as Fases 1 a 4 estão `COMPLETED`. A Fase 5 de
-[reabertura controlada](modules/PAYROLL_PERIOD_CONTROLLED_REOPENING.md) está `READY FOR REVIEW`:
+homologada, e as Fases 1 a 5 estão `COMPLETED`. A Fase 6 de histórico público e
+[frontend](modules/PAYROLL_PERIOD_FRONTEND.md) está `READY FOR REVIEW`:
 o comando canônico reavalia readiness sob advisory lock, aplica idempotência e versão otimista e
 confirma estado, manifesto SHA-256, eventos append-only e auditoria na mesma transação. Não há
 reabertura, frontend, histórico público separado nem redirecionamento das demais rotas legadas; a
-Fase 6 permanece `NOT STARTED`.
+A ETP-014 está `READY FOR FINAL ACCEPTANCE` após revisão da Fase 6.
 
 ## Próximas iniciativas propostas
 

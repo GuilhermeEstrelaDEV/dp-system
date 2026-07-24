@@ -5,6 +5,7 @@ import { PayrollPeriodClosurePersistenceService } from './payroll-period-closure
 import { PayrollPeriodClosureRepository } from './payroll-period-closure.repository';
 import { PayrollPeriodOperationalClosureService } from './payroll-period-operational-closure.service';
 import { PayrollPeriodControlledReopeningService } from './payroll-period-controlled-reopening.service';
+import { PayrollPeriodHistoryService } from './payroll-period-history.service';
 import { PayrollPeriodReadinessService } from './payroll-period-readiness.service';
 import { PayrollPeriodsController } from './payroll-periods.controller';
 import { PayrollPeriodsService } from './payroll-periods.service';
@@ -18,6 +19,7 @@ import { PayrollPeriodsService } from './payroll-periods.service';
     PayrollPeriodClosurePersistenceService,
     PayrollPeriodOperationalClosureService,
     PayrollPeriodControlledReopeningService,
+    PayrollPeriodHistoryService,
   ],
   exports: [PayrollPeriodsService, PayrollPeriodClosurePersistenceService],
 })

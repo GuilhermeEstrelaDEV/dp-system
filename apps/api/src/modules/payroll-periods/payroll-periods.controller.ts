@@ -5,6 +5,7 @@ import {
   Headers,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -34,6 +35,12 @@ import {
 } from './payroll-period-readiness.dto';
 import { PayrollPeriodReadinessService } from './payroll-period-readiness.service';
 import {
+  PayrollPeriodHistoryEventsResponseDto,
+  PayrollPeriodHistoryResponseDto,
+  PayrollPeriodManifestResponseDto,
+} from './payroll-period-history.dto';
+import { PayrollPeriodHistoryService } from './payroll-period-history.service';
+import {
   ClosePayrollPeriodCommandDto,
   ClosePayrollPeriodResponseDto,
 } from './payroll-period-operational-closure.dto';
@@ -55,6 +62,7 @@ export class PayrollPeriodsController {
     private readonly readinessService: PayrollPeriodReadinessService,
     private readonly operationalClosureService: PayrollPeriodOperationalClosureService,
     private readonly controlledReopeningService: PayrollPeriodControlledReopeningService,
+    private readonly historyService: PayrollPeriodHistoryService,
   ) {}
   @Get() list(@Query() q: PayrollPeriodQueryDto) {
     return this.service.list(q);
@@ -73,6 +81,74 @@ export class PayrollPeriodsController {
     @CurrentPrincipal() principal: AuthenticatedPrincipal,
   ) {
     return this.readinessService.evaluate(payrollPeriodId, query.payrollRunId, principal);
+  }
+  @Get(':payrollPeriodId/history')
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    type: PayrollPeriodHistoryResponseDto,
+    description: 'Ordered closure versions with summarized immutable evidence.',
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ description: 'Period missing or outside the active company.' })
+  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
+  @RequireCapabilities('payroll.period.close.history')
+  history(
+    @Param('payrollPeriodId') payrollPeriodId: string,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.historyService.list(payrollPeriodId, principal);
+  }
+  @Get(':payrollPeriodId/history/:closureVersion/events')
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    type: PayrollPeriodHistoryEventsResponseDto,
+    description: 'Chronological append-only event timeline.',
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
+  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
+  @RequireCapabilities('payroll.period.close.history')
+  historyEvents(
+    @Param('payrollPeriodId') payrollPeriodId: string,
+    @Param('closureVersion', ParseIntPipe) closureVersion: number,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.historyService.events(payrollPeriodId, closureVersion, principal);
+  }
+  @Get(':payrollPeriodId/history/:closureVersion/manifest')
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    type: PayrollPeriodManifestResponseDto,
+    description: 'Safe read-only manifest projection without internal context or unnecessary PII.',
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse({ description: 'Period, version or manifest not found.' })
+  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
+  @RequireCapabilities('payroll.period.close.history')
+  historyManifest(
+    @Param('payrollPeriodId') payrollPeriodId: string,
+    @Param('closureVersion', ParseIntPipe) closureVersion: number,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.historyService.manifest(payrollPeriodId, closureVersion, principal);
+  }
+  @Get(':payrollPeriodId/history/:closureVersion')
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Complete safe projection for one closure version.' })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
+  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
+  @RequireCapabilities('payroll.period.close.history')
+  historyVersion(
+    @Param('payrollPeriodId') payrollPeriodId: string,
+    @Param('closureVersion', ParseIntPipe) closureVersion: number,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.historyService.find(payrollPeriodId, closureVersion, principal);
   }
   @Post() create(@Body() dto: CreatePayrollPeriodDto) {
     return this.service.create(dto);

@@ -36,6 +36,12 @@ import {
   PayrollReviewRunsPage,
   PayrollRunReviewPage,
 } from '@/features/payroll-review/PayrollReviewPages';
+import {
+  PayrollPeriodEventsPage,
+  PayrollPeriodHistoryPage,
+  PayrollPeriodManifestPage,
+  PayrollPeriodVersionPage,
+} from '@/features/payroll-period-history/PayrollPeriodHistoryPages';
 
 export const appRoutes: RouteObject[] = [
   {
@@ -92,6 +98,27 @@ export const appRoutes: RouteObject[] = [
               { path: 'folha/execucoes/:runId', element: <PayrollRunReviewPage /> },
               { path: 'folha/conferencia', element: <PayrollReviewRunsPage /> },
               { path: 'folha/conferencia/:reviewId', element: <PayrollReviewDetailPage /> },
+            ],
+          },
+          {
+            element: <CapabilityRoute capability="payroll.period.close.history" />,
+            children: [
+              {
+                path: 'folha/competencias/:payrollPeriodId/historico',
+                element: <PayrollPeriodHistoryPage />,
+              },
+              {
+                path: 'folha/competencias/:payrollPeriodId/historico/versoes/:closureVersion',
+                element: <PayrollPeriodVersionPage />,
+              },
+              {
+                path: 'folha/competencias/:payrollPeriodId/historico/versoes/:closureVersion/eventos',
+                element: <PayrollPeriodEventsPage />,
+              },
+              {
+                path: 'folha/competencias/:payrollPeriodId/historico/versoes/:closureVersion/manifesto',
+                element: <PayrollPeriodManifestPage />,
+              },
             ],
           },
           { path: 'desligamentos', element: <ModulePlaceholderPage /> },

@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PayrollPeriodReadinessService } from './payroll-period-readiness.service';
 import { PayrollPeriodOperationalClosureService } from './payroll-period-operational-closure.service';
 import { PayrollPeriodControlledReopeningService } from './payroll-period-controlled-reopening.service';
+import { PayrollPeriodHistoryService } from './payroll-period-history.service';
 import { PayrollPeriodsController } from './payroll-periods.controller';
 import { PayrollPeriodsService } from './payroll-periods.service';
 
@@ -21,6 +22,10 @@ describe('PayrollPeriodsController readiness contract', () => {
         { provide: PayrollPeriodReadinessService, useValue: { evaluate: jest.fn() } },
         { provide: PayrollPeriodOperationalClosureService, useValue: { close: jest.fn() } },
         { provide: PayrollPeriodControlledReopeningService, useValue: { reopen: jest.fn() } },
+        {
+          provide: PayrollPeriodHistoryService,
+          useValue: { list: jest.fn(), find: jest.fn(), events: jest.fn(), manifest: jest.fn() },
+        },
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -96,5 +101,32 @@ describe('PayrollPeriodsController readiness contract', () => {
     );
     expect(operation?.responses['201']).toBeDefined();
     expect(operation?.responses['409']).toBeDefined();
+  });
+
+  it('documents four history operations under the history capability', () => {
+    for (const handler of [
+      'history',
+      'historyVersion',
+      'historyEvents',
+      'historyManifest',
+    ] as const) {
+      expect(
+        Reflect.getMetadata(REQUIRED_CAPABILITIES, PayrollPeriodsController.prototype[handler]),
+      ).toEqual(['payroll.period.close.history']);
+    }
+    const document = SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder().setTitle('test').build(),
+    );
+    expect(document.paths['/payroll-periods/{payrollPeriodId}/history']?.get).toBeDefined();
+    expect(
+      document.paths['/payroll-periods/{payrollPeriodId}/history/{closureVersion}']?.get,
+    ).toBeDefined();
+    expect(
+      document.paths['/payroll-periods/{payrollPeriodId}/history/{closureVersion}/events']?.get,
+    ).toBeDefined();
+    expect(
+      document.paths['/payroll-periods/{payrollPeriodId}/history/{closureVersion}/manifest']?.get,
+    ).toBeDefined();
   });
 });

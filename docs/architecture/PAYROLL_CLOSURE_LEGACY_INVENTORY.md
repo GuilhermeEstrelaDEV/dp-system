@@ -126,5 +126,10 @@ de entrada e resposta conforme a BDP-014. `validate`, `open`, `reopen` e toda a 
 `POST /payroll-periods/:payrollPeriodId/reopen`, e o handler passou a delegar exclusivamente ao fluxo
 canônico de reabertura controlada. A mudança de nome do parâmetro não altera a URI. Essa conversão foi
 expressamente autorizada para resolver a colisão; nenhuma outra rota legada foi adaptada ou removida.
+
+## 13. Superfície pública da Fase 6
+
+O histórico canônico foi adicionado exclusivamente à família `/payroll-periods`. A família legada
+`/payroll-closures` permanece inalterada e não fornece as projeções canônicas de evidência.
 `/payroll-closures` permanecem inalterados e ainda não delegam ao orquestrador. Seus consumidores,
 telemetria e janela de migração continuam pendentes; nenhuma remoção ou redirecionamento ocorreu.
