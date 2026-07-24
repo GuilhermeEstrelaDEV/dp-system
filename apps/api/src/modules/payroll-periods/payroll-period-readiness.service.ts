@@ -90,14 +90,34 @@ export class PayrollPeriodReadinessService {
     principal: AuthenticatedPrincipal,
   ): Promise<PayrollPeriodClosureReadinessResponseDto> {
     this.authorization.requireCapability(principal, READINESS_CAPABILITY);
+    return this.evaluateWithClient(this.prisma, payrollPeriodId, payrollRunId, principal);
+  }
+
+  async evaluateInTransaction(
+    client: Prisma.TransactionClient,
+    payrollPeriodId: string,
+    payrollRunId: string,
+    principal: AuthenticatedPrincipal,
+  ): Promise<PayrollPeriodClosureReadinessResponseDto> {
+    this.authorization.requireCapability(principal, 'payroll.period.close.execute');
+    return this.evaluateWithClient(client, payrollPeriodId, payrollRunId, principal);
+  }
+
+  private async evaluateWithClient(
+    client: Prisma.TransactionClient | PrismaService,
+    payrollPeriodId: string,
+    payrollRunId: string | undefined,
+    principal: AuthenticatedPrincipal,
+  ): Promise<PayrollPeriodClosureReadinessResponseDto> {
     const companyId = principal.activeCompanyId!;
-    const period = await this.prisma.payrollPeriod.findFirst({
+    const period = await client.payrollPeriod.findFirst({
       where: { id: payrollPeriodId, companyId },
       select: readinessPeriodSelect,
     });
     if (!period) throw new NotFoundException('Competência não encontrada');
 
     const pendingVariablePayItems = await this.countPendingVariablePayItems(
+      client,
       companyId,
       period.referenceDate,
     );
@@ -141,16 +161,20 @@ export class PayrollPeriodReadinessService {
     };
   }
 
-  private async countPendingVariablePayItems(companyId: string, referenceDate: Date) {
+  private async countPendingVariablePayItems(
+    client: Prisma.TransactionClient | PrismaService,
+    companyId: string,
+    referenceDate: Date,
+  ) {
     const employmentContract = { companyId };
     const [events, advances, offCyclePayments] = await Promise.all([
-      this.prisma.variableCompensationEvent.count({
+      client.variableCompensationEvent.count({
         where: { referencePeriod: referenceDate, approvalStatus: 'PENDING', employmentContract },
       }),
-      this.prisma.salaryAdvance.count({
+      client.salaryAdvance.count({
         where: { referencePeriod: referenceDate, status: 'PENDING', employmentContract },
       }),
-      this.prisma.offCyclePayment.count({
+      client.offCyclePayment.count({
         where: { referencePeriod: referenceDate, approvalStatus: 'PENDING', employmentContract },
       }),
     ]);

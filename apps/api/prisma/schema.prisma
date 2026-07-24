@@ -903,7 +903,7 @@ model PayrollRun {
   status            String                        @default("DRAFT") @db.VarChar(20)
   engineVersion     String                        @map("engine_version") @db.VarChar(50)
   parameterVersion  String?                       @map("parameter_version") @db.VarChar(50)
-  parameterSnapshot Json?
+  parameterSnapshot Json?                         @map("parameter_snapshot")
   startedAt         DateTime?                     @map("started_at") @db.Timestamptz(6)
   completedAt       DateTime?                     @map("completed_at") @db.Timestamptz(6)
   createdAt         DateTime                      @default(now()) @map("created_at") @db.Timestamptz(6)

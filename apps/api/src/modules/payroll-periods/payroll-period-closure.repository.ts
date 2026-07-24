@@ -23,6 +23,16 @@ export interface ReserveIdempotencyRecord {
 
 @Injectable()
 export class PayrollPeriodClosureRepository {
+  async lockPeriod(
+    client: Prisma.TransactionClient,
+    companyId: string,
+    payrollPeriodId: string,
+  ): Promise<void> {
+    const lockScope = `${companyId}:${payrollPeriodId}`;
+    await client.$queryRaw`SELECT set_config('lock_timeout', ${'5s'}, true)`;
+    await client.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${lockScope}, 0))::text AS lock_result`;
+  }
+
   async createVersion(client: Prisma.TransactionClient, input: CreateClosureVersionRecord) {
     const active = await client.payrollPeriodClosureVersion.findFirst({
       where: {

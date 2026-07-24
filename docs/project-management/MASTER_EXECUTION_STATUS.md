@@ -217,7 +217,7 @@
 
 ### ETP-014 — Fechamento de competência e integração operacional
 
-- **Status:** `IN PROGRESS`; Fases 1 e 2 `COMPLETED`, Fase 3 `READY FOR REVIEW`, Fase 4 `NOT STARTED`.
+- **Status:** `IN PROGRESS`; Fases 1 a 3 `COMPLETED`, Fase 4 `READY FOR REVIEW`, Fase 5 `NOT STARTED`.
 - **Especificação:** `docs/project-management/ETP-014_PAYROLL_PERIOD_CLOSURE_SPECIFICATION.md`.
 - **Objetivo proposto:** vincular o fechamento operacional da competência a uma execução e conferência encerrada, com prontidão explícita, RBAC, isolamento empresarial e auditoria atômica.
 - **Base reutilizável:** `PayrollPeriod`, `PayrollRun`, `PayrollPeriodClosure`, workflow da ETP-013, JWT, empresa ativa, RBAC, auditoria, substituição e acesso emergencial.
@@ -231,7 +231,15 @@
 - **Banco:** 15 migrations; índice parcial garante uma versão ativa, trigger valida escopo empresa–competência–execução–review e quatro triggers protegem evidências/idempotência.
 - **Capabilities:** conjunto final de cinco códigos cadastrado no seed, com zero associação automática a papéis.
 - **Limites da Fase 3:** nenhum endpoint novo, fechamento/reabertura operacional, lock, adaptação legada ou frontend.
-- **Gate:** revisão e merge da Fase 3; a Fase 4 permanece `NOT STARTED`.
+- **Fase 4:** `POST /payroll-periods/:payrollPeriodId/close` exige JWT, empresa ativa,
+  `payroll.period.close.execute`, `Idempotency-Key` e token observado. Reavalia readiness sob advisory
+  transaction lock, valida warnings, cria versão, manifesto SHA-256, eventos e `AuditLog` e conclui
+  `PayrollPeriod` como `CLOSED` atomicamente.
+- **Concorrência:** chave persistente, fingerprint canônico, replay `200`, lock empresa–competência e
+  versão otimista; testes PostgreSQL cobrem chaves iguais/diferentes e ausência de `CLOSING` residual.
+- **Limites da Fase 4:** sem migration 0016, reabertura, histórico/manifesto público, frontend,
+  redirecionamento de `/payroll-closures`, scheduler, integração, retenção ou alçada.
+- **Gate:** revisão e merge da Fase 4; a Fase 5 permanece `NOT STARTED`.
 
 ### ETP-015 a ETP-017 — propostas
 

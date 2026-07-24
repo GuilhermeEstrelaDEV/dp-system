@@ -44,7 +44,14 @@ export class AuditWriterService {
     });
   }
 
-  transaction<T>(work: (client: Prisma.TransactionClient) => Promise<T>): Promise<T> {
-    return this.prisma.$transaction(work);
+  transaction<T>(
+    work: (client: Prisma.TransactionClient) => Promise<T>,
+    options?: {
+      maxWait?: number;
+      timeout?: number;
+      isolationLevel?: Prisma.TransactionIsolationLevel;
+    },
+  ): Promise<T> {
+    return this.prisma.$transaction(work, options);
   }
 }

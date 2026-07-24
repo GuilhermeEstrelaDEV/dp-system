@@ -2,25 +2,26 @@
 
 ## Classificação atual
 
-| Controller/família    | Rotas                                                                | Classificação             | Estado                                 |
-| --------------------- | -------------------------------------------------------------------- | ------------------------- | -------------------------------------- |
-| Health                | `/health`, `/health/live`, `/health/ready`                           | Pública                   | Mantida pública para operação          |
-| Auth login            | `POST /auth/login`                                                   | Pública                   | Rate limit; credenciais validadas      |
-| Auth bootstrap        | `GET /auth/me`, `GET /auth/companies`, `POST /auth/context`          | Autenticada               | JWT; seleção valida assignment         |
-| Access grants         | seis rotas sob `/access-grants`                                      | Autenticada e empresarial | JWT, capability e validação no serviço |
-| Swagger               | `/api/docs`, `/api/docs-json`                                        | Pública/configurável      | Somente quando habilitado              |
-| Companies             | todas sob `/companies`                                               | Ainda legada              | Sem migração neste incremento          |
-| Organização           | todas sob `/branches`, `/departments`, `/positions`, `/cost-centers` | Ainda legada              | Recebem companyId do cliente           |
-| Employees/contracts   | todas sob `/employees`, `/employment-contracts`                      | Ainda legada              | Exige desenho de visibilidade sensível |
-| Admission             | `/admission-processes`, checklists e documentos                      | Ainda legada              | Exige capabilities homologadas         |
-| Time management       | jornadas, feriados, marcações e saldos                               | Ainda legada              | Exige inventário por operação          |
-| Benefits              | todas sob `/benefits`                                                | Ainda legada              | Exige visibilidade por capability      |
-| Vacations/leaves      | férias, afastamentos e tipos                                         | Ainda legada              | Exige migração por caso de uso         |
-| Payroll readiness     | `GET /payroll-periods/:payrollPeriodId/closure-readiness`            | Autenticada e empresarial | JWT, capability, serviço e `404`       |
-| Payroll configuration | demais rotas de competências, rubricas e parâmetros                  | Ainda legada              | Não migrada para evitar quebra         |
-| Payroll operation     | lançamentos, execuções e fechamentos                                 | Ainda legada              | Prioridade para fase do workflow       |
-| Payroll review        | quatorze rotas incluindo fechamento, reabertura e histórico          | Autenticada e empresarial | JWT, capability, policy e `404`        |
-| Variable compensation | todas sob `/variable-compensation`                                   | Ainda legada              | BDP-006 continua pendente              |
+| Controller/família    | Rotas                                                                | Classificação             | Estado                                                                   |
+| --------------------- | -------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------ |
+| Health                | `/health`, `/health/live`, `/health/ready`                           | Pública                   | Mantida pública para operação                                            |
+| Auth login            | `POST /auth/login`                                                   | Pública                   | Rate limit; credenciais validadas                                        |
+| Auth bootstrap        | `GET /auth/me`, `GET /auth/companies`, `POST /auth/context`          | Autenticada               | JWT; seleção valida assignment                                           |
+| Access grants         | seis rotas sob `/access-grants`                                      | Autenticada e empresarial | JWT, capability e validação no serviço                                   |
+| Swagger               | `/api/docs`, `/api/docs-json`                                        | Pública/configurável      | Somente quando habilitado                                                |
+| Companies             | todas sob `/companies`                                               | Ainda legada              | Sem migração neste incremento                                            |
+| Organização           | todas sob `/branches`, `/departments`, `/positions`, `/cost-centers` | Ainda legada              | Recebem companyId do cliente                                             |
+| Employees/contracts   | todas sob `/employees`, `/employment-contracts`                      | Ainda legada              | Exige desenho de visibilidade sensível                                   |
+| Admission             | `/admission-processes`, checklists e documentos                      | Ainda legada              | Exige capabilities homologadas                                           |
+| Time management       | jornadas, feriados, marcações e saldos                               | Ainda legada              | Exige inventário por operação                                            |
+| Benefits              | todas sob `/benefits`                                                | Ainda legada              | Exige visibilidade por capability                                        |
+| Vacations/leaves      | férias, afastamentos e tipos                                         | Ainda legada              | Exige migração por caso de uso                                           |
+| Payroll readiness     | `GET /payroll-periods/:payrollPeriodId/closure-readiness`            | Autenticada e empresarial | JWT, capability, serviço e `404`                                         |
+| Payroll period close  | `POST /payroll-periods/:payrollPeriodId/close`                       | Autenticada e empresarial | JWT, `payroll.period.close.execute`, empresa ativa, idempotência e `404` |
+| Payroll configuration | demais rotas de competências, rubricas e parâmetros                  | Ainda legada              | Não migrada para evitar quebra                                           |
+| Payroll operation     | lançamentos, execuções e fechamentos                                 | Ainda legada              | Prioridade para fase do workflow                                         |
+| Payroll review        | quatorze rotas incluindo fechamento, reabertura e histórico          | Autenticada e empresarial | JWT, capability, policy e `404`                                          |
+| Variable compensation | todas sob `/variable-compensation`                                   | Ainda legada              | BDP-006 continua pendente                                                |
 
 Não há rota administrativa da plataforma protegida nesta fase; capabilities globais continuam disponíveis apenas como fundação.
 
@@ -30,6 +31,14 @@ A persistência de fechamento permanece exclusivamente interna. Nenhuma rota pú
 `reopen`, `history`, manifesto ou acknowledgement foi adicionada. As rotas homônimas existentes em
 `payroll-periods` e `payroll-closures` continuam classificadas como legado e não foram adaptadas. As
 capabilities `execute`, `reopen` e `history` estão apenas no catálogo, sem assignments.
+
+## ETP-014 Fase 4
+
+A Fase 4 tornou canônica a URI homologada `POST /payroll-periods/:payrollPeriodId/close`. Ela exige
+JWT, empresa ativa, `payroll.period.close.execute`, `Idempotency-Key`, readiness transacional e
+auditoria atômica. Não foram adicionadas rotas públicas de `reopen`, `history` ou manifesto. As
+demais escritas históricas, especialmente `/payroll-closures`, continuam legadas e não foram
+redirecionadas. `reopen` e `history` permanecem somente no catálogo, sem assignments.
 
 ## Encerramento da ETP-013 v1
 

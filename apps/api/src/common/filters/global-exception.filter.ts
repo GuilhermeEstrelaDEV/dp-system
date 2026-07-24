@@ -28,6 +28,19 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       'message' in exceptionResponse
         ? exceptionResponse.message
         : (httpException?.message ?? 'Internal server error');
+    const responseCode =
+      typeof exceptionResponse === 'object' &&
+      exceptionResponse !== null &&
+      'code' in exceptionResponse &&
+      typeof exceptionResponse.code === 'string'
+        ? exceptionResponse.code
+        : undefined;
+    const details =
+      typeof exceptionResponse === 'object' && exceptionResponse !== null
+        ? Object.fromEntries(
+            Object.entries(exceptionResponse).filter(([key]) => !['code', 'message'].includes(key)),
+          )
+        : undefined;
 
     this.logger.error(
       'Unhandled request error',
@@ -41,13 +54,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     response.status(status).json({
       error: {
-        code: HttpStatus[status] ?? 'INTERNAL_SERVER_ERROR',
+        code: responseCode ?? HttpStatus[status] ?? 'INTERNAL_SERVER_ERROR',
         message:
           status >= 500
             ? 'Internal server error'
             : status === HttpStatus.PAYLOAD_TOO_LARGE
               ? 'Request payload too large'
               : message,
+        ...(details && Object.keys(details).length > 0 ? { details } : {}),
       },
       meta: {
         correlationId: request.correlationId ?? 'unknown',

@@ -3,6 +3,7 @@ import { PrismaModule } from '../../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
 import { PayrollPeriodClosurePersistenceService } from './payroll-period-closure-persistence.service';
 import { PayrollPeriodClosureRepository } from './payroll-period-closure.repository';
+import { PayrollPeriodOperationalClosureService } from './payroll-period-operational-closure.service';
 import { PayrollPeriodReadinessService } from './payroll-period-readiness.service';
 import { PayrollPeriodsController } from './payroll-periods.controller';
 import { PayrollPeriodsService } from './payroll-periods.service';
@@ -14,6 +15,7 @@ import { PayrollPeriodsService } from './payroll-periods.service';
     PayrollPeriodReadinessService,
     PayrollPeriodClosureRepository,
     PayrollPeriodClosurePersistenceService,
+    PayrollPeriodOperationalClosureService,
   ],
   exports: [PayrollPeriodsService, PayrollPeriodClosurePersistenceService],
 })

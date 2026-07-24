@@ -6,6 +6,7 @@ describe('PayrollPeriodClosureRepository', () => {
   const repository = new PayrollPeriodClosureRepository();
 
   const client = () => ({
+    $queryRaw: jest.fn(),
     payrollPeriodClosureVersion: {
       findFirst: jest.fn(),
       findMany: jest.fn(),
@@ -28,6 +29,15 @@ describe('PayrollPeriodClosureRepository', () => {
     consistencyToken: 'token-1',
     createdBy: 'actor-1',
   };
+
+  it('uses a parameterized transaction advisory lock scoped by company and period', async () => {
+    const tx = client();
+    await repository.lockPeriod(tx as unknown as Prisma.TransactionClient, 'company-1', 'period-1');
+    expect(tx.$queryRaw).toHaveBeenCalledTimes(2);
+    const query = tx.$queryRaw.mock.calls[1]?.[0] as TemplateStringsArray;
+    expect(query.join('?')).toContain('pg_advisory_xact_lock(hashtextextended(?, 0))::text');
+    expect(tx.$queryRaw.mock.calls[1]?.[1]).toBe('company-1:period-1');
+  });
 
   it('creates the next unique operational version', async () => {
     const tx = client();
