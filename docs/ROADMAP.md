@@ -94,7 +94,7 @@ A etapa possui workflow auditável até `CLOSED`. Reabertura autorizada invalida
 
 **Status:** `IN PROGRESS`.
 
-A iniciativa está `IN PROGRESS`. A [BDP-014 v1](project-management/BDP-014_RESOLUTION_V1.md) foi homologada e a Fase 1 documental está `COMPLETED`. A Fase 2 de [readiness somente leitura](modules/PAYROLL_PERIOD_CLOSURE_READINESS.md) está `READY FOR REVIEW`: consulta canônica, política pura, blockers, warnings e capabilities sem assignments foram implementados sem migration, mutação, fechamento, reabertura ou interface. A Fase 3 permanece `NOT STARTED`.
+A iniciativa está `IN PROGRESS`. A [BDP-014 v1](project-management/BDP-014_RESOLUTION_V1.md) foi homologada, e as Fases 1 e 2 estão `COMPLETED`. A Fase 3 de [persistência e auditoria](modules/PAYROLL_PERIOD_CLOSURE_PERSISTENCE.md) está `READY FOR REVIEW`, com migration 0015, agregado versionado, manifesto SHA-256, eventos e reconhecimentos append-only, idempotência, versão otimista e composição transacional interna. Nenhum comando operacional, rota legada ou frontend foi alterado; a Fase 4 permanece `NOT STARTED`.
 
 ## Próximas iniciativas propostas
 

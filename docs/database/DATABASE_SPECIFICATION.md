@@ -1,5 +1,12 @@
 # Especificação do Banco de Dados
 
+## Complemento ETP-014 — persistência de fechamento
+
+A migration `0015_payroll_period_closure_persistence` adiciona o agregado operacional versionado sem
+alterar a tabela histórica legada `payroll_period_closures`. Consulte
+[`PAYROLL_PERIOD_CLOSURE_PERSISTENCE`](../modules/PAYROLL_PERIOD_CLOSURE_PERSISTENCE.md) para modelos,
+índices, validação de escopo, triggers append-only, idempotência e limites da fase.
+
 ## 1. Convenções
 
 - Banco transacional: PostgreSQL.

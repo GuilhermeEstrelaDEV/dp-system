@@ -1,7 +1,7 @@
 # Readiness de fechamento de competência
 
 **ETP:** 014 — Fase 2  
-**Status:** `READY FOR REVIEW`  
+**Status:** `COMPLETED` após merge do PR #43
 **Natureza:** consulta somente leitura
 
 ## Contrato HTTP
@@ -122,5 +122,5 @@ capability e a operação OpenAPI.
 
 ## Gate seguinte
 
-A Fase 2 permanece `READY FOR REVIEW` até revisão e merge. A Fase 3 continua `NOT STARTED` e não pode
-usar esta consulta como autorização para persistência ou fechamento.
+A Fase 2 foi concluída após revisão e merge. A Fase 3 usa esta consulta como fonte de avaliação, mas
+não como autorização para fechamento; o comando operacional permanece exclusivo da Fase 4.
