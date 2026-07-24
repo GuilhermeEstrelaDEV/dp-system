@@ -1253,6 +1253,7 @@ function PayrollPeriodsPanel() {
         {periods.data?.items.map((item) => (
           <li key={item.id}>
             <strong>{item.referenceDate}</strong> ({item.status}){' '}
+            <Link to={`/folha/competencias/${item.id}/historico`}>Histórico de Fechamentos</Link>{' '}
             {item.status === 'CLOSED' ? (
               <span>— imutável</span>
             ) : (
