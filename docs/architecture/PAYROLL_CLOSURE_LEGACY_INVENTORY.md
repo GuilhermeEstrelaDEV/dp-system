@@ -118,7 +118,8 @@ Este inventário não altera controller, serviço, DTO, entidade, rota, frontend
 
 A URI homologada `POST /payroll-periods/:id/close` passou a executar o comando canônico autenticado
 da Fase 4. Isso elimina o bypass do fechamento por essa URI, mas altera deliberadamente seu contrato
-de entrada e resposta conforme a BDP-014. `validate`, `open`, `reopen` e toda a família
+de entrada e resposta conforme a BDP-014. `validate`, `open` e toda a família
+`/payroll-closures` permaneceram legados naquele incremento.
 
 ## 12. Conversão autorizada na Fase 5
 
@@ -133,3 +134,9 @@ O histórico canônico foi adicionado exclusivamente à família `/payroll-perio
 `/payroll-closures` permanece inalterada e não fornece as projeções canônicas de evidência.
 `/payroll-closures` permanecem inalterados e ainda não delegam ao orquestrador. Seus consumidores,
 telemetria e janela de migração continuam pendentes; nenhuma remoção ou redirecionamento ocorreu.
+
+## 14. Continuidade documental
+
+O inventário rota por rota e o pacote de decisão para autorização progressiva estão em
+[LEGACY_API_AUTHORIZATION_ROUTE_INVENTORY.md](LEGACY_API_AUTHORIZATION_ROUTE_INVENTORY.md). A
+referência não autoriza mudança funcional nem descontinuação.

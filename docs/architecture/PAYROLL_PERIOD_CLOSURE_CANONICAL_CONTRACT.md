@@ -1,10 +1,10 @@
 # Contrato canônico de fechamento de competência
 
-**Status:** `APPROVED — VERSION 1` para orientar a implementação futura
+**Status:** `IMPLEMENTED — VERSION 1`
 
 **Decisão de negócio:** [BDP-014 v1](../project-management/BDP-014_RESOLUTION_V1.md)
 
-**Implementação:** Fases 2 a 5 `COMPLETED`; Fase 6 `READY FOR REVIEW`
+**Implementação:** Fases 2 a 6 `COMPLETED`
 
 As consultas de histórico, versão, eventos e manifesto seguro exigem
 `payroll.period.close.history`. São projeções somente leitura, empresariais e deny-by-default; não

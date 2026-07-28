@@ -56,19 +56,19 @@ Jornadas e escalas configuráveis, ocorrências em minutos, livro imutável de m
 
 ## ETP-008 — Benefícios
 
-**Status:** em implementação.
+**Status:** concluída.
 
 Catálogo por empresa, planos com vigência, adesões contratuais e coparticipação parametrizável são tratados como controles demonstrativos. Não há cálculo de folha, dados de saúde, integração com operadoras ou regras legais presumidas. Consulte [Benefícios de colaboradores](modules/EMPLOYEE_BENEFITS.md).
 
 ## ETP-009 — Férias e afastamentos
 
-**Status:** em implementação.
+**Status:** concluída.
 
 Períodos, solicitações, férias coletivas estruturais, afastamentos e retornos são tratados como controles administrativos demonstrativos. Não há cálculo financeiro, prazo legal, regra de fracionamento ou dado médico. Consulte [Férias e afastamentos](modules/VACATIONS_AND_LEAVES.md).
 
 ## ETP-010 — Fundação de folha de pagamento
 
-**Status:** em implementação.
+**Status:** concluída.
 
 Competências, rubricas, parâmetros, lançamentos, execuções e fechamentos formam uma base configurável, versionada e demonstrativa. Não inclui cálculos legais, alíquotas, faixas, deduções, guias ou integrações. Consulte [Fundação de folha](modules/PAYROLL_FOUNDATION.md).
 
