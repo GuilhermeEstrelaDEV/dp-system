@@ -6,28 +6,29 @@
 
 ## Como preencher
 
-Cada decisão exige alternativa selecionada, justificativa, exceções, evidência, responsável,
-aprovadores e data. Respostas incompletas mantêm a decisão bloqueada. Recomendações do pacote são
-propostas técnicas não vinculantes.
+Cada decisão exige alternativa selecionada, justificativa, evidência, data e manifestação dos
+aprovadores. A matriz RACI é a fonte autoritativa: `R` prepara, `A` aprova, `C` é consultado e `I` é
+informado. Respostas incompletas mantêm a decisão `PENDING`. Recomendações do pacote são propostas
+técnicas não vinculantes.
 
 ## Registro das decisões
 
-| ID     | Decisão bloqueante                 | Alternativas a homologar                                                     | Resposta | Justificativa/evidência | Exceções | Responsável  | Aprovadores                  | Data |
-| ------ | ---------------------------------- | ---------------------------------------------------------------------------- | -------- | ----------------------- | -------- | ------------ | ---------------------------- | ---- |
-| DAL-01 | Classificação das superfícies      | pública explícita; autenticação; global administrativa; empresarial; interna |          |                         |          | Produto      | Segurança, Engenharia        |      |
-| DAL-02 | Granularidade das capabilities     | módulo; recurso; leitura/escrita; caso de uso; ação sensível                 |          |                         |          | Produto      | DP, Segurança                |      |
-| DAL-03 | Matriz de concessão                | assignment manual; template revisável; seed por papel                        |          |                         |          | DP           | Segurança, Diretoria         |      |
-| DAL-04 | Administração global e empresarial | global; empresarial; híbrida conforme BDP-009 v1                             |          |                         |          | Segurança    | Produto, Engenharia          |      |
-| DAL-05 | Semântica de negação               | 401/403/404 uniformes; exceções documentadas                                 |          |                         |          | Segurança    | Engenharia                   |      |
-| DAL-06 | Visibilidade de dados sensíveis    | integral; mascarada; projeção allowlist; capability adicional                |          |                         |          | Jurídico/DPO | DP, Segurança                |      |
-| DAL-07 | Cobertura de auditoria             | escritas; escritas + leituras sensíveis; todas as leituras                   |          |                         |          | Segurança    | Jurídico/DPO, Engenharia     |      |
-| DAL-08 | Metadata e retenção de auditoria   | allowlist; campos adicionais; prazo conforme BDP-011                         |          |                         |          | Jurídico/DPO | Segurança, Engenharia        |      |
-| DAL-09 | Compatibilidade do legado          | corte; alias; adapter; delegação canônica                                    |          |                         |          | Engenharia   | Produto, Operação            |      |
-| DAL-10 | Estratégia de rollout              | big bang; família a família; observe-only/flag antes do enforcement          |          |                         |          | Engenharia   | Produto, Segurança, Operação |      |
-| DAL-11 | Política de rollback               | retirar enforcement; flag; adapter anterior sem reabrir bypass               |          |                         |          | Engenharia   | Segurança, Operação          |      |
-| DAL-12 | Depreciação e remoção              | prazo fixo; evidência de uso; comunicação e janela                           |          |                         |          | Produto      | Engenharia, Operação         |      |
-| DAL-13 | Segregação e grants                | separação por ação; substituição; emergência; incompatibilidades             |          |                         |          | DP           | Segurança, Diretoria         |      |
-| DAL-14 | Primeiro recorte técnico           | fechamento P0; outra família; nenhuma fase até dependências adicionais       |          |                         |          | Produto      | DP, Segurança, Engenharia    |      |
+| ID     | Decisão bloqueante                 | Alternativas a homologar                                                     | Área principal responsável | Responsáveis pela preparação (`R`) | Aprovadores (`A`)             | Consultados (`C`)                 | Informados (`I`)                 | Decisão selecionada | Justificativa | Data | Status    |
+| ------ | ---------------------------------- | ---------------------------------------------------------------------------- | -------------------------- | ---------------------------------- | ----------------------------- | --------------------------------- | -------------------------------- | ------------------- | ------------- | ---- | --------- |
+| DAL-01 | Classificação das superfícies      | pública explícita; autenticação; global administrativa; empresarial; interna | Produto                    | Produto, Engenharia                | Segurança                     | DP, Jurídico/DPO                  | Diretoria/Operação               |                     |               |      | `PENDING` |
+| DAL-02 | Granularidade das capabilities     | módulo; recurso; leitura/escrita; caso de uso; ação sensível                 | Produto                    | Produto, Engenharia                | DP, Segurança                 | Jurídico/DPO                      | Diretoria/Operação               |                     |               |      | `PENDING` |
+| DAL-03 | Matriz de concessão                | assignment manual; template revisável; seed por papel                        | DP                         | DP                                 | Segurança, Diretoria/Operação | Produto, Engenharia               | Jurídico/DPO                     |                     |               |      | `PENDING` |
+| DAL-04 | Administração global e empresarial | global; empresarial; híbrida conforme BDP-009 v1                             | Engenharia                 | Engenharia                         | Segurança                     | Produto, DP                       | Jurídico/DPO, Diretoria/Operação |                     |               |      | `PENDING` |
+| DAL-05 | Semântica de negação               | 401/403/404 uniformes; exceções documentadas                                 | Engenharia                 | Engenharia                         | Segurança                     | Produto, Jurídico/DPO             | DP, Diretoria/Operação           |                     |               |      | `PENDING` |
+| DAL-06 | Visibilidade de dados sensíveis    | integral; mascarada; projeção allowlist; capability adicional                | DP                         | DP                                 | Segurança, Jurídico/DPO       | Produto, Engenharia               | Diretoria/Operação               |                     |               |      | `PENDING` |
+| DAL-07 | Cobertura de auditoria             | escritas; escritas + leituras sensíveis; todas as leituras                   | Engenharia                 | Engenharia                         | Segurança, Jurídico/DPO       | DP                                | Produto, Diretoria/Operação      |                     |               |      | `PENDING` |
+| DAL-08 | Metadata e retenção de auditoria   | allowlist; campos adicionais; prazo conforme BDP-011                         | Engenharia                 | Engenharia                         | Segurança, Jurídico/DPO       | DP                                | Produto, Diretoria/Operação      |                     |               |      | `PENDING` |
+| DAL-09 | Compatibilidade do legado          | corte; alias; adapter; delegação canônica                                    | Engenharia                 | Engenharia                         | Produto                       | DP, Segurança, Diretoria/Operação | Jurídico/DPO                     |                     |               |      | `PENDING` |
+| DAL-10 | Estratégia de rollout              | big bang; família a família; observe-only/flag antes do enforcement          | Engenharia                 | Engenharia                         | Produto, Segurança            | DP, Diretoria/Operação            | Jurídico/DPO                     |                     |               |      | `PENDING` |
+| DAL-11 | Política de rollback               | retirar enforcement; flag; adapter anterior sem reabrir bypass               | Engenharia                 | Engenharia                         | Segurança                     | DP, Diretoria/Operação            | Produto, Jurídico/DPO            |                     |               |      | `PENDING` |
+| DAL-12 | Depreciação e remoção              | prazo fixo; evidência de uso; comunicação e janela                           | Engenharia                 | Engenharia                         | Produto                       | Segurança, Diretoria/Operação     | DP, Jurídico/DPO                 |                     |               |      | `PENDING` |
+| DAL-13 | Segregação e grants                | separação por ação; substituição; emergência; incompatibilidades             | DP                         | DP                                 | Segurança, Diretoria/Operação | Produto, Jurídico/DPO, Engenharia | —                                |                     |               |      | `PENDING` |
+| DAL-14 | Primeiro recorte técnico           | fechamento P0; outra família; nenhuma fase até dependências adicionais       | Engenharia                 | Engenharia                         | Produto, DP, Segurança        | Jurídico/DPO, Diretoria/Operação  | —                                |                     |               |      | `PENDING` |
 
 ## Perguntas por área
 
@@ -75,13 +76,13 @@ propostas técnicas não vinculantes.
 
 ## Confirmação dos aprovadores
 
-| Área         | Nome/função | Decisões revisadas          | Resultado (`APROVAR`, `REJEITAR`, `AJUSTAR`) | Evidência/data |
-| ------------ | ----------- | --------------------------- | -------------------------------------------- | -------------- |
-| Produto      |             | DAL-01, 02, 09, 10, 12, 14  |                                              |                |
-| DP           |             | DAL-02, 03, 06, 13, 14      |                                              |                |
-| Segurança    |             | DAL-01 a 08, 10, 11, 13, 14 |                                              |                |
-| Jurídico/DPO |             | DAL-06, 07, 08              |                                              |                |
-| Engenharia   |             | DAL-01, 04, 05, 07 a 12, 14 |                                              |                |
+| Área               | Nome/função | Decisões em que possui `A`       | Resultado (`APROVAR`, `REJEITAR`, `AJUSTAR`) | Evidência/data |
+| ------------------ | ----------- | -------------------------------- | -------------------------------------------- | -------------- |
+| Produto            |             | DAL-09, 10, 12, 14               |                                              |                |
+| DP                 |             | DAL-02, 14                       |                                              |                |
+| Segurança          |             | DAL-01 a 08, DAL-10, 11, 13 e 14 |                                              |                |
+| Jurídico/DPO       |             | DAL-06, 07 e 08                  |                                              |                |
+| Diretoria/Operação |             | DAL-03 e 13                      |                                              |                |
 
 Nenhuma assinatura isolada aprova a BDP. A aprovação só pode ser registrada quando todos os critérios
 da [matriz de aprovação](BDP-AUTH-LEGACY_APPROVAL_MATRIX.md) estiverem atendidos.

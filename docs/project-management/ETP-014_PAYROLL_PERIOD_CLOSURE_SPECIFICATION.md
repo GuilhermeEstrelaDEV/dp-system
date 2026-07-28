@@ -250,7 +250,9 @@ Nenhuma integração externa integra a ETP-014. O fechamento poderá emitir um c
 - matriz de capabilities e mutações bloqueadas homologada;
 - contrato canônico e compatibilidade legada documentados, sem modelo físico implementado.
 
-**Aceite:** resolução, contrato, inventário e plano publicados; a ETP-014 permanece `PLANNING`.
+**Aceite no marco histórico da Fase 1:** resolução, contrato, inventário e plano publicados; naquele
+momento, a ETP-014 permanecia `PLANNING`. As fases posteriores foram implementadas e a ETP-014 está
+oficialmente `COMPLETED`.
 
 ### Fase 2 — Domínio e prontidão somente leitura — `COMPLETED`
 

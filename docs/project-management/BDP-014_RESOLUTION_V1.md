@@ -247,4 +247,8 @@ O contrato canônico detalha estados, comandos, queries e eventos em [PAYROLL_PE
 
 ## 11. Efeito da homologação
 
-BDP-014 está `APPROVED — VERSION 1`. A Fase 1 da ETP-014 está `COMPLETED` exclusivamente no plano documental. A ETP-014 permanece `PLANNING`, e sua Fase 2 permanece `NOT STARTED`. Esta resolução não altera código, schema, entidade, endpoint, capability, seed ou frontend.
+BDP-014 está `APPROVED — VERSION 1`. No marco histórico desta homologação, a Fase 1 da ETP-014
+estava `COMPLETED` exclusivamente no plano documental, a ETP-014 permanecia `PLANNING` e sua Fase 2
+permanecia `NOT STARTED`. As fases técnicas posteriores implementaram a resolução e concluíram
+oficialmente a ETP-014; este registro de decisão, por si só, não alterou código, schema, entidade,
+endpoint, capability, seed ou frontend.
