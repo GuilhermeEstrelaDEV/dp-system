@@ -100,9 +100,23 @@ público e [frontend](modules/PAYROLL_PERIOD_FRONTEND.md), com advisory lock, id
 otimista, manifesto SHA-256, eventos append-only e auditoria transacional. A ETP-014 foi oficialmente
 concluída após a Final Acceptance.
 
+## ETP-015 — Authorization Foundation & Enterprise Isolation
+
+**Status:** `PLANNING — SPECIFICATION REVIEW REQUIRED`.
+
+A ETP-015 foi iniciada exclusivamente em descoberta e planejamento após a homologação da
+BDP-AUTH-LEGACY. A [especificação](project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md)
+define identidade, empresa ativa, capabilities, assignments explícitos, isolamento, masking,
+auditoria e rollout das APIs legadas. O [backlog](project-management/ETP-015_IMPLEMENTATION_BACKLOG.md)
+divide a futura execução em dez incrementos, começando pelo fechamento P0. Nenhuma implementação ou
+migration está autorizada antes da revisão da especificação e dos
+[Gates A–D](project-management/ETP-015_RELEASE_GATES.md).
+
 ## Próximas iniciativas propostas
 
-ETP-015 era placeholder sem escopo e ETP-016/017 não existiam. Permanecem propostas, sem autorização de implementação: **ETP-015 — Integrações, notificações e automações**; **ETP-016 — Relatórios, dashboards e inteligência operacional**; e **ETP-017 — Hardening, observabilidade e performance**. Cada iniciativa requer especificação, análise das BDPs relacionadas e aprovação.
+Permanecem propostas não vinculantes, sem autorização de implementação: **ETP-016 — Relatórios,
+dashboards e inteligência operacional** e **ETP-017 — Hardening, observabilidade e performance**.
+Integrações, notificações e automações continuam fora da ETP-015 e exigem iniciativa futura própria.
 
 ## Etapa 2 — Fundação técnica
 

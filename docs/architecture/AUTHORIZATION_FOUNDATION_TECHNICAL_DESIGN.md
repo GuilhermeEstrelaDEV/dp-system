@@ -1,0 +1,125 @@
+# Authorization Foundation — Technical Design
+
+**Status:** proposta para revisão; sem implementação
+
+## 1. Componentes reutilizáveis
+
+O desenho estende, sem duplicar, `JwtStrategy`, `JwtAuthGuard`, `ApplicationContextService`,
+`CapabilitiesGuard`, `AuthorizationService`, `AuditWriterService`, `UserCompanyRole`,
+`TemporarySubstitution`, `EmergencyAccess`, o middleware de correlação e o filtro global de erros.
+
+## 2. Pipeline canônico
+
+```mermaid
+sequenceDiagram
+  participant C as Cliente
+  participant T as Trace middleware
+  participant J as JWT guard
+  participant X as Context resolver
+  participant G as Capability guard
+  participant A as Aplicação
+  participant P as Prisma/PostgreSQL
+  C->>T: request + bearer + seleção de empresa
+  T->>J: traceId validado
+  J->>X: actorId, sessionId, empresa selecionada
+  X->>P: usuário + assignment + grants vigentes
+  P-->>X: contexto efetivo
+  X->>G: principal imutável
+  G->>A: capability declarada e autorizada
+  A->>P: query filtrada por companyId
+  P-->>A: recurso ou ausência
+  A-->>C: projeção permitida / 401 / 403 / 404
+```
+
+## 3. Principal e empresa ativa
+
+O principal canônico preserva `actorId`, `sessionId`, `activeCompanyId`, `permissions`, `traceId`, IP,
+user-agent e grants usados. A empresa selecionada pode chegar pelo contrato de sessão existente, mas
+só se torna ativa após validação de usuário, empresa, assignment, status e vigência. `companyId` de
+DTO/path/query não substitui `activeCompanyId`.
+
+Superfícies administrativas globais aceitam apenas capabilities `platform.*` classificadas. Casos de
+uso de domínio sempre exigem empresa ativa, inclusive quando o ator possui papel global.
+
+## 4. Modelo de autorização
+
+- capabilities são códigos estáveis por recurso e leitura/escrita;
+- ações críticas (`approve`, `close`, `reopen`, `export`, `sensitive.read`) são separadas;
+- `Role` agrupa capabilities; autorização nunca compara `Role.code`;
+- `UserCompanyRole` materializa assignment empresarial vigente;
+- `UserRole` fica restrito à administração global explicitamente classificada;
+- substituição e emergência acrescentam somente capabilities explícitas e vigentes;
+- policy de segregação valida incompatibilidades por ação, ator e histórico;
+- ausência de metadata, contexto, capability ou policy aplicável nega.
+
+## 5. Decorators, guards e serviços
+
+| Componente                  | Responsabilidade proposta                           |
+| --------------------------- | --------------------------------------------------- |
+| `@PublicSurface()`          | allowlist explícita; uso excepcional e inventariado |
+| `@RequireCapabilities(...)` | capability mínima da operação                       |
+| `@SensitiveRead(...)`       | projeção e evento de leitura sensível               |
+| `JwtAuthGuard`              | identidade válida; `401`                            |
+| resolvedor de empresa       | assignment/empresa vigente; sem consulta ampla      |
+| `CapabilitiesGuard`         | deny-by-default e grants usados                     |
+| `AuthorizationService`      | defesa no caso de uso e escopo empresarial          |
+| policy de segregação        | incompatibilidades configuráveis e falha fechada    |
+| projection/masking service  | seleção allowlist de campos                         |
+| `AuditWriterService`        | escrita e auditoria na mesma transação              |
+
+Guard global só poderá ser ativado quando todas as rotas estiverem classificadas. Até lá, a migração
+é opt-in por família, e CI deve impedir nova rota sem classificação.
+
+## 6. Repositórios e isolamento
+
+Portas de aplicação recebem `ApplicationActorContext`; adaptadores Prisma aplicam `companyId` no
+`where` da primeira consulta. Detalhes usam chave composta lógica `{ id, companyId }`; listas não
+aceitam empresa livre do cliente. Relações indiretas resolvem a empresa por join dentro da query ou
+transação. Pós-filtragem e “buscar por ID, depois comparar” não são o padrão aceitável quando o filtro
+pode ser expresso no banco.
+
+## 7. Semântica de erros
+
+| Condição                                              | Resposta                                |
+| ----------------------------------------------------- | --------------------------------------- |
+| token ausente, inválido, expirado ou usuário inválido | `401`                                   |
+| identidade/empresa válidas, capability ausente        | `403`                                   |
+| recurso inexistente ou de outra empresa               | `404`                                   |
+| estado, concorrência ou idempotência incompatível     | `409`                                   |
+| validação estrutural                                  | `400`/`422` conforme contrato existente |
+
+O filtro global mantém envelope e correlation ID. Auditoria interna pode distinguir negação sem
+alterar a resposta externa.
+
+## 8. Auditoria e masking
+
+Escritas críticas usam `AuditWriterService.transaction`; estado, evento de domínio e `AuditLog`
+compartilham o mesmo `TransactionClient`. Metadata é allowlist e nunca contém credenciais, headers,
+body integral, documento ou dados bancários. Leituras sensíveis geram evento com finalidade/categoria,
+ator, empresa, alvo e resultado, sem copiar o valor lido.
+
+Projeções padrão retornam somente campos necessários. Uma capability adicional autoriza projeção
+integral, ainda limitada à empresa ativa e à finalidade da rota. Masking ocorre no backend antes da
+serialização; ocultação visual não é controle de segurança.
+
+## 9. Adapters e integração existente
+
+Adapters legados preservam URI, status ou envelope durante a janela, mas convertem o comando e chamam
+o mesmo caso de uso canônico. No fechamento, `/payroll-closures` deve delegar aos serviços canônicos de
+readiness, close, reopen e history, preservando lock, idempotência, manifesto e auditoria. Não existe
+fallback ao `PayrollClosuresService` como regra paralela.
+
+Os módulos de payroll review e payroll periods são referências de integração. Módulos restantes são
+migrados na ordem registrada no backlog, sem guard global prematuro.
+
+## 10. Segregação e grants
+
+Policies recebem ator, empresa, capability, ação, recurso e evidência histórica. Grants são
+explícitos, temporários, expirados/revogados imediatamente e auditados no uso. Acesso emergencial exige
+capability de gestão, motivo e teto técnico. Nenhum grant copia papel, ignora empresa ou cria
+assignment permanente.
+
+## 11. Limites
+
+Este desenho não atribui capabilities, não define cargos, não cria migration, não modifica rota e não
+autoriza implementação antes do Gate A.
