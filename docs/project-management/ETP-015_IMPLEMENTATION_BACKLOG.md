@@ -7,6 +7,8 @@ gate aplicável.
 
 ## ETP-015.1 — Identity Context Foundation
 
+**Status:** `IN PROGRESS`
+
 - **Objetivo:** estabilizar principal, sessão, trace e contrato imutável de aplicação.
 - **Dependências:** ADR-007, DAL-01/05; Gate A.
 - **Módulos afetados:** auth, request context, correlation middleware e filtro global.

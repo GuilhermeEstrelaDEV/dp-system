@@ -8,14 +8,17 @@ describe('AuthService', () => {
   const userFindUnique = jest.fn();
   const assignmentsFindMany = jest.fn();
   const signAsync = jest.fn().mockResolvedValue('token');
+  const decode = jest.fn().mockReturnValue({ exp: 2_000_000_000 });
   const verify = jest.fn();
+  const register = jest.fn();
   const service = new AuthService(
     {
       user: { findUnique: userFindUnique },
       userCompanyRole: { findMany: assignmentsFindMany },
     } as unknown as PrismaService,
-    { signAsync } as unknown as JwtService,
+    { signAsync, decode } as unknown as JwtService,
     { verify } as unknown as PasswordHasherService,
+    { register } as never,
   );
 
   beforeEach(() => jest.clearAllMocks());
@@ -30,6 +33,11 @@ describe('AuthService', () => {
       sessionId: expect.any(String),
     });
     expect(userFindUnique).toHaveBeenCalledWith({ where: { email: 'user@example.com' } });
+    expect(register).toHaveBeenCalledWith(
+      'user-1',
+      expect.any(String),
+      new Date(2_000_000_000_000),
+    );
   });
 
   it.each([

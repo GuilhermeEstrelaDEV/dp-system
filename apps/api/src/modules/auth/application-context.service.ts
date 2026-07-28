@@ -1,16 +1,16 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
-
-interface TokenIdentity {
-  actorId: string;
-  activeCompanyId: string | null;
-  sessionId: string;
-}
+import { IdentityAuthenticationException } from './identity-authentication.errors';
+import type { TokenIdentity } from './identity-context';
+import { IdentitySessionService } from './identity-session.service';
 
 @Injectable()
 export class ApplicationContextService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly sessions: IdentitySessionService,
+  ) {}
 
   async resolve(
     identity: TokenIdentity,
@@ -19,9 +19,11 @@ export class ApplicationContextService {
     userAgent: string | null = null,
   ): Promise<AuthenticatedPrincipal> {
     const now = new Date();
-    const user = await this.prisma.user.findFirst({
-      where: { id: identity.actorId, status: 'ACTIVE' },
+    await this.sessions.assertActive(identity.actorId, identity.sessionId, now);
+    const user = await this.prisma.user.findUnique({
+      where: { id: identity.actorId },
       select: {
+        status: true,
         roles: { select: { role: { select: { permissions: { select: { permission: true } } } } } },
         companyRoles: {
           where: {
@@ -59,7 +61,8 @@ export class ApplicationContextService {
           : false,
       },
     });
-    if (!user) throw new UnauthorizedException('Credenciais inválidas');
+    if (!user) throw new IdentityAuthenticationException('USER_NOT_FOUND');
+    if (user.status !== 'ACTIVE') throw new IdentityAuthenticationException('USER_INACTIVE');
     if (identity.activeCompanyId && user.companyRoles.length === 0) {
       throw new NotFoundException('Empresa não encontrada');
     }
