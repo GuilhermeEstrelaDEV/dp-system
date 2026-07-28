@@ -1,7 +1,7 @@
 # Plano incremental — autorização e consolidação das APIs legadas
 
 **Iniciativa:** `INIT-AUTH-LEGACY` (provisória)
-**Status:** plano candidato; não aprovado e sem fase técnica autorizada
+**Status:** plano candidato; `READY FOR HUMAN DECISION`, sem fase técnica autorizada
 **Governança:** uma fase por branch e PR draft; merge e verificação pós-merge antes da seguinte
 
 ## Princípios vinculantes já existentes
@@ -32,6 +32,11 @@
 | 9 — Remuneração variável                       | BDP-006 continua autoridade                                  | `variable.compensation.*`                                                                         | criar fórmula/alçada implícita; testes só de acesso/auditoria              | registrar limites; aceite sem efeito material novo; rollback por controller                                     |
 | 10 — Telemetria e compatibilidade              | todas as famílias protegidas                                 | aliases marcados deprecated                                                                       | PII em logs e consumidor invisível; métricas agregadas e OpenAPI           | relatório de uso/comunicação; aceite janela cumprida; rollback mantém aliases protegidos                        |
 | 11 — Remoção definitiva                        | F10 aceita, zero consumidor ou migração formal               | remover somente contratos obsoletos aprovados                                                     | quebra externa; testes E2E e ausência de referência                        | PR exclusivo, changelog e plano de retorno; aceite pós-merge; nunca remoção incidental                          |
+
+A Fase 1 utiliza o [questionário](BDP-AUTH-LEGACY_HOMOLOGATION_QUESTIONNAIRE.md), a
+[matriz RACI](BDP-AUTH-LEGACY_APPROVAL_MATRIX.md) e o
+[gate técnico](BDP-AUTH-LEGACY_TECHNICAL_RELEASE_GATE.md). O preenchimento desses documentos exige
+homologação humana e não faz parte desta entrega.
 
 ## Detalhamento da Fase 4
 

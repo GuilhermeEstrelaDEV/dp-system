@@ -1,6 +1,6 @@
 # Matriz de decisões — autorização das APIs legadas
 
-**Status:** análise; não homologada
+**Status:** `READY FOR HUMAN DECISION`; não homologada
 **BDP candidata:** `BDP-AUTH-LEGACY` (identificador provisório)
 
 ## Decisões existentes e lacunas
@@ -42,3 +42,7 @@
 Uma nova BDP é necessária. BDP-009 e BDP-014 fornecem mecanismos e invariantes, mas não autorizam a
 matriz transversal de concessões nem a transição das famílias legadas. A implementação permanece
 bloqueada até o pacote provisório ser homologado e receber identificador definitivo.
+
+As respostas e aprovações devem ser registradas no
+[questionário de homologação](BDP-AUTH-LEGACY_HOMOLOGATION_QUESTIONNAIRE.md) e avaliadas pela
+[matriz de aprovação](BDP-AUTH-LEGACY_APPROVAL_MATRIX.md). Esta matriz não cria decisão por si só.

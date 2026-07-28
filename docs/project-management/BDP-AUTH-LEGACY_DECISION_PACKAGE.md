@@ -1,7 +1,7 @@
 # BDP-AUTH-LEGACY — Matriz de autorização e transição das APIs legadas
 
 **Identificador:** provisório; não reservar numeração definitiva
-**Status:** pacote de decisão preparado; não homologado
+**Status:** `READY FOR HUMAN DECISION`; não homologado
 **Natureza:** alternativas para decisão humana; não autoriza código, assignment ou mudança de rota
 
 ## 1. Problema e condição de saída
@@ -152,3 +152,16 @@ uma regra independente de fechamento ou expor recurso de outra empresa como atal
 - conflitos com BDP-001–013 registrados;
 - plano técnico e estratégia de testes revisados;
 - identificador definitivo atribuído pela governança somente depois da aprovação.
+
+## 11. Pacote de homologação
+
+O pacote está documentalmente completo para decisão humana, sem representar aprovação:
+
+- [questionário estruturado](BDP-AUTH-LEGACY_HOMOLOGATION_QUESTIONNAIRE.md), com 14 decisões;
+- [matriz RACI, dependências e critérios de aprovação](BDP-AUTH-LEGACY_APPROVAL_MATRIX.md);
+- [gate de liberação técnica](BDP-AUTH-LEGACY_TECHNICAL_RELEASE_GATE.md);
+- [matriz preenchível de alternativas](LEGACY_API_AUTHORIZATION_DECISION_MATRIX.md);
+- [plano incremental candidato](LEGACY_API_AUTHORIZATION_IMPLEMENTATION_PLAN.md).
+
+O estado `READY FOR HUMAN DECISION` declara somente completude documental. A BDP continua provisória,
+sem identificador definitivo, resolução homologada, assignment ou implementação autorizada.
