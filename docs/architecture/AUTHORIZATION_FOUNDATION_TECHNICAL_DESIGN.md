@@ -41,6 +41,21 @@ DTO/path/query não substitui `activeCompanyId`.
 Superfícies administrativas globais aceitam apenas capabilities `platform.*` classificadas. Casos de
 uso de domínio sempre exigem empresa ativa, inclusive quando o ator possui papel global.
 
+### 3.1 Autenticação e revogação
+
+`JwtStrategy` valida assinatura e expiração; `ApplicationContextService` valida existência e status do
+usuário. A ETP-015.1 deve decidir e testar como `sessionId` participa da revogação imediata: token com
+sessão ausente, revogada ou expirada retorna `401`. Até essa verificação existir, o access token curto
+continua sendo a fronteira observada e não deve ser descrito como revogação completa.
+
+Identidade técnica/interna não reutiliza usuário humano silenciosamente. Job, fila ou integração
+futura exige principal de serviço explícito, credencial rotacionável, company scope obrigatório para
+domínio e capabilities próprias. Como não existe mecanismo aprovado, chamadas internas continuam
+pelos mesmos casos de uso com contexto humano ou ficam bloqueadas.
+
+Troca de empresa emite/resolve novo contexto, invalida caches empresariais do cliente e nunca conserva
+capabilities da empresa anterior.
+
 ## 4. Modelo de autorização
 
 - capabilities são códigos estáveis por recurso e leitura/escrita;
@@ -70,6 +85,12 @@ uso de domínio sempre exigem empresa ativa, inclusive quando o ator possui pape
 Guard global só poderá ser ativado quando todas as rotas estiverem classificadas. Até lá, a migração
 é opt-in por família, e CI deve impedir nova rota sem classificação.
 
+Capabilities passadas a `@RequireCapabilities(a, b)` possuem semântica **AND**, coerente com o guard
+atual. Necessidade **OR** exige decorator/policy distinto e nomeado; não será inferida por array. A
+ordem é trace → autenticação → contexto empresarial → capabilities → controller → autorização/policy
+no caso de uso. Chamada interna não pode invocar repository como atalho: usa o caso de uso com contexto
+explícito, que repete capability, empresa e policy.
+
 ## 6. Repositórios e isolamento
 
 Portas de aplicação recebem `ApplicationActorContext`; adaptadores Prisma aplicam `companyId` no
@@ -77,6 +98,11 @@ Portas de aplicação recebem `ApplicationActorContext`; adaptadores Prisma apli
 aceitam empresa livre do cliente. Relações indiretas resolvem a empresa por join dentro da query ou
 transação. Pós-filtragem e “buscar por ID, depois comparar” não são o padrão aceitável quando o filtro
 pode ser expresso no banco.
+
+Agregações, joins, updates e deletes incluem empresa no predicado e validam contagem/retorno dentro da
+transação. Jobs, filas e tarefas assíncronas carregam `actor/servicePrincipal`, `companyId`,
+capabilities delegadas, `traceId` e idempotency key; sem contexto completo falham fechados. Operação
+global não percorre dados de domínio sem autorização empresarial explícita por empresa.
 
 ## 7. Semântica de erros
 
@@ -101,6 +127,15 @@ ator, empresa, alvo e resultado, sem copiar o valor lido.
 Projeções padrão retornam somente campos necessários. Uma capability adicional autoriza projeção
 integral, ainda limitada à empresa ativa e à finalidade da rota. Masking ocorre no backend antes da
 serialização; ocultação visual não é controle de segurança.
+
+Cada família define classe de dados, campos padrão, campos integrais, capability sensível, finalidade,
+cache e exportação. Erros nunca ecoam valores sensíveis. Relatórios e exports usam a mesma projeção e
+auditoria da API; frontend limpa cache na troca de empresa.
+
+Negações críticas (`403`, tentativa entre empresas e uso de grant inválido) geram evento de segurança
+sanitizado fora da transação de domínio, sem revelar existência do recurso. Ausência de token pode ser
+telemetria agregada; não cria `AuditLog` com ator fictício. A taxonomia e limites de volume pertencem à
+ETP-015.7. Retenção permanece provisória, sem descarte automático antes da BDP-011.
 
 ## 9. Adapters e integração existente
 

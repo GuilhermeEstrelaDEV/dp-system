@@ -2,6 +2,18 @@
 
 **Status:** proposto; nenhum gate técnico liberado por esta especificação
 
+## Governança de evidências
+
+| Gate | Responsável (`R`)                | Aprovadores (`A`)                          | Evidência mínima                                             | Rollback                                        |
+| ---- | -------------------------------- | ------------------------------------------ | ------------------------------------------------------------ | ----------------------------------------------- |
+| A    | Arquitetura/Engenharia           | Segurança                                  | PR documental, schema diff proposto, matriz DAL e ata        | revert documental; nenhuma migration aplicada   |
+| B    | Engenharia                       | Segurança                                  | commits em `develop`, suites e relatório de seed/contexto    | plano por incremento preservando JWT/isolamento |
+| C    | Engenharia + owner de folha      | Segurança, Produto e DP                    | testes PostgreSQL, contrato, telemetria e aceite P0          | adapter seguro testado; sem regra paralela      |
+| D    | owners das famílias + Engenharia | Segurança e Produto; DP/DPO conforme dados | inventário 163/163, métricas, comunicação e Final Acceptance | alias protegido e rollback por família          |
+
+Cada checkbox precisa de link para commit, PR, teste, relatório ou ata e identificação do responsável.
+Sem evidência, o resultado binário do item é `FAIL`.
+
 ## Gate A — Architecture and Data Model
 
 - [ ] especificação e technical design aprovados;
@@ -62,3 +74,13 @@
 Gate incompleto mantém a próxima etapa bloqueada. Evidência deve apontar para commit, PR, teste ou ata;
 declaração sem referência não satisfaz item. Rollback jamais pode reintroduzir acesso anônimo,
 autoridade do `companyId` cliente, lookup cruzado ou regra paralela de fechamento.
+
+### Critérios quantitativos transversais
+
+- Gate A: 14/14 DALs `COVERED`; 0 `PARTIAL`, `MISSING` ou `CONFLICT`.
+- Gate B: 100% das rotas do recorte declaradas públicas ou com JWT/capability; seed com 0 assignment.
+- Gate C: 100% das rotas P0 com testes `401`/`403`/`404`, duas empresas e rollback; 0 regra paralela.
+- Gate D: 163/163 handlers reconciliados; 0 rota empresarial implícita; 0 capability sem documentação.
+
+Os itens qualitativos “aprovado”, “revisado” e “estável” só passam quando acompanhados da evidência e
+do aprovador definidos na tabela de governança.

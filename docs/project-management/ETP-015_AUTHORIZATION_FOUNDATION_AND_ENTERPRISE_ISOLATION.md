@@ -88,6 +88,28 @@ evidência, segregação e fechamento P0. Também permanecem vinculantes o
 [ADR-007](../architecture/decisions/ADR-007-identity-authorization-context.md), a
 [BDP-009 v1](BDP-009_RESOLUTION_V1.md) e a [BDP-014 v1](BDP-014_RESOLUTION_V1.md).
 
+### 7.1 Matriz de conformidade DAL-01 a DAL-14
+
+| DAL | Decisão vinculante                                | Especificação/seção            | Backlog           | Gate | Status    | Evidência e ajuste                       |
+| --- | ------------------------------------------------- | ------------------------------ | ----------------- | ---- | --------- | ---------------------------------------- |
+| 01  | allowlist pública mínima                          | §5 RF-1; Technical Design §5   | 015.4             | A/B  | `COVERED` | decorator público explícito e inventário |
+| 02  | capabilities por recurso/operação crítica         | §5 RF-2/5; Technical Design §4 | 015.3/015.4       | A/B  | `COVERED` | catálogo e ações críticas separadas      |
+| 03  | assignments explícitos; zero seed automático      | §5 RF-4; Data Model §2/5       | 015.3             | A/B  | `COVERED` | provenance, vigência e teste do seed     |
+| 04  | RBAC híbrido; domínio empresarial                 | §2/5; Technical Design §3      | 015.2/015.5       | A/B  | `COVERED` | `platform.*` não autoriza domínio        |
+| 05  | `401`/`403`/`404` uniforme                        | §5 RF-6; Technical Design §7   | 015.1/015.4/015.5 | B/C  | `COVERED` | matriz negativa e antienumeração         |
+| 06  | masking/allowlist e acesso integral adicional     | §9; Technical Design §8        | 015.6             | C/D  | `COVERED` | projeção backend e capability sensível   |
+| 07  | escritas críticas e leituras sensíveis auditadas  | §9/12; Technical Design §8     | 015.7             | C/D  | `COVERED` | taxonomia, atomicidade e testes          |
+| 08  | metadata allowlist; sem descarte antes da BDP-011 | §9; Technical Design §8        | 015.7             | A/C  | `COVERED` | sanitizer e retenção provisória          |
+| 09  | adapters delegam à regra canônica                 | §10/11; Technical Design §9    | 015.8/015.9       | C/D  | `COVERED` | sem fallback de domínio                  |
+| 10  | rollout por família com telemetria/gates          | §10/13.1                       | 015.8–015.10      | C/D  | `COVERED` | ondas P0–P4 e gate individual            |
+| 11  | rollback preserva autenticação/isolamento         | §10                            | todos             | B–D  | `COVERED` | rollback obrigatório por incremento      |
+| 12  | remoção após comunicação/evidência/janela         | §10                            | 015.10            | D    | `COVERED` | remoção posterior em PR próprio          |
+| 13  | segregação e grants explícitos/expiráveis         | §2/9; Technical Design §10     | 015.3/015.7       | A/B  | `COVERED` | policy, vigência, revogação e auditoria  |
+| 14  | fechamento P0 com adapters                        | §11/13.1                       | 015.8             | C    | `COVERED` | cinco capabilities e orquestrador único  |
+
+Nenhuma linha possui ajuste pendente após esta revisão. Mudança futura que torne uma linha `PARTIAL`,
+`MISSING` ou `CONFLICT` bloqueia o Gate A até correção documental.
+
 ## 8. Dependências, restrições e pendências
 
 - BDP-011 bloqueia retenção definitiva e projeções finais de dados sensíveis.
@@ -185,3 +207,27 @@ A ETP-015 só poderá ser considerada pronta quando:
 - zero TODO/FIXME crítico e `pnpm check` verde.
 
 Esta especificação não satisfaz a definição de pronto e não inicia implementação.
+
+## 15. Prontidão após revisão
+
+| Área            | Classificação            | Justificativa                                                       |
+| --------------- | ------------------------ | ------------------------------------------------------------------- |
+| arquitetura     | `READY`                  | responsabilidades, pipeline e defesa em profundidade definidos      |
+| modelo de dados | `READY WITH ADJUSTMENTS` | schema reutilizável; campos/constraints dependem do Gate A          |
+| autenticação    | `READY WITH ADJUSTMENTS` | JWT existe; contrato de revogação de sessão será fechado na 015.1   |
+| empresa ativa   | `READY`                  | seleção é validada por assignment e nunca é autoridade do cliente   |
+| capabilities    | `READY`                  | fonte, escopo e ações críticas definidos                            |
+| assignments     | `READY WITH ADJUSTMENTS` | provenance/revogação requerem decisão de migration no Gate A        |
+| guards          | `READY WITH ADJUSTMENTS` | primitives existem; allowlist e composição explícita vêm na 015.4   |
+| isolamento      | `READY`                  | filtro antes do lookup é requisito verificável                      |
+| masking         | `READY WITH ADJUSTMENTS` | mecanismo definido; matrizes de campos dependem das BDPs da família |
+| auditoria       | `READY WITH ADJUSTMENTS` | writer existe; taxonomia de leitura/negação será definida na 015.7  |
+| legado          | `READY WITH ADJUSTMENTS` | estratégia definida; consumidores/janela são gates por família      |
+| fechamento P0   | `READY`                  | contrato canônico e cinco capabilities já existem                   |
+| testes          | `READY`                  | matriz negativa e camadas obrigatórias especificadas                |
+| rollout         | `READY`                  | ondas e gate individual definidos                                   |
+| rollback        | `READY`                  | nenhum retorno pode remover identidade ou isolamento                |
+
+Não há área `BLOCKED` para iniciar a especificação detalhada da ETP-015.1 após aprovação deste PR. Os
+itens `READY WITH ADJUSTMENTS` são critérios do incremento ou do Gate A, não autorização para
+presumir comportamento.

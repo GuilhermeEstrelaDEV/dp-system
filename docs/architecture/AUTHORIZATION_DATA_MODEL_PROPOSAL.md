@@ -100,3 +100,21 @@ o catálogo de códigos apenas se não conceder acesso e se a governança do cat
 
 O Gate A deve aprovar campos de provenance/revogação, normalização dos arrays, constraints temporais e
 estratégia de catálogo. Até isso ocorrer, o schema atual permanece inalterado.
+
+## 8. Matriz de aderência ao Prisma atual
+
+| Conceito         | Situação                     | Alteração candidata                                         | Risco/compatibilidade      | Índice/constraint                       | Seed/testes                      |
+| ---------------- | ---------------------------- | ----------------------------------------------------------- | -------------------------- | --------------------------------------- | -------------------------------- |
+| usuário/sessão   | parcial                      | validar revogação por `sessionId`; sem tabela aprovada nova | médio; tokens atuais       | índice depende do modelo de sessão      | zero credencial; testes `401`    |
+| capability       | existe (`Permission`)        | scope/risco/sensibilidade                                   | baixo, aditivo             | unique code já existe                   | catálogo sem concessão           |
+| role–capability  | existe                       | validar escopo global/empresa                               | médio por dados existentes | PK composta existente                   | nenhum grant automático          |
+| assignment       | parcial (`UserCompanyRole`)  | provenance e revogação                                      | médio; backfill técnico    | vigência e exclusão temporal            | fixtures ativo/expirado/revogado |
+| grant temporário | existe                       | constraint de coerência/intervalo                           | médio em dados prévios     | beneficiário/status/expiração           | zero grant no seed               |
+| emergência       | existe                       | constraint e taxonomia                                      | médio                      | índice atual + eventual parcial         | auto concessão negada            |
+| segregação       | não persistida genericamente | policy/config versionada apenas quando caso exigir          | alto; decisão própria      | unicidade por versão                    | matriz de incompatibilidade      |
+| auditoria        | existe                       | outcome/classificação somente se consulta justificar        | baixo/aditivo              | índices atuais suficientes inicialmente | rollback e sanitizer             |
+| company scope    | existe nas relações          | tornar predicado obrigatório na aplicação                   | sem migration geral        | índices por família                     | duas empresas                    |
+| global scope     | parcial (`UserRole`)         | restringir a `platform.*`                                   | médio por grants atuais    | sem índice novo inicial                 | testes global ≠ domínio          |
+
+Nenhuma tabela nova está comprovadamente obrigatória para a ETP-015.1. Migration futura exige diff
+aditivo, inventário de dados, backfill, validação PostgreSQL e rollback documentado.

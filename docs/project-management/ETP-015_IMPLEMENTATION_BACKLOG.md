@@ -113,6 +113,16 @@ gate aplicável.
 - **Rollback:** por família, preservando autenticação e isolamento.
 - **Evidências:** telemetria, owner, janela, OpenAPI e checks.
 
+Esta entrega é um programa de ondas, não um único PR. Deve ser decomposta sem renumerar a governança:
+
+- **015.9a — P1:** empresa, colaboradores, contratos, parâmetros e rubricas, respeitando BDPs;
+- **015.9b — P2:** organização, admissão, afastamentos e remuneração variável;
+- **015.9c — P3:** jornada, benefícios e férias;
+- **015.9d — P4/preservação:** superfícies públicas legítimas e reconciliação das já protegidas.
+
+Cada onda e cada família possuem PR, gate, rollback e aceite próprios. Uma família bloqueada não
+impede outra sem dependência material.
+
 ## ETP-015.10 — Hardening and Legacy Removal Readiness
 
 - **Objetivo:** provar prontidão para enforcement global e futura remoção.
@@ -124,3 +134,20 @@ gate aplicável.
 - **Aceite:** 163 rotas classificadas, zero rota empresarial implícita e relatório de prontidão.
 - **Rollback:** manter aliases protegidos; remoção somente em iniciativa/PR posterior.
 - **Evidências:** comunicação, telemetria, aceite dos owners e checklist final.
+
+## Ordem final recomendada e resultado da revisão
+
+1. 015.1 principal/sessão/revogação;
+2. 015.2 empresa ativa;
+3. 015.3 catálogo/assignments;
+4. 015.4 decorators/guards;
+5. 015.5 isolamento de repositories;
+6. 015.7 fundação de auditoria necessária ao enforcement;
+7. 015.6 projeção/masking por família (pode ocorrer em paralelo somente após 015.5/015.7);
+8. 015.8 fechamento P0;
+9. 015.9a–d, sequencial por prioridade e independente por família aprovada;
+10. 015.10 hardening e prontidão de remoção.
+
+O ajuste move 015.7 antes de ativar masking/leituras sensíveis e explicita que 015.9 não é uma entrega
+monolítica. Não há dependência circular. 015.3 é o único incremento com migration provável; 015.6 e
+015.9 permanecem condicionados às BDPs materiais de cada família.
