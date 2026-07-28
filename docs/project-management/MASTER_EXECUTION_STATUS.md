@@ -248,8 +248,21 @@
 - **Final Acceptance:** arquitetura, 15 migrations, seed, regressão, cobertura, PostgreSQL 16,
   frontend e documentação validados; ETP-014 oficialmente concluída.
 
-### ETP-015 a ETP-017 — propostas
+### ETP-015 — Authorization Foundation & Enterprise Isolation
+
+- **Status:** `PLANNING — SPECIFICATION REVIEW REQUIRED`; nenhuma implementação iniciada.
+- **Governança:** BDP-AUTH-LEGACY e DAL-01 a DAL-14 estão `APPROVED`.
+- **Especificação:** `docs/project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md`.
+- **Arquitetura:** `docs/architecture/AUTHORIZATION_FOUNDATION_TECHNICAL_DESIGN.md` e
+  `docs/architecture/AUTHORIZATION_DATA_MODEL_PROPOSAL.md`.
+- **Plano:** dez incrementos em `docs/project-management/ETP-015_IMPLEMENTATION_BACKLOG.md`, com
+  fechamento da folha como primeiro recorte P0.
+- **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; o Gate A e a aprovação
+  desta especificação antecedem qualquer código ou migration.
+- **Limites:** zero alteração funcional, endpoint, guard, schema, seed ou frontend nesta etapa.
+
+### ETP-016 e ETP-017 — propostas
 
 - **Status:** não iniciadas; títulos propostos, sem especificação aprovada.
-- **Proposta:** ETP-015 integrações/automações; ETP-016 relatórios/inteligência; ETP-017 hardening/observabilidade/performance.
+- **Proposta:** ETP-016 relatórios/inteligência; ETP-017 hardening/observabilidade/performance.
 - **Gate:** especificação, análise das BDPs e aprovação antes de código.
