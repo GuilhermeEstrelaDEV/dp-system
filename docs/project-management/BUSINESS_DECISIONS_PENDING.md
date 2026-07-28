@@ -68,7 +68,10 @@
 - Capabilities permanecem deny-by-default, empresariais e sem associação automática a papéis; seu cadastro pertence à fase técnica correspondente.
 - BDP-006 continua pendente: nenhuma regra material de remuneração variável será presumida como bloqueio de fechamento.
 - BDP-011 continua pendente: a trilha deve ser preservada, mas retenção e descarte não serão automatizados sem decisão Jurídico/DPO.
-- A homologação conclui somente a Fase 1 documental. A ETP-014 permanece `PLANNING`, sua Fase 2 está `NOT STARTED` e nenhuma implementação foi autorizada por este registro.
+- Estado histórico anterior: a homologação concluiu somente a Fase 1 documental e, naquele marco, a
+  ETP-014 permanecia `PLANNING`, com Fase 2 `NOT STARTED`. Posteriormente, a BDP-014 foi implementada
+  pela ETP-014, oficialmente `COMPLETED`; o pacote documental da INIT-AUTH-LEGACY foi incorporado à
+  `develop` pelo PR #48 sem alterar decisões materiais.
 
 ## Gestão
 

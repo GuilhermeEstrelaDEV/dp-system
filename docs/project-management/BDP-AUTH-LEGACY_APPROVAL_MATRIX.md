@@ -2,7 +2,8 @@
 
 **Identificador:** provisório; não reserva numeração definitiva
 **Status:** `READY FOR HUMAN DECISION`
-**Legenda RACI:** `R` responsável por preparar; `A` aprovador final; `C` consultado; `I` informado
+**Legenda RACI:** `R` responsável por preparar; `A` aprovador e autoridade final; `C` consultado;
+`I` informado. Somente papéis marcados como `A` aparecem na coluna “Aprovadores” do questionário.
 
 ## Matriz RACI
 

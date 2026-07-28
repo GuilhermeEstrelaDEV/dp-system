@@ -2,7 +2,7 @@
 
 **Identificador:** provisório; não reserva numeração definitiva
 **Status:** `READY FOR HUMAN DECISION`
-**Resultado atual:** `BLOCKED`; nenhuma implementação está autorizada
+**Resultado atual:** `BLOCKED — AWAITING HUMAN DECISIONS`; nenhuma implementação está autorizada
 
 ## Objetivo
 
@@ -68,15 +68,15 @@ do primeiro PR. Item vazio, rejeitado ou condicionado mantém o resultado `BLOCK
 
 ## Registro de execução futura
 
-| Campo                      | Valor     |
-| -------------------------- | --------- |
-| Data do gate               |           |
-| Commit de `origin/develop` |           |
-| Resolução homologada       |           |
-| Primeiro recorte           |           |
-| Evidências                 |           |
-| Responsável técnico        |           |
-| Resultado                  | `BLOCKED` |
+| Campo                      | Valor                                |
+| -------------------------- | ------------------------------------ |
+| Data do gate               |                                      |
+| Commit de `origin/develop` |                                      |
+| Resolução homologada       |                                      |
+| Primeiro recorte           |                                      |
+| Evidências                 |                                      |
+| Responsável técnico        |                                      |
+| Resultado                  | `BLOCKED — AWAITING HUMAN DECISIONS` |
 
 O resultado não pode ser liberado por este pacote documental; exige nova execução após a decisão
 humana.
