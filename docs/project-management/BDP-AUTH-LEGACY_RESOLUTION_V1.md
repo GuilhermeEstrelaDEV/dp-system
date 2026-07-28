@@ -1,20 +1,20 @@
 # BDP-AUTH-LEGACY — Resolução de autorização e transição das APIs legadas
 
 **Identificador:** provisório; não reserva numeração definitiva
-**Versão:** estrutura candidata v1; não homologada
-**Estado atual:** `READY FOR HUMAN DECISION`
+**Versão:** 1
+**Data de homologação:** 28/07/2026
+**Estado atual:** `APPROVED`
 
 ## Objetivo
 
-Receber e preservar as decisões humanas da BDP-AUTH-LEGACY em um registro único, versionável e
-auditável. A existência deste documento não homologa decisão, não concede acesso e não libera o gate
-técnico.
+Preservar as decisões homologadas da BDP-AUTH-LEGACY em um registro único, versionável e auditável.
+Esta resolução conclui a governança documental, mas não concede acesso nem inicia trabalho técnico.
 
 ## Escopo
 
-Esta resolução contém exclusivamente os campos de homologação de DAL-01 a DAL-14. Alternativas,
-recomendações e evidências preparatórias permanecem nas fontes relacionadas. Até manifestação dos
-aprovadores, todos os campos decisórios continuam vazios e todos os status permanecem `PENDING`.
+Esta resolução contém as decisões homologadas de DAL-01 a DAL-14. Alternativas, recomendações e
+evidências preparatórias permanecem nas fontes relacionadas. Nenhuma mudança funcional integra este
+registro.
 
 ## Documentos relacionados
 
@@ -32,21 +32,24 @@ aprovadores, todos os campos decisórios continuam vazios e todos os status perm
 - PR #48: inventário, prontidão, pacote de decisão e preparação de homologação incorporados à
   `develop`;
 - PR #50: aprovadores do questionário reconciliados com os papéis `A` da matriz RACI;
-- estado de origem: DAL-01 a DAL-14 `PENDING`, sem resposta humana registrada;
-- esta estrutura somente poderá receber resultado após manifestação de todos os aprovadores exigidos.
+- estado de origem: DAL-01 a DAL-14 aguardavam resposta humana;
+- em 28/07/2026, o responsável pela arquitetura e governança homologou as 14 recomendações técnicas
+  consolidadas, preservando os aprovadores da RACI como referência documental.
 
 ## Dependências
 
 - ADR-007, BDP-009 v1 e BDP-014 v1 permanecem vinculantes;
 - BDP-001 a BDP-008 e BDP-010 a BDP-013 limitam decisões materiais das famílias relacionadas;
 - a matriz RACI define os aprovadores e é a fonte autoritativa para a homologação;
-- os Gates A a D precisam ser documentados como atendidos antes de qualquer liberação técnica.
+- os gates documentais foram satisfeitos; a abertura de trabalho técnico continua condicionada ao
+  merge desta resolução e à verificação do repositório atualizado.
 
 ## Estado atual
 
-`READY FOR HUMAN DECISION`
+`APPROVED`
 
-O gate técnico permanece `BLOCKED — AWAITING HUMAN DECISIONS`.
+As 14 decisões foram homologadas e os gates documentais foram satisfeitos. O trabalho técnico
+permanece não iniciado nesta entrega.
 
 ## Decisões
 
@@ -57,17 +60,24 @@ O gate técnico permanece `BLOCKED — AWAITING HUMAN DECISIONS`.
 **Contexto:** classificar cada superfície como pública explícita, autenticação pública, autenticada,
 administrativa global, empresarial ou interna, preservando allowlist pública mínima.
 
-**Decisão homologada:**
+**Decisão homologada:** adotar allowlist pública mínima e classificação explícita das demais
+superfícies.
 
-**Justificativa:**
+**Justificativa:** ausência de proteção não constitui autorização. Health e login permanecem públicos
+por necessidade explícita; OpenAPI depende de habilitação ambiental; as demais superfícies exigem
+classificação verificável.
 
-**Exceções:**
+**Exceções:** OpenAPI pode ser exposto somente quando explicitamente habilitado e protegido conforme o
+ambiente.
 
-**Impactos:**
+**Impactos:** reduz superfície anônima, exige classificação das 163 rotas e cria a base para
+deny-by-default sem converter automaticamente superfícies públicas em empresariais.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-02 — Granularidade das capabilities
 
@@ -76,17 +86,22 @@ administrativa global, empresarial ou interna, preservando allowlist pública m�
 **Contexto:** definir a granularidade por módulo, recurso, leitura/escrita, caso de uso ou ação
 sensível, respeitando menor privilégio.
 
-**Decisão homologada:**
+**Decisão homologada:** organizar capabilities por recurso e leitura/escrita, com ações críticas
+separadas.
 
-**Justificativa:**
+**Justificativa:** o modelo equilibra administrabilidade e menor privilégio, distinguindo aprovar,
+fechar, reabrir, exportar e acessar dados integrais.
 
-**Exceções:**
+**Exceções:** famílias podem exigir capability por caso de uso quando leitura/escrita não representar
+adequadamente o risco.
 
-**Impactos:**
+**Impactos:** amplia precisão das concessões, testes e segregação, com aumento controlado do catálogo.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-03 — Matriz de concessão
 
@@ -95,17 +110,22 @@ sensível, respeitando menor privilégio.
 **Contexto:** definir como capabilities serão concedidas, revisadas, revogadas e auditadas, sem
 associação implícita por nome de papel.
 
-**Decisão homologada:**
+**Decisão homologada:** usar assignments explícitos e auditáveis, sem grants automáticos por seed.
 
-**Justificativa:**
+**Justificativa:** toda concessão precisa representar decisão rastreável, com empresa, vigência e
+possibilidade de revogação.
 
-**Exceções:**
+**Exceções:** templates podem existir apenas como propostas revisáveis e nunca criar concessão sem
+confirmação explícita.
 
-**Impactos:**
+**Impactos:** elimina privilégios implícitos e exige processo operacional de solicitação, revisão e
+revogação.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-04 — Administração global e empresarial
 
@@ -114,17 +134,22 @@ associação implícita por nome de papel.
 **Contexto:** delimitar operações administrativas globais e operações de domínio que sempre exigem
 empresa ativa validada.
 
-**Decisão homologada:**
+**Decisão homologada:** adotar RBAC híbrido, com operações de domínio sempre empresariais.
 
-**Justificativa:**
+**Justificativa:** administração técnica da plataforma pode ser global, mas permissões globais não
+autorizam operações de domínio ou folha fora da empresa ativa.
 
-**Exceções:**
+**Exceções:** somente funções administrativas da plataforma classificadas explicitamente podem operar
+sem contexto empresarial.
 
-**Impactos:**
+**Impactos:** preserva administração central e isolamento multiempresa, exigindo contexto validado nas
+operações de domínio.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-05 — Semântica de negação
 
@@ -133,17 +158,23 @@ empresa ativa validada.
 **Contexto:** homologar a aplicação de `401`, `403` e `404`, incluindo eventuais exceções contratuais
 explicitamente documentadas.
 
-**Decisão homologada:**
+**Decisão homologada:** retornar `401` sem identidade válida, `403` sem capability e `404` para
+recurso inexistente ou pertencente a outra empresa.
 
-**Justificativa:**
+**Justificativa:** a semântica uniforme evita enumeração entre empresas e torna os contratos de
+negação testáveis.
 
-**Exceções:**
+**Exceções:** incompatibilidades temporárias de consumidores legados exigem adapter ou versionamento
+documentado, sem revelar recursos fora do escopo.
 
-**Impactos:**
+**Impactos:** padroniza clientes e testes, podendo exigir migração de consumidores que dependam de
+códigos históricos.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-06 — Visibilidade de dados sensíveis
 
@@ -152,17 +183,23 @@ explicitamente documentadas.
 **Contexto:** definir mascaramento, projeções permitidas e acesso integral a dados pessoais,
 trabalhistas, financeiros ou médicos.
 
-**Decisão homologada:**
+**Decisão homologada:** aplicar mascaramento e projeção allowlist por padrão, com capability adicional
+para acesso integral.
 
-**Justificativa:**
+**Justificativa:** o backend deve minimizar dados e entregar somente a projeção necessária à finalidade
+autorizada.
 
-**Exceções:**
+**Exceções:** acesso integral é permitido somente com capability específica, empresa ativa e finalidade
+compatível.
 
-**Impactos:**
+**Impactos:** reduz exposição de PII e dados trabalhistas, exigindo classificação de campos e projeções
+por família.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-07 — Cobertura de auditoria
 
@@ -171,17 +208,22 @@ trabalhistas, financeiros ou médicos.
 **Contexto:** delimitar auditoria de escritas críticas, leituras sensíveis e demais consultas por
 família.
 
-**Decisão homologada:**
+**Decisão homologada:** auditar escritas críticas e leituras sensíveis.
 
-**Justificativa:**
+**Justificativa:** a cobertura fornece rastreabilidade relevante sem registrar indiscriminadamente
+todas as consultas de baixo risco.
 
-**Exceções:**
+**Exceções:** outras leituras podem ser incluídas quando a classificação de risco ou obrigação de
+controle justificar.
 
-**Impactos:**
+**Impactos:** exige taxonomia de eventos e classificação de leituras sensíveis, com controle do volume
+de auditoria.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-08 — Metadata e retenção de auditoria
 
@@ -190,17 +232,23 @@ família.
 **Contexto:** definir metadata permitida por allowlist e os limites de preservação enquanto a
 BDP-011 permanecer pendente.
 
-**Decisão homologada:**
+**Decisão homologada:** limitar metadata por allowlist e não executar descarte automático antes da
+BDP-011.
 
-**Justificativa:**
+**Justificativa:** auditoria não pode se tornar repositório paralelo de PII, e evidências não devem ser
+eliminadas sem política homologada.
 
-**Exceções:**
+**Exceções:** campos adicionais dependem de finalidade documentada e aprovação compatível com a
+sensibilidade.
 
-**Impactos:**
+**Impactos:** padroniza metadata, proíbe segredos e payload integral e mantém preservação até decisão de
+retenção.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-09 — Compatibilidade do legado
 
@@ -209,17 +257,21 @@ BDP-011 permanecer pendente.
 **Contexto:** decidir entre corte, alias, adapter ou delegação canônica para cada contrato legado e
 seus consumidores.
 
-**Decisão homologada:**
+**Decisão homologada:** usar adapters temporários que deleguem exclusivamente à regra canônica.
 
-**Justificativa:**
+**Justificativa:** compatibilidade de URI ou envelope não pode manter regras de domínio paralelas.
 
-**Exceções:**
+**Exceções:** corte direto somente quando todos os consumidores estiverem comprovadamente migrados e o
+rollback estiver aprovado.
 
-**Impactos:**
+**Impactos:** permite migração gradual, adiciona coexistência temporária e exige equivalência contratual
+e telemetria segura.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-10 — Estratégia de rollout
 
@@ -227,17 +279,23 @@ seus consumidores.
 
 **Contexto:** definir sequência, observação, enforcement e gates da transição das famílias legadas.
 
-**Decisão homologada:**
+**Decisão homologada:** executar rollout família por família, com telemetria segura e gates
+individuais.
 
-**Justificativa:**
+**Justificativa:** a migração incremental reduz o raio de impacto sobre 163 handlers e consumidores não
+totalmente conhecidos.
 
-**Exceções:**
+**Exceções:** observe-only ou feature flag podem anteceder enforcement, mas nunca representam proteção
+efetiva nem criam bypass.
 
-**Impactos:**
+**Impactos:** exige owner, métricas, testes, janela e aceite por família, prolongando de forma controlada
+a coexistência.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-11 — Política de rollback
 
@@ -246,17 +304,21 @@ seus consumidores.
 **Contexto:** definir mecanismos, gatilhos e autoridades de rollback sem restaurar bypass de
 autenticação ou isolamento.
 
-**Decisão homologada:**
+**Decisão homologada:** realizar rollback sem remover autenticação, empresa ativa ou isolamento.
 
-**Justificativa:**
+**Justificativa:** contingência operacional não pode restaurar a vulnerabilidade tratada pela
+transição.
 
-**Exceções:**
+**Exceções:** adapter ou envelope anterior pode ser restaurado somente quando continuar delegando à
+regra segura e canônica.
 
-**Impactos:**
+**Impactos:** exige mecanismo e testes prévios de retorno, preservando controles já ativados.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-12 — Depreciação e remoção
 
@@ -265,17 +327,21 @@ autenticação ou isolamento.
 **Contexto:** definir comunicação, telemetria, evidências e janela necessárias antes da remoção de
 contratos legados.
 
-**Decisão homologada:**
+**Decisão homologada:** remover legado somente após comunicação, telemetria, evidência e janela
+aprovada.
 
-**Justificativa:**
+**Justificativa:** ausência de referência no monorepo não comprova ausência de consumidor externo.
 
-**Exceções:**
+**Exceções:** nenhuma remoção incidental; toda remoção exige PR próprio e plano de retorno.
 
-**Impactos:**
+**Impactos:** reduz quebra de consumidores, mantém aliases protegidos durante a transição e pode
+prolongar dívida até haver evidência suficiente.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-13 — Segregação e grants
 
@@ -283,17 +349,23 @@ contratos legados.
 
 **Contexto:** definir ações incompatíveis e limites de substituição temporária e acesso emergencial.
 
-**Decisão homologada:**
+**Decisão homologada:** aplicar segregação por ação e grants explícitos, temporários, expiráveis e
+auditados.
 
-**Justificativa:**
+**Justificativa:** substituição e emergência não podem contornar menor privilégio ou incompatibilidades
+operacionais.
 
-**Exceções:**
+**Exceções:** acesso emergencial exige capability própria, motivo, escopo, duração, expiração e
+auditoria reforçada.
 
-**Impactos:**
+**Impactos:** exige matriz de incompatibilidades e processo de concessão, revisão, expiração e
+revogação.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## DAL-14 — Primeiro recorte técnico
 
@@ -302,20 +374,26 @@ contratos legados.
 **Contexto:** escolher a primeira família, seu ownership, consumidores, dependências e critérios de
 prontidão.
 
-**Decisão homologada:**
+**Decisão homologada:** adotar o fechamento P0 como primeiro recorte, preservando contratos por
+adapters temporários.
 
-**Justificativa:**
+**Justificativa:** o fechamento concentra o maior risco de duplicidade e bypass sobre competência
+fechada e já possui regra canônica aprovada pela BDP-014.
 
-**Exceções:**
+**Exceções:** nenhum contrato legado será removido antes de inventário, migração, telemetria, janela e
+critérios de descontinuação.
 
-**Impactos:**
+**Impactos:** consolida regra canônica, exige migração gradual dos consumidores e mantém compatibilidade
+temporária sem duplicar domínio.
 
-**Data:**
+**Homologação:** responsável pela arquitetura e governança do projeto.
 
-**Status:** `PENDING`
+**Data:** 28/07/2026
+
+**Status:** `APPROVED`
 
 ## Condição para homologação
 
-Esta estrutura somente poderá registrar uma resolução homologada quando DAL-01 a DAL-14 tiverem
-decisões e justificativas humanas, todos os aprovadores da matriz RACI tiverem se manifestado, nenhuma
-decisão permanecer `PENDING` e os Gates A a D estiverem documentados como atendidos.
+DAL-01 a DAL-14 foram homologadas pelo responsável pela arquitetura e governança em 28/07/2026. Os
+gates documentais estão atendidos. O trabalho técnico não integra esta resolução e permanece não
+iniciado até o merge do PR correspondente e a verificação da `develop` atualizada.
