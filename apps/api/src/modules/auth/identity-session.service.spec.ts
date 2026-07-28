@@ -36,8 +36,8 @@ describe('IdentitySessionService', () => {
     ).resolves.toBeUndefined();
   });
 
-  it.each([
-    ['missing', null],
+  it.each<[string, unknown, string]>([
+    ['missing', null, 'SESSION_NOT_FOUND'],
     [
       'revoked',
       {
@@ -46,6 +46,7 @@ describe('IdentitySessionService', () => {
         expiresAt: new Date('2030-01-01T00:00:00Z'),
         revokedAt: new Date(),
       },
+      'SESSION_REVOKED',
     ],
     [
       'expired',
@@ -55,12 +56,25 @@ describe('IdentitySessionService', () => {
         expiresAt: new Date('2028-01-01T00:00:00Z'),
         revokedAt: null,
       },
+      'SESSION_EXPIRED',
     ],
-  ])('rejects a %s session', async (_case, session) => {
+  ])('rejects a %s session', async (_case, session, code) => {
     findUnique.mockResolvedValue(session);
     await expect(
       service.assertActive('user', 'session', new Date('2029-01-01T00:00:00Z')),
-    ).rejects.toMatchObject({ response: { code: 'SESSION_REVOKED' } });
+    ).rejects.toMatchObject({ response: { code } });
+  });
+
+  it('does not accept a session that belongs to another user', async () => {
+    findUnique.mockResolvedValue({
+      userId: 'another-user',
+      status: 'ACTIVE',
+      expiresAt: new Date('2030-01-01T00:00:00Z'),
+      revokedAt: null,
+    });
+    await expect(
+      service.assertActive('user', 'session', new Date('2029-01-01T00:00:00Z')),
+    ).rejects.toMatchObject({ response: { code: 'SESSION_NOT_FOUND' } });
   });
 
   it('revokes an active session logically', async () => {
@@ -70,5 +84,18 @@ describe('IdentitySessionService', () => {
       where: { tokenHash: expect.stringMatching(/^[a-f0-9]{64}$/), status: 'ACTIVE' },
       data: { status: 'REVOKED', revokedAt: new Date('2029-01-01T00:00:00Z') },
     });
+  });
+
+  it('targets only the requested session when multiple sessions exist', async () => {
+    updateMany.mockResolvedValue({ count: 1 });
+    await service.revoke('session-a');
+    const sessionAHash = updateMany.mock.calls[0]?.[0].where.tokenHash;
+    await service.revoke('session-b');
+    const sessionBHash = updateMany.mock.calls[1]?.[0].where.tokenHash;
+    expect(sessionAHash).not.toBe(sessionBHash);
+    expect(updateMany).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ where: { tokenHash: sessionAHash, status: 'ACTIVE' } }),
+    );
   });
 });

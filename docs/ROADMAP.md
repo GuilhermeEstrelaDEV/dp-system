@@ -113,6 +113,8 @@ migration fora do incremento aprovado está autorizada. A ETP-015.1 implementa s
 contexto autenticado, resolução de usuário e revogação lógica de sessão; capabilities, autorização,
 isolamento e migração de endpoints permanecem nas etapas posteriores e sujeitos aos
 [Gates A–D](project-management/ETP-015_RELEASE_GATES.md).
+Sua revisão técnica mantém o incremento `IN PROGRESS` e classifica a reutilização provisória de
+`RefreshToken` como `ACCEPTABLE WITH FOLLOW-UP`, sem migration nesta entrega.
 
 ## Próximas iniciativas propostas
 

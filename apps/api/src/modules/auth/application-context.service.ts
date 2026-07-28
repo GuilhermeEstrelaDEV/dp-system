@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { IdentityAuthenticationException } from './identity-authentication.errors';
-import type { TokenIdentity } from './identity-context';
+import { createAuthenticatedPrincipal, type TokenIdentity } from './identity-context';
 import { IdentitySessionService } from './identity-session.service';
 
 @Injectable()
@@ -86,7 +86,7 @@ export class ApplicationContextService {
         capabilities: grant.capabilities,
       })),
     ];
-    return {
+    return createAuthenticatedPrincipal({
       actorId: identity.actorId,
       activeCompanyId: identity.activeCompanyId,
       permissions: [
@@ -101,6 +101,6 @@ export class ApplicationContextService {
       ipAddress,
       userAgent,
       accessGrants,
-    };
+    });
   }
 }

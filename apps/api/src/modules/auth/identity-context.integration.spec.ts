@@ -57,4 +57,32 @@ describe('identity context integration', () => {
     });
     expect(userFindUnique).not.toHaveBeenCalled();
   });
+
+  it('creates isolated immutable principals for concurrent requests', async () => {
+    sessionFindUnique.mockResolvedValue({
+      userId: 'user-1',
+      status: 'ACTIVE',
+      expiresAt: new Date(Date.now() + 60_000),
+      revokedAt: null,
+    });
+    userFindUnique.mockResolvedValue({
+      status: 'ACTIVE',
+      roles: [],
+      companyRoles: [],
+      substitutionsAsSubstitute: [],
+      emergencyAccesses: [],
+    });
+    const token = await jwt.signAsync({ sub: 'user-1', sid: 'session-1' });
+    const identity = await strategy.authenticate(token);
+    const [first, second] = await Promise.all([
+      contexts.resolve(identity, 'trace-1'),
+      contexts.resolve(identity, 'trace-2'),
+    ]);
+    expect(first).not.toBe(second);
+    expect(first.traceId).toBe('trace-1');
+    expect(second.traceId).toBe('trace-2');
+    expect(Object.isFrozen(first)).toBe(true);
+    expect(Object.isFrozen(first.permissions)).toBe(true);
+    expect(Object.isFrozen(first.accessGrants)).toBe(true);
+  });
 });

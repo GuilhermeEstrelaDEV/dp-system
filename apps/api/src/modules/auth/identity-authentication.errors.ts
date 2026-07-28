@@ -1,13 +1,21 @@
 import { UnauthorizedException } from '@nestjs/common';
 
 export type IdentityAuthenticationErrorCode =
-  'TOKEN_EXPIRED' | 'TOKEN_INVALID' | 'USER_NOT_FOUND' | 'USER_INACTIVE' | 'SESSION_REVOKED';
+  | 'TOKEN_EXPIRED'
+  | 'TOKEN_INVALID'
+  | 'USER_NOT_FOUND'
+  | 'USER_INACTIVE'
+  | 'SESSION_NOT_FOUND'
+  | 'SESSION_EXPIRED'
+  | 'SESSION_REVOKED';
 
 const messages: Readonly<Record<IdentityAuthenticationErrorCode, string>> = {
   TOKEN_EXPIRED: 'Token expirado',
   TOKEN_INVALID: 'Token inválido',
   USER_NOT_FOUND: 'Usuário não encontrado',
   USER_INACTIVE: 'Usuário inativo',
+  SESSION_NOT_FOUND: 'Sessão não encontrada',
+  SESSION_EXPIRED: 'Sessão expirada',
   SESSION_REVOKED: 'Sessão revogada',
 };
 

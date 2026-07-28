@@ -15,3 +15,16 @@ export interface AuthenticatedPrincipal extends TokenIdentity {
     capabilities: readonly string[];
   }[];
 }
+
+export function createAuthenticatedPrincipal(
+  principal: AuthenticatedPrincipal,
+): AuthenticatedPrincipal {
+  const accessGrants = principal.accessGrants.map((grant) =>
+    Object.freeze({ ...grant, capabilities: Object.freeze([...grant.capabilities]) }),
+  );
+  return Object.freeze({
+    ...principal,
+    permissions: Object.freeze([...principal.permissions]),
+    accessGrants: Object.freeze(accessGrants),
+  });
+}

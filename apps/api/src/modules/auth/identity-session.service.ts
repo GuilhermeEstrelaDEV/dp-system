@@ -18,13 +18,13 @@ export class IdentitySessionService {
       where: { tokenHash: this.hash(sessionId) },
       select: { userId: true, status: true, expiresAt: true, revokedAt: true },
     });
-    if (
-      !session ||
-      session.userId !== userId ||
-      session.status !== 'ACTIVE' ||
-      session.revokedAt !== null ||
-      session.expiresAt <= now
-    ) {
+    if (!session || session.userId !== userId) {
+      throw new IdentityAuthenticationException('SESSION_NOT_FOUND');
+    }
+    if (session.expiresAt <= now || session.status === 'EXPIRED') {
+      throw new IdentityAuthenticationException('SESSION_EXPIRED');
+    }
+    if (session.status !== 'ACTIVE' || session.revokedAt !== null) {
       throw new IdentityAuthenticationException('SESSION_REVOKED');
     }
   }

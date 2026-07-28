@@ -32,7 +32,7 @@ export class AuthService {
     }
     const sessionId = randomUUID();
     const token = await this.issueToken(user.id, null, sessionId);
-    const payload = this.jwt.decode<AccessTokenPayload>(token.accessToken);
+    const payload = await this.jwt.verifyAsync<AccessTokenPayload>(token.accessToken);
     if (!payload?.exp) throw new UnauthorizedException('Credenciais inválidas');
     await this.sessions.register(user.id, sessionId, new Date(payload.exp * 1000));
     return {

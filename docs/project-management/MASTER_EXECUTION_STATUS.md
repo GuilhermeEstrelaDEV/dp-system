@@ -259,6 +259,12 @@
   fechamento da folha como primeiro recorte P0.
 - **ETP-015.1:** principal autenticado único, contexto de identidade, resolução explícita de usuário e
   sessão lógica revogável sobre a persistência existente, sem migration ou contrato HTTP novo.
+- **Revisão técnica da ETP-015.1:** em andamento no PR #53; erros de token, usuário e sessão possuem
+  semântica `401` explícita, o contexto é imutável por requisição e o uso provisório de `RefreshToken`
+  foi classificado como `ACCEPTABLE WITH FOLLOW-UP`.
+- **Follow-ups:** modelo dedicado/migration de sessão, limpeza de expirados, issuer/audience, refresh,
+  logout backend, revogação global e identidades técnicas dependem de recorte futuro aprovado e não
+  iniciam a ETP-015.2.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,

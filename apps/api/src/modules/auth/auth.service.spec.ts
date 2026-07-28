@@ -8,7 +8,7 @@ describe('AuthService', () => {
   const userFindUnique = jest.fn();
   const assignmentsFindMany = jest.fn();
   const signAsync = jest.fn().mockResolvedValue('token');
-  const decode = jest.fn().mockReturnValue({ exp: 2_000_000_000 });
+  const verifyAsync = jest.fn().mockResolvedValue({ exp: 2_000_000_000 });
   const verify = jest.fn();
   const register = jest.fn();
   const service = new AuthService(
@@ -16,7 +16,7 @@ describe('AuthService', () => {
       user: { findUnique: userFindUnique },
       userCompanyRole: { findMany: assignmentsFindMany },
     } as unknown as PrismaService,
-    { signAsync, decode } as unknown as JwtService,
+    { signAsync, verifyAsync } as unknown as JwtService,
     { verify } as unknown as PasswordHasherService,
     { register } as never,
   );
