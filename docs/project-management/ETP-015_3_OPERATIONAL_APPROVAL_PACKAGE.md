@@ -64,3 +64,25 @@ aprovado, backup irrecuperável, restore não testado, incompatibilidade de vers
 responsável ou risco de perda histórica.
 
 **Decisão humana final:** `PENDING` — nenhuma aprovação é presumida por este documento.
+
+## Evidência local registrada em 29/07/2026
+
+O [sumário local](evidence/etp-015-3/local-environment-summary.md) e os relatórios de instalação,
+upgrade, locks, seed, rollback, backup/restore e compatibilidade demonstram o comportamento em Docker
+com PostgreSQL 16.14. A evidência confirma tecnicamente fail-closed, locks fortes, preservação de
+dados e rollback protegido. Classificação: `EVIDENCED LOCALLY — TARGET ENVIRONMENT PENDING`.
+
+Continuam pendentes: ambientes/provedores reais, acesso autorizado, volume, réplicas, instâncias,
+timeouts, janela, owners DBA/Infra, política de backup, RPO/RTO, restore real, monitoramento,
+comunicação e aprovador final. Nenhuma senha deve ser registrada.
+
+### Informações humanas necessárias
+
+- ambientes reais, provedor e PostgreSQL de cada banco;
+- canal autorizado de execução, disponibilidade de `btree_gist` e privilégio `CREATE EXTENSION`;
+- volumes, réplicas, instâncias, estratégia de deploy e janela;
+- responsáveis DBA e Infraestrutura;
+- política de backup, RPO, RTO e evidência de restore;
+- monitoramento, comunicação e aprovador final.
+
+Credenciais, senhas e connection strings não devem ser versionadas.
