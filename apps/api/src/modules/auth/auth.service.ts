@@ -3,12 +3,14 @@ import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
+import { IdentitySessionService } from './identity-session.service';
 import { PasswordHasherService } from './password-hasher.service';
 
 export interface AccessTokenPayload {
   sub: string;
   activeCompanyId?: string;
   sid: string;
+  exp?: number;
 }
 
 @Injectable()
@@ -17,6 +19,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly passwords: PasswordHasherService,
+    private readonly sessions: IdentitySessionService,
   ) {}
 
   async login(email: string, password: string) {
@@ -28,8 +31,12 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas');
     }
     const sessionId = randomUUID();
+    const token = await this.issueToken(user.id, null, sessionId);
+    const payload = await this.jwt.verifyAsync<AccessTokenPayload>(token.accessToken);
+    if (!payload?.exp) throw new UnauthorizedException('Credenciais inválidas');
+    await this.sessions.register(user.id, sessionId, new Date(payload.exp * 1000));
     return {
-      ...(await this.issueToken(user.id, null, sessionId)),
+      ...token,
       actorId: user.id,
       sessionId,
     };

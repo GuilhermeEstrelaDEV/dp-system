@@ -10,13 +10,21 @@ describe('authenticated company context integration', () => {
   let app: Awaited<ReturnType<typeof createApplication>>;
   let passwordHash: string;
   let assignmentActive = true;
+  const sessions = new Map<
+    string,
+    { userId: string; status: 'ACTIVE' | 'REVOKED'; expiresAt: Date }
+  >();
 
   const company = { id: '11111111-1111-4111-8111-111111111111', legalName: 'A', tradeName: 'A' };
   const prisma = {
     $queryRaw: jest.fn().mockResolvedValue([{ result: 1 }]),
     user: {
       findUnique: jest.fn(),
-      findFirst: jest.fn(),
+    },
+    refreshToken: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+      updateMany: jest.fn(),
     },
     userCompanyRole: { findMany: jest.fn() },
     auditLog: { create: jest.fn().mockResolvedValue({ id: 'audit-1' }) },
@@ -24,30 +32,44 @@ describe('authenticated company context integration', () => {
 
   beforeAll(async () => {
     passwordHash = await new PasswordHasherService().hash('correct-password');
-    prisma.user.findUnique.mockImplementation(({ where }: { where: { email: string } }) =>
-      where.email === 'user@example.com' ? { id: 'user-1', status: 'ACTIVE', passwordHash } : null,
-    );
-    prisma.userCompanyRole.findMany.mockImplementation(() =>
-      assignmentActive ? [{ company }] : [],
-    );
-    prisma.user.findFirst.mockImplementation(
-      ({ where }: { where: { id: string }; select: unknown }) =>
-        where.id === 'user-1'
+    prisma.user.findUnique.mockImplementation(
+      ({ where }: { where: { email?: string; id?: string }; select?: unknown }) => {
+        if (where.email) {
+          return where.email === 'user@example.com'
+            ? { id: 'user-1', status: 'ACTIVE', passwordHash }
+            : null;
+        }
+        return where.id === 'user-1'
           ? {
+              status: 'ACTIVE',
               roles: [],
               companyRoles: assignmentActive
-                ? [
-                    {
-                      role: {
-                        permissions: [{ permission: { code: 'payroll.view' } }],
-                      },
-                    },
-                  ]
+                ? [{ role: { permissions: [{ permission: { code: 'payroll.view' } }] } }]
                 : [],
               substitutionsAsSubstitute: [],
               emergencyAccesses: [],
             }
-          : null,
+          : null;
+      },
+    );
+    prisma.userCompanyRole.findMany.mockImplementation(() =>
+      assignmentActive ? [{ company }] : [],
+    );
+    prisma.refreshToken.create.mockImplementation(
+      ({ data }: { data: { tokenHash: string; userId: string; expiresAt: Date } }) => {
+        sessions.set(data.tokenHash, {
+          userId: data.userId,
+          status: 'ACTIVE',
+          expiresAt: data.expiresAt,
+        });
+        return { id: 'session-record', ...data };
+      },
+    );
+    prisma.refreshToken.findUnique.mockImplementation(
+      ({ where }: { where: { tokenHash: string } }) => {
+        const session = sessions.get(where.tokenHash);
+        return session ? { ...session, revokedAt: null } : null;
+      },
     );
     moduleRef = await Test.createTestingModule({ imports: [AppModule] })
       .overrideProvider(PrismaService)
@@ -60,6 +82,7 @@ describe('authenticated company context integration', () => {
   afterAll(async () => app.close());
   beforeEach(() => {
     assignmentActive = true;
+    sessions.clear();
     jest.clearAllMocks();
   });
 

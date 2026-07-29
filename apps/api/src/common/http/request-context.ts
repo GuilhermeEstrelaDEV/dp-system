@@ -1,19 +1,7 @@
 import type { Request } from 'express';
+import type { AuthenticatedPrincipal } from '../../modules/auth/identity-context';
 
-export interface AuthenticatedPrincipal {
-  actorId: string;
-  activeCompanyId: string | null;
-  permissions: readonly string[];
-  traceId: string;
-  sessionId: string;
-  ipAddress: string;
-  userAgent: string | null;
-  accessGrants: readonly {
-    id: string;
-    type: 'SUBSTITUTION' | 'EMERGENCY';
-    capabilities: readonly string[];
-  }[];
-}
+export type { AuthenticatedPrincipal } from '../../modules/auth/identity-context';
 
 export type RequestWithContext = Request & {
   correlationId?: string;

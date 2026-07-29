@@ -250,16 +250,25 @@
 
 ### ETP-015 — Authorization Foundation & Enterprise Isolation
 
-- **Status:** `PLANNING — SPECIFICATION REVIEW REQUIRED`; nenhuma implementação iniciada.
+- **Status:** `IN PROGRESS`; especificação aprovada no PR #52 e ETP-015.1 em implementação.
 - **Governança:** BDP-AUTH-LEGACY e DAL-01 a DAL-14 estão `APPROVED`.
 - **Especificação:** `docs/project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md`.
 - **Arquitetura:** `docs/architecture/AUTHORIZATION_FOUNDATION_TECHNICAL_DESIGN.md` e
   `docs/architecture/AUTHORIZATION_DATA_MODEL_PROPOSAL.md`.
 - **Plano:** dez incrementos em `docs/project-management/ETP-015_IMPLEMENTATION_BACKLOG.md`, com
   fechamento da folha como primeiro recorte P0.
-- **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; o Gate A e a aprovação
-  desta especificação antecedem qualquer código ou migration.
-- **Limites:** zero alteração funcional, endpoint, guard, schema, seed ou frontend nesta etapa.
+- **ETP-015.1:** principal autenticado único, contexto de identidade, resolução explícita de usuário e
+  sessão lógica revogável sobre a persistência existente, sem migration ou contrato HTTP novo.
+- **Revisão técnica da ETP-015.1:** em andamento no PR #53; erros de token, usuário e sessão possuem
+  semântica `401` explícita, o contexto é imutável por requisição e o uso provisório de `RefreshToken`
+  foi classificado como `ACCEPTABLE WITH FOLLOW-UP`.
+- **Follow-ups:** modelo dedicado/migration de sessão, limpeza de expirados, issuer/audience, refresh,
+  logout backend, revogação global e identidades técnicas dependem de recorte futuro aprovado e não
+  iniciam a ETP-015.2.
+- **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
+  aprovado pode avançar.
+- **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,
+  DTOs, schema, seed e frontend permanecem inalterados.
 
 ### ETP-016 e ETP-017 — propostas
 
