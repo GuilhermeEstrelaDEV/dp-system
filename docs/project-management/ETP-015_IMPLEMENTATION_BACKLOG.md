@@ -1,6 +1,6 @@
 # ETP-015 — Implementation Backlog
 
-**Status:** especificação aprovada; ETP-015.1 e ETP-015.2 concluídas; ETP-015.3 não iniciada
+**Status:** especificação aprovada; ETP-015.1 e ETP-015.2 concluídas; ETP-015.3 pronta para iniciar
 
 Cada entrega nasce de `develop` atualizada, possui branch/PR próprios e só avança após evidência do
 gate aplicável.
@@ -55,15 +55,17 @@ inclui capabilities, autorização de recursos, migração de endpoints, Prisma 
 
 ## ETP-015.3 — Capability Catalog and Assignments
 
-**Status:** `NOT STARTED`
+**Status:** `READY TO START`
 
 **Gate de entrada:** `APPROVED`. GA-01..GA-15 foram homologadas em 29/07/2026 no pacote
 [ETP-015 Gate A — Capability Catalog and Assignments Data Model](ETP-015_GATE_A_DATA_MODEL_DECISION_PACKAGE.md),
 sem iniciar migration ou implementação funcional.
 
 **Classification Subgate:** `APPROVED — READY FOR CONTROLLED MIGRATION`. Os 19 códigos e as políticas
-PC-20/PC-21 foram homologados em 29/07/2026; migration `NOT CREATED`, ETP-015.3 e implementação
-funcional `NOT STARTED`. Próxima etapa: merge documental e retomada controlada.
+PC-20/PC-21 foram homologados em 29/07/2026. O PR #59 foi incorporado à `develop` pelo merge
+`f3a63d6243797c91e17ace40a715bdbf78478efb`, com CI aprovado. Todos os pré-requisitos documentais
+estão concluídos; migration `NOT CREATED` e implementação funcional `NOT STARTED`. Próxima etapa:
+implementação controlada da ETP-015.3.
 
 - **Objetivo:** governar catálogo e concessões explícitas.
 - **Dependências:** 015.2, DAL-02/03/04/13.
