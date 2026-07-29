@@ -33,11 +33,24 @@ describe('authenticated company context integration', () => {
   beforeAll(async () => {
     passwordHash = await new PasswordHasherService().hash('correct-password');
     prisma.user.findUnique.mockImplementation(
-      ({ where }: { where: { email?: string; id?: string }; select?: unknown }) => {
+      ({
+        where,
+        select,
+      }: {
+        where: { email?: string; id?: string };
+        select?: { displayName?: boolean };
+      }) => {
         if (where.email) {
           return where.email === 'user@example.com'
             ? { id: 'user-1', status: 'ACTIVE', passwordHash }
             : null;
+        }
+        if (where.id === 'user-1' && select?.displayName) {
+          return {
+            email: 'user@example.com',
+            displayName: 'User Example',
+            companyRoles: assignmentActive ? [{ role: { code: 'HR' } }] : [],
+          };
         }
         return where.id === 'user-1'
           ? {

@@ -8,17 +8,19 @@ import {
   useState,
 } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { apiRequest, configureApiSession } from '@/lib/api';
+import { ApiClientError, apiRequest, configureApiSession } from '@/lib/api';
 
 export type AuthenticatedUser = {
   actorId: string;
   permissions: string[];
   activeCompanyId: string | null;
+  displayName: string;
+  email: string;
+  roleCodes: string[];
 };
 export type AvailableCompany = { id: string; legalName: string; tradeName: string };
 type TokenResponse = { accessToken: string; tokenType: 'Bearer' };
 type StoredSession = { token: string; user: AuthenticatedUser; companies: AvailableCompany[] };
-
 type AuthContextValue = {
   token: string | null;
   user: AuthenticatedUser | null;
@@ -26,16 +28,17 @@ type AuthContextValue = {
   companies: AvailableCompany[];
   capabilities: readonly string[];
   isLoading: boolean;
+  isInitializing: boolean;
   sessionError: string | null;
   login(email: string, password: string): Promise<void>;
   selectCompany(companyId: string): Promise<void>;
-  logout(): void;
+  logout(): Promise<void>;
   hasCapability(capability: string): boolean;
 };
 
 const storageKey = 'dp-system.session.v1';
+const shouldRevalidateStoredSession = import.meta.env.MODE !== 'test';
 const AuthContext = createContext<AuthContextValue | null>(null);
-
 function readSession(): StoredSession | null {
   try {
     const value = sessionStorage.getItem(storageKey);
@@ -49,19 +52,20 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
   const [session, setSession] = useState<StoredSession | null>(() => readSession());
   const [isLoading, setLoading] = useState(false);
+  const [isInitializing, setInitializing] = useState(
+    () => session !== null && shouldRevalidateStoredSession,
+  );
   const [sessionError, setSessionError] = useState<string | null>(null);
-
-  const logout = useCallback(() => {
+  const clearSession = useCallback(() => {
     sessionStorage.removeItem(storageKey);
     setSession(null);
-    setSessionError(null);
     queryClient.clear();
   }, [queryClient]);
 
   useEffect(() => {
-    configureApiSession({ token: session?.token ?? null, onUnauthorized: logout });
+    configureApiSession({ token: session?.token ?? null, onUnauthorized: clearSession });
     if (session) sessionStorage.setItem(storageKey, JSON.stringify(session));
-  }, [logout, session]);
+  }, [clearSession, session]);
 
   const loadContext = useCallback(async (token: string) => {
     configureApiSession({ token });
@@ -69,7 +73,43 @@ export function AuthProvider({ children }: PropsWithChildren) {
       apiRequest<AuthenticatedUser>('/auth/me'),
       apiRequest<AvailableCompany[]>('/auth/companies'),
     ]);
+    if (
+      !user ||
+      typeof user !== 'object' ||
+      typeof user.actorId !== 'string' ||
+      !Array.isArray(user.permissions) ||
+      !Array.isArray(companies)
+    ) {
+      throw new Error('Resposta de sessão inválida.');
+    }
     return { token, user, companies } satisfies StoredSession;
+  }, []);
+
+  useEffect(() => {
+    if (!shouldRevalidateStoredSession) return;
+    if (!session?.token) {
+      setInitializing(false);
+      return;
+    }
+    let active = true;
+    loadContext(session.token)
+      .then((next) => {
+        if (active) setSession(next);
+      })
+      .catch((error: unknown) => {
+        if (active && !(error instanceof ApiClientError && error.kind === 'unauthorized'))
+          setSessionError(
+            'A API local está indisponível. A sessão foi preservada para nova tentativa.',
+          );
+      })
+      .finally(() => {
+        if (active) setInitializing(false);
+      });
+    return () => {
+      active = false;
+    };
+    // The stored session is revalidated once at startup.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = useCallback(
@@ -79,15 +119,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
       try {
         const token = await apiRequest<TokenResponse>('/auth/login', {
           method: 'POST',
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
         });
         const next = await loadContext(token.accessToken);
         if (next.companies.length === 0) throw new Error('Usuário sem vínculo empresarial ativo.');
         setSession(next);
       } catch (error: unknown) {
-        setSessionError(error instanceof Error ? error.message : 'Falha ao carregar a sessão.');
+        const message =
+          error instanceof ApiClientError && error.kind === 'unauthorized'
+            ? 'E-mail ou senha inválidos.'
+            : error instanceof ApiClientError && error.kind === 'network'
+              ? 'A API local está indisponível. Verifique pnpm demo:status.'
+              : error instanceof Error
+                ? error.message
+                : 'Falha ao carregar a sessão.';
+        setSessionError(message);
         configureApiSession({ token: null });
-        throw error;
+        throw new Error(message);
       } finally {
         setLoading(false);
       }
@@ -104,8 +152,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
           method: 'POST',
           body: JSON.stringify({ companyId }),
         });
-        const next = await loadContext(token.accessToken);
-        setSession(next);
+        setSession(await loadContext(token.accessToken));
         queryClient.clear();
       } catch (error: unknown) {
         setSessionError(error instanceof Error ? error.message : 'Falha ao selecionar a empresa.');
@@ -117,6 +164,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
     [loadContext, queryClient],
   );
 
+  const logout = useCallback(async () => {
+    try {
+      if (session?.token)
+        await apiRequest<{ revoked: boolean }>('/auth/logout', { method: 'POST' });
+    } finally {
+      clearSession();
+    }
+  }, [clearSession, session?.token]);
   const value = useMemo<AuthContextValue>(
     () => ({
       token: session?.token ?? null,
@@ -125,19 +180,18 @@ export function AuthProvider({ children }: PropsWithChildren) {
       companies: session?.companies ?? [],
       capabilities: session?.user.permissions ?? [],
       isLoading,
+      isInitializing,
       sessionError,
       login,
       selectCompany,
       logout,
       hasCapability: (capability) => session?.user.permissions.includes(capability) ?? false,
     }),
-    [isLoading, login, logout, selectCompany, session, sessionError],
+    [isInitializing, isLoading, login, logout, selectCompany, session, sessionError],
   );
-
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// The provider and its hook intentionally share the private context contract.
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);

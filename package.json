@@ -27,7 +27,8 @@
     "prisma:generate": "pnpm --filter @dp-system/api prisma:generate",
     "prisma:validate": "pnpm --filter @dp-system/api prisma:validate",
     "prisma:migrate:deploy": "pnpm --filter @dp-system/api prisma:migrate:deploy",
-    "prisma:seed": "pnpm --filter @dp-system/api prisma:seed"
+    "prisma:seed": "pnpm --filter @dp-system/api prisma:seed",
+    "prisma:seed:demo": "pnpm --filter @dp-system/api prisma:seed:demo"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",

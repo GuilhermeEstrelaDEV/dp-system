@@ -2,6 +2,9 @@
 
 O protótipo somente poderá ser declarado demonstrável quando houver evidência para todos os itens.
 
+A MVP-001.3 fornece autenticação e contexto empresarial demonstrativos com identidades fictícias,
+hash real, sessão revogável e zero grants automáticos. Isso não conclui o protótipo completo.
+
 - [ ] instalação e inicialização documentadas em uma máquina local suportada;
 - [ ] ambiente sobe sem edição manual de código;
 - [ ] migrations novas e existentes são aplicadas sem alterar migrations mescladas;

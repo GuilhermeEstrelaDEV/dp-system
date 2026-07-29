@@ -32,8 +32,9 @@ pnpm demo:reset -- --confirm-reset
 ```
 
 Consulte o [guia da demonstração](docs/DEMO_LOCAL_SETUP.md) e o
-[troubleshooting](docs/DEMO_TROUBLESHOOTING.md). O seed atual ainda não cria credenciais; login
-demonstrativo pertence à MVP-001.3. Nenhuma configuração é adequada para produção.
+[troubleshooting](docs/DEMO_TROUBLESHOOTING.md) e as
+[contas fictícias](docs/product/MVP-001_DEMO_ACCOUNTS.md). A MVP-001.3 adiciona login local seguro,
+sem grants automáticos. Nenhuma configuração é adequada para produção.
 
 ## Qualidade e validação
 

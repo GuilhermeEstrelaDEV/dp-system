@@ -11,6 +11,7 @@ describe('AuthService', () => {
   const verifyAsync = jest.fn().mockResolvedValue({ exp: 2_000_000_000 });
   const verify = jest.fn();
   const register = jest.fn();
+  const revoke = jest.fn();
   const resolveCompany = jest.fn();
   const service = new AuthService(
     {
@@ -19,7 +20,7 @@ describe('AuthService', () => {
     } as unknown as PrismaService,
     { signAsync, verifyAsync } as unknown as JwtService,
     { verify } as unknown as PasswordHasherService,
-    { register } as never,
+    { register, revoke } as never,
     { resolve: resolveCompany } as never,
   );
 
@@ -40,6 +41,29 @@ describe('AuthService', () => {
       expect.any(String),
       new Date(2_000_000_000_000),
     );
+  });
+
+  it('normalizes whitespace in the login email', async () => {
+    userFindUnique.mockResolvedValue({ id: 'user-1', status: 'ACTIVE', passwordHash: 'hash' });
+    verify.mockResolvedValue(true);
+    await service.login('  USER@example.com ', 'correct-password');
+    expect(userFindUnique).toHaveBeenCalledWith({ where: { email: 'user@example.com' } });
+  });
+
+  it('revokes the authenticated session on logout', async () => {
+    revoke.mockResolvedValue(true);
+    const principal = {
+      actorId: 'user-1',
+      activeCompanyId: null,
+      permissions: [],
+      traceId: 'trace',
+      sessionId: 'session-1',
+      ipAddress: '127.0.0.1',
+      userAgent: 'test',
+      accessGrants: [],
+    };
+    await expect(service.logout(principal)).resolves.toBe(true);
+    expect(revoke).toHaveBeenCalledWith('session-1');
   });
 
   it.each([

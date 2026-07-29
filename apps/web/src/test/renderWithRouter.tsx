@@ -20,6 +20,9 @@ const testSession = {
       'payroll.review.close',
       'payroll.review.reopen',
     ],
+    displayName: 'Usuário de Teste',
+    email: 'teste@dp-system.local',
+    roleCodes: ['TEST'],
   },
   companies: [{ id: 'company-1', legalName: 'Empresa Teste SA', tradeName: 'Empresa Teste' }],
 };
