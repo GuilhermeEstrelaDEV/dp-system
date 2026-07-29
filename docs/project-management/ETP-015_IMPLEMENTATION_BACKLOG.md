@@ -1,6 +1,6 @@
 # ETP-015 — Implementation Backlog
 
-**Status:** especificação aprovada; ETP-015.1 concluída e ETP-015.2 em implementação
+**Status:** especificação aprovada; ETP-015.1 e ETP-015.2 concluídas; ETP-015.3 não iniciada
 
 Cada entrega nasce de `develop` atualizada, possui branch/PR próprios e só avança após evidência do
 gate aplicável.
@@ -30,7 +30,7 @@ gate aplicável.
 
 ## ETP-015.2 — Active Company Resolution
 
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETED`
 
 Recorte atual: contrato imutável mínimo, normalização das fontes existentes, rejeição de conflitos,
 validação do vínculo empresarial ativo e integração opt-in no fluxo autenticado existente. Não
@@ -45,6 +45,13 @@ inclui capabilities, autorização de recursos, migração de endpoints, Prisma 
 - **Aceite:** contexto validado e `404` fora do escopo.
 - **Rollback:** preservar validação e reverter apenas forma de seleção.
 - **Evidências:** queries, testes API/PostgreSQL e cache segmentado documentado.
+- **Conclusão:** PR #55 incorporado à `develop` em 29/07/2026 pelo merge
+  `70dd036080fdeac59a88f434786257b01c3c7ead`, com CI aprovado.
+- **Classificação do modelo:** `SUFFICIENT WITH FOLLOW-UP`.
+- **Follow-ups não bloqueantes:** revogação dedicada, provenance, unicidade temporal, múltiplos
+  assignments, política futura de assignment canônico, evolução controlada das fontes empresariais
+  e semântica futura de `404`. O modelo dedicado de sessão, issuer/audience, refresh, logout backend,
+  revogação global e identidades técnicas também permanecem preservados da ETP-015.1.
 
 ## ETP-015.3 — Capability Catalog and Assignments
 
