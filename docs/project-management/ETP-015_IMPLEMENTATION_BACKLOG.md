@@ -1,13 +1,13 @@
 # ETP-015 — Implementation Backlog
 
-**Status:** especificação aprovada; ETP-015.1 em implementação e revisão no PR #53
+**Status:** especificação aprovada; ETP-015.1 concluída e ETP-015.2 não iniciada
 
 Cada entrega nasce de `develop` atualizada, possui branch/PR próprios e só avança após evidência do
 gate aplicável.
 
 ## ETP-015.1 — Identity Context Foundation
 
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETED`
 
 - **Objetivo:** estabilizar principal, sessão, trace e contrato imutável de aplicação.
 - **Dependências:** ADR-007, DAL-01/05; Gate A.
@@ -18,6 +18,8 @@ gate aplicável.
 - **Aceite:** principal único, sem Express na aplicação e `401` uniforme.
 - **Rollback:** restaurar adapter de principal sem abrir rota protegida.
 - **Evidências:** contratos, matriz negativa, OpenAPI e checks.
+- **Conclusão:** PR #53 incorporado à `develop` em 29/07/2026 pelo merge
+  `dac460d8bd84bbe0a1e9f39360f4c740c47c2e4e`, com CI aprovado.
 - **Revisão técnica:** uso de `RefreshToken` como registro de sessão classificado como
   `ACCEPTABLE WITH FOLLOW-UP`; a chave exclusiva é o hash SHA-256 do `sessionId`, sem armazenar token
   bruto e sem alterar o schema.
@@ -27,6 +29,8 @@ gate aplicável.
   futuras explicitamente aprovadas. Nenhum desses itens integra ou inicia a ETP-015.2.
 
 ## ETP-015.2 — Active Company Resolution
+
+**Status:** `NOT STARTED`
 
 - **Objetivo:** tornar empresa ativa a única autoridade empresarial.
 - **Dependências:** 015.1, BDP-009, DAL-04/05.

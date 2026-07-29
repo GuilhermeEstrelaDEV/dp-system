@@ -250,21 +250,25 @@
 
 ### ETP-015 — Authorization Foundation & Enterprise Isolation
 
-- **Status:** `IN PROGRESS`; especificação aprovada no PR #52 e ETP-015.1 em implementação.
+- **Status:** `IN PROGRESS`; especificação aprovada no PR #52, ETP-015.1 concluída e ETP-015.2 não
+  iniciada.
 - **Governança:** BDP-AUTH-LEGACY e DAL-01 a DAL-14 estão `APPROVED`.
 - **Especificação:** `docs/project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md`.
 - **Arquitetura:** `docs/architecture/AUTHORIZATION_FOUNDATION_TECHNICAL_DESIGN.md` e
   `docs/architecture/AUTHORIZATION_DATA_MODEL_PROPOSAL.md`.
 - **Plano:** dez incrementos em `docs/project-management/ETP-015_IMPLEMENTATION_BACKLOG.md`, com
   fechamento da folha como primeiro recorte P0.
-- **ETP-015.1:** principal autenticado único, contexto de identidade, resolução explícita de usuário e
-  sessão lógica revogável sobre a persistência existente, sem migration ou contrato HTTP novo.
-- **Revisão técnica da ETP-015.1:** em andamento no PR #53; erros de token, usuário e sessão possuem
+- **ETP-015.1 — `COMPLETED`:** principal autenticado único, contexto de identidade, resolução
+  explícita de usuário e sessão lógica revogável sobre a persistência existente, sem migration ou
+  contrato HTTP novo. O PR #53 foi incorporado à `develop` em 29/07/2026 pelo merge
+  `dac460d8bd84bbe0a1e9f39360f4c740c47c2e4e`, com CI aprovado.
+- **Revisão técnica da ETP-015.1:** erros de token, usuário e sessão possuem
   semântica `401` explícita, o contexto é imutável por requisição e o uso provisório de `RefreshToken`
   foi classificado como `ACCEPTABLE WITH FOLLOW-UP`.
 - **Follow-ups:** modelo dedicado/migration de sessão, limpeza de expirados, issuer/audience, refresh,
   logout backend, revogação global e identidades técnicas dependem de recorte futuro aprovado e não
   iniciam a ETP-015.2.
+- **ETP-015.2 — `NOT STARTED`:** nenhuma implementação de resolução de empresa ativa foi iniciada.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,
