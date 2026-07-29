@@ -1,6 +1,6 @@
 # ETP-015 — Release Gates
 
-**Status:** proposto; nenhum gate técnico liberado por esta especificação
+**Status:** Gate A aprovado; Gate B em formação; Gates C e D não iniciados
 
 ## Governança de evidências
 
@@ -16,14 +16,14 @@ Sem evidência, o resultado binário do item é `FAIL`.
 
 ## Gate A — Architecture and Data Model
 
-- [ ] especificação e technical design aprovados;
-- [ ] DAL-01 a DAL-14 rastreadas sem contradição com ADR-007/BDP-009/BDP-014;
-- [ ] principal, empresa ativa e fronteira global/empresarial definidos;
-- [ ] modelo de catálogo, assignment, vigência e revogação aprovado;
-- [ ] constraints, índices, backfill e rollback de migration revisados;
-- [ ] zero assignment automático e zero autorização por nome de papel;
-- [ ] pendências de BDP delimitadas e fora do comportamento técnico;
-- [ ] baseline de schema, rotas, testes e cobertura registrado.
+- [x] especificação e technical design aprovados;
+- [x] DAL-01 a DAL-14 rastreadas sem contradição com ADR-007/BDP-009/BDP-014;
+- [x] principal, empresa ativa e fronteira global/empresarial definidos;
+- [x] modelo de catálogo, assignment, vigência e revogação aprovado;
+- [x] constraints, índices, backfill e rollback de migration revisados;
+- [x] zero assignment automático e zero autorização por nome de papel;
+- [x] pendências de BDP delimitadas e fora do comportamento técnico;
+- [x] baseline de schema, rotas, testes e cobertura registrado.
 
 **Saída verificável:** ata/review do desenho, checklist completo e primeiro PR técnico delimitado.
 

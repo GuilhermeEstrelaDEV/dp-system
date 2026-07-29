@@ -19,9 +19,43 @@ enum RefreshTokenStatus {
   EXPIRED
 }
 
-enum UserCompanyRoleStatus {
+enum AssignmentStatus {
   ACTIVE
   INACTIVE
+  REVOKED
+  EXPIRED
+}
+
+enum AssignmentSourceType {
+  MIGRATION
+  ADMINISTRATION
+  IMPORT
+  SYSTEM
+  MANUAL
+}
+
+enum PermissionScope {
+  PLATFORM
+  COMPANY
+}
+
+enum PermissionRiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum PermissionSensitivity {
+  STANDARD
+  SENSITIVE
+  RESTRICTED
+}
+
+enum PermissionStatus {
+  ACTIVE
+  DEPRECATED
+  RETIRED
 }
 
 enum AccessGrantStatus {
@@ -111,6 +145,12 @@ model User {
   refreshTokens                            RefreshToken[]
   auditLogs                                AuditLog[]
   companyRoles                             UserCompanyRole[]
+  rolePermissionsAssigned                  RolePermission[]                             @relation("RolePermissionAssigner")
+  rolePermissionsApproved                  RolePermission[]                             @relation("RolePermissionApprover")
+  rolePermissionsRevoked                   RolePermission[]                             @relation("RolePermissionRevoker")
+  companyRolesAssigned                     UserCompanyRole[]                            @relation("UserCompanyRoleAssigner")
+  companyRolesApproved                     UserCompanyRole[]                            @relation("UserCompanyRoleApprover")
+  companyRolesRevoked                      UserCompanyRole[]                            @relation("UserCompanyRoleRevoker")
   substitutionsAsHolder                    TemporarySubstitution[]                      @relation("SubstitutionHolder")
   substitutionsAsSubstitute                TemporarySubstitution[]                      @relation("SubstitutionSubstitute")
   substitutionsGranted                     TemporarySubstitution[]                      @relation("SubstitutionGrantor")
@@ -147,13 +187,30 @@ model Role {
 }
 
 model Permission {
-  id          String           @id @default(uuid()) @db.Uuid
-  code        String           @unique @db.VarChar(100)
-  description String?          @db.VarChar(255)
-  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
-  roles       RolePermission[]
+  id                      String                @id @default(uuid()) @db.Uuid
+  code                    String                @unique @db.VarChar(100)
+  name                    String                @db.VarChar(120)
+  description             String                @db.VarChar(500)
+  resource                String                @db.VarChar(80)
+  action                  String                @db.VarChar(50)
+  scope                   PermissionScope
+  riskLevel               PermissionRiskLevel   @map("risk_level")
+  sensitivity             PermissionSensitivity
+  status                  PermissionStatus      @default(ACTIVE)
+  introducedAt            DateTime              @default(now()) @map("introduced_at") @db.Timestamptz(6)
+  deprecatedAt            DateTime?             @map("deprecated_at") @db.Timestamptz(6)
+  retiredAt               DateTime?             @map("retired_at") @db.Timestamptz(6)
+  replacementCapabilityId String?               @map("replacement_capability_id") @db.Uuid
+  metadata                Json                  @default("{}")
+  createdAt               DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
+  roles                   RolePermission[]
+  replacementCapability   Permission?           @relation("PermissionReplacement", fields: [replacementCapabilityId], references: [id], onDelete: Restrict)
+  replacedCapabilities    Permission[]          @relation("PermissionReplacement")
 
+  @@index([resource, action, status])
+  @@index([scope, status])
+  @@index([riskLevel, sensitivity, status])
   @@map("permissions")
 }
 
@@ -169,32 +226,79 @@ model UserRole {
 }
 
 model RolePermission {
-  roleId       String     @map("role_id") @db.Uuid
-  permissionId String     @map("permission_id") @db.Uuid
-  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  id                      String               @id @default(uuid()) @db.Uuid
+  roleId                  String               @map("role_id") @db.Uuid
+  permissionId            String               @map("permission_id") @db.Uuid
+  assignedAt              DateTime             @default(now()) @map("assigned_at") @db.Timestamptz(6)
+  assignedByUserId        String?              @map("assigned_by_user_id") @db.Uuid
+  sourceType              AssignmentSourceType @map("source_type")
+  sourceId                String?              @map("source_id") @db.VarChar(160)
+  reason                  String               @db.VarChar(1000)
+  correlationId           String               @map("correlation_id") @db.VarChar(100)
+  importBatchId           String?              @map("import_batch_id") @db.VarChar(100)
+  approvedByUserId        String?              @map("approved_by_user_id") @db.Uuid
+  approvalReference       String?              @map("approval_reference") @db.VarChar(255)
+  validFrom               DateTime             @default(now()) @map("valid_from") @db.Timestamptz(6)
+  validTo                 DateTime?            @map("valid_to") @db.Timestamptz(6)
+  status                  AssignmentStatus     @default(ACTIVE)
+  revokedAt               DateTime?            @map("revoked_at") @db.Timestamptz(6)
+  revokedByUserId         String?              @map("revoked_by_user_id") @db.Uuid
+  revokeReason            String?              @map("revoke_reason") @db.VarChar(1000)
+  replacementAssignmentId String?              @map("replacement_assignment_id") @db.Uuid
+  createdAt               DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  role                    Role                 @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  permission              Permission           @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+  assignedBy              User?                @relation("RolePermissionAssigner", fields: [assignedByUserId], references: [id], onDelete: Restrict)
+  approvedBy              User?                @relation("RolePermissionApprover", fields: [approvedByUserId], references: [id], onDelete: Restrict)
+  revokedBy               User?                @relation("RolePermissionRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+  replacementAssignment   RolePermission?      @relation("RolePermissionReplacement", fields: [replacementAssignmentId], references: [id], onDelete: Restrict)
+  replacedAssignments     RolePermission[]     @relation("RolePermissionReplacement")
 
-  @@id([roleId, permissionId])
+  @@index([roleId, status, validFrom, validTo])
+  @@index([permissionId, status, validFrom, validTo])
+  @@index([assignedByUserId])
+  @@index([approvedByUserId])
+  @@index([revokedByUserId])
   @@map("role_permissions")
 }
 
 model UserCompanyRole {
-  id        String                @id @default(uuid()) @db.Uuid
-  userId    String                @map("user_id") @db.Uuid
-  companyId String                @map("company_id") @db.Uuid
-  roleId    String                @map("role_id") @db.Uuid
-  status    UserCompanyRoleStatus @default(ACTIVE)
-  validFrom DateTime              @default(now()) @map("valid_from") @db.Timestamptz(6)
-  validTo   DateTime?             @map("valid_to") @db.Timestamptz(6)
-  createdAt DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
-  user      User                  @relation(fields: [userId], references: [id], onDelete: Restrict)
-  company   Company               @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  role      Role                  @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  id                      String               @id @default(uuid()) @db.Uuid
+  userId                  String               @map("user_id") @db.Uuid
+  companyId               String               @map("company_id") @db.Uuid
+  roleId                  String               @map("role_id") @db.Uuid
+  assignedAt              DateTime             @default(now()) @map("assigned_at") @db.Timestamptz(6)
+  assignedByUserId        String?              @map("assigned_by_user_id") @db.Uuid
+  sourceType              AssignmentSourceType @map("source_type")
+  sourceId                String?              @map("source_id") @db.VarChar(160)
+  reason                  String               @db.VarChar(1000)
+  correlationId           String               @map("correlation_id") @db.VarChar(100)
+  importBatchId           String?              @map("import_batch_id") @db.VarChar(100)
+  approvedByUserId        String?              @map("approved_by_user_id") @db.Uuid
+  approvalReference       String?              @map("approval_reference") @db.VarChar(255)
+  status                  AssignmentStatus     @default(ACTIVE)
+  validFrom               DateTime             @default(now()) @map("valid_from") @db.Timestamptz(6)
+  validTo                 DateTime?            @map("valid_to") @db.Timestamptz(6)
+  revokedAt               DateTime?            @map("revoked_at") @db.Timestamptz(6)
+  revokedByUserId         String?              @map("revoked_by_user_id") @db.Uuid
+  revokeReason            String?              @map("revoke_reason") @db.VarChar(1000)
+  replacementAssignmentId String?              @map("replacement_assignment_id") @db.Uuid
+  createdAt               DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user                    User                 @relation(fields: [userId], references: [id], onDelete: Restrict)
+  company                 Company              @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  role                    Role                 @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  assignedBy              User?                @relation("UserCompanyRoleAssigner", fields: [assignedByUserId], references: [id], onDelete: Restrict)
+  approvedBy              User?                @relation("UserCompanyRoleApprover", fields: [approvedByUserId], references: [id], onDelete: Restrict)
+  revokedBy               User?                @relation("UserCompanyRoleRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+  replacementAssignment   UserCompanyRole?     @relation("UserCompanyRoleReplacement", fields: [replacementAssignmentId], references: [id], onDelete: Restrict)
+  replacedAssignments     UserCompanyRole[]    @relation("UserCompanyRoleReplacement")
 
   @@index([userId, companyId, status])
   @@index([companyId, roleId, status])
+  @@index([assignedByUserId])
+  @@index([approvedByUserId])
+  @@index([revokedByUserId])
   @@map("user_company_roles")
 }
 

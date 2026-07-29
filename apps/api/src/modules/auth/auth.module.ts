@@ -15,6 +15,8 @@ import { IdentitySessionService } from './identity-session.service';
 import { PasswordHasherService } from './password-hasher.service';
 import { ActiveCompanyResolverService } from './active-company-resolver.service';
 import { CompanySelectionService } from './company-selection.service';
+import { AssignmentGovernanceService } from './assignment-governance.service';
+import { CapabilityCatalogService } from './capability-catalog.service';
 
 type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
 
@@ -47,6 +49,8 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
     PasswordHasherService,
     ActiveCompanyResolverService,
     CompanySelectionService,
+    AssignmentGovernanceService,
+    CapabilityCatalogService,
   ],
   exports: [
     JwtModule,
@@ -59,6 +63,8 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
     IdentitySessionService,
     ActiveCompanyResolverService,
     CompanySelectionService,
+    AssignmentGovernanceService,
+    CapabilityCatalogService,
   ],
 })
 export class AuthModule {}

@@ -2,8 +2,8 @@
 
 ## Estado e limites
 
-**PROPOSAL — NOT AUTHORIZED.** Nenhuma migration foi criada. Este blueprint somente torna a futura
-alteração revisável; não ativa autorização nem concede acesso.
+**APPROVED — IMPLEMENTED BY MIGRATION 0016.** O blueprint foi homologado em 29/07/2026 e orienta a
+implementação controlada. A migration não ativa autorização nem concede acesso.
 
 ## Estruturas afetadas
 

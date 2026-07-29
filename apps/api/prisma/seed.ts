@@ -13,25 +13,177 @@ const roles = [
 ] as const;
 
 const permissions = [
-  ['platform.read', 'View platform resources'],
-  ['platform.manage', 'Manage platform resources'],
-  ['delegation.manage', 'Manage temporary substitutions'],
-  ['emergency_access.manage', 'Manage audited emergency access'],
-  ['payroll.review.view', 'View payroll review cycles and findings'],
-  ['payroll.review.create', 'Open payroll review cycles'],
-  ['payroll.review.finding.create', 'Create payroll review findings'],
-  ['payroll.review.finding.resolve', 'Resolve payroll review findings'],
-  ['payroll.review.finding.reopen', 'Reopen payroll review findings'],
-  ['payroll.review.submit', 'Submit payroll review cycles'],
-  ['payroll.review.approve', 'Approve configured payroll review stages'],
-  ['payroll.review.reject', 'Reject submitted payroll review cycles'],
-  ['payroll.review.close', 'Close approved payroll review cycles'],
-  ['payroll.review.reopen', 'Reopen approved or closed payroll review cycles'],
-  ['payroll.period.close.view', 'View payroll period closure summary'],
-  ['payroll.period.close.readiness', 'Evaluate payroll period closure readiness'],
-  ['payroll.period.close.execute', 'Execute payroll period closure'],
-  ['payroll.period.close.reopen', 'Reopen a closed payroll period'],
-  ['payroll.period.close.history', 'View payroll period closure history'],
+  [
+    'platform.read',
+    'View platform resources',
+    'platform',
+    'read',
+    'PLATFORM',
+    'MEDIUM',
+    'SENSITIVE',
+  ],
+  [
+    'platform.manage',
+    'Manage platform resources',
+    'platform',
+    'manage',
+    'PLATFORM',
+    'CRITICAL',
+    'RESTRICTED',
+  ],
+  [
+    'delegation.manage',
+    'Manage temporary substitutions',
+    'delegation',
+    'manage',
+    'COMPANY',
+    'CRITICAL',
+    'RESTRICTED',
+  ],
+  [
+    'emergency_access.manage',
+    'Manage audited emergency access',
+    'emergency_access',
+    'manage',
+    'COMPANY',
+    'CRITICAL',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.review.view',
+    'View payroll review cycles and findings',
+    'payroll.review',
+    'view',
+    'COMPANY',
+    'MEDIUM',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.review.create',
+    'Open payroll review cycles',
+    'payroll.review',
+    'create',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.review.finding.create',
+    'Create payroll review findings',
+    'payroll.review.finding',
+    'create',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.review.finding.resolve',
+    'Resolve payroll review findings',
+    'payroll.review.finding',
+    'resolve',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.review.finding.reopen',
+    'Reopen payroll review findings',
+    'payroll.review.finding',
+    'reopen',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.review.submit',
+    'Submit payroll review cycles',
+    'payroll.review',
+    'submit',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.review.approve',
+    'Approve configured payroll review stages',
+    'payroll.review',
+    'approve',
+    'COMPANY',
+    'CRITICAL',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.review.reject',
+    'Reject submitted payroll review cycles',
+    'payroll.review',
+    'reject',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.review.close',
+    'Close approved payroll review cycles',
+    'payroll.review',
+    'close',
+    'COMPANY',
+    'CRITICAL',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.review.reopen',
+    'Reopen approved or closed payroll review cycles',
+    'payroll.review',
+    'reopen',
+    'COMPANY',
+    'CRITICAL',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.period.close.view',
+    'View payroll period closure summary',
+    'payroll.period.close',
+    'view',
+    'COMPANY',
+    'MEDIUM',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.period.close.readiness',
+    'Evaluate payroll period closure readiness',
+    'payroll.period.close',
+    'readiness',
+    'COMPANY',
+    'MEDIUM',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.period.close.execute',
+    'Execute payroll period closure',
+    'payroll.period.close',
+    'execute',
+    'COMPANY',
+    'CRITICAL',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.period.close.reopen',
+    'Reopen a closed payroll period',
+    'payroll.period.close',
+    'reopen',
+    'COMPANY',
+    'CRITICAL',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.period.close.history',
+    'View payroll period closure history',
+    'payroll.period.close',
+    'history',
+    'COMPANY',
+    'MEDIUM',
+    'RESTRICTED',
+  ],
 ] as const;
 
 async function main() {
@@ -45,12 +197,74 @@ async function main() {
     ),
   );
 
-  await Promise.all(
-    permissions.map(([code, description]) =>
+  const existingPermissions = await prisma.permission.findMany({
+    select: {
+      code: true,
+      resource: true,
+      action: true,
+      scope: true,
+      riskLevel: true,
+      sensitivity: true,
+    },
+    orderBy: { code: 'asc' },
+  });
+  const approvedPermissions = new Map<
+    string,
+    {
+      resource: string;
+      action: string;
+      scope: string;
+      riskLevel: string;
+      sensitivity: string;
+    }
+  >(
+    permissions.map(([code, , resource, action, scope, riskLevel, sensitivity]) => [
+      code,
+      { resource, action, scope, riskLevel, sensitivity },
+    ]),
+  );
+  if (existingPermissions.length > 0) {
+    if (existingPermissions.length !== permissions.length) {
+      throw new Error('Permission seed blocked: inventory differs from the 19 approved codes');
+    }
+    for (const existing of existingPermissions) {
+      const approved = approvedPermissions.get(existing.code);
+      if (
+        !approved ||
+        existing.resource !== approved.resource ||
+        existing.action !== approved.action ||
+        existing.scope !== approved.scope ||
+        existing.riskLevel !== approved.riskLevel ||
+        existing.sensitivity !== approved.sensitivity
+      ) {
+        throw new Error(`Permission seed blocked: ${existing.code} is not homologated as stored`);
+      }
+    }
+  }
+
+  await prisma.$transaction(
+    permissions.map(([code, description, resource, action, scope, riskLevel, sensitivity]) =>
       prisma.permission.upsert({
         where: { code },
-        update: { description },
-        create: { code, description },
+        update: {
+          name: code,
+          description,
+          resource,
+          action,
+          scope,
+          riskLevel,
+          sensitivity,
+        },
+        create: {
+          code,
+          name: code,
+          description,
+          resource,
+          action,
+          scope,
+          riskLevel,
+          sensitivity,
+        },
       }),
     ),
   );
