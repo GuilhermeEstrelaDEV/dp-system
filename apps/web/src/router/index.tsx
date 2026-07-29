@@ -1,7 +1,6 @@
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { App } from '@/app/App';
 import { DashboardPage } from '@/pages/DashboardPage';
-import { ModulePlaceholderPage } from '@/pages/ModulePlaceholderPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { RouteErrorPage } from '@/pages/RouteErrorPage';
 import { BranchesPage } from '@/features/branches';
@@ -61,7 +60,6 @@ export const appRoutes: RouteObject[] = [
         errorElement: <RouteErrorPage />,
         children: [
           { index: true, element: <DashboardPage /> },
-          { path: 'administracao', element: <ModulePlaceholderPage /> },
           { path: 'estrutura', element: <CompaniesPage /> },
           { path: 'estrutura/empresas', element: <CompaniesPage /> },
           { path: 'estrutura/filiais', element: <BranchesPage /> },
@@ -121,9 +119,6 @@ export const appRoutes: RouteObject[] = [
               },
             ],
           },
-          { path: 'desligamentos', element: <ModulePlaceholderPage /> },
-          { path: 'documentos', element: <ModulePlaceholderPage /> },
-          { path: 'relatorios', element: <ModulePlaceholderPage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },

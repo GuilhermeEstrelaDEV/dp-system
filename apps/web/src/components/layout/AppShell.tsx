@@ -4,8 +4,11 @@ import { Breadcrumbs } from './Breadcrumbs';
 import { Header } from './Header';
 import { MobileNavigation } from './MobileNavigation';
 import { Sidebar } from './Sidebar';
+import { Spinner } from '@/components/common/Primitives';
+import { useAuth } from '@/features/auth/AuthContext';
 
 export function AppShell() {
+  const auth = useAuth();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuTriggerRef = useRef<HTMLButtonElement>(null);
@@ -27,12 +30,15 @@ export function AppShell() {
   }, [isMobileMenuOpen]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <div className="flex min-h-screen">
+    <div className="app-shell">
+      <a className="skip-link" href="#main-content">
+        Pular para o conteúdo
+      </a>
+      <div className="app-shell__frame">
         <div id="desktop-sidebar">
           <Sidebar collapsed={isSidebarCollapsed} />
         </div>
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="app-shell__workspace">
           <Header
             isMobileMenuOpen={isMobileMenuOpen}
             isSidebarCollapsed={isSidebarCollapsed}
@@ -42,13 +48,18 @@ export function AppShell() {
             }
             onSidebarToggle={() => setIsSidebarCollapsed((isCollapsed) => !isCollapsed)}
           />
-          <main className="w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          <main className="app-content" id="main-content">
             <Breadcrumbs />
             <Outlet />
           </main>
         </div>
       </div>
       {isMobileMenuOpen && <MobileNavigation onClose={closeMobileMenu} />}
+      {auth.isLoading && (
+        <div aria-live="polite" className="global-loading">
+          <Spinner label="Atualizando contexto" />
+        </div>
+      )}
     </div>
   );
 }

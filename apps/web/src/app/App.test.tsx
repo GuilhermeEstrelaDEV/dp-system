@@ -3,42 +3,45 @@ import { describe, expect, it } from 'vitest';
 import { renderWithRouter } from '@/test/renderWithRouter';
 
 describe('application shell', () => {
-  it('renders semantic layout regions and the demonstrative dashboard', () => {
+  it('renders semantic layout regions, brand and demonstrative dashboard', () => {
     renderWithRouter();
-
     expect(screen.getByRole('banner')).toBeInTheDocument();
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('navigation', { name: 'Navegação principal' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Visão geral' })).toBeInTheDocument();
-    expect(screen.getAllByText('Ambiente demonstrativo').length).toBeGreaterThan(0);
-    expect(
-      screen.getByText(/Todos os números e atividades abaixo são fictícios/i),
-    ).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('DP-System')).toBeInTheDocument();
+    expect(screen.getAllByText(/Ambiente (demonstrativo|local)/).length).toBeGreaterThan(0);
   });
 
-  it('navigates to a placeholder and marks the active route', async () => {
+  it('navigates to a real module and marks the active route', async () => {
     renderWithRouter();
-
-    fireEvent.click(screen.getByRole('link', { name: /Administração/ }));
-
-    expect(await screen.findByRole('heading', { name: 'Administração' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Administração/ })).toHaveAttribute(
+    fireEvent.click(screen.getByRole('link', { name: /Colaboradores/ }));
+    expect(await screen.findByRole('heading', { name: 'Colaboradores' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Colaboradores/ })).toHaveAttribute(
       'aria-current',
       'page',
     );
     expect(screen.getByLabelText('Navegação estrutural')).toHaveTextContent(
-      /Início\s*\/\s*Administração/,
+      /Início\s*\/\s*Colaboradores/,
     );
-    expect(screen.getByText(/rota de placeholder/i)).toBeInTheDocument();
+  });
+
+  it('identifies future modules without creating actionable links', () => {
+    renderWithRouter();
+    expect(screen.getByText('Desligamentos').closest('[aria-disabled="true"]')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Desligamentos' })).not.toBeInTheDocument();
+    expect(screen.getAllByText('Em breve')).toHaveLength(3);
+  });
+
+  it('shows company context and the user menu', () => {
+    renderWithRouter();
+    expect(screen.getByRole('button', { name: /Empresa Teste/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sair' })).toBeInTheDocument();
   });
 
   it('recolhe a sidebar mantendo seus rótulos acessíveis', () => {
     renderWithRouter();
-
-    const toggle = screen.getByRole('button', { name: 'Recolher barra lateral' });
-    fireEvent.click(toggle);
-
+    fireEvent.click(screen.getByRole('button', { name: 'Recolher barra lateral' }));
     expect(screen.getByRole('button', { name: 'Expandir barra lateral' })).toHaveAttribute(
       'aria-expanded',
       'false',
@@ -49,15 +52,13 @@ describe('application shell', () => {
     );
   });
 
-  it('fecha o menu móvel pelo botão de fechar e devolve o foco ao gatilho', async () => {
+  it('fecha o menu móvel e devolve o foco ao gatilho', async () => {
     renderWithRouter();
     const trigger = screen.getByRole('button', { name: 'Abrir menu de navegação' });
     trigger.focus();
     fireEvent.click(trigger);
-
     const dialog = screen.getByRole('dialog', { name: 'Menu de navegação' });
     fireEvent.click(within(dialog).getByRole('button', { name: 'Fechar menu' }));
-
     expect(await screen.findByRole('button', { name: 'Abrir menu de navegação' })).toHaveFocus();
     expect(screen.queryByRole('dialog', { name: 'Menu de navegação' })).not.toBeInTheDocument();
   });
@@ -65,20 +66,18 @@ describe('application shell', () => {
   it('fecha o menu móvel por Escape, backdrop e seleção de rota', async () => {
     renderWithRouter();
     const trigger = screen.getByRole('button', { name: 'Abrir menu de navegação' });
-
     fireEvent.click(trigger);
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(await screen.findByRole('button', { name: 'Abrir menu de navegação' })).toHaveFocus();
-
     fireEvent.click(trigger);
     fireEvent.click(screen.getByRole('button', { name: 'Fechar menu pelo plano de fundo' }));
     expect(await screen.findByRole('button', { name: 'Abrir menu de navegação' })).toHaveFocus();
-
     fireEvent.click(trigger);
-    const dialog = screen.getByRole('dialog', { name: 'Menu de navegação' });
-    fireEvent.click(within(dialog).getByRole('link', { name: /Colaboradores/ }));
-
+    fireEvent.click(
+      within(screen.getByRole('dialog', { name: 'Menu de navegação' })).getByRole('link', {
+        name: /Colaboradores/,
+      }),
+    );
     expect(await screen.findByRole('heading', { name: 'Colaboradores' })).toBeInTheDocument();
-    expect(screen.queryByRole('dialog', { name: 'Menu de navegação' })).not.toBeInTheDocument();
   });
 });

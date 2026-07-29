@@ -2,28 +2,27 @@
 
 ## Estado
 
-`IN PROGRESS`. MVP-001.1 está `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`; os demais incrementos não
-foram iniciados. O protótipo completo ainda não está pronto.
+`IN PROGRESS`. O bootstrap local e a fundação visual estão disponíveis. O protótipo completo ainda
+não está pronto e não possui credenciais demonstrativas.
 
-| Ordem | Incremento                      | Entrega                                                                        | Critério de saída                                        | Complexidade |
-| ----- | ------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------- | ------------ |
-| 1     | MVP-001.1 Bootstrap e reset     | `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`                                      | setup/start/stop/status/reset isolados e documentados    | média        |
-| 2     | MVP-001.2 Massa e identidades   | duas empresas, usuários/personas, assignments e domínio inteiramente fictícios | login e troca autorizada funcionam; zero grant implícito | alta         |
-| 3     | MVP-001.3 Experiência executiva | dashboard coerente, estados vazios e feedback padronizado                      | nenhuma tela enganosa; dados demo identificados          | média        |
-| 4     | MVP-001.4 Fluxo principal       | estrutura → colaborador → contrato ponta a ponta                               | criação, consulta, edição e isolamento cobertos          | alta         |
-| 5     | MVP-001.5 Roteiro e acceptance  | smoke test, roteiro de 15 minutos e guia do apresentador                       | execução sem 5xx, console crítico ou reinício            | média        |
+| Ordem | Incremento                          | Estado                                    | Critério de saída                                                    |
+| ----- | ----------------------------------- | ----------------------------------------- | -------------------------------------------------------------------- |
+| 1     | MVP-001.1 Bootstrap e reset         | `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE` | setup/start/stop/status/reset isolados e documentados                |
+| 2     | MVP-001.2 Identidade e shell visual | `IMPLEMENTED — VISUAL SHELL AVAILABLE`    | marca temporária, tokens, navegação honesta e shell desktop/notebook |
+| 3     | MVP-001.3 Identidades e massa demo  | `NOT STARTED`                             | login fictício, empresas, assignments e dados sem grant implícito    |
+| 4     | MVP-001.4 Fluxo principal           | `NOT STARTED`                             | estrutura → colaborador → contrato ponta a ponta                     |
+| 5     | MVP-001.5 Roteiro e acceptance      | `NOT STARTED`                             | smoke test, roteiro de 15 minutos e guia do apresentador             |
 
 ## Dependências e gates
 
-- especificar credenciais fictícias sem versionar senha reutilizável ou segredo real;
+- credenciais fictícias pertencem exclusivamente à MVP-001.3 e não foram antecipadas;
 - assignments devem ser explícitos e auditáveis; nenhuma capability automática por papel;
 - scripts destrutivos devem falhar fora do ambiente local e exigir alvo explícito;
-- escolher apenas contratos existentes; qualquer alteração de banco exige migration nova;
+- qualquer alteração de banco futura exige migration nova;
 - cada incremento parte de `develop`, usa branch/PR próprio e preserva ETP-015.4 `NOT STARTED`.
 
 ## Sequência recomendada
 
-MVP-001.1 e MVP-001.2 desbloqueiam a primeira execução real. MVP-001.3 pode evoluir em paralelo
-conceitual, mas não deve mascarar ausência de dados. MVP-001.4 entrega valor demonstrável; MVP-001.5
-é o gate final. Complexidade global estimada: **alta**, sobretudo pela preparação segura e
-reproduzível de identidade, assignments e dados relacionais.
+A MVP-001.1 oferece execução reproduzível e a MVP-001.2 fornece a linguagem visual reutilizável. A
+MVP-001.3 deverá preparar identidade e dados fictícios sem alterar o modelo de segurança. A
+MVP-001.4 validará o fluxo principal e a MVP-001.5 será o gate final da demonstração.

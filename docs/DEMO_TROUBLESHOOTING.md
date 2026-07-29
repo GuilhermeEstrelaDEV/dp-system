@@ -9,7 +9,7 @@
 | migration/seed falha         | comando encerra com etapa identificada   | corrigir a causa; migrations são transacionais e setup pode ser repetido  |
 | API não fica saudável        | `dp-system-demo-api` unhealthy           | verificar logs, URL do banco e se `demo:setup` concluiu                   |
 | frontend não acessa API      | erro CORS/rede                           | alinhar `WEB_PORT`, `API_PORT`, `CORS_ORIGIN` e `VITE_API_URL`            |
-| login falha após setup       | comportamento esperado na MVP-001.1      | aguardar a massa/identidade fictícia da MVP-001.2; não criar usuário real |
+| login falha após setup       | comportamento esperado na MVP-001.1      | aguardar a massa/identidade fictícia da MVP-001.3; não criar usuário real |
 | reset recusado               | flag ausente ou ambiente não reconhecido | revisar `.env.demo.local` e usar `pnpm demo:reset -- --confirm-reset`     |
 
 Comandos úteis:

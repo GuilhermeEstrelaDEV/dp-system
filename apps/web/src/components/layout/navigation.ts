@@ -12,11 +12,15 @@ export type NavigationIcon =
   | 'documents'
   | 'reports';
 
+export type NavigationGroup = 'Visão geral' | 'Cadastros' | 'Pessoas' | 'Administração';
+
 export interface NavigationItem {
   readonly label: string;
-  readonly path: string;
+  readonly path?: string;
   readonly description: string;
   readonly icon: NavigationIcon;
+  readonly group: NavigationGroup;
+  readonly comingSoon?: boolean;
 }
 
 export const navigationItems: readonly NavigationItem[] = [
@@ -25,83 +29,98 @@ export const navigationItems: readonly NavigationItem[] = [
     path: '/',
     description: 'Resumo visual do ambiente demonstrativo.',
     icon: 'dashboard',
-  },
-  {
-    label: 'Administração',
-    path: '/administracao',
-    description: 'Configurações administrativas estarão disponíveis neste módulo.',
-    icon: 'administration',
+    group: 'Visão geral',
   },
   {
     label: 'Estrutura',
     path: '/estrutura',
-    description: 'A estrutura organizacional será organizada neste módulo.',
+    description: 'Empresas, filiais, departamentos, cargos e centros de custo.',
     icon: 'structure',
+    group: 'Cadastros',
   },
   {
     label: 'Colaboradores',
     path: '/colaboradores',
-    description: 'Cadastros demonstrativos de colaboradores e contatos.',
+    description: 'Cadastros de colaboradores e contatos.',
     icon: 'people',
+    group: 'Pessoas',
   },
   {
     label: 'Contratos',
     path: '/contratos',
-    description: 'Vínculos de trabalho demonstrativos e seu histórico.',
+    description: 'Vínculos de trabalho e histórico.',
     icon: 'people',
+    group: 'Pessoas',
   },
   {
     label: 'Admissões',
     path: '/admissoes',
-    description: 'Processos admissionais demonstrativos, checklists e prazos internos.',
+    description: 'Processos admissionais, checklists e documentos.',
     icon: 'admissions',
+    group: 'Pessoas',
   },
   {
     label: 'Movimentações',
     path: '/movimentacoes',
-    description: 'Férias, afastamentos e outras movimentações serão tratadas aqui.',
+    description: 'Férias e afastamentos.',
     icon: 'movements',
+    group: 'Pessoas',
   },
   {
     label: 'Jornada',
     path: '/jornada',
-    description: 'Os recursos de jornada estarão disponíveis neste módulo.',
+    description: 'Jornadas e registros de ponto.',
     icon: 'time',
+    group: 'Pessoas',
   },
   {
     label: 'Benefícios',
     path: '/beneficios',
-    description: 'Os recursos de benefícios estarão disponíveis neste módulo.',
+    description: 'Benefícios vinculados aos colaboradores.',
     icon: 'benefits',
+    group: 'Pessoas',
   },
   {
     label: 'Folha',
     path: '/folha',
-    description: 'Os recursos de folha estarão disponíveis neste módulo.',
+    description: 'Competências, lançamentos, conferência e fechamento.',
     icon: 'payroll',
+    group: 'Administração',
   },
   {
     label: 'Desligamentos',
-    path: '/desligamentos',
-    description: 'Os fluxos de desligamento serão construídos neste módulo.',
+    description: 'Fluxo ainda não implementado.',
     icon: 'termination',
+    group: 'Administração',
+    comingSoon: true,
   },
   {
     label: 'Documentos',
-    path: '/documentos',
-    description: 'Os documentos serão organizados neste módulo.',
+    description: 'Central ainda não implementada.',
     icon: 'documents',
+    group: 'Administração',
+    comingSoon: true,
   },
   {
     label: 'Relatórios',
-    path: '/relatorios',
-    description: 'Relatórios e integrações futuras serão apresentados neste módulo.',
+    description: 'Relatórios executivos pertencem a uma etapa futura.',
     icon: 'reports',
+    group: 'Administração',
+    comingSoon: true,
   },
+];
+
+export const navigationGroups: readonly NavigationGroup[] = [
+  'Visão geral',
+  'Cadastros',
+  'Pessoas',
+  'Administração',
 ];
 
 export function getNavigationItem(pathname: string) {
   return navigationItems.find(
-    (item) => pathname === item.path || (item.path !== '/' && pathname.startsWith(`${item.path}/`)),
+    (item) =>
+      item.path &&
+      (pathname === item.path || (item.path !== '/' && pathname.startsWith(`${item.path}/`))),
   );
 }
