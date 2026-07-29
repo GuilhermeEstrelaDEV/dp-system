@@ -56,3 +56,13 @@ em 458 ms e preservou 19/133/20.000 registros; cenário com histórico posterior
 3 e manteve a estrutura/dados. Evidências:
 [backup e restore](evidence/etp-015-3/backup-restore-results.md) e
 [rollback](evidence/etp-015-3/rollback-results.md). Destinos, RPO e RTO seguem pendentes.
+
+## Declaração operacional recebida
+
+- backup: `pg_dump` local, recuperável apenas no ensaio local;
+- restore: testado durante o ensaio local da ETP-015.3;
+- rollback da aplicação: permitido conforme este runbook;
+- rollback da migration: permitido somente sem histórico posterior incompatível;
+- RPO, RTO, responsável pelo restore e autorizador do rollback: `PENDING` para destinos.
+
+A declaração não constitui aprovação formal e não evidencia recuperação em ambiente de destino.
