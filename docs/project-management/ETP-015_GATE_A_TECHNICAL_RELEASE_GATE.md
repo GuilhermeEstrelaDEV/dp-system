@@ -1,5 +1,13 @@
 # ETP-015 Gate A — Technical Release Gate
 
+## Evidência externa posterior ao Gate A
+
+Implementation candidate available in PR #61 — not merged. A revisão funcional, de segurança e
+privacidade concluiu GA-01..GA-14 e PC-01..PC-21 como `COMPLIANT IN PR #61`; GA-15 permanece
+`PARTIALLY COMPLIANT — OPERATIONAL EVIDENCE PENDING`. O PR está Draft e bloqueado exclusivamente por
+DBA/Operações. O [pacote operacional](ETP-015_3_OPERATIONAL_APPROVAL_PACKAGE.md) não altera a aprovação
+estrutural do Gate A nem o estado mesclado `READY TO START`; sua homologação permanece `PENDING`.
+
 ## Resultado atual
 
 **APPROVED — READY FOR CONTROLLED IMPLEMENTATION**
