@@ -312,3 +312,8 @@
   `PENDING FOR FUTURE TARGET ENVIRONMENT`. O gate de destino não bloqueia demo local.
 - **ETP-015.4:** `NOT STARTED`; nenhuma capability, guard ou migração de rota foi antecipada.
 - **Alterações funcionais desta etapa:** zero.
+- **MVP-001.1 — `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`:** comandos `demo:setup`, `demo:start`,
+  `demo:stop`, `demo:status` e reset com confirmação operam um Compose exclusivamente local, com
+  PostgreSQL 16, health check, rede e volume próprios. O setup aplica migrations e o seed existente
+  sem sobrescrever ambiente local. Identidades, credenciais e fluxo demonstrativo permanecem para a
+  MVP-001.2; o protótipo completo não está pronto.

@@ -1,0 +1,93 @@
+name: dp-system-demo
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dp-system-demo-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - '${POSTGRES_PORT}:5432'
+    volumes:
+      - demo_postgres_data:/var/lib/postgresql/data
+    networks:
+      - demo_network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    container_name: dp-system-demo-redis
+    ports:
+      - '${REDIS_PORT}:6379'
+    networks:
+      - demo_network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    container_name: dp-system-demo-api
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      API_PREFIX: api
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      CORS_ORIGINS: ${CORS_ORIGIN}
+    ports:
+      - '${API_PORT}:3000'
+    networks:
+      - demo_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000/api/v1/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    container_name: dp-system-demo-web
+    environment:
+      VITE_API_URL: ${VITE_API_URL}
+    ports:
+      - '${WEB_PORT}:5173'
+    networks:
+      - demo_network
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  demo_postgres_data:
+    name: dp-system-demo-postgres-data
+
+networks:
+  demo_network:
+    name: dp-system-demo-network
+    driver: bridge

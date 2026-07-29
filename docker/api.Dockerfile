@@ -1,6 +1,9 @@
 FROM node:20-bookworm-slim
 
 WORKDIR /workspace
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends openssl \
+  && rm -rf /var/lib/apt/lists/*
 RUN corepack enable
 
 COPY package.json pnpm-workspace.yaml turbo.json pnpm-lock.yaml ./
@@ -14,7 +17,7 @@ COPY packages/ui/package.json packages/ui/package.json
 
 RUN pnpm install --frozen-lockfile
 COPY . .
-RUN pnpm --filter @dp-system/api prisma:generate && pnpm --filter @dp-system/api build
+RUN pnpm --filter @dp-system/api prisma:generate && pnpm --filter @dp-system/api... build
 
 EXPOSE 3000
 CMD ["pnpm", "--filter", "@dp-system/api", "start:prod"]

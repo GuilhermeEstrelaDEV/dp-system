@@ -19,6 +19,22 @@ Monorepo `pnpm` + Turborepo com aplicações em `apps/web` e `apps/api`, e pacot
 
 Consulte o [manual de instalação](docs/INSTALLATION.md) e o [relatório da ETP-002.1](docs/project-management/ETP-002_STAGE_01.md).
 
+## Protótipo executivo local
+
+A MVP-001.1 oferece bootstrap isolado e reproduzível para demonstração local:
+
+```powershell
+pnpm demo:setup
+pnpm demo:start
+pnpm demo:status
+pnpm demo:stop
+pnpm demo:reset -- --confirm-reset
+```
+
+Consulte o [guia da demonstração](docs/DEMO_LOCAL_SETUP.md) e o
+[troubleshooting](docs/DEMO_TROUBLESHOOTING.md). O seed atual ainda não cria credenciais; login
+demonstrativo pertence à MVP-001.2. Nenhuma configuração é adequada para produção.
+
 ## Qualidade e validação
 
 Os comandos de validação devem ser executados a partir da raiz do monorepo:

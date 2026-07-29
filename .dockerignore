@@ -4,4 +4,5 @@ node_modules
 .turbo
 .git
 .env
+.env.*
 coverage
