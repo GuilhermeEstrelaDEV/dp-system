@@ -2,6 +2,11 @@
 
 **Status:** especificação aprovada; ETP-015.1 e ETP-015.2 concluídas; ETP-015.3 em execução
 
+**Revisão externa:** implementation candidate available in PR #61 — not merged. GA-01..GA-14 e
+PC-01..PC-21 estão `COMPLIANT IN PR #61`; GA-15 está `PARTIALLY COMPLIANT` até homologação operacional.
+O PR segue Draft, o [Operational Gate](ETP-015_3_OPERATIONAL_RELEASE_GATE.md) está `NOT READY`, o estado
+mesclado da ETP-015.3 permanece `READY TO START` e a ETP-015.4 permanece `NOT STARTED`.
+
 Cada entrega nasce de `develop` atualizada, possui branch/PR próprios e só avança após evidência do
 gate aplicável.
 

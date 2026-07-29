@@ -104,6 +104,12 @@ concluída após a Final Acceptance.
 
 **Status:** `IN PROGRESS` — ETP-015.1 e ETP-015.2 concluídas; ETP-015.3 em execução.
 
+**Evento externo de revisão:** implementation candidate available in PR #61 — not merged. A candidata
+da ETP-015.3 foi validada funcionalmente, em segurança e privacidade, mas permanece Draft e bloqueada
+exclusivamente por evidências de DBA/Operações. O
+[pacote operacional](project-management/ETP-015_3_OPERATIONAL_APPROVAL_PACKAGE.md) está preparado com
+homologação `PENDING`; `develop` continua em `READY TO START` e a ETP-015.4 em `NOT STARTED`.
+
 A ETP-015 foi iniciada exclusivamente em descoberta e planejamento após a homologação da
 BDP-AUTH-LEGACY. A [especificação](project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md)
 aprovada define identidade, empresa ativa, capabilities, assignments explícitos, isolamento, masking,
