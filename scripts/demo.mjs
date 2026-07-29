@@ -127,7 +127,7 @@ function setup() {
   run('pnpm', ['prisma:migrate:deploy'], { env: childEnv });
   info('Executando o seed demonstrativo disponível...');
   run('pnpm', ['prisma:seed'], { env: childEnv });
-  info('Setup concluído. O seed atual ainda não fornece credenciais de login (MVP-001.2).');
+  info('Setup concluído. O seed atual ainda não fornece credenciais de login (MVP-001.3).');
   showUrls(env);
   info('Execute pnpm demo:start para iniciar API e frontend.');
 }

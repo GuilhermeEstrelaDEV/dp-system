@@ -46,6 +46,8 @@ describe('authenticated experience', () => {
   it('shows invalid credentials without creating a session', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(failure(401, 'Credenciais inválidas'));
     renderWithRouter('/login', false);
+    expect(screen.getAllByText('DP-System').length).toBeGreaterThan(0);
+    expect(screen.getByText('Acesso seguro')).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('E-mail'), { target: { value: 'user@example.com' } });
     fireEvent.change(screen.getByLabelText('Senha'), { target: { value: 'invalid123' } });
     fireEvent.click(screen.getByRole('button', { name: 'Entrar' }));

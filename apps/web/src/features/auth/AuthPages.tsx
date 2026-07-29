@@ -1,5 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Brand } from '@/components/brand/Brand';
+import { Alert, Button, Card, Input, Spinner } from '@/components/common/Primitives';
 import { useAuth } from './AuthContext';
 
 export function LoginPage() {
@@ -22,51 +24,58 @@ export function LoginPage() {
     }
   }
 
+  const message = error ?? auth.sessionError;
   return (
-    <main className="mx-auto flex min-h-screen max-w-md items-center px-4">
-      <section
-        className="w-full rounded-xl border bg-white p-6 shadow-sm"
-        aria-labelledby="login-title"
-      >
-        <h1 id="login-title" className="text-2xl font-semibold">
-          Entrar no DP-System
-        </h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Use suas credenciais para acessar as empresas autorizadas.
-        </p>
-        <form className="mt-6 grid gap-4" onSubmit={submit} noValidate>
-          <label className="grid gap-1">
-            E-mail
-            <input
-              type="email"
-              autoComplete="username"
-              required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </label>
-          <label className="grid gap-1">
-            Senha
-            <input
-              type="password"
-              autoComplete="current-password"
-              minLength={8}
-              required
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-          </label>
-          <button
-            disabled={auth.isLoading}
-            className="rounded bg-sky-700 px-4 py-2 font-medium text-white"
-          >
-            {auth.isLoading ? 'Entrando…' : 'Entrar'}
-          </button>
-          {(error ?? auth.sessionError) ? (
-            <p role="alert" className="text-sm text-red-700">
-              {error ?? auth.sessionError}
-            </p>
-          ) : null}
+    <main className="auth-layout">
+      <section className="auth-layout__intro" aria-label="Apresentação do DP-System">
+        <Brand inverse />
+        <div>
+          <p className="auth-layout__eyebrow">Ambiente local de demonstração</p>
+          <h1>Departamento Pessoal com contexto, segurança e rastreabilidade.</h1>
+          <p>
+            Uma experiência integrada para apoiar as rotinas do DP sem ocultar os limites atuais do
+            protótipo.
+          </p>
+        </div>
+        <small>Dados reais e credenciais demonstrativas não fazem parte desta etapa.</small>
+      </section>
+      <section className="auth-layout__form" aria-labelledby="login-title">
+        <div className="auth-layout__mobile-brand">
+          <Brand />
+        </div>
+        <p className="auth-layout__eyebrow">Acesso seguro</p>
+        <h2 id="login-title">Entrar no DP-System</h2>
+        <p>Use suas credenciais existentes para acessar as empresas autorizadas.</p>
+        <form className="auth-form" onSubmit={submit} noValidate>
+          <label htmlFor="login-email">E-mail</label>
+          <Input
+            aria-describedby={message ? 'login-error' : undefined}
+            autoComplete="username"
+            id="login-email"
+            onChange={(event) => setEmail(event.target.value)}
+            required
+            type="email"
+            value={email}
+          />
+          <label htmlFor="login-password">Senha</label>
+          <Input
+            aria-describedby={message ? 'login-error' : undefined}
+            autoComplete="current-password"
+            id="login-password"
+            minLength={8}
+            onChange={(event) => setPassword(event.target.value)}
+            required
+            type="password"
+            value={password}
+          />
+          <Button disabled={auth.isLoading} type="submit">
+            {auth.isLoading ? <Spinner label="Entrando" /> : 'Entrar'}
+          </Button>
+          {message && (
+            <div id="login-error">
+              <Alert tone="danger">{message}</Alert>
+            </div>
+          )}
         </form>
       </section>
     </main>
@@ -79,41 +88,47 @@ export function CompanySelectionPage() {
   const [error, setError] = useState<string>();
   if (!auth.token) return <Navigate to="/login" replace />;
   return (
-    <main className="mx-auto max-w-2xl px-4 py-12">
-      <h1 className="text-2xl font-semibold">Selecionar empresa</h1>
-      <p className="mt-2">Escolha o contexto empresarial desta sessão.</p>
-      <ul className="mt-6 grid gap-3" aria-label="Empresas disponíveis">
-        {auth.companies.map((company) => (
-          <li key={company.id} className="rounded border bg-white p-4">
-            <strong>{company.tradeName}</strong>
-            <p className="text-sm text-slate-600">{company.legalName}</p>
-            <button
-              className="mt-3 rounded border px-3 py-2"
-              disabled={auth.isLoading}
-              onClick={async () => {
-                try {
-                  await auth.selectCompany(company.id);
-                  navigate('/', { replace: true });
-                } catch (caught: unknown) {
-                  setError(
-                    caught instanceof Error ? caught.message : 'Falha ao selecionar empresa.',
-                  );
-                }
-              }}
-            >
-              Acessar empresa
-            </button>
-          </li>
-        ))}
-      </ul>
-      {error ? (
-        <p role="alert" className="mt-4 text-red-700">
-          {error}
-        </p>
-      ) : null}
-      <button className="mt-6" onClick={auth.logout}>
-        Encerrar sessão local
-      </button>
+    <main className="selection-page">
+      <div className="selection-page__header">
+        <Brand />
+        <Button onClick={auth.logout} variant="ghost">
+          Encerrar sessão local
+        </Button>
+      </div>
+      <section aria-labelledby="company-selection-title" className="selection-page__content">
+        <p className="auth-layout__eyebrow">Contexto empresarial</p>
+        <h1 id="company-selection-title">Selecionar empresa</h1>
+        <p>Escolha a empresa em que você deseja atuar nesta sessão.</p>
+        <ul aria-label="Empresas disponíveis" className="company-grid">
+          {auth.companies.map((company) => (
+            <li key={company.id}>
+              <Card>
+                <span aria-hidden="true" className="company-card__symbol">
+                  {company.tradeName.slice(0, 2).toUpperCase()}
+                </span>
+                <strong>{company.tradeName}</strong>
+                <p>{company.legalName}</p>
+                <Button
+                  disabled={auth.isLoading}
+                  onClick={async () => {
+                    try {
+                      await auth.selectCompany(company.id);
+                      navigate('/', { replace: true });
+                    } catch (caught: unknown) {
+                      setError(
+                        caught instanceof Error ? caught.message : 'Falha ao selecionar empresa.',
+                      );
+                    }
+                  }}
+                >
+                  Acessar empresa
+                </Button>
+              </Card>
+            </li>
+          ))}
+        </ul>
+        {error && <Alert tone="danger">{error}</Alert>}
+      </section>
     </main>
   );
 }

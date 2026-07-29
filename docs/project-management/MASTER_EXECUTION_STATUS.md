@@ -297,15 +297,14 @@
 
 ### MVP-001 — Protótipo executivo local
 
-- **Status:** `PLANNED — DISCOVERY COMPLETED`.
+- **Status:** `IN PROGRESS`.
 - **Base auditada:** `origin/develop@9420edc`.
 - **Diagnóstico:** [estado atual](MVP-001_CURRENT_STATE_ASSESSMENT.md), com login e empresa ativa
   implementados, porém sem identidade/vínculo no seed; dashboard demonstrativo estático; fluxo
   ponta a ponta e reset ainda ausentes.
 - **Escopo:** [MUST/SHOULD/COULD/OUT](MVP-001_PROTOTYPE_SCOPE.md), limitado ao uso local e a dados
   fictícios.
-- **Plano:** cinco incrementos em [MVP-001_IMPLEMENTATION_BACKLOG.md](MVP-001_IMPLEMENTATION_BACKLOG.md),
-  ainda não iniciados.
+- **Plano:** cinco incrementos em [MVP-001_IMPLEMENTATION_BACKLOG.md](MVP-001_IMPLEMENTATION_BACKLOG.md).
 - **Aceite e riscos:** [critérios mensuráveis](MVP-001_DEMO_ACCEPTANCE_CRITERIA.md) e
   [registro de riscos](MVP-001_DEMO_RISK_REGISTER.md).
 - **ETP-015.3:** `IMPLEMENTED AND MERGED`; Operational Deployment Gate
@@ -315,5 +314,9 @@
 - **MVP-001.1 — `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`:** comandos `demo:setup`, `demo:start`,
   `demo:stop`, `demo:status` e reset com confirmação operam um Compose exclusivamente local, com
   PostgreSQL 16, health check, rede e volume próprios. O setup aplica migrations e o seed existente
-  sem sobrescrever ambiente local. Identidades, credenciais e fluxo demonstrativo permanecem para a
-  MVP-001.2; o protótipo completo não está pronto.
+  sem sobrescrever ambiente local.
+- **MVP-001.2 — `IMPLEMENTED — VISUAL SHELL AVAILABLE`:** identidade temporária, tokens, marca SVG,
+  AppShell, navegação agrupada, estados seguros e login visual foram consolidados sem mudar o fluxo
+  funcional. Credenciais, identidades e massa fictícia pertencem à MVP-001.3.
+- **MVP-001.3 — `NOT STARTED`:** nenhuma credencial, assignment ou massa demonstrativa foi criada.
+- **ETP-015.4 — `NOT STARTED`:** nenhuma autorização ou rota legada foi antecipada pelo MVP.

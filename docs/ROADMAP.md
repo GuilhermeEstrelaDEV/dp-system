@@ -134,13 +134,13 @@ ativada pela migration. A ETP-015.4 permanece `NOT STARTED`.
 
 ## MVP-001 — Protótipo executivo local
 
-**Status:** `PLANNED — DISCOVERY COMPLETED`.
+**Status:** `IN PROGRESS`.
 
 O diagnóstico e o [escopo do protótipo](project-management/MVP-001_PROTOTYPE_SCOPE.md) definem uma
-demonstração exclusivamente local, com dados fictícios, bootstrap/reset, identidade, empresa ativa,
-dashboard e um fluxo real de estrutura → colaborador → contrato. Nenhuma funcionalidade foi
-implementada nesta etapa. A execução futura seguirá o
-[backlog incremental](project-management/MVP-001_IMPLEMENTATION_BACKLOG.md).
+demonstração exclusivamente local. A MVP-001.1 está `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE` e a
+MVP-001.2 está `IMPLEMENTED — VISUAL SHELL AVAILABLE`. A identidade visual é temporária; não foram
+criadas credenciais, massa demonstrativa ou funcionalidades de negócio. A MVP-001.3 permanece
+`NOT STARTED`, conforme o [backlog incremental](project-management/MVP-001_IMPLEMENTATION_BACKLOG.md).
 
 ETP-015.3 está `IMPLEMENTED AND MERGED`. Seu Operational Deployment Gate permanece
 `PENDING FOR FUTURE TARGET ENVIRONMENT`; esse bloqueio de destino não impede a demonstração local.

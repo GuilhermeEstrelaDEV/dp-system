@@ -37,7 +37,7 @@ URLs padrão:
 - readiness: `http://localhost:53000/api/v1/health/ready`.
 
 O seed atual cria catálogo, empresa e filial fictícios, mas **ainda não cria credenciais de login**.
-Identidades e assignments demonstrativos pertencem à MVP-001.2. A mensagem do setup informa esse
+Identidades e assignments demonstrativos pertencem à MVP-001.3. A mensagem do setup informa esse
 limite; a MVP-001.1 não simula autenticação funcional.
 
 ## Operação

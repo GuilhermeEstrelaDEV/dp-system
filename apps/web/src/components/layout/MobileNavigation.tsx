@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { NavigationLinks } from './NavigationLinks';
+import { Brand } from '@/components/brand/Brand';
 
 interface MobileNavigationProps {
   readonly onClose: () => void;
@@ -16,19 +17,19 @@ export function MobileNavigation({ onClose }: MobileNavigationProps) {
     <div
       aria-label="Menu de navegação"
       aria-modal="true"
-      className="fixed inset-0 z-50 lg:hidden"
+      className="mobile-navigation lg:hidden"
       id="mobile-navigation"
       role="dialog"
     >
       <button
         aria-label="Fechar menu pelo plano de fundo"
-        className="absolute inset-0 cursor-default bg-slate-950/60"
+        className="mobile-navigation__backdrop"
         onClick={onClose}
         type="button"
       />
-      <aside className="relative flex h-full w-[min(18rem,calc(100vw-2rem))] flex-col bg-slate-950 p-4 text-white shadow-2xl">
+      <aside className="mobile-navigation__panel">
         <div className="mb-6 flex items-center justify-between">
-          <span className="font-semibold">DP System</span>
+          <Brand inverse />
           <button
             aria-label="Fechar menu"
             className="rounded-md p-2 text-slate-100 hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"

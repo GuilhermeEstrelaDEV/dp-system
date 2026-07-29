@@ -1,4 +1,6 @@
 import type { RefObject } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Badge, Button, IconButton, Spinner } from '@/components/common/Primitives';
 import { useAuth } from '@/features/auth/AuthContext';
 
 interface HeaderProps {
@@ -9,55 +11,69 @@ interface HeaderProps {
   readonly onSidebarToggle: () => void;
 }
 
-export function Header({
-  isMobileMenuOpen,
-  isSidebarCollapsed,
-  mobileMenuTriggerRef,
-  onMobileMenuToggle,
-  onSidebarToggle,
-}: HeaderProps) {
+export function Header(props: HeaderProps) {
+  const {
+    isMobileMenuOpen,
+    isSidebarCollapsed,
+    mobileMenuTriggerRef,
+    onMobileMenuToggle,
+    onSidebarToggle,
+  } = props;
   const auth = useAuth();
+  const navigate = useNavigate();
   const company = auth.companies.find((item) => item.id === auth.activeCompanyId);
+  const actorLabel = auth.user?.actorId ? `Usuário ${auth.user.actorId.slice(0, 8)}` : 'Usuário';
+
   return (
-    <header className="flex min-h-16 items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 sm:px-6">
-      <div className="flex min-w-0 items-center gap-3">
-        <button
+    <header className="app-topbar">
+      <div className="app-topbar__start">
+        <IconButton
           aria-controls="mobile-navigation"
           aria-expanded={isMobileMenuOpen}
           aria-label={isMobileMenuOpen ? 'Fechar menu de navegação' : 'Abrir menu de navegação'}
-          className="rounded-md p-2 text-slate-700 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 lg:hidden"
+          className="lg:hidden"
           onClick={onMobileMenuToggle}
           ref={mobileMenuTriggerRef}
           type="button"
         >
-          <span aria-hidden="true" className="text-xl leading-none">
-            ☰
-          </span>
-        </button>
-        <button
+          <span aria-hidden="true">☰</span>
+        </IconButton>
+        <IconButton
           aria-controls="desktop-sidebar"
           aria-expanded={!isSidebarCollapsed}
-          className="hidden rounded-md p-2 text-slate-700 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 lg:block"
+          aria-label={isSidebarCollapsed ? 'Expandir barra lateral' : 'Recolher barra lateral'}
+          className="hidden lg:inline-flex"
           onClick={onSidebarToggle}
           type="button"
         >
-          <span className="sr-only">
-            {isSidebarCollapsed ? 'Expandir barra lateral' : 'Recolher barra lateral'}
-          </span>
           <span aria-hidden="true">{isSidebarCollapsed ? '»' : '«'}</span>
-        </button>
-        <span className="truncate text-sm font-medium text-slate-700">
-          Portal de Departamento Pessoal
-        </span>
+        </IconButton>
+        <div className="app-topbar__context">
+          <span className="app-topbar__eyebrow">Contexto empresarial</span>
+          <button
+            className="app-topbar__company"
+            onClick={() => navigate('/selecionar-empresa')}
+            type="button"
+          >
+            {company?.tradeName ?? 'Selecionar empresa'} <span aria-hidden="true">⌄</span>
+          </button>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <span className="hidden text-sm sm:inline">{company?.tradeName}</span>
-        <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">
-          Ambiente demonstrativo
-        </span>
-        <button type="button" className="rounded border px-2 py-1 text-xs" onClick={auth.logout}>
-          Sair
-        </button>
+      <div className="app-topbar__end">
+        {auth.isLoading && <Spinner label="Atualizando" />}
+        <Badge tone="warning">Ambiente local · Demo</Badge>
+        <div className="user-menu">
+          <span aria-hidden="true" className="user-menu__avatar">
+            {actorLabel.slice(-2).toUpperCase()}
+          </span>
+          <span className="user-menu__copy">
+            <strong>{actorLabel}</strong>
+            <small>Sessão local</small>
+          </span>
+          <Button onClick={auth.logout} type="button" variant="ghost">
+            Sair
+          </Button>
+        </div>
       </div>
     </header>
   );
