@@ -197,7 +197,52 @@ async function main() {
     ),
   );
 
-  await Promise.all(
+  const existingPermissions = await prisma.permission.findMany({
+    select: {
+      code: true,
+      resource: true,
+      action: true,
+      scope: true,
+      riskLevel: true,
+      sensitivity: true,
+    },
+    orderBy: { code: 'asc' },
+  });
+  const approvedPermissions = new Map<
+    string,
+    {
+      resource: string;
+      action: string;
+      scope: string;
+      riskLevel: string;
+      sensitivity: string;
+    }
+  >(
+    permissions.map(([code, , resource, action, scope, riskLevel, sensitivity]) => [
+      code,
+      { resource, action, scope, riskLevel, sensitivity },
+    ]),
+  );
+  if (existingPermissions.length > 0) {
+    if (existingPermissions.length !== permissions.length) {
+      throw new Error('Permission seed blocked: inventory differs from the 19 approved codes');
+    }
+    for (const existing of existingPermissions) {
+      const approved = approvedPermissions.get(existing.code);
+      if (
+        !approved ||
+        existing.resource !== approved.resource ||
+        existing.action !== approved.action ||
+        existing.scope !== approved.scope ||
+        existing.riskLevel !== approved.riskLevel ||
+        existing.sensitivity !== approved.sensitivity
+      ) {
+        throw new Error(`Permission seed blocked: ${existing.code} is not homologated as stored`);
+      }
+    }
+  }
+
+  await prisma.$transaction(
     permissions.map(([code, description, resource, action, scope, riskLevel, sensitivity]) =>
       prisma.permission.upsert({
         where: { code },
@@ -209,7 +254,6 @@ async function main() {
           scope,
           riskLevel,
           sensitivity,
-          status: 'ACTIVE',
         },
         create: {
           code,

@@ -11,6 +11,10 @@ describe('AssignmentGovernanceService', () => {
   const userCompanyRoleFindFirst = jest.fn();
   const userCompanyRoleUpdate = jest.fn();
   const append = jest.fn();
+  const roleFindUnique = jest.fn();
+  const permissionFindFirst = jest.fn();
+  const userFindFirst = jest.fn();
+  const companyFindFirst = jest.fn();
   const tx = {
     rolePermission: {
       create: rolePermissionCreate,
@@ -22,6 +26,10 @@ describe('AssignmentGovernanceService', () => {
       findFirst: userCompanyRoleFindFirst,
       update: userCompanyRoleUpdate,
     },
+    role: { findUnique: roleFindUnique },
+    permission: { findFirst: permissionFindFirst },
+    user: { findFirst: userFindFirst },
+    company: { findFirst: companyFindFirst },
   };
   const audit = {
     append,
@@ -41,11 +49,16 @@ describe('AssignmentGovernanceService', () => {
   const provenance = {
     sourceType: 'ADMINISTRATION' as const,
     reason: 'approved request',
-    correlationId: 'trace',
     validFrom: new Date('2026-07-29T12:00:00.000Z'),
   };
 
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    roleFindUnique.mockResolvedValue({ id: 'role' });
+    permissionFindFirst.mockResolvedValue({ id: 'permission' });
+    userFindFirst.mockResolvedValue({ id: 'user' });
+    companyFindFirst.mockResolvedValue({ id: 'company' });
+  });
 
   it('creates a role assignment and audit evidence in the same transaction', async () => {
     const assignment = { id: 'assignment', roleId: 'role', permissionId: 'permission' };
@@ -59,15 +72,23 @@ describe('AssignmentGovernanceService', () => {
     expect(rolePermissionCreate).toHaveBeenCalledWith({
       data: {
         ...provenance,
+        correlationId: 'trace',
         roleId: 'role',
         permissionId: 'permission',
         assignedByUserId: 'actor',
       },
     });
     expect(append).toHaveBeenCalledWith(
-      expect.objectContaining({ action: 'ROLE_PERMISSION_ASSIGNED', entityId: 'assignment' }),
+      expect.objectContaining({
+        action: 'ROLE_PERMISSION_ASSIGNED',
+        entityId: 'assignment',
+        metadata: { source: 'ADMINISTRATION' },
+      }),
       tx,
     );
+    expect(audit.transaction).toHaveBeenCalledWith(expect.any(Function), {
+      isolationLevel: 'Serializable',
+    });
   });
 
   it('creates an enterprise assignment without deriving grants or roles', async () => {
@@ -104,6 +125,46 @@ describe('AssignmentGovernanceService', () => {
       ),
     ).toThrow(BadRequestException);
     expect(rolePermissionCreate).not.toHaveBeenCalled();
+  });
+
+  it('rejects reserved or incomplete provenance sources', () => {
+    expect(() =>
+      service.createRolePermission(
+        { ...provenance, sourceType: 'MIGRATION', roleId: 'role', permissionId: 'permission' },
+        principal,
+      ),
+    ).toThrow(BadRequestException);
+    expect(() =>
+      service.createRolePermission(
+        { ...provenance, sourceType: 'IMPORT', roleId: 'role', permissionId: 'permission' },
+        principal,
+      ),
+    ).toThrow(BadRequestException);
+    expect(() =>
+      service.createRolePermission(
+        { ...provenance, sourceType: 'SYSTEM', roleId: 'role', permissionId: 'permission' },
+        principal,
+      ),
+    ).toThrow(BadRequestException);
+  });
+
+  it('rejects inactive assignment targets before writing', async () => {
+    permissionFindFirst.mockResolvedValue(null);
+    await expect(
+      service.createRolePermission(
+        { ...provenance, roleId: 'role', permissionId: 'retired' },
+        principal,
+      ),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    userFindFirst.mockResolvedValue(null);
+    await expect(
+      service.createUserCompanyRole(
+        { ...provenance, userId: 'inactive', companyId: 'company', roleId: 'role' },
+        principal,
+      ),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    expect(rolePermissionCreate).not.toHaveBeenCalled();
+    expect(userCompanyRoleCreate).not.toHaveBeenCalled();
   });
 
   it('logically revokes an assignment and preserves its historical row', async () => {

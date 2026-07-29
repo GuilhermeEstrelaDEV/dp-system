@@ -13,6 +13,19 @@ BEGIN
   ) THEN
     RAISE EXCEPTION 'Rollback blocked: user_company_roles contains post-migration history';
   END IF;
+  IF EXISTS (
+    SELECT 1 FROM role_permissions
+    WHERE source_type::text <> 'MIGRATION'
+       OR source_id <> '0016_capability_catalog_assignments'
+       OR reason <> 'LEGACY_BACKFILL'
+  ) OR EXISTS (
+    SELECT 1 FROM user_company_roles
+    WHERE source_type::text <> 'MIGRATION'
+       OR source_id <> '0016_capability_catalog_assignments'
+       OR reason <> 'LEGACY_BACKFILL'
+  ) THEN
+    RAISE EXCEPTION 'Rollback blocked: assignments created or changed after migration would lose governance history';
+  END IF;
 END $$;
 
 ALTER TABLE "user_company_roles" DROP CONSTRAINT "user_company_roles_no_temporal_overlap";
@@ -81,6 +94,7 @@ ALTER TABLE "role_permissions"
   ADD CONSTRAINT "role_permissions_permission_id_fkey" FOREIGN KEY ("permission_id") REFERENCES "permissions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "permissions" DROP CONSTRAINT "permissions_replacement_capability_id_fkey";
+ALTER TABLE "permissions" DROP CONSTRAINT "permissions_metadata_object_check";
 ALTER TABLE "permissions" DROP CONSTRAINT "permissions_replacement_not_self_check";
 ALTER TABLE "permissions" DROP CONSTRAINT "permissions_lifecycle_check";
 ALTER TABLE "permissions" DROP CONSTRAINT "permissions_code_format_check";

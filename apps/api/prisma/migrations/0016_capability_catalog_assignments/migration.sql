@@ -1,12 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS "btree_gist";
-
-CREATE TYPE "AssignmentSourceType" AS ENUM ('MIGRATION', 'ADMINISTRATION', 'IMPORT', 'SYSTEM', 'MANUAL');
-CREATE TYPE "AssignmentStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'REVOKED', 'EXPIRED');
-CREATE TYPE "PermissionScope" AS ENUM ('PLATFORM', 'COMPANY');
-CREATE TYPE "PermissionRiskLevel" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL');
-CREATE TYPE "PermissionSensitivity" AS ENUM ('STANDARD', 'SENSITIVE', 'RESTRICTED');
-CREATE TYPE "PermissionStatus" AS ENUM ('ACTIVE', 'DEPRECATED', 'RETIRED');
-
 -- PC-20/PC-21: upgrades fail closed before any catalog data is changed. A clean
 -- database is allowed to remain empty until the approved seed is executed.
 DO $$
@@ -49,6 +40,15 @@ BEGIN
     RAISE EXCEPTION 'ETP-015.3 blocked: approved permission has no description';
   END IF;
 END $$;
+
+CREATE EXTENSION IF NOT EXISTS "btree_gist";
+
+CREATE TYPE "AssignmentSourceType" AS ENUM ('MIGRATION', 'ADMINISTRATION', 'IMPORT', 'SYSTEM', 'MANUAL');
+CREATE TYPE "AssignmentStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'REVOKED', 'EXPIRED');
+CREATE TYPE "PermissionScope" AS ENUM ('PLATFORM', 'COMPANY');
+CREATE TYPE "PermissionRiskLevel" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL');
+CREATE TYPE "PermissionSensitivity" AS ENUM ('STANDARD', 'SENSITIVE', 'RESTRICTED');
+CREATE TYPE "PermissionStatus" AS ENUM ('ACTIVE', 'DEPRECATED', 'RETIRED');
 
 ALTER TABLE "permissions"
   ADD COLUMN "name" VARCHAR(120),
@@ -118,6 +118,7 @@ ALTER TABLE "permissions"
     ("status" = 'RETIRED' AND "deprecated_at" IS NOT NULL AND "retired_at" IS NOT NULL AND "retired_at" >= "deprecated_at")
   ),
   ADD CONSTRAINT "permissions_replacement_not_self_check" CHECK ("replacement_capability_id" IS NULL OR "replacement_capability_id" <> "id"),
+  ADD CONSTRAINT "permissions_metadata_object_check" CHECK (jsonb_typeof("metadata") = 'object'),
   ADD CONSTRAINT "permissions_replacement_capability_id_fkey" FOREIGN KEY ("replacement_capability_id") REFERENCES "permissions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 CREATE INDEX "permissions_resource_action_status_idx" ON "permissions"("resource", "action", "status");
