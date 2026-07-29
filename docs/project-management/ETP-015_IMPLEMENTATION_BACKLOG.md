@@ -57,6 +57,10 @@ inclui capabilities, autorização de recursos, migração de endpoints, Prisma 
 
 **Status:** `NOT STARTED`
 
+**Gate de entrada:** `PENDING HUMAN APPROVAL`. O pacote documental GA-01..GA-15 está preparado em
+[ETP-015 Gate A — Capability Catalog and Assignments Data Model](ETP-015_GATE_A_DATA_MODEL_DECISION_PACKAGE.md),
+sem aprovação, migration ou implementação funcional.
+
 - **Objetivo:** governar catálogo e concessões explícitas.
 - **Dependências:** 015.2, DAL-02/03/04/13.
 - **Módulos afetados:** auth, Prisma e administração futura.
