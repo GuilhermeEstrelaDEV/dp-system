@@ -2,27 +2,28 @@
 
 ## Resultado atual
 
-**NOT READY — HUMAN APPROVAL REQUIRED**
+**APPROVED — READY FOR CONTROLLED IMPLEMENTATION**
 
-O pacote técnico está preparado, mas nenhuma decisão humana GA foi homologada. A ETP-015.3 permanece
-`NOT STARTED`; nenhuma migration ou implementação está autorizada.
+As decisões GA-01..GA-15 foram homologadas por Guilherme Estrela em 29/07/2026, sem condições
+bloqueadoras. A ETP-015.3 permanece `NOT STARTED`; a aprovação do desenho não cria migration nem
+ativa autorização funcional.
 
 ## Checklist decisório
 
-- [ ] GA-01 a GA-15 possuem decisão inequívoca;
-- [ ] aprovador e data estão identificados em cada decisão;
-- [ ] justificativa e evidência estão anexadas;
-- [ ] nenhuma condição bloqueadora permanece aberta;
-- [ ] estratégia Permission/Capability está fechada;
-- [ ] campos e taxonomia do catálogo estão fechados;
-- [ ] RolePermission e UserCompanyRole estão fechados;
-- [ ] proveniência, revogação, vigência e unicidade temporal estão fechadas;
-- [ ] constraints e índices foram aceitos por Arquitetura e DBA/Operação;
-- [ ] migration blueprint e backfill foram aprovados;
-- [ ] rollout e rollback foram aprovados;
-- [ ] Segurança confirmou zero assignments automáticos e zero ampliação de acesso;
-- [ ] riscos e custos de lock foram aceitos;
-- [ ] matriz, questionário e documentos técnicos são consistentes;
+- [x] GA-01 a GA-15 possuem decisão inequívoca;
+- [x] aprovador e data estão identificados em cada decisão;
+- [x] justificativa e evidência estão anexadas;
+- [x] nenhuma condição bloqueadora permanece aberta;
+- [x] estratégia Permission/Capability está fechada;
+- [x] campos e taxonomia do catálogo estão fechados;
+- [x] RolePermission e UserCompanyRole estão fechados;
+- [x] proveniência, revogação, vigência e unicidade temporal estão fechadas;
+- [x] constraints e índices foram aceitos por Arquitetura e DBA/Operação;
+- [x] migration blueprint e backfill foram aprovados;
+- [x] rollout e rollback foram aprovados;
+- [x] Segurança confirmou zero assignments automáticos e zero ampliação de acesso;
+- [x] riscos e custos de lock foram aceitos;
+- [x] matriz, questionário e documentos técnicos são consistentes;
 - [x] ETP-015.3 permanece `NOT STARTED` durante a homologação.
 
 ## Critérios técnicos após aprovação humana
@@ -42,16 +43,16 @@ Antes do primeiro PR de migration, registrar:
 
 ## Matriz de consistência
 
-| Tema                     | Package     | Matrix  | Questionnaire | Blueprint/Rollback | Estado            |
-| ------------------------ | ----------- | ------- | ------------- | ------------------ | ----------------- |
-| GA-01..GA-03 catálogo    | definido    | PENDING | sem resposta  | M1/M2              | aguardando humano |
-| GA-04..GA-09 assignments | definido    | PENDING | sem resposta  | M1–M3              | aguardando humano |
-| GA-10..GA-12 dados       | definido    | PENDING | sem resposta  | M2/M3              | aguardando humano |
-| GA-13..GA-14 operação    | definido    | PENDING | sem resposta  | rollout/rollback   | aguardando humano |
-| GA-15 zero grants        | obrigatório | PENDING | sem resposta  | verificações       | aguardando humano |
+| Tema                     | Package     | Matrix   | Questionnaire | Blueprint/Rollback | Estado   |
+| ------------------------ | ----------- | -------- | ------------- | ------------------ | -------- |
+| GA-01..GA-03 catálogo    | definido    | APPROVED | respondido    | M1/M2              | aprovado |
+| GA-04..GA-09 assignments | definido    | APPROVED | respondido    | M1–M3              | aprovado |
+| GA-10..GA-12 dados       | definido    | APPROVED | respondido    | M2/M3              | aprovado |
+| GA-13..GA-14 operação    | definido    | APPROVED | respondido    | rollout/rollback   | aprovado |
+| GA-15 zero grants        | obrigatório | APPROVED | respondido    | verificações       | aprovado |
 
 ## Saída objetiva
 
-O resultado só muda para `READY FOR ETP-015.3` após todos os checkboxes decisórios possuírem evidência
-e as condições técnicas pré-PR estarem atribuídas. A preparação documental, isoladamente, não altera
-o estado deste gate.
+O Gate A está `APPROVED — READY FOR CONTROLLED IMPLEMENTATION`. Os critérios técnicos pré-PR continuam
+obrigatórios para a futura execução. A ETP-015.3 só muda de `NOT STARTED` por iniciativa posterior;
+esta homologação não inicia implementação.

@@ -117,9 +117,9 @@ PR #53 em 29/07/2026, no merge `dac460d8bd84bbe0a1e9f39360f4c740c47c2e4e`, com C
 provisório de `RefreshToken` permanece `ACCEPTABLE WITH FOLLOW-UP`. A ETP-015.2 foi incorporada à
 `develop` pelo PR #55 em 29/07/2026, no merge `70dd036080fdeac59a88f434786257b01c3c7ead`,
 com CI aprovado e modelo atual classificado como `SUFFICIENT WITH FOLLOW-UP`; a ETP-015.3 permanece
-`NOT STARTED`. O pacote documental do Gate A para catálogo e assignments está preparado, com
-GA-01..GA-15 ainda `PENDING`; o gate permanece `PENDING HUMAN APPROVAL` e nenhuma implementação foi
-iniciada.
+`NOT STARTED`. O Gate A para catálogo e assignments foi homologado em 29/07/2026: GA-01..GA-15 estão
+`APPROVED`, sem condições bloqueadoras. A implementação controlada ainda não foi iniciada e nenhuma
+migration foi criada.
 
 ## Próximas iniciativas propostas
 
