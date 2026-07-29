@@ -102,13 +102,12 @@ concluída após a Final Acceptance.
 
 ## ETP-015 — Authorization Foundation & Enterprise Isolation
 
-**Status:** `IN PROGRESS` — ETP-015.1 e ETP-015.2 concluídas; ETP-015.3 em execução.
+**Status:** `IN PROGRESS` — ETP-015.1, ETP-015.2 e ETP-015.3 implementadas; ETP-015.4 não iniciada.
 
-**Evento externo de revisão:** implementation candidate available in PR #61 — not merged. A candidata
-da ETP-015.3 foi validada funcionalmente, em segurança e privacidade, mas permanece Draft e bloqueada
-exclusivamente por evidências de DBA/Operações. O
-[pacote operacional](project-management/ETP-015_3_OPERATIONAL_APPROVAL_PACKAGE.md) está preparado com
-homologação `PENDING`; `develop` continua em `READY TO START` e a ETP-015.4 em `NOT STARTED`.
+A ETP-015.3 foi incorporada à `develop` pelo PR #61. A migration 0016, o catálogo e os assignments
+estão implementados, sem grants automáticos. O
+[gate operacional](project-management/ETP-015_3_OPERATIONAL_RELEASE_GATE.md) permanece
+`PENDING FOR FUTURE TARGET ENVIRONMENT`; seu bloqueio é de deploy futuro, não da demonstração local.
 
 A ETP-015 foi iniciada exclusivamente em descoberta e planejamento após a homologação da
 BDP-AUTH-LEGACY. A [especificação](project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md)
@@ -122,18 +121,30 @@ isolamento e migração de endpoints permanecem nas etapas posteriores e sujeito
 PR #53 em 29/07/2026, no merge `dac460d8bd84bbe0a1e9f39360f4c740c47c2e4e`, com CI aprovado. O uso
 provisório de `RefreshToken` permanece `ACCEPTABLE WITH FOLLOW-UP`. A ETP-015.2 foi incorporada à
 `develop` pelo PR #55 em 29/07/2026, no merge `70dd036080fdeac59a88f434786257b01c3c7ead`,
-com CI aprovado e modelo atual classificado como `SUFFICIENT WITH FOLLOW-UP`; a ETP-015.3 permanece
-`NOT STARTED`. O Gate A para catálogo e assignments foi homologado em 29/07/2026: GA-01..GA-15 estão
-`APPROVED`, sem condições bloqueadoras. A implementação controlada ainda não foi iniciada e nenhuma
-migration foi criada. O subgate de classificação de risco e sensibilidade dos 19 códigos está
+com CI aprovado e modelo atual classificado como `SUFFICIENT WITH FOLLOW-UP`. O Gate A para catálogo
+e assignments foi homologado em 29/07/2026: GA-01..GA-15 estão `APPROVED`, sem condições
+bloqueadoras. O subgate de classificação de risco e sensibilidade dos 19 códigos está
 `APPROVED — READY FOR CONTROLLED MIGRATION`. O PR #59 foi incorporado à `develop` em 29/07/2026,
 no merge `f3a63d6243797c91e17ace40a715bdbf78478efb`, com CI aprovado. Todos os pré-requisitos
-documentais foram concluídos. A ETP-015.3 está `IN PROGRESS` na branch
-`feature/etp-015-3-capability-catalog-assignments`, com migration aditiva, catálogo interno e
-assignments históricos em validação. Nenhuma rota, guard, assignment automático ou ampliação de acesso
-foi ativada. A ETP-015.4 permanece `NOT STARTED`.
+documentais foram concluídos. A ETP-015.3 está `IMPLEMENTED AND MERGED`, com migration aditiva,
+catálogo interno e assignments históricos. Nenhuma rota, grant automático ou ampliação de acesso foi
+ativada pela migration. A ETP-015.4 permanece `NOT STARTED`.
 
 ## Próximas iniciativas propostas
+
+## MVP-001 — Protótipo executivo local
+
+**Status:** `PLANNED — DISCOVERY COMPLETED`.
+
+O diagnóstico e o [escopo do protótipo](project-management/MVP-001_PROTOTYPE_SCOPE.md) definem uma
+demonstração exclusivamente local, com dados fictícios, bootstrap/reset, identidade, empresa ativa,
+dashboard e um fluxo real de estrutura → colaborador → contrato. Nenhuma funcionalidade foi
+implementada nesta etapa. A execução futura seguirá o
+[backlog incremental](project-management/MVP-001_IMPLEMENTATION_BACKLOG.md).
+
+ETP-015.3 está `IMPLEMENTED AND MERGED`. Seu Operational Deployment Gate permanece
+`PENDING FOR FUTURE TARGET ENVIRONMENT`; esse bloqueio de destino não impede a demonstração local.
+ETP-015.4 permanece `NOT STARTED` e não integra o escopo do MVP-001.
 
 Permanecem propostas não vinculantes, sem autorização de implementação: **ETP-016 — Relatórios,
 dashboards e inteligência operacional** e **ETP-017 — Hardening, observabilidade e performance**.
