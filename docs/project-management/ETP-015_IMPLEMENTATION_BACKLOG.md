@@ -1,6 +1,6 @@
 # ETP-015 — Implementation Backlog
 
-**Status:** especificação aprovada; ETP-015.1 concluída e ETP-015.2 não iniciada
+**Status:** especificação aprovada; ETP-015.1 concluída e ETP-015.2 em implementação
 
 Cada entrega nasce de `develop` atualizada, possui branch/PR próprios e só avança após evidência do
 gate aplicável.
@@ -30,7 +30,11 @@ gate aplicável.
 
 ## ETP-015.2 — Active Company Resolution
 
-**Status:** `NOT STARTED`
+**Status:** `IN PROGRESS`
+
+Recorte atual: contrato imutável mínimo, normalização das fontes existentes, rejeição de conflitos,
+validação do vínculo empresarial ativo e integração opt-in no fluxo autenticado existente. Não
+inclui capabilities, autorização de recursos, migração de endpoints, Prisma ou frontend.
 
 - **Objetivo:** tornar empresa ativa a única autoridade empresarial.
 - **Dependências:** 015.1, BDP-009, DAL-04/05.
@@ -43,6 +47,8 @@ gate aplicável.
 - **Evidências:** queries, testes API/PostgreSQL e cache segmentado documentado.
 
 ## ETP-015.3 — Capability Catalog and Assignments
+
+**Status:** `NOT STARTED`
 
 - **Objetivo:** governar catálogo e concessões explícitas.
 - **Dependências:** 015.2, DAL-02/03/04/13.

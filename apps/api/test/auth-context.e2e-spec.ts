@@ -140,14 +140,32 @@ describe('authenticated company context integration', () => {
     expect(prisma.auditLog.create).toHaveBeenCalled();
   });
 
-  it('returns 404 when the company assignment is absent or inactive', async () => {
+  it('returns 403 when the company assignment is absent or inactive', async () => {
     const bootstrapToken = await login();
     assignmentActive = false;
-    await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/api/v1/auth/context')
       .set('Authorization', `Bearer ${bootstrapToken}`)
       .send({ companyId: company.id })
-      .expect(404);
+      .expect(403);
+    expect(response.body.error).toEqual({
+      code: 'COMPANY_SELECTION_FORBIDDEN',
+      message: 'Empresa não disponível para a identidade autenticada',
+    });
+  });
+
+  it('rejects missing and malformed company selections before persistence resolution', async () => {
+    const bootstrapToken = await login();
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/context')
+      .set('Authorization', `Bearer ${bootstrapToken}`)
+      .send({})
+      .expect(400);
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/context')
+      .set('Authorization', `Bearer ${bootstrapToken}`)
+      .send({ companyId: 'invalid' })
+      .expect(400);
   });
 
   it('keeps legacy routes outside the incremental protection rollout', async () => {

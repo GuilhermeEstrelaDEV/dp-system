@@ -1,4 +1,4 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import type { JwtService } from '@nestjs/jwt';
 import type { PrismaService } from '../../prisma/prisma.service';
 import { AuthService } from './auth.service';
@@ -11,6 +11,7 @@ describe('AuthService', () => {
   const verifyAsync = jest.fn().mockResolvedValue({ exp: 2_000_000_000 });
   const verify = jest.fn();
   const register = jest.fn();
+  const resolveCompany = jest.fn();
   const service = new AuthService(
     {
       user: { findUnique: userFindUnique },
@@ -19,6 +20,7 @@ describe('AuthService', () => {
     { signAsync, verifyAsync } as unknown as JwtService,
     { verify } as unknown as PasswordHasherService,
     { register } as never,
+    { resolve: resolveCompany } as never,
   );
 
   beforeEach(() => jest.clearAllMocks());
@@ -65,9 +67,7 @@ describe('AuthService', () => {
   });
 
   it('selects only an accessible company and keeps the session', async () => {
-    assignmentsFindMany.mockResolvedValue([
-      { company: { id: 'company-a', legalName: 'A', tradeName: 'A' } },
-    ]);
+    resolveCompany.mockResolvedValue({ companyId: 'company-a' });
     await service.selectCompany(
       {
         actorId: 'user-1',
@@ -87,7 +87,7 @@ describe('AuthService', () => {
   });
 
   it('hides an unlinked or inactive company as not found', async () => {
-    assignmentsFindMany.mockResolvedValue([]);
+    resolveCompany.mockRejectedValue(new ForbiddenException());
     await expect(
       service.selectCompany(
         {
@@ -102,6 +102,6 @@ describe('AuthService', () => {
         },
         'company-b',
       ),
-    ).rejects.toBeInstanceOf(NotFoundException);
+    ).rejects.toBeInstanceOf(ForbiddenException);
   });
 });

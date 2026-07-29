@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { IdentitySessionService } from './identity-session.service';
 import { PasswordHasherService } from './password-hasher.service';
+import { ActiveCompanyResolverService } from './active-company-resolver.service';
 
 export interface AccessTokenPayload {
   sub: string;
@@ -20,6 +21,7 @@ export class AuthService {
     private readonly jwt: JwtService,
     private readonly passwords: PasswordHasherService,
     private readonly sessions: IdentitySessionService,
+    private readonly activeCompanies: ActiveCompanyResolverService,
   ) {}
 
   async login(email: string, password: string) {
@@ -59,11 +61,10 @@ export class AuthService {
   }
 
   async selectCompany(principal: AuthenticatedPrincipal, companyId: string) {
-    const companies = await this.listCompanies(principal.actorId);
-    if (!companies.some((company) => company.id === companyId)) {
-      throw new NotFoundException('Empresa não encontrada');
-    }
-    return this.issueToken(principal.actorId, companyId, principal.sessionId);
+    const context = await this.activeCompanies.resolve(principal, [
+      { source: 'AUTH_CONTEXT_BODY', value: companyId },
+    ]);
+    return this.issueToken(principal.actorId, context.companyId, principal.sessionId);
   }
 
   private async issueToken(actorId: string, activeCompanyId: string | null, sessionId: string) {
