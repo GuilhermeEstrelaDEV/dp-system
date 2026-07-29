@@ -251,7 +251,7 @@
 ### ETP-015 — Authorization Foundation & Enterprise Isolation
 
 - **Status:** `IN PROGRESS`; especificação aprovada no PR #52, ETP-015.1 e ETP-015.2 concluídas e
-  ETP-015.3 pronta para iniciar.
+  ETP-015.3 em execução controlada.
 - **Governança:** BDP-AUTH-LEGACY e DAL-01 a DAL-14 estão `APPROVED`.
 - **Especificação:** `docs/project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md`.
 - **Arquitetura:** `docs/architecture/AUTHORIZATION_FOUNDATION_TECHNICAL_DESIGN.md` e
@@ -274,14 +274,16 @@
 - **Follow-ups da ETP-015.2:** revogação dedicada, provenance, unicidade temporal, múltiplos
   assignments, política futura de assignment canônico, evolução controlada das fontes empresariais
   e semântica futura de `404` permanecem abertos.
-- **ETP-015.3 — `READY TO START`:** todos os pré-requisitos documentais estão concluídos; nenhuma
-  capability, permission, policy, concessão ou implementação foi antecipada e nenhuma migration foi criada.
+- **ETP-015.3 — `IN PROGRESS`:** migration aditiva `0016`, catálogo canônico, assignments históricos,
+  constraints temporais e serviços internos estão em validação, sem rota, guard, grant automático ou
+  ampliação de acesso.
 - **Gate A — `APPROVED`:** GA-01..GA-15 homologadas por Guilherme Estrela em 29/07/2026, sem
   condições bloqueadoras; nenhuma migration ou implementação da ETP-015.3 foi iniciada.
 - **Classification Subgate — `APPROVED`:** PC-01..PC-21 homologadas por Guilherme Estrela em
   29/07/2026, sem condições bloqueadoras. O PR #59 foi incorporado à `develop` no merge
-  `f3a63d6243797c91e17ace40a715bdbf78478efb`, com CI aprovado; migration `NOT CREATED` e
-  implementação funcional `NOT STARTED`. Próxima etapa: implementação controlada da ETP-015.3.
+  `f3a63d6243797c91e17ace40a715bdbf78478efb`, com CI aprovado. A classificação homologada é aplicada
+  de forma explícita na migration e no seed da ETP-015.3.
+- **ETP-015.4 — `NOT STARTED`:** guards, decorators, allowlist e deny-by-default não foram antecipados.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,

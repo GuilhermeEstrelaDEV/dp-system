@@ -102,7 +102,7 @@ concluída após a Final Acceptance.
 
 ## ETP-015 — Authorization Foundation & Enterprise Isolation
 
-**Status:** `IN PROGRESS` — ETP-015.1 e ETP-015.2 concluídas; ETP-015.3 pronta para iniciar.
+**Status:** `IN PROGRESS` — ETP-015.1 e ETP-015.2 concluídas; ETP-015.3 em execução.
 
 A ETP-015 foi iniciada exclusivamente em descoberta e planejamento após a homologação da
 BDP-AUTH-LEGACY. A [especificação](project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md)
@@ -122,8 +122,10 @@ com CI aprovado e modelo atual classificado como `SUFFICIENT WITH FOLLOW-UP`; a 
 migration foi criada. O subgate de classificação de risco e sensibilidade dos 19 códigos está
 `APPROVED — READY FOR CONTROLLED MIGRATION`. O PR #59 foi incorporado à `develop` em 29/07/2026,
 no merge `f3a63d6243797c91e17ace40a715bdbf78478efb`, com CI aprovado. Todos os pré-requisitos
-documentais foram concluídos; a ETP-015.3 está `READY TO START`, a migration permanece `NOT CREATED`
-e nenhuma implementação foi iniciada. A próxima etapa é sua implementação controlada.
+documentais foram concluídos. A ETP-015.3 está `IN PROGRESS` na branch
+`feature/etp-015-3-capability-catalog-assignments`, com migration aditiva, catálogo interno e
+assignments históricos em validação. Nenhuma rota, guard, assignment automático ou ampliação de acesso
+foi ativada. A ETP-015.4 permanece `NOT STARTED`.
 
 ## Próximas iniciativas propostas
 

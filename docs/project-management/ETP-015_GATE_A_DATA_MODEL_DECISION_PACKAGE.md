@@ -2,8 +2,8 @@
 
 ## Estado
 
-**PENDING HUMAN APPROVAL.** Este pacote fecha as alternativas técnicas necessárias para homologar o
-Gate A. Não aprova decisões, não inicia a ETP-015.3 e não autoriza migration ou mudança funcional.
+**APPROVED — CONTROLLED IMPLEMENTATION IN PROGRESS.** GA-01..GA-15 foram homologadas em 29/07/2026.
+A ETP-015.3 implementa o desenho sem ativar autorização em rotas ou conceder acesso.
 
 ## Objetivo e referências
 

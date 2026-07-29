@@ -1,7 +1,7 @@
 # ETP-015 — Authorization Foundation & Enterprise Isolation
 
-**Status:** `PLANNING — SPECIFICATION REVIEW REQUIRED`
-**Natureza:** descoberta, especificação e planejamento; nenhuma implementação autorizada por este documento
+**Status:** `IN PROGRESS — SPECIFICATION APPROVED`
+**Natureza:** especificação vinculante; implementação somente pelos incrementos e gates aprovados
 **Base analisada:** `origin/develop@af9c68b`
 
 ## 1. Objetivo e motivação

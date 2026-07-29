@@ -2,7 +2,8 @@
 
 ## Estado
 
-**PROPOSAL — HUMAN APPROVAL REQUIRED.** O plano não executa rollback e não autoriza migration.
+**APPROVED — CONTROLLED IMPLEMENTATION.** GA-14 homologou este plano em 29/07/2026. A execução de
+rollback continua sendo uma ação operacional explícita e não permissiva.
 
 ## Princípios
 
@@ -43,6 +44,6 @@ preferência é forward fix aditivo; restore exige backup testado, janela aprova
 
 ## Aprovações necessárias
 
-Arquitetura aprova reversibilidade lógica; Segurança valida que rollback não seja permissivo;
+Arquitetura aprovou a reversibilidade lógica; Segurança validou que rollback não seja permissivo;
 DBA/Operação aprova locks, backup/restore e extensão; Produto aceita janela somente quando houver
-impacto operacional. GA-14 permanece `PENDING`.
+impacto operacional. GA-14 está `APPROVED`.
