@@ -60,3 +60,20 @@ futuros sejam efetivos. Nenhuma rota nova é protegida ou migrada pela ETP-015.3
 - testes estáticos: conjunto homologado, PC-20/PC-21 e zero assignments no seed/migration;
 - risco operacional: `btree_gist`, troca da PK de `RolePermission` e locks exigem janela controlada;
 - risco funcional: ativação de guards e migração de endpoints pertencem à ETP-015.4 ou posterior.
+
+### Gate operacional antes do deploy
+
+A revisão técnica do PR #61 validou o fluxo em PostgreSQL 16 local, mas isso não substitui a
+aprovação do ambiente de destino. DBA/Operação deve registrar, antes do merge/deploy:
+
+- disponibilidade e privilégio para `CREATE EXTENSION btree_gist` em cada ambiente gerenciado;
+- volume real de `permissions`, `role_permissions` e `user_company_roles`, janela e timeout para os
+  locks de `ALTER TABLE`, troca da PK, FKs, índices e exclusion constraints;
+- backup recuperável, teste de restore, observação de locks/replica lag e procedimento de abortar;
+- compatibilidade do rollout com instâncias antigas e execução transacional do rollback com
+  `ON_ERROR_STOP` quando suas precondições permitirem;
+- ensaio no ambiente representativo e evidência de duração. O rollback bloqueia se assignments ou
+  histórico posteriores à migration puderem ser perdidos e nunca remove a extensão compartilhada.
+
+Sem essas evidências, a liberação operacional permanece bloqueada, embora os testes locais estejam
+aprovados.
