@@ -48,6 +48,8 @@ inclui capabilities, autorização de recursos, migração de endpoints, Prisma 
 
 ## ETP-015.3 — Capability Catalog and Assignments
 
+**Status:** `NOT STARTED`
+
 - **Objetivo:** governar catálogo e concessões explícitas.
 - **Dependências:** 015.2, DAL-02/03/04/13.
 - **Módulos afetados:** auth, Prisma e administração futura.
