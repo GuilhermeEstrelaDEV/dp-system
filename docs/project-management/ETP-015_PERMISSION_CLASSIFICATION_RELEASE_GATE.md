@@ -2,26 +2,27 @@
 
 ## Resultado atual
 
-**NOT READY — HUMAN APPROVAL REQUIRED**
+**APPROVED — READY FOR CONTROLLED MIGRATION**
 
 O Gate A estrutural permanece `APPROVED`. Este subgate bloqueia apenas a migration da ETP-015.3 até
-que risco, sensibilidade e tratamento fail-closed sejam homologados. A ETP-015.3 permanece
-`NOT STARTED` e nenhuma migration foi criada.
+que risco, sensibilidade e tratamento fail-closed sejam homologados. PC-01..PC-21 foram aprovadas por
+Guilherme Estrela em 29/07/2026, sem condições bloqueadoras. A ETP-015.3 permanece `NOT STARTED` e
+nenhuma migration foi criada.
 
 ## Checklist de liberação
 
 - [x] inventário contém exatamente 19 códigos atuais;
 - [x] cada código aparece uma vez na matriz técnica;
 - [x] cada código possui recomendação e justificativa individual;
-- [ ] PC-01..PC-19 estão `APPROVED`;
-- [ ] `riskLevel` foi homologado para os 19 códigos por Segurança;
-- [ ] `sensitivity` foi homologada para os 19 códigos por Privacidade/DPO;
-- [ ] PC-20, política fail-closed, está `APPROVED`;
-- [ ] PC-21, governança de novos códigos, está `APPROVED`;
-- [ ] nenhuma decisão/classificação permanece `PENDING`;
-- [ ] nenhuma condição bloqueadora está aberta;
-- [ ] matriz homologada corresponde exatamente ao inventário do seed/repositório;
-- [ ] relatório pré-migration foi especificado para ausentes, extras e duplicados;
+- [x] PC-01..PC-19 estão `APPROVED`;
+- [x] `riskLevel` foi homologado para os 19 códigos por Segurança;
+- [x] `sensitivity` foi homologada para os 19 códigos por Privacidade/DPO;
+- [x] PC-20, política fail-closed, está `APPROVED`;
+- [x] PC-21, governança de novos códigos, está `APPROVED`;
+- [x] nenhuma decisão/classificação permanece `PENDING`;
+- [x] nenhuma condição bloqueadora está aberta;
+- [x] matriz homologada corresponde exatamente ao inventário do seed/repositório;
+- [x] relatório pré-migration foi especificado para ausentes, extras e duplicados;
 - [x] nenhum default genérico ou inferência por nome/role foi proposto;
 - [x] ETP-015.3 permanece `NOT STARTED`;
 - [x] migration permanece `NOT CREATED`.
@@ -38,6 +39,6 @@ que risco, sensibilidade e tratamento fail-closed sejam homologados. A ETP-015.3
 
 ## Evidência necessária
 
-Segurança e Privacidade/DPO devem preencher PC-01..PC-21 e a decisão geral. Produto deve participar
-dos itens de administração de acesso, aprovação, fechamento, reabertura e demais impactos indicados.
-Somente depois a conclusão poderá mudar para `READY FOR CONTROLLED MIGRATION`.
+Segurança, Privacidade/DPO e Produto foram representados por Guilherme Estrela na homologação. As
+regras fail-closed permanecem obrigatórias para a futura migration; esta aprovação não inicia a
+ETP-015.3 nem ativa autorização funcional.

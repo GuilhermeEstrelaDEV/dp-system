@@ -61,8 +61,9 @@ inclui capabilities, autorização de recursos, migração de endpoints, Prisma 
 [ETP-015 Gate A — Capability Catalog and Assignments Data Model](ETP-015_GATE_A_DATA_MODEL_DECISION_PACKAGE.md),
 sem iniciar migration ou implementação funcional.
 
-**Classification Subgate:** `PENDING HUMAN APPROVAL`. Os 19 códigos aguardam homologação de risco e
-sensibilidade em PC-01..PC-21; migration `NOT CREATED` e implementação funcional `NOT STARTED`.
+**Classification Subgate:** `APPROVED — READY FOR CONTROLLED MIGRATION`. Os 19 códigos e as políticas
+PC-20/PC-21 foram homologados em 29/07/2026; migration `NOT CREATED`, ETP-015.3 e implementação
+funcional `NOT STARTED`. Próxima etapa: merge documental e retomada controlada.
 
 - **Objetivo:** governar catálogo e concessões explícitas.
 - **Dependências:** 015.2, DAL-02/03/04/13.
