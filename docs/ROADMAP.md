@@ -102,7 +102,7 @@ concluída após a Final Acceptance.
 
 ## ETP-015 — Authorization Foundation & Enterprise Isolation
 
-**Status:** `IN PROGRESS` — ETP-015.1 em implementação.
+**Status:** `IN PROGRESS` — ETP-015.1 concluída; ETP-015.2 ainda não iniciada.
 
 A ETP-015 foi iniciada exclusivamente em descoberta e planejamento após a homologação da
 BDP-AUTH-LEGACY. A [especificação](project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md)
@@ -112,9 +112,9 @@ divide a futura execução em dez incrementos, começando pelo fechamento P0. Ne
 migration fora do incremento aprovado está autorizada. A ETP-015.1 implementa somente principal,
 contexto autenticado, resolução de usuário e revogação lógica de sessão; capabilities, autorização,
 isolamento e migração de endpoints permanecem nas etapas posteriores e sujeitos aos
-[Gates A–D](project-management/ETP-015_RELEASE_GATES.md).
-Sua revisão técnica mantém o incremento `IN PROGRESS` e classifica a reutilização provisória de
-`RefreshToken` como `ACCEPTABLE WITH FOLLOW-UP`, sem migration nesta entrega.
+[Gates A–D](project-management/ETP-015_RELEASE_GATES.md). A ETP-015.1 foi incorporada à `develop` pelo
+PR #53 em 29/07/2026, no merge `dac460d8bd84bbe0a1e9f39360f4c740c47c2e4e`, com CI aprovado. O uso
+provisório de `RefreshToken` permanece `ACCEPTABLE WITH FOLLOW-UP`; a ETP-015.2 não foi iniciada.
 
 ## Próximas iniciativas propostas
 
