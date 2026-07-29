@@ -1,32 +1,26 @@
 # ETP-015.3 — Questionário de homologação operacional
 
-Respostas e evidências humanas permanecem `PENDING`.
+As respostas recebidas referem-se somente a Desenvolvimento Local. `DECLARED — LOCAL ONLY` não
+representa aprovação de destino.
 
-| ID    | Área           | Pergunta                                                          | Resposta  | Evidência | Aprovador | Data      | Bloqueadora |
-| ----- | -------------- | ----------------------------------------------------------------- | --------- | --------- | --------- | --------- | ----------- |
-| OQ-01 | DBA            | Quais destinos e versões PostgreSQL existem?                      | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-02 | DBA/Infra      | `btree_gist` está disponível e autorizada em cada destino?        | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-03 | DBA            | A instalação foi ensaiada com o privilégio real?                  | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-04 | DBA            | Quais são contagens e tamanhos das tabelas/índices?               | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-05 | DBA            | Qual duração, maior lock e espera foram medidos?                  | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-06 | DBA            | Quais timeouts e critérios de cancelamento/retry foram aprovados? | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-07 | Produto/Deploy | Qual janela e impacto de tráfego foram aceitos?                   | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-08 | Infra          | Existem réplicas; qual limite de lag?                             | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-09 | Infra/Deploy   | Como drenar instâncias, workers, jobs, pools e conexões?          | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-10 | DBA            | Existe backup íntegro, criptografado e retido?                    | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-11 | DBA/Produto    | Restore foi testado e RPO/RTO são aceitáveis?                     | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-12 | Engenharia/DBA | Os dois cenários de rollback foram aprovados?                     | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-13 | Operação       | Locks, lag, erros e performance serão observados como?            | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-14 | Segurança      | Evidências/logs evitam credenciais e dados pessoais?              | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-15 | Deploy         | Compatibilidade e ordem de rollout foram ensaiadas?               | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-16 | Produto        | Comunicação, owner e escalonamento estão aprovados?               | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
-| OQ-17 | DBA/Operação   | A decisão final é GO ou NO-GO?                                    | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
+| ID    | Área           | Resposta registrada                                        | Evidência/estado                                | Aprovador |
+| ----- | -------------- | ---------------------------------------------------------- | ----------------------------------------------- | --------- |
+| OQ-01 | DBA            | Docker, PostgreSQL 16.14                                   | `EVIDENCED` local; destinos `NOT EVIDENCED`     | `PENDING` |
+| OQ-02 | DBA/Infra      | `btree_gist` disponível e instalada                        | `EVIDENCED` local                               | `PENDING` |
+| OQ-03 | DBA            | usuário local da migration autorizado                      | `EVIDENCED` local; destino `NOT EVIDENCED`      | `PENDING` |
+| OQ-04 | DBA            | 19/133/20.000 sintéticos; tamanhos locais                  | `EVIDENCED` local; volume real `NOT EVIDENCED`  | `PENDING` |
+| OQ-05 | DBA            | duração e locks nos relatórios locais                      | `EVIDENCED` local                               | `PENDING` |
+| OQ-06 | DBA            | timeouts 0/0; cancelamento não definido                    | `DECLARED — LOCAL ONLY`; política `PENDING`     | `PENDING` |
+| OQ-07 | Produto/Deploy | janela e impacto não informados                            | `PENDING`                                       | `PENDING` |
+| OQ-08 | Infra          | sem réplica local; destino não informado                   | local `NOT APPLICABLE`; destino `NOT EVIDENCED` | `PENDING` |
+| OQ-09 | Infra/Deploy   | 1 instância; sem jobs identificados; deploy não definido   | local declarado; destino `PENDING`              | `PENDING` |
+| OQ-10 | DBA            | `pg_dump` recuperável somente localmente                   | `EVIDENCED` local; destino `NOT EVIDENCED`      | `PENDING` |
+| OQ-11 | DBA/Produto    | restore local; RPO/RTO não informados                      | local evidenciado; aceitação `PENDING`          | `PENDING` |
+| OQ-12 | Engenharia/DBA | rollback condicionado à ausência de histórico incompatível | local evidenciado; aprovação `PENDING`          | `PENDING` |
+| OQ-13 | Operação       | somente observação local                                   | destino `NOT EVIDENCED`                         | `PENDING` |
+| OQ-14 | Segurança      | evidências sanitizadas                                     | `EVIDENCED` local; aprovação `PENDING`          | `PENDING` |
+| OQ-15 | Deploy         | estratégia não informada                                   | `PENDING`                                       | `PENDING` |
+| OQ-16 | Produto        | comunicação, owners e escalonamento não informados         | `PENDING`                                       | `PENDING` |
+| OQ-17 | DBA/Operação   | decisão final não fornecida                                | `PENDING`                                       | `PENDING` |
 
-## Subsídios locais, sem resposta humana
-
-- OQ-01–OQ-06: PostgreSQL 16.14, `btree_gist` 1.7, privilégio restrito negado, volumes sintéticos,
-  duração e locks constam nos [relatórios locais](evidence/etp-015-3/local-environment-summary.md).
-- OQ-10–OQ-12: backup/restore e dois cenários de rollback foram ensaiados apenas localmente.
-- OQ-15: builds A–D foram avaliados; runtime completo permanece parcial.
-
-Todas as respostas, aprovadores e datas continuam `PENDING` para decisão humana e destinos reais.
+Não há data nem decisão formal de DBA/Operações, Infraestrutura, Segurança ou Produto.

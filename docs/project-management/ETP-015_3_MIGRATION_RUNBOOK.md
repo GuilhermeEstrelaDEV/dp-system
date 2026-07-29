@@ -1,6 +1,7 @@
 # ETP-015.3 — Runbook da migration 0016
 
-> **IMPLEMENTED IN PR #61 — NOT MERGED.** Não executar em ambiente externo sem o release gate.
+> **IMPLEMENTED AND MERGED IN PR #61.** Não executar em ambiente externo sem aprovação do release
+> gate. O merge não equivale à homologação operacional.
 
 ## Pré-deploy
 
@@ -70,6 +71,11 @@ cancelamento, retry e janela dependem de medição e aprovação DBA — não h�
 | Tempo total / maior lock / espera máxima | `NOT EVIDENCED` |
 | Queries bloqueadas / impacto em réplicas | `NOT EVIDENCED` |
 | Responsável / data / resultado           | `PENDING`       |
+
+Declaração recebida para **Desenvolvimento Local**: 19 Permission, 133 RolePermission e 20.000
+UserCompanyRole em ensaio sintético; `statement_timeout=0`; `lock_timeout=0`; uma instância; sem
+réplicas e sem concorrência identificada. Estes dados são locais. Volume real, estratégia de deploy,
+janela e responsáveis dos destinos permanecem `NOT EVIDENCED` ou `PENDING`.
 
 ## `btree_gist`
 
