@@ -119,7 +119,9 @@ provisório de `RefreshToken` permanece `ACCEPTABLE WITH FOLLOW-UP`. A ETP-015.2
 com CI aprovado e modelo atual classificado como `SUFFICIENT WITH FOLLOW-UP`; a ETP-015.3 permanece
 `NOT STARTED`. O Gate A para catálogo e assignments foi homologado em 29/07/2026: GA-01..GA-15 estão
 `APPROVED`, sem condições bloqueadoras. A implementação controlada ainda não foi iniciada e nenhuma
-migration foi criada.
+migration foi criada. O subgate de classificação de risco e sensibilidade dos 19 códigos está
+`APPROVED — READY FOR CONTROLLED MIGRATION`; a ETP-015.3 permanece `NOT STARTED`, a migration
+`NOT CREATED` e a próxima etapa é o merge documental seguido da retomada controlada.
 
 ## Próximas iniciativas propostas
 
