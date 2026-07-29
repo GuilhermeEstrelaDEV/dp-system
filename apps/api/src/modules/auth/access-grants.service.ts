@@ -201,16 +201,29 @@ export class AccessGrantsService {
   }
 
   private async resolveUserCapabilities(userId: string, companyId: string): Promise<Set<string>> {
+    const now = new Date();
     const assignments = await this.prisma.userCompanyRole.findMany({
       where: {
         userId,
         companyId,
         status: 'ACTIVE',
-        validFrom: { lte: new Date() },
-        OR: [{ validTo: null }, { validTo: { gt: new Date() } }],
+        validFrom: { lte: now },
+        OR: [{ validTo: null }, { validTo: { gt: now } }],
       },
       select: {
-        role: { select: { permissions: { select: { permission: { select: { code: true } } } } } },
+        role: {
+          select: {
+            permissions: {
+              where: {
+                status: 'ACTIVE',
+                validFrom: { lte: now },
+                OR: [{ validTo: null }, { validTo: { gt: now } }],
+                permission: { status: 'ACTIVE' },
+              },
+              select: { permission: { select: { code: true } } },
+            },
+          },
+        },
       },
     });
     if (!assignments.length) throw new NotFoundException('Usuário não encontrado');

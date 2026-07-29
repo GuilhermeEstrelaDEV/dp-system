@@ -24,7 +24,23 @@ export class ApplicationContextService {
       where: { id: identity.actorId },
       select: {
         status: true,
-        roles: { select: { role: { select: { permissions: { select: { permission: true } } } } } },
+        roles: {
+          select: {
+            role: {
+              select: {
+                permissions: {
+                  where: {
+                    status: 'ACTIVE',
+                    validFrom: { lte: now },
+                    OR: [{ validTo: null }, { validTo: { gt: now } }],
+                    permission: { status: 'ACTIVE' },
+                  },
+                  select: { permission: true },
+                },
+              },
+            },
+          },
+        },
         companyRoles: {
           where: {
             companyId: identity.activeCompanyId ?? '00000000-0000-0000-0000-000000000000',
@@ -34,7 +50,19 @@ export class ApplicationContextService {
             company: { status: 'ACTIVE' },
           },
           select: {
-            role: { select: { permissions: { select: { permission: true } } } },
+            role: {
+              select: {
+                permissions: {
+                  where: {
+                    status: 'ACTIVE',
+                    validFrom: { lte: now },
+                    OR: [{ validTo: null }, { validTo: { gt: now } }],
+                    permission: { status: 'ACTIVE' },
+                  },
+                  select: { permission: true },
+                },
+              },
+            },
           },
         },
         substitutionsAsSubstitute: identity.activeCompanyId
