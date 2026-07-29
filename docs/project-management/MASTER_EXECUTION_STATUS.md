@@ -276,6 +276,12 @@
   e semântica futura de `404` permanecem abertos.
 - **ETP-015.3 — `READY TO START`:** todos os pré-requisitos documentais estão concluídos; nenhuma
   capability, permission, policy, concessão ou implementação foi antecipada e nenhuma migration foi criada.
+- **Evento externo do PR #61:** implementation candidate available in PR #61 — not merged. A revisão
+  funcional, de segurança e privacidade está concluída na branch candidata: GA-01..GA-14 e
+  PC-01..PC-21 `COMPLIANT IN PR #61`; GA-15 `PARTIALLY COMPLIANT — OPERATIONAL EVIDENCE PENDING`.
+  O PR permanece Draft e bloqueado exclusivamente por DBA/Operações. O
+  [pacote operacional](ETP-015_3_OPERATIONAL_APPROVAL_PACKAGE.md) foi preparado, sem alterar o estado
+  mesclado `READY TO START`; homologação operacional `PENDING` e ETP-015.4 `NOT STARTED`.
 - **Gate A — `APPROVED`:** GA-01..GA-15 homologadas por Guilherme Estrela em 29/07/2026, sem
   condições bloqueadoras; nenhuma migration ou implementação da ETP-015.3 foi iniciada.
 - **Classification Subgate — `APPROVED`:** PC-01..PC-21 homologadas por Guilherme Estrela em
