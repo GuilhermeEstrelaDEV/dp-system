@@ -14,7 +14,7 @@ COPY packages/ui/package.json packages/ui/package.json
 
 RUN pnpm install --frozen-lockfile
 COPY . .
-RUN pnpm --filter @dp-system/web build
+RUN pnpm --filter @dp-system/web... build
 
 EXPOSE 5173
 CMD ["pnpm", "--filter", "@dp-system/web", "dev", "--host", "0.0.0.0"]
