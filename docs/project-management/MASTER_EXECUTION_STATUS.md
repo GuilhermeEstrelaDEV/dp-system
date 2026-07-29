@@ -277,6 +277,8 @@
 - **ETP-015.3 — `NOT STARTED`:** nenhuma capability, permission, policy ou concessão foi antecipada.
 - **Gate A — `APPROVED`:** GA-01..GA-15 homologadas por Guilherme Estrela em 29/07/2026, sem
   condições bloqueadoras; nenhuma migration ou implementação da ETP-015.3 foi iniciada.
+- **Classification Subgate — `PENDING HUMAN APPROVAL`:** recomendações PC-01..PC-21 preparadas para
+  os 19 códigos; migration `NOT CREATED` e implementação funcional `NOT STARTED`.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,

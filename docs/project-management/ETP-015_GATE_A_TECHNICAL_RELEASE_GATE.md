@@ -8,6 +8,10 @@ As decisões GA-01..GA-15 foram homologadas por Guilherme Estrela em 29/07/2026,
 bloqueadoras. A ETP-015.3 permanece `NOT STARTED`; a aprovação do desenho não cria migration nem
 ativa autorização funcional.
 
+**Subgate de classificação:** `PENDING HUMAN APPROVAL`. A estrutura do Gate A continua aprovada, mas
+a migration permanece bloqueada até PC-01..PC-21 homologarem risco e sensibilidade dos 19 códigos e
+a política fail-closed. Nenhum campo obrigatório pode receber default inventado.
+
 ## Checklist decisório
 
 - [x] GA-01 a GA-15 possuem decisão inequívoca;
@@ -53,6 +57,7 @@ Antes do primeiro PR de migration, registrar:
 
 ## Saída objetiva
 
-O Gate A está `APPROVED — READY FOR CONTROLLED IMPLEMENTATION`. Os critérios técnicos pré-PR continuam
-obrigatórios para a futura execução. A ETP-015.3 só muda de `NOT STARTED` por iniciativa posterior;
-esta homologação não inicia implementação.
+O Gate A estrutural está `APPROVED — READY FOR CONTROLLED IMPLEMENTATION`. Os critérios técnicos
+pré-PR e o [subgate de classificação](ETP-015_PERMISSION_CLASSIFICATION_RELEASE_GATE.md) continuam
+obrigatórios. A ETP-015.3 só muda de `NOT STARTED` por iniciativa posterior; esta homologação não
+inicia implementação.
