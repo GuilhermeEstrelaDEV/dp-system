@@ -16,9 +16,12 @@ export class CompanySelectionService {
         message: 'Empresa obrigatória',
       });
     const normalized = supplied.map(({ source, value }) => {
-      if (typeof value !== 'string' || value.trim() === '' || !isUUID(value))
+      if (typeof value !== 'string')
         throw new BadRequestException({ code: 'COMPANY_ID_INVALID', message: 'Empresa inválida' });
-      return { source, companyId: value.toLowerCase() };
+      const companyId = value.trim().toLowerCase();
+      if (companyId === '' || !isUUID(companyId))
+        throw new BadRequestException({ code: 'COMPANY_ID_INVALID', message: 'Empresa inválida' });
+      return { source, companyId };
     });
     if (new Set(normalized.map(({ companyId }) => companyId)).size !== 1)
       throw new BadRequestException({

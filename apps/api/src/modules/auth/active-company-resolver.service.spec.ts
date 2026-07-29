@@ -47,6 +47,13 @@ describe('ActiveCompanyResolverService', () => {
     ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
+  it('rejects malformed input before querying persistence', async () => {
+    await expect(
+      service.resolve({ actorId: 'user-a' }, [{ source: 'SESSION_TOKEN', value: 'invalid' }]),
+    ).rejects.toMatchObject({ response: { code: 'COMPANY_ID_INVALID' } });
+    expect(findMany).not.toHaveBeenCalled();
+  });
+
   it.each(['unlinked', 'expired', 'inactive company'])(
     'denies %s without revealing resource existence',
     async () => {
@@ -72,5 +79,25 @@ describe('ActiveCompanyResolverService', () => {
     expect(a.userId).toBe('a');
     expect(b.userId).toBe('b');
     expect(a).not.toBe(b);
+  });
+
+  it('creates independent contexts when the same user switches companies', async () => {
+    const otherCompany = '22222222-2222-4222-8222-222222222222';
+    findMany
+      .mockResolvedValueOnce([{ id: 'assignment-a' }])
+      .mockResolvedValueOnce([{ id: 'assignment-b' }]);
+    const first = await service.resolve(
+      { actorId: 'user-a' },
+      [{ source: 'SESSION_TOKEN', value: companyId }],
+      now,
+    );
+    const second = await service.resolve(
+      { actorId: 'user-a' },
+      [{ source: 'SESSION_TOKEN', value: otherCompany }],
+      now,
+    );
+    expect(first.companyId).toBe(companyId);
+    expect(second.companyId).toBe(otherCompany);
+    expect(first).not.toBe(second);
   });
 });

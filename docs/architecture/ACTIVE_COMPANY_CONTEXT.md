@@ -16,8 +16,9 @@ The existing surfaces are mapped as follows:
 
 1. `AUTH_CONTEXT_BODY`: the explicit `/auth/context` selection command establishes the company for
    the next token. It is validated independently so that an authenticated user can switch company.
-2. `SESSION_TOKEN`: `activeCompanyId` in a validated JWT is revalidated for each opt-in protected
-   request before becoming a context.
+2. `SESSION_TOKEN`: `activeCompanyId` in a validated JWT is a persisted preference candidate. It is
+   never trusted as authority and must be passed explicitly to the resolver by a future opt-in
+   consumer before becoming a context.
 
 When sources are evaluated together, equal values use the order above and different values fail
 with `COMPANY_SELECTION_CONFLICT`. Missing, empty, non-string, and non-UUID values fail before
@@ -38,10 +39,11 @@ provenance, and temporal uniqueness as follow-ups rather than inventing semantic
 
 ## HTTP integration and compatibility
 
-Integration remains opt-in through the existing JWT authentication guard and `/auth/context` flow.
-Public and legacy routes do not acquire a global company requirement. No capability evaluation,
-resource authorization, endpoint migration, DTO change, schema change, or frontend change belongs
-to this delivery.
+Integration remains opt-in. The existing `/auth/context` command is the only production consumer in
+this delivery; the resolver also exposes `SESSION_TOKEN` for explicitly migrated consumers without
+changing `JwtAuthGuard`. Public, legacy, and protected routes do not acquire a new global company
+requirement. No capability evaluation, resource authorization, endpoint migration, DTO change,
+schema change, or frontend change belongs to this delivery.
 
 Stable errors are: 401 for absent identity, 400 for malformed/missing/conflicting selection, and 403
 when the identity cannot select the company. A 404 remains reserved for later resource lookup under
@@ -52,5 +54,7 @@ an already established company context.
 - ETP-015.3 owns capability catalog and assignments.
 - Endpoint-family migration owns resource isolation and 404 semantics.
 - A future approved data-model change may add explicit revocation/provenance and temporal uniqueness.
+- Multiple active assignments are returned in deterministic identifier order; a future approved
+  policy may replace this projection if a single canonical membership identifier becomes necessary.
 - Session hardening remains tracked separately (issuer/audience, refresh, backend logout, global
   revocation, cleanup, and technical identities).
