@@ -48,3 +48,11 @@ da aplicação se comprovado ou decidir forward fix/restore com DBA.
 - toda ação registra executor, horários, evidência, impacto e decisão humana.
 
 Não há autorização para perda silenciosa ou remoção de `btree_gist` compartilhada.
+
+## Evidência local
+
+Backup/restore local preservou contagens e hash de IDs/códigos. Rollback somente com backfill concluiu
+em 458 ms e preservou 19/133/20.000 registros; cenário com histórico posterior foi bloqueado com exit
+3 e manteve a estrutura/dados. Evidências:
+[backup e restore](evidence/etp-015-3/backup-restore-results.md) e
+[rollback](evidence/etp-015-3/rollback-results.md). Destinos, RPO e RTO seguem pendentes.

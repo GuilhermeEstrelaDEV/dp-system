@@ -104,3 +104,12 @@ runbook de recuperação.
 - [ ] réplicas sincronizadas e performance aprovada;
 - [ ] contagens antes/depois e horários anexados ao template;
 - [ ] janela encerrada somente após aprovação do responsável.
+
+## Resultado do ensaio local
+
+Instalação limpa: 4.721,21 ms para 16 migrations e 414,46 ms para a 0016. Upgrade sintético com
+20.000 vínculos: 3.387,06 ms. Foram observados `AccessExclusiveLock` e outros modos; leitura e escrita
+concorrentes aguardaram 1.636 ms e 1.508 ms. Consulte
+[clean install](evidence/etp-015-3/clean-install-results.md),
+[upgrade](evidence/etp-015-3/upgrade-results.md) e
+[locks](evidence/etp-015-3/migration-lock-observation.md). Não extrapolar para destinos reais.

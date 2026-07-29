@@ -21,3 +21,12 @@ Respostas e evidências humanas permanecem `PENDING`.
 | OQ-15 | Deploy         | Compatibilidade e ordem de rollout foram ensaiadas?               | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
 | OQ-16 | Produto        | Comunicação, owner e escalonamento estão aprovados?               | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
 | OQ-17 | DBA/Operação   | A decisão final é GO ou NO-GO?                                    | `PENDING` | `PENDING` | `PENDING` | `PENDING` | SIM         |
+
+## Subsídios locais, sem resposta humana
+
+- OQ-01–OQ-06: PostgreSQL 16.14, `btree_gist` 1.7, privilégio restrito negado, volumes sintéticos,
+  duração e locks constam nos [relatórios locais](evidence/etp-015-3/local-environment-summary.md).
+- OQ-10–OQ-12: backup/restore e dois cenários de rollback foram ensaiados apenas localmente.
+- OQ-15: builds A–D foram avaliados; runtime completo permanece parcial.
+
+Todas as respostas, aprovadores e datas continuam `PENDING` para decisão humana e destinos reais.

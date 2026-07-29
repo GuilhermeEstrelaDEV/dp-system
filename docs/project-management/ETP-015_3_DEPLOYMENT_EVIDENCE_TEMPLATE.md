@@ -2,6 +2,10 @@
 
 Não preencher sem ensaio representativo real.
 
+O ensaio local preenchido está nos relatórios sanitizados em
+[`evidence/etp-015-3`](evidence/etp-015-3/local-environment-summary.md). Este template permanece
+`NOT EVIDENCED` para cada ambiente de destino real.
+
 | Campo                          | Resultado             |
 | ------------------------------ | --------------------- |
 | Ambiente/provedor              | `NOT EVIDENCED`       |
