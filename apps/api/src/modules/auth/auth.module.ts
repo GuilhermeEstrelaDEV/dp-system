@@ -13,6 +13,8 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { JwtStrategy } from './jwt.strategy';
 import { IdentitySessionService } from './identity-session.service';
 import { PasswordHasherService } from './password-hasher.service';
+import { ActiveCompanyResolverService } from './active-company-resolver.service';
+import { CompanySelectionService } from './company-selection.service';
 
 type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
 
@@ -43,6 +45,8 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
     JwtStrategy,
     IdentitySessionService,
     PasswordHasherService,
+    ActiveCompanyResolverService,
+    CompanySelectionService,
   ],
   exports: [
     JwtModule,
@@ -53,6 +57,8 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
     JwtAuthGuard,
     JwtStrategy,
     IdentitySessionService,
+    ActiveCompanyResolverService,
+    CompanySelectionService,
   ],
 })
 export class AuthModule {}

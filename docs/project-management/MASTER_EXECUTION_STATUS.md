@@ -250,8 +250,8 @@
 
 ### ETP-015 — Authorization Foundation & Enterprise Isolation
 
-- **Status:** `IN PROGRESS`; especificação aprovada no PR #52, ETP-015.1 concluída e ETP-015.2 não
-  iniciada.
+- **Status:** `IN PROGRESS`; especificação aprovada no PR #52, ETP-015.1 concluída e ETP-015.2 em
+  implementação.
 - **Governança:** BDP-AUTH-LEGACY e DAL-01 a DAL-14 estão `APPROVED`.
 - **Especificação:** `docs/project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md`.
 - **Arquitetura:** `docs/architecture/AUTHORIZATION_FOUNDATION_TECHNICAL_DESIGN.md` e
@@ -268,7 +268,8 @@
 - **Follow-ups:** modelo dedicado/migration de sessão, limpeza de expirados, issuer/audience, refresh,
   logout backend, revogação global e identidades técnicas dependem de recorte futuro aprovado e não
   iniciam a ETP-015.2.
-- **ETP-015.2 — `NOT STARTED`:** nenhuma implementação de resolução de empresa ativa foi iniciada.
+- **ETP-015.2 — `IN PROGRESS`:** contexto imutável, fontes explícitas e resolução de vínculo ativo
+  implementados de forma opt-in, sem autorização por capability ou migração de endpoints legados.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,
