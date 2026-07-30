@@ -9,15 +9,19 @@ hash real, sessão revogável e zero grants automáticos. Isso não conclui o pr
 - [ ] ambiente sobe sem edição manual de código;
 - [x] migrations existentes são aplicadas sem alterar migrations mescladas;
 - [x] seed/bootstrap cria apenas dados fictícios e identificados como demonstrativos;
-- [ ] login demonstrativo funciona com orientação segura de credencial local;
-- [ ] seleção/troca de empresa respeita vínculos e isolamento no backend;
+- [x] login demonstrativo funciona com orientação segura de credencial local;
+- [x] seleção/troca de empresa respeita vínculos e isolamento no backend;
 - [x] dashboard apresenta dados persistidos, coerentes, autorizados e rotulados como demonstrativos;
 - [ ] fluxo estrutura → colaborador → contrato funciona do início ao fim;
-- [ ] logout local e seu limite de revogação estão claros;
-- [ ] nenhuma tela aparenta executar capacidade inexistente;
+- [x] logout local e revogação lógica da sessão estão claros;
+- [x] superfícies sem grant apresentam estado restrito antes de carregar dados;
 - [ ] nenhum erro crítico aparece no console do navegador ou da API;
 - [ ] nenhuma resposta 5xx ocorre durante o roteiro aprovado;
 - [ ] apresentação de 15 minutos conclui sem reinício do ambiente;
 - [x] reset demonstrativo restaura o baseline e falha de forma segura fora do local;
-- [ ] lint, typecheck, testes e build estão aprovados;
+- [x] lint, typecheck, testes e build da MVP-001.6 estão aprovados;
 - [ ] smoke tests confirmam dados, capabilities e zero vazamento entre empresas.
+
+O fluxo estrutura → colaborador → contrato permanece pendente: suas APIs legadas ainda dependem da
+ETP-015.4 e não podem ser apresentadas como isoladas/autorizadas. A MVP-001.6 entrega o roteiro
+seguro possível sem grants; o gate final continua aberto.

@@ -9,6 +9,7 @@ const testSession = {
     actorId: 'user-1',
     activeCompanyId: 'company-1',
     permissions: [
+      'platform.manage',
       'payroll.review.view',
       'payroll.review.create',
       'payroll.review.finding.create',

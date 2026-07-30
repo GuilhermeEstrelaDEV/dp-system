@@ -11,6 +11,7 @@
 | `Card` / `Badge` / `Alert`            | novo                     | empresa, ambiente e feedback seguro                            |
 | `Spinner` / `Skeleton` / `EmptyState` | novo                     | base dos estados carregando e vazio                            |
 | `ErrorFallback` / `NotFoundPage`      | reaproveitado            | erro seguro e página 404                                       |
+| `CapabilityRoute` / `EmptyState`      | reaproveitado e refinado | bloqueio pré-fetch e alternativas seguras sem expor capability |
 
 Não foi adicionada uma segunda biblioteca de UI. Select, textarea, checkbox, modal, diálogo de
 confirmação, toast e tabela permanecem nas implementações de domínio existentes ou serão

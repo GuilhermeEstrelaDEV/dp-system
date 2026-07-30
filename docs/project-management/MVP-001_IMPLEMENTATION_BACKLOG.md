@@ -12,7 +12,7 @@ O protótipo completo ainda não está pronto.
 | 3     | MVP-001.3 Identidades e massa demo  | `IMPLEMENTED — DEMO LOGIN AVAILABLE`          | login fictício, empresas, assignments e dados sem grant implícito    |
 | 4     | MVP-001.4 Dashboard executivo       | `IMPLEMENTED — EXECUTIVE DASHBOARD AVAILABLE` | métricas reais, autorizadas e isoladas por empresa                   |
 | 5     | MVP-001.5 Dataset demonstrativo     | `IMPLEMENTED — DEMO DATASET AVAILABLE`        | massa determinística, segura, isolada e verificável                  |
-| 6     | MVP-001.6 Fluxos principais         | `NOT STARTED`                                 | estrutura → colaborador → contrato ponta a ponta                     |
+| 6     | MVP-001.6 Fluxos principais         | `IMPLEMENTED — CORE DEMO FLOWS AVAILABLE`     | login, contexto, dashboard, restrição segura, troca e logout         |
 | 7     | MVP-001.7 Roteiro e acceptance      | `NOT STARTED`                                 | smoke test, roteiro de 15 minutos e guia do apresentador             |
 
 ## Dependências e gates
@@ -28,5 +28,7 @@ O protótipo completo ainda não está pronto.
 A MVP-001.1 oferece execução reproduzível e a MVP-001.2 fornece a linguagem visual reutilizável. A
 MVP-001.3 preparou identidades fictícias sem alterar o modelo de segurança. A MVP-001.4 oferece a
 visão autorizada documentada na [matriz de métricas](../product/MVP-001_DASHBOARD_METRICS.md). A
-MVP-001.5 fornece o [dataset determinístico](../product/MVP-001_DEMO_DATASET.md). MVP-001.6 e
-MVP-001.7 permanecem `NOT STARTED`; o protótipo completo ainda não está pronto.
+MVP-001.5 fornece o [dataset determinístico](../product/MVP-001_DEMO_DATASET.md). MVP-001.6 entrega
+os [fluxos essenciais seguros](../product/MVP-001_CORE_FLOWS.md), sem antecipar a proteção de backend
+da ETP-015.4 nem criar grants. MVP-001.7 permanece `NOT STARTED`; o protótipo completo ainda não
+está pronto.
