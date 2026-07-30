@@ -304,7 +304,7 @@
   ponta a ponta e reset ainda ausentes.
 - **Escopo:** [MUST/SHOULD/COULD/OUT](MVP-001_PROTOTYPE_SCOPE.md), limitado ao uso local e a dados
   fictícios.
-- **Plano:** sete incrementos em [MVP-001_IMPLEMENTATION_BACKLOG.md](MVP-001_IMPLEMENTATION_BACKLOG.md).
+- **Plano:** nove incrementos em [MVP-001_IMPLEMENTATION_BACKLOG.md](MVP-001_IMPLEMENTATION_BACKLOG.md).
 - **Aceite e riscos:** [critérios mensuráveis](MVP-001_DEMO_ACCEPTANCE_CRITERIA.md) e
   [registro de riscos](MVP-001_DEMO_RISK_REGISTER.md).
 - **ETP-015.3:** `IMPLEMENTED AND MERGED`; Operational Deployment Gate
@@ -331,4 +331,8 @@
 - **MVP-001.7 — `IMPLEMENTED — DEMO MODE AND GO/NO-GO AVAILABLE`:** modo visual condicional,
   verificação não destrutiva, smoke autenticado, relatório sanitizado e documentação operacional.
 - **MVP-001.8 — `NOT STARTED`:** estabilização e aceite final ainda não foram iniciados.
+- **MVP-001.9 — `NOT STARTED — PRESENTATION PACKAGE`:** etapa futura, dependente da MVP-001.8, para
+  roteiro executivo, narrativa, slides, guia, checklist, contingência, limitações, feedback,
+  evidências e decisão de encerramento. Não inclui funcionalidade, grants, capabilities, produção,
+  cloud, deploy ou ETP-015.4; nenhum material foi iniciado.
 - **ETP-015.4 — `NOT STARTED`:** nenhuma autorização ou rota legada foi antecipada pelo MVP.
