@@ -12,6 +12,7 @@
 | `Spinner` / `Skeleton` / `EmptyState` | novo                     | base dos estados carregando e vazio                            |
 | `ErrorFallback` / `NotFoundPage`      | reaproveitado            | erro seguro e página 404                                       |
 | `CapabilityRoute` / `EmptyState`      | reaproveitado e refinado | bloqueio pré-fetch e alternativas seguras sem expor capability |
+| `DemoPresenterHelp`                   | novo                     | apoio acessível e condicional ao apresentador, sem dados reais |
 
 Não foi adicionada uma segunda biblioteca de UI. Select, textarea, checkbox, modal, diálogo de
 confirmação, toast e tabela permanecem nas implementações de domínio existentes ou serão

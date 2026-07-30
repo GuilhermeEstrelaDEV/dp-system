@@ -54,3 +54,9 @@ A empresa ativa vem do JWT emitido por `POST /auth/context`. A troca limpa o Rea
 de renderizar o novo contexto. A aplicação diferencia sessão ausente/expirada, acesso restrito,
 dashboard sem dados, falha de API e rota inexistente. IDs empresariais não são aceitos pelo
 dashboard, e detalhes legados não são carregados no recorte demo.
+
+## Operação de apresentação
+
+Com `VITE_DEMO_MODE=true`, o shell identifica claramente o modo demonstrativo e oferece ajuda ao
+apresentador. O gate `pnpm demo:verify` ensaia este roteiro por APIs reais, sem bypass nem mutação de
+dados. Fora desse modo, badge e ajuda não são renderizados.

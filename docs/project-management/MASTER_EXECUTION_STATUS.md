@@ -325,8 +325,10 @@
   ativa, seções por capability, métricas persistidas, estados seguros e visualizações acessíveis.
 - **MVP-001.5 — `IMPLEMENTED — DEMO DATASET AVAILABLE`:** duas empresas, 26 colaboradores e
   contratos, massa de folha/conferência e verificador automatizado, sem grants automáticos.
-- **MVP-001.6 — `IMPLEMENTED — CORE DEMO FLOWS AVAILABLE`:** login, contexto empresarial,
+- **MVP-001.6 — `IMPLEMENTED — SAFE CORE DEMO FLOWS AVAILABLE`:** login, contexto empresarial,
   dashboard, bloqueio conservador das APIs legadas, troca de empresa e logout compõem o roteiro
   seguro. Escritas e consultas administrativas permanecem adiadas por zero grants e ETP-015.4.
-- **MVP-001.7 — `NOT STARTED`:** roteiro e acceptance final ainda não foram iniciados.
+- **MVP-001.7 — `IMPLEMENTED — DEMO MODE AND GO/NO-GO AVAILABLE`:** modo visual condicional,
+  verificação não destrutiva, smoke autenticado, relatório sanitizado e documentação operacional.
+- **MVP-001.8 — `NOT STARTED`:** estabilização e aceite final ainda não foram iniciados.
 - **ETP-015.4 — `NOT STARTED`:** nenhuma autorização ou rota legada foi antecipada pelo MVP.

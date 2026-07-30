@@ -56,6 +56,27 @@ describe('application shell', () => {
     expect(screen.getByRole('button', { name: 'Sair' })).toBeInTheDocument();
   });
 
+  it('shows accessible presenter help only in demo mode and restores focus on close', async () => {
+    vi.stubEnv('VITE_DEMO_MODE', 'true');
+    renderWithRouter();
+    const trigger = screen.getByRole('button', { name: 'Ajuda da demonstração' });
+    fireEvent.click(trigger);
+    const dialog = screen.getByRole('dialog', { name: 'Ajuda da demonstração' });
+    expect(within(dialog).getByText('Usuário de Teste')).toBeInTheDocument();
+    expect(within(dialog).getByText('Empresa Teste')).toBeInTheDocument();
+    expect(within(dialog).getByText(/Todos os dados são fictícios/)).toBeInTheDocument();
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(await screen.findByRole('button', { name: 'Ajuda da demonstração' })).toHaveFocus();
+    expect(screen.queryByRole('dialog', { name: 'Ajuda da demonstração' })).not.toBeInTheDocument();
+  });
+
+  it('does not expose presentation controls outside demo mode', () => {
+    vi.stubEnv('VITE_DEMO_MODE', 'false');
+    renderWithRouter();
+    expect(screen.queryByRole('button', { name: 'Ajuda da demonstração' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Ambiente de demonstração')).not.toBeInTheDocument();
+  });
+
   it('recolhe a sidebar mantendo seus rótulos acessíveis', () => {
     renderWithRouter();
     fireEvent.click(screen.getByRole('button', { name: 'Recolher barra lateral' }));

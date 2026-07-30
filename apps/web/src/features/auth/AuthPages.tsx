@@ -1,10 +1,19 @@
 import { type FormEvent, useState } from 'react';
 import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Brand } from '@/components/brand/Brand';
-import { Alert, Button, Card, EmptyState, Input, Spinner } from '@/components/common/Primitives';
+import {
+  Alert,
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Input,
+  Spinner,
+} from '@/components/common/Primitives';
 import { useAuth } from './AuthContext';
 
 export function LoginPage() {
+  const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
   const auth = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,14 +43,16 @@ export function LoginPage() {
       <section className="auth-layout__intro" aria-label="Apresentação do DP-System">
         <Brand inverse />
         <div>
-          <p className="auth-layout__eyebrow">Ambiente local de demonstração</p>
+          <p className="auth-layout__eyebrow">
+            {isDemoMode ? 'Ambiente local de demonstração' : 'Gestão de Departamento Pessoal'}
+          </p>
           <h1>Departamento Pessoal com contexto, segurança e rastreabilidade.</h1>
           <p>
             Uma experiência integrada para apoiar as rotinas do DP sem ocultar os limites atuais do
             protótipo.
           </p>
         </div>
-        <small>Dados reais e credenciais demonstrativas não fazem parte desta etapa.</small>
+        {isDemoMode && <small>Dados fictícios · Data-base 01/07/2026</small>}
       </section>
       <section className="auth-layout__form" aria-labelledby="login-title">
         <div className="auth-layout__mobile-brand">
@@ -80,8 +91,9 @@ export function LoginPage() {
               <Alert tone="danger">{message}</Alert>
             </div>
           )}
-          {import.meta.env.VITE_DEMO_MODE === 'true' && (
+          {isDemoMode && (
             <Card>
+              <Badge tone="warning">Ambiente de demonstração</Badge>
               <strong>Conta demonstrativa</strong>
               <p>Administrador Demo · uso fictício e exclusivamente local.</p>
               <Button
