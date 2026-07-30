@@ -142,7 +142,9 @@ MVP-001.2 está `IMPLEMENTED — VISUAL SHELL AVAILABLE`. A identidade visual é
 criadas somente identidades fictícias e vínculos locais, sem grants automáticos. A MVP-001.3 está
 `IMPLEMENTED — DEMO LOGIN AVAILABLE`; a MVP-001.4 está
 `IMPLEMENTED — EXECUTIVE DASHBOARD AVAILABLE`, com métricas autorizadas e isoladas. A MVP-001.5 está
-`IMPLEMENTED — DEMO DATASET AVAILABLE`; MVP-001.6 e MVP-001.7 permanecem `NOT STARTED`, conforme o
+`IMPLEMENTED — DEMO DATASET AVAILABLE`; MVP-001.6 está
+`IMPLEMENTED — CORE DEMO FLOWS AVAILABLE`, com roteiro autenticado e estados restritos seguros;
+MVP-001.7 permanece `NOT STARTED`, conforme o
 [backlog incremental](project-management/MVP-001_IMPLEMENTATION_BACKLOG.md).
 
 ETP-015.3 está `IMPLEMENTED AND MERGED`. Seu Operational Deployment Gate permanece

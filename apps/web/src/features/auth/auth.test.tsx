@@ -68,12 +68,22 @@ describe('authenticated experience', () => {
     expect(sessionStorage.getItem('dp-system.session.v1')).toBeNull();
   });
 
-  it('redirects anonymous users and denies a missing capability', async () => {
+  it('redirects anonymous users and renders a safe state for a missing capability', async () => {
     renderWithRouter('/folha/conferencia', false);
     expect(await screen.findByRole('heading', { name: 'Entrar no DP-System' })).toBeInTheDocument();
     renderWithRouter('/folha/conferencia', true, []);
     await waitFor(() =>
-      expect(screen.getByRole('heading', { name: 'Acesso negado' })).toBeInTheDocument(),
+      expect(screen.getByRole('heading', { name: 'Acesso restrito' })).toBeInTheDocument(),
     );
+    expect(screen.getByText('Nenhum dado foi carregado.', { exact: false })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Voltar ao dashboard' })).toBeInTheDocument();
+  });
+
+  it('does not call a legacy API when the authenticated identity lacks platform management', async () => {
+    const fetch = vi.spyOn(globalThis, 'fetch');
+    renderWithRouter('/colaboradores', true, []);
+    expect(await screen.findByRole('heading', { name: 'Acesso restrito' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Novo colaborador' })).not.toBeInTheDocument();
+    expect(fetch).not.toHaveBeenCalled();
   });
 });

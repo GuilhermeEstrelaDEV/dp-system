@@ -8,8 +8,7 @@ Estes cenários descrevem o uso do dataset; não criam fluxos ou permissões nov
 2. Selecionar Horizonte e confirmar nome e contexto no shell.
 3. Abrir o dashboard e observar o estado restrito esperado por zero grants.
 4. Trocar para Atlas e confirmar que o contexto muda sem resíduos da Horizonte.
-5. Consultar, quando a rota legada fizer parte do roteiro aprovado, as estruturas e registros
-   fictícios já persistidos.
+5. Abrir uma rota administrativa e confirmar o estado restrito sem carregamento de dados.
 6. Encerrar a sessão local.
 
 ## Analista RH Demo
@@ -27,3 +26,7 @@ capabilities é responsabilidade da governança de autorização, não deste pro
 
 A execução completa de apresentação e o gate GO/NO-GO pertencem à MVP-001.7. Nenhuma ação de
 cadastro, edição ou desligamento foi adicionada nesta etapa.
+
+O [roteiro preliminar](../presentation/MVP-001_PRELIMINARY_DEMO_SCRIPT.md) e a
+[matriz de capabilities](MVP-001_FLOW_CAPABILITY_MATRIX.md) registram o recorte executável e os
+bloqueios. As APIs legadas não são usadas como atalho para contornar a ETP-015.4.

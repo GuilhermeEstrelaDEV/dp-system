@@ -152,6 +152,6 @@ describe('payroll period public history', () => {
 
   it('denies the UI without the history capability', async () => {
     renderWithRouter('/folha/competencias/period-1/historico', true, []);
-    expect(await screen.findByRole('heading', { name: 'Acesso negado' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Acesso restrito' })).toBeInTheDocument();
   });
 });

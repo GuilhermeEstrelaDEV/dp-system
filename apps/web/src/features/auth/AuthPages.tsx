@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react';
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Brand } from '@/components/brand/Brand';
-import { Alert, Button, Card, Input, Spinner } from '@/components/common/Primitives';
+import { Alert, Button, Card, EmptyState, Input, Spinner } from '@/components/common/Primitives';
 import { useAuth } from './AuthContext';
 
 export function LoginPage() {
@@ -169,10 +169,25 @@ export function CapabilityRoute({ capability }: { readonly capability: string })
   const auth = useAuth();
   if (!auth.hasCapability(capability))
     return (
-      <main>
-        <h1>Acesso negado</h1>
-        <p>Seu contexto atual não possui a capacidade necessária.</p>
-      </main>
+      <section aria-label="Acesso restrito">
+        <h1 className="sr-only">Acesso restrito</h1>
+        <EmptyState
+          title="Recurso não disponível"
+          description="Sua identidade está autenticada, mas o contexto atual não possui acesso a este recurso. Nenhum dado foi carregado."
+          action={
+            <nav aria-label="Alternativas seguras" className="flex flex-wrap justify-center gap-2">
+              <Link className="ui-button ui-button--primary" to="/">
+                Voltar ao dashboard
+              </Link>
+              {auth.companies.length > 1 && (
+                <Link className="ui-button ui-button--secondary" to="/selecionar-empresa">
+                  Trocar empresa
+                </Link>
+              )}
+            </nav>
+          }
+        />
+      </section>
     );
   return <Outlet />;
 }
