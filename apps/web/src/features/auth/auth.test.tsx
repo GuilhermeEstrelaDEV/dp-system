@@ -32,6 +32,17 @@ describe('authenticated experience', () => {
       )
       .mockResolvedValueOnce(
         success([{ id: 'company', legalName: 'Empresa SA', tradeName: 'Empresa' }]),
+      )
+      .mockResolvedValueOnce(
+        success({
+          context: {
+            companyId: 'company',
+            companyName: 'Empresa',
+            generatedAt: '2026-07-30T00:00:00Z',
+            timezone: 'UTC',
+          },
+          access: 'RESTRICTED',
+        }),
       );
     renderWithRouter('/login', false);
     fireEvent.change(screen.getByLabelText('E-mail'), { target: { value: 'user@example.com' } });
@@ -39,7 +50,7 @@ describe('authenticated experience', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Entrar' }));
     expect(await screen.findByRole('heading', { name: 'Selecionar empresa' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Acessar empresa' }));
-    expect(await screen.findByRole('heading', { name: 'Visão geral' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Visão executiva' })).toBeInTheDocument();
     await waitFor(() =>
       expect(sessionStorage.getItem('dp-system.session.v1')).toContain('company-token'),
     );

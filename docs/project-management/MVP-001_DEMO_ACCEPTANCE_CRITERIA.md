@@ -11,7 +11,7 @@ hash real, sessão revogável e zero grants automáticos. Isso não conclui o pr
 - [ ] seed/bootstrap cria apenas dados fictícios e identificados como demonstrativos;
 - [ ] login demonstrativo funciona com orientação segura de credencial local;
 - [ ] seleção/troca de empresa respeita vínculos e isolamento no backend;
-- [ ] dashboard apresenta dados coerentes e rotulados como demonstrativos;
+- [x] dashboard apresenta dados persistidos, coerentes, autorizados e rotulados como demonstrativos;
 - [ ] fluxo estrutura → colaborador → contrato funciona do início ao fim;
 - [ ] logout local e seu limite de revogação estão claros;
 - [ ] nenhuma tela aparenta executar capacidade inexistente;

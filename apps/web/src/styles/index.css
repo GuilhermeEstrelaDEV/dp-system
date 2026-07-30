@@ -680,3 +680,62 @@ button:disabled,
     transition-duration: 0.01ms !important;
   }
 }
+
+.dashboard-visuals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.dashboard-panel h2 {
+  margin: 0 0 1rem;
+  color: var(--color-brand-950);
+  font-size: 1rem;
+}
+.dashboard-bars,
+.dashboard-activity {
+  display: grid;
+  gap: 0.8rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.dashboard-bars li {
+  display: grid;
+  grid-template-columns: minmax(7rem, 1fr) minmax(7rem, 2fr) 2rem;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+}
+.dashboard-bars__track {
+  height: 0.65rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-brand-100);
+}
+.dashboard-bars__track > span {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  background: var(--color-brand-700);
+}
+.dashboard-activity li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.85rem;
+}
+.dashboard-activity time {
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+.dashboard-shortcuts {
+  margin-top: 1.5rem;
+}
+.dashboard-shortcuts a {
+  color: var(--color-brand-700);
+  font-weight: 700;
+}
