@@ -271,21 +271,27 @@ async function main() {
 
   const company = await prisma.company.upsert({
     where: { taxId: '00.000.000/0001-00' },
-    update: {},
+    update: {
+      legalName: 'Horizonte Serviços Empresariais Demonstrativos Ltda.',
+      tradeName: 'Horizonte Demo',
+      status: 'ACTIVE',
+    },
     create: {
-      legalName: 'Empresa Fictícia de Demonstração Ltda.',
-      tradeName: 'Empresa Demonstração',
+      id: '10000000-0000-4000-8000-000000000001',
+      legalName: 'Horizonte Serviços Empresariais Demonstrativos Ltda.',
+      tradeName: 'Horizonte Demo',
       taxId: '00.000.000/0001-00',
     },
   });
 
   await prisma.branch.upsert({
     where: { companyId_code: { companyId: company.id, code: 'MATRIZ-DEMO' } },
-    update: {},
+    update: { name: 'Matriz Horizonte Demonstrativa', status: 'ACTIVE' },
     create: {
+      id: '30000000-0000-4000-8000-000000000001',
       companyId: company.id,
       code: 'MATRIZ-DEMO',
-      name: 'Filial Matriz Demonstrativa',
+      name: 'Matriz Horizonte Demonstrativa',
       address: { city: 'Cidade Fictícia', state: 'DF' },
     },
   });

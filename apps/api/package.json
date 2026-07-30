@@ -15,7 +15,8 @@
     "prisma:validate": "prisma validate --schema prisma/schema.prisma",
     "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
     "prisma:seed": "prisma db seed --schema prisma/schema.prisma",
-    "prisma:seed:demo": "tsx prisma/demo-seed.ts"
+    "prisma:seed:demo": "tsx prisma/demo-seed.ts",
+    "prisma:demo:verify": "tsx prisma/demo-verify.ts"
   },
   "dependencies": {
     "@dp-system/config": "workspace:*",

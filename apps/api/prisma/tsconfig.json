@@ -1,9 +1,9 @@
 {
   "extends": "@dp-system/tsconfig/nest.json",
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "..",
     "outDir": "../.prisma-tsbuild",
     "noEmit": true
   },
-  "include": ["seed.ts"]
+  "include": ["seed.ts", "demo-seed.ts", "demo-verify.ts"]
 }

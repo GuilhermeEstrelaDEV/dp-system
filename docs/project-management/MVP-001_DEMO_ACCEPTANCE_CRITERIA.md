@@ -7,8 +7,8 @@ hash real, sessão revogável e zero grants automáticos. Isso não conclui o pr
 
 - [ ] instalação e inicialização documentadas em uma máquina local suportada;
 - [ ] ambiente sobe sem edição manual de código;
-- [ ] migrations novas e existentes são aplicadas sem alterar migrations mescladas;
-- [ ] seed/bootstrap cria apenas dados fictícios e identificados como demonstrativos;
+- [x] migrations existentes são aplicadas sem alterar migrations mescladas;
+- [x] seed/bootstrap cria apenas dados fictícios e identificados como demonstrativos;
 - [ ] login demonstrativo funciona com orientação segura de credencial local;
 - [ ] seleção/troca de empresa respeita vínculos e isolamento no backend;
 - [x] dashboard apresenta dados persistidos, coerentes, autorizados e rotulados como demonstrativos;
@@ -18,6 +18,6 @@ hash real, sessão revogável e zero grants automáticos. Isso não conclui o pr
 - [ ] nenhum erro crítico aparece no console do navegador ou da API;
 - [ ] nenhuma resposta 5xx ocorre durante o roteiro aprovado;
 - [ ] apresentação de 15 minutos conclui sem reinício do ambiente;
-- [ ] reset demonstrativo restaura o baseline e falha de forma segura fora do local;
+- [x] reset demonstrativo restaura o baseline e falha de forma segura fora do local;
 - [ ] lint, typecheck, testes e build estão aprovados;
 - [ ] smoke tests confirmam dados, capabilities e zero vazamento entre empresas.
