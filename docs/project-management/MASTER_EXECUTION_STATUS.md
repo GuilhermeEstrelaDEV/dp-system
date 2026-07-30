@@ -321,5 +321,7 @@
 - **MVP-001.3 — `IMPLEMENTED — DEMO LOGIN AVAILABLE`:** identidades fictícias, vínculos explícitos,
   sessão revogável e seleção empresarial estão disponíveis somente no ambiente local, sem grants
   automáticos.
-- **MVP-001.4 — `NOT STARTED`:** o fluxo executivo principal ainda não foi iniciado.
+- **MVP-001.4 — `IMPLEMENTED — EXECUTIVE DASHBOARD AVAILABLE`:** resumo autenticado da empresa
+  ativa, seções por capability, métricas persistidas, estados seguros e visualizações acessíveis.
+- **MVP-001.5 — `NOT STARTED`:** roteiro e acceptance final ainda não foram iniciados.
 - **ETP-015.4 — `NOT STARTED`:** nenhuma autorização ou rota legada foi antecipada pelo MVP.

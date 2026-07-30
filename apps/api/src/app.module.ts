@@ -32,6 +32,7 @@ import { PayrollReviewsModule } from './modules/payroll-reviews/payroll-reviews.
 import { PayrollClosuresModule } from './modules/payroll-closures/payroll-closures.module';
 import { VariableCompensationModule } from './modules/variable-compensation/variable-compensation.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
     PrismaModule,
     AuthModule,
+    DashboardModule,
     HealthModule,
     CompaniesModule,
     BranchesModule,

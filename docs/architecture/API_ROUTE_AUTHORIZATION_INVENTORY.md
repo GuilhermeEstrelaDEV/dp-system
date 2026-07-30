@@ -7,6 +7,7 @@
 | Health                | `/health`, `/health/live`, `/health/ready`                           | Pública                   | Mantida pública para operação                                            |
 | Auth login            | `POST /auth/login`                                                   | Pública                   | Rate limit; credenciais validadas                                        |
 | Auth bootstrap        | `GET /auth/me`, `GET /auth/companies`, `POST /auth/context`          | Autenticada               | JWT; seleção valida assignment                                           |
+| Dashboard executivo   | `GET /dashboard/summary`                                             | Autenticada e empresarial | JWT; empresa ativa e seções filtradas por capability                     |
 | Access grants         | seis rotas sob `/access-grants`                                      | Autenticada e empresarial | JWT, capability e validação no serviço                                   |
 | Swagger               | `/api/docs`, `/api/docs-json`                                        | Pública/configurável      | Somente quando habilitado                                                |
 | Companies             | todas sob `/companies`                                               | Ainda legada              | Sem migração neste incremento                                            |

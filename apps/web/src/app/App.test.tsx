@@ -1,14 +1,31 @@
 import { fireEvent, screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { renderWithRouter } from '@/test/renderWithRouter';
 
 describe('application shell', () => {
-  it('renders semantic layout regions, brand and demonstrative dashboard', () => {
+  it('renders semantic layout regions, brand and demonstrative dashboard', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          data: {
+            context: {
+              companyId: 'company-1',
+              companyName: 'Empresa Teste',
+              generatedAt: '2026-07-30T00:00:00Z',
+              timezone: 'UTC',
+            },
+            access: 'RESTRICTED',
+          },
+          meta: {},
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    );
     renderWithRouter();
     expect(screen.getByRole('banner')).toBeInTheDocument();
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('navigation', { name: 'Navegação principal' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Visão geral' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Visão executiva' })).toBeInTheDocument();
     expect(screen.getByText('DP-System')).toBeInTheDocument();
     expect(screen.getAllByText(/Ambiente (demonstrativo|local)/).length).toBeGreaterThan(0);
   });
