@@ -318,5 +318,8 @@
 - **MVP-001.2 — `IMPLEMENTED — VISUAL SHELL AVAILABLE`:** identidade temporária, tokens, marca SVG,
   AppShell, navegação agrupada, estados seguros e login visual foram consolidados sem mudar o fluxo
   funcional. Credenciais, identidades e massa fictícia pertencem à MVP-001.3.
-- **MVP-001.3 — `NOT STARTED`:** nenhuma credencial, assignment ou massa demonstrativa foi criada.
+- **MVP-001.3 — `IMPLEMENTED — DEMO LOGIN AVAILABLE`:** identidades fictícias, vínculos explícitos,
+  sessão revogável e seleção empresarial estão disponíveis somente no ambiente local, sem grants
+  automáticos.
+- **MVP-001.4 — `NOT STARTED`:** o fluxo executivo principal ainda não foi iniciado.
 - **ETP-015.4 — `NOT STARTED`:** nenhuma autorização ou rota legada foi antecipada pelo MVP.

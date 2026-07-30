@@ -120,14 +120,22 @@ function setup() {
   info('Subindo somente o PostgreSQL da demonstração...');
   compose('up', '--detach', 'postgres');
   waitForPostgres();
-  const childEnv = { ...process.env, DATABASE_URL: databaseUrl(env) };
+  const childEnv = {
+    ...process.env,
+    ...env,
+    DATABASE_URL: databaseUrl(env),
+    DEMO_ENV: 'local-demo',
+    DEMO_SEED_ENABLED: 'true',
+  };
   info('Gerando Prisma Client...');
   run('pnpm', ['prisma:generate'], { env: childEnv });
   info('Aplicando migrations existentes...');
   run('pnpm', ['prisma:migrate:deploy'], { env: childEnv });
   info('Executando o seed demonstrativo disponível...');
   run('pnpm', ['prisma:seed'], { env: childEnv });
-  info('Setup concluído. O seed atual ainda não fornece credenciais de login (MVP-001.3).');
+  info('Criando identidades e vínculos exclusivamente demonstrativos...');
+  run('pnpm', ['prisma:seed:demo'], { env: childEnv });
+  info('Setup concluído com massa fictícia local. Consulte docs/product/MVP-001_DEMO_ACCOUNTS.md.');
   showUrls(env);
   info('Execute pnpm demo:start para iniciar API e frontend.');
 }

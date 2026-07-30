@@ -103,12 +103,12 @@ export class ApplicationContextService {
       role.permissions.map(({ permission }) => permission.code),
     );
     const accessGrants = [
-      ...user.substitutionsAsSubstitute.map((grant) => ({
+      ...(user.substitutionsAsSubstitute ?? []).map((grant) => ({
         id: grant.id,
         type: 'SUBSTITUTION' as const,
         capabilities: grant.capabilities,
       })),
-      ...user.emergencyAccesses.map((grant) => ({
+      ...(user.emergencyAccesses ?? []).map((grant) => ({
         id: grant.id,
         type: 'EMERGENCY' as const,
         capabilities: grant.capabilities,

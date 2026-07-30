@@ -40,7 +40,9 @@ describe('authenticated experience', () => {
     expect(await screen.findByRole('heading', { name: 'Selecionar empresa' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Acessar empresa' }));
     expect(await screen.findByRole('heading', { name: 'Visão geral' })).toBeInTheDocument();
-    expect(sessionStorage.getItem('dp-system.session.v1')).toContain('company-token');
+    await waitFor(() =>
+      expect(sessionStorage.getItem('dp-system.session.v1')).toContain('company-token'),
+    );
   });
 
   it('shows invalid credentials without creating a session', async () => {
@@ -51,7 +53,7 @@ describe('authenticated experience', () => {
     fireEvent.change(screen.getByLabelText('E-mail'), { target: { value: 'user@example.com' } });
     fireEvent.change(screen.getByLabelText('Senha'), { target: { value: 'invalid123' } });
     fireEvent.click(screen.getByRole('button', { name: 'Entrar' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Credenciais inválidas');
+    expect(await screen.findByRole('alert')).toHaveTextContent('E-mail ou senha inválidos.');
     expect(sessionStorage.getItem('dp-system.session.v1')).toBeNull();
   });
 

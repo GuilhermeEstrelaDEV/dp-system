@@ -38,7 +38,7 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   me(@CurrentPrincipal() principal: AuthenticatedPrincipal) {
-    return principal;
+    return this.auth.currentUser(principal);
   }
 
   @Get('companies')
@@ -63,5 +63,19 @@ export class AuthController {
       entityId: dto.companyId,
     });
     return token;
+  }
+
+  @Post('logout')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async logout(@CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    const revoked = await this.auth.logout(principal);
+    await this.audit.append({
+      principal,
+      action: 'AUTH_LOGOUT_SUCCEEDED',
+      entityType: 'Session',
+      entityId: principal.sessionId,
+    });
+    return { revoked };
   }
 }

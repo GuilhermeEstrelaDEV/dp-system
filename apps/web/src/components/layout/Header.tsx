@@ -22,7 +22,7 @@ export function Header(props: HeaderProps) {
   const auth = useAuth();
   const navigate = useNavigate();
   const company = auth.companies.find((item) => item.id === auth.activeCompanyId);
-  const actorLabel = auth.user?.actorId ? `Usuário ${auth.user.actorId.slice(0, 8)}` : 'Usuário';
+  const actorLabel = auth.user?.displayName ?? 'Usuário';
 
   return (
     <header className="app-topbar">
@@ -68,9 +68,10 @@ export function Header(props: HeaderProps) {
           </span>
           <span className="user-menu__copy">
             <strong>{actorLabel}</strong>
-            <small>Sessão local</small>
+            <small>{auth.user?.email}</small>
+            <small>{auth.user?.roleCodes?.join(', ') || 'Sem papel ativo'}</small>
           </span>
-          <Button onClick={auth.logout} type="button" variant="ghost">
+          <Button onClick={() => void auth.logout()} type="button" variant="ghost">
             Sair
           </Button>
         </div>

@@ -75,6 +75,7 @@ services:
     container_name: dp-system-demo-web
     environment:
       VITE_API_URL: ${VITE_API_URL}
+      VITE_DEMO_MODE: ${VITE_DEMO_MODE:-true}
     ports:
       - '${WEB_PORT}:5173'
     networks:

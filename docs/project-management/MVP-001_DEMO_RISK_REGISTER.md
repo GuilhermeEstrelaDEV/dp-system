@@ -1,5 +1,9 @@
 # MVP-001 — Registro de riscos da demonstração
 
+O seed da MVP-001.3 falha fora do modo local, persiste apenas hashes e não atribui capabilities.
+Refresh, MFA e recuperação de senha permanecem fora do protótipo e devem ser apresentados como
+limitações explícitas.
+
 | ID      | Risco                                              | Probabilidade/impacto | Mitigação e evidência requerida                                           |
 | ------- | -------------------------------------------------- | --------------------- | ------------------------------------------------------------------------- |
 | MVP-R01 | seed atual não permite login                       | alta/alta             | identidade e vínculo fictícios explícitos, testados e documentados        |

@@ -7,6 +7,7 @@ import { useAuth } from './AuthContext';
 export function LoginPage() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string>();
@@ -15,12 +16,15 @@ export function LoginPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (auth.isLoading) return;
     setError(undefined);
     try {
-      await auth.login(email, password);
-      navigate('/selecionar-empresa', { replace: true });
+      await auth.login(email.trim().toLowerCase(), password);
+      navigate('/selecionar-empresa', { replace: true, state: location.state });
     } catch (caught: unknown) {
       setError(caught instanceof Error ? caught.message : 'Não foi possível entrar.');
+    } finally {
+      setPassword('');
     }
   }
 
@@ -76,6 +80,19 @@ export function LoginPage() {
               <Alert tone="danger">{message}</Alert>
             </div>
           )}
+          {import.meta.env.VITE_DEMO_MODE === 'true' && (
+            <Card>
+              <strong>Conta demonstrativa</strong>
+              <p>Administrador Demo · uso fictício e exclusivamente local.</p>
+              <Button
+                onClick={() => setEmail('admin.demo@dp-system.local')}
+                type="button"
+                variant="ghost"
+              >
+                Preencher e-mail demo
+              </Button>
+            </Card>
+          )}
         </form>
       </section>
     </main>
@@ -85,13 +102,15 @@ export function LoginPage() {
 export function CompanySelectionPage() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = (location.state as { from?: string } | null)?.from ?? '/';
   const [error, setError] = useState<string>();
   if (!auth.token) return <Navigate to="/login" replace />;
   return (
     <main className="selection-page">
       <div className="selection-page__header">
         <Brand />
-        <Button onClick={auth.logout} variant="ghost">
+        <Button onClick={() => void auth.logout()} variant="ghost">
           Encerrar sessão local
         </Button>
       </div>
@@ -108,12 +127,13 @@ export function CompanySelectionPage() {
                 </span>
                 <strong>{company.tradeName}</strong>
                 <p>{company.legalName}</p>
+                {company.id === auth.activeCompanyId && <p>Empresa ativa</p>}
                 <Button
                   disabled={auth.isLoading}
                   onClick={async () => {
                     try {
                       await auth.selectCompany(company.id);
-                      navigate('/', { replace: true });
+                      navigate(returnTo, { replace: true });
                     } catch (caught: unknown) {
                       setError(
                         caught instanceof Error ? caught.message : 'Falha ao selecionar empresa.',
@@ -127,6 +147,9 @@ export function CompanySelectionPage() {
             </li>
           ))}
         </ul>
+        {auth.companies.length === 0 && (
+          <Alert tone="warning">Nenhuma empresa ativa está vinculada a esta identidade.</Alert>
+        )}
         {error && <Alert tone="danger">{error}</Alert>}
       </section>
     </main>
@@ -136,6 +159,7 @@ export function CompanySelectionPage() {
 export function AuthenticatedRoute() {
   const auth = useAuth();
   const location = useLocation();
+  if (auth.isInitializing) return <Spinner label="Validando sessão" />;
   if (!auth.token) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   if (!auth.activeCompanyId) return <Navigate to="/selecionar-empresa" replace />;
   return <Outlet />;
