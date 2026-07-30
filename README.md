@@ -28,6 +28,9 @@ pnpm demo:setup
 pnpm demo:start
 pnpm demo:status
 pnpm demo:data:verify
+pnpm demo:verify
+pnpm demo:ready
+pnpm demo:rehearse
 pnpm demo:stop
 pnpm demo:reset -- --confirm-reset
 ```
@@ -40,6 +43,9 @@ sem grants automáticos. Nenhuma configuração é adequada para produção.
 A MVP-001.5 fornece um [dataset determinístico](docs/product/MVP-001_DEMO_DATASET.md) para duas
 empresas. `pnpm demo:data:verify` valida contagens, isolamento, zero grants e readiness sem expor
 senhas ou criar autorização.
+
+Antes de apresentar, siga o [guia do operador](docs/demo/MVP-001_DEMO_OPERATOR_GUIDE.md) e exija
+`DEMO STATUS: GO` em `pnpm demo:verify`.
 
 ## Qualidade e validação
 

@@ -14,10 +14,11 @@ limitações explícitas.
 | MVP-R06 | fluxo falhar por massa relacional incompleta       | mitigado/média        | dataset determinístico e `demo:data:verify`; leitura segue bloqueada por autorização |
 | MVP-R07 | APIs legadas permanecerem sem autorização uniforme | alta/alta             | gate pré-fetch, roteiro restrito e migração exclusiva na ETP-015.4                   |
 | MVP-R08 | logout ser interpretado como revogação global      | média/média           | revogar sessão atual e documentar que revogação global permanece follow-up           |
-| MVP-R09 | dependência de Docker/portas impedir start         | média/média           | preflight, health checks e diagnóstico objetivo                                      |
-| MVP-R10 | apresentação depender de internet                  | baixa/alta            | operação integralmente local e dependências previamente instaladas                   |
+| MVP-R09 | dependência de Docker/portas impedir start         | mitigado/média        | `demo:verify`, health checks, diagnóstico e ação corretiva objetiva                  |
+| MVP-R10 | apresentação depender de internet                  | mitigado/alta         | checklist offline e operação local previamente validada                              |
 | MVP-R11 | gate produtivo ser confundido com gate local       | média/média           | manter gate de destino pendente e registrar separação explícita                      |
 | MVP-R12 | escopo crescer para módulos complexos              | alta/média            | MoSCoW, um fluxo principal e gates por incremento                                    |
+| MVP-R13 | relatório operacional expor segredo                | baixa/alta            | sanitização testada, metadados mínimos e diretório local ignorado                    |
 
 Owner, prazo e aceitação de cada risco deverão ser definidos na implementação; não são presumidos
 nesta descoberta.

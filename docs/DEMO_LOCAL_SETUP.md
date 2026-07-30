@@ -21,6 +21,7 @@ pnpm demo:setup
 pnpm demo:start
 pnpm demo:status
 pnpm demo:data:verify
+pnpm demo:verify
 ```
 
 `demo:setup` valida ferramentas, cria `.env.demo.local` somente se ele não existir, inicia o
@@ -65,6 +66,12 @@ Compose padrão ou de outros projetos não são removidos.
 
 O seed exige ainda `DEMO_MODE=true`, banco `dp_system_demo` em host local e ambiente não produtivo.
 A data-base é `2026-07-01`.
+
+## Gate de apresentação
+
+`pnpm demo:verify` executa preflight, readiness, dataset e smoke autenticado sem modificar o banco.
+`pnpm demo:ready` inicia os serviços e executa o mesmo gate. `pnpm demo:rehearse` repete somente o
+ensaio funcional sobre o ambiente já saudável. Apresente apenas após o resultado `DEMO STATUS: GO`.
 
 ## Recursos previsíveis
 

@@ -13,6 +13,7 @@
 | Conflito                    | `409`                           | explicar conflito sem resposta bruta                             |
 | Validação                   | `400`                           | manter campos e indicar correção                                 |
 | Rota inexistente            | roteador `*`                    | página 404, sem placeholder funcional                            |
+| Gate operacional bloqueado  | `demo:verify` retorna `NO-GO`   | não apresentar; seguir a ação corretiva e repetir o gate         |
 
 O estado restrito não expõe o código interno da capability, não renderiza dados parciais e preserva
 links seguros para dashboard e, quando aplicável, troca de empresa.

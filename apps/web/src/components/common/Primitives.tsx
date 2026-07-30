@@ -10,9 +10,12 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   readonly variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
 };
 
-export function Button({ className = '', variant = 'primary', ...props }: ButtonProps) {
-  return <button className={`ui-button ui-button--${variant} ${className}`} {...props} />;
-}
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  { className = '', variant = 'primary', ...props },
+  ref,
+) {
+  return <button className={`ui-button ui-button--${variant} ${className}`} ref={ref} {...props} />;
+});
 
 export const IconButton = forwardRef<HTMLButtonElement, ButtonProps>(function IconButton(
   { className = '', ...props },

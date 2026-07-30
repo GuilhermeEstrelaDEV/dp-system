@@ -4,10 +4,12 @@ import { Badge, Button, IconButton, Spinner } from '@/components/common/Primitiv
 import { useAuth } from '@/features/auth/AuthContext';
 
 interface HeaderProps {
+  readonly demoHelpTriggerRef: RefObject<HTMLButtonElement | null>;
   readonly isMobileMenuOpen: boolean;
   readonly isSidebarCollapsed: boolean;
   readonly mobileMenuTriggerRef: RefObject<HTMLButtonElement | null>;
   readonly onMobileMenuToggle: () => void;
+  readonly onDemoHelpOpen: () => void;
   readonly onSidebarToggle: () => void;
 }
 
@@ -16,6 +18,8 @@ export function Header(props: HeaderProps) {
     isMobileMenuOpen,
     isSidebarCollapsed,
     mobileMenuTriggerRef,
+    demoHelpTriggerRef,
+    onDemoHelpOpen,
     onMobileMenuToggle,
     onSidebarToggle,
   } = props;
@@ -61,7 +65,19 @@ export function Header(props: HeaderProps) {
       </div>
       <div className="app-topbar__end">
         {auth.isLoading && <Spinner label="Atualizando" />}
-        <Badge tone="warning">Ambiente local · Demo</Badge>
+        {import.meta.env.VITE_DEMO_MODE === 'true' && (
+          <>
+            <Badge tone="warning">Ambiente de demonstração</Badge>
+            <Button
+              onClick={onDemoHelpOpen}
+              ref={demoHelpTriggerRef}
+              type="button"
+              variant="secondary"
+            >
+              Ajuda da demonstração
+            </Button>
+          </>
+        )}
         <div className="user-menu">
           <span aria-hidden="true" className="user-menu__avatar">
             {actorLabel.slice(-2).toUpperCase()}

@@ -2,6 +2,7 @@ node_modules/
 dist/
 .turbo/
 coverage/
+.demo-reports/
 .env
 .env.*
 !.env.example

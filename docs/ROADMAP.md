@@ -143,8 +143,8 @@ criadas somente identidades fictícias e vínculos locais, sem grants automátic
 `IMPLEMENTED — DEMO LOGIN AVAILABLE`; a MVP-001.4 está
 `IMPLEMENTED — EXECUTIVE DASHBOARD AVAILABLE`, com métricas autorizadas e isoladas. A MVP-001.5 está
 `IMPLEMENTED — DEMO DATASET AVAILABLE`; MVP-001.6 está
-`IMPLEMENTED — CORE DEMO FLOWS AVAILABLE`, com roteiro autenticado e estados restritos seguros;
-MVP-001.7 permanece `NOT STARTED`, conforme o
+`IMPLEMENTED — SAFE CORE DEMO FLOWS AVAILABLE`, com roteiro autenticado e estados restritos seguros;
+MVP-001.7 está `IMPLEMENTED — DEMO MODE AND GO/NO-GO AVAILABLE`; MVP-001.8 permanece `NOT STARTED`, conforme o
 [backlog incremental](project-management/MVP-001_IMPLEMENTATION_BACKLOG.md).
 
 ETP-015.3 está `IMPLEMENTED AND MERGED`. Seu Operational Deployment Gate permanece

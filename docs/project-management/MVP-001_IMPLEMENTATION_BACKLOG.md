@@ -5,15 +5,16 @@
 `IN PROGRESS`. Bootstrap, shell visual, login demonstrativo e dashboard executivo estão disponíveis.
 O protótipo completo ainda não está pronto.
 
-| Ordem | Incremento                          | Estado                                        | Critério de saída                                                    |
-| ----- | ----------------------------------- | --------------------------------------------- | -------------------------------------------------------------------- |
-| 1     | MVP-001.1 Bootstrap e reset         | `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`     | setup/start/stop/status/reset isolados e documentados                |
-| 2     | MVP-001.2 Identidade e shell visual | `IMPLEMENTED — VISUAL SHELL AVAILABLE`        | marca temporária, tokens, navegação honesta e shell desktop/notebook |
-| 3     | MVP-001.3 Identidades e massa demo  | `IMPLEMENTED — DEMO LOGIN AVAILABLE`          | login fictício, empresas, assignments e dados sem grant implícito    |
-| 4     | MVP-001.4 Dashboard executivo       | `IMPLEMENTED — EXECUTIVE DASHBOARD AVAILABLE` | métricas reais, autorizadas e isoladas por empresa                   |
-| 5     | MVP-001.5 Dataset demonstrativo     | `IMPLEMENTED — DEMO DATASET AVAILABLE`        | massa determinística, segura, isolada e verificável                  |
-| 6     | MVP-001.6 Fluxos principais         | `IMPLEMENTED — CORE DEMO FLOWS AVAILABLE`     | login, contexto, dashboard, restrição segura, troca e logout         |
-| 7     | MVP-001.7 Roteiro e acceptance      | `NOT STARTED`                                 | smoke test, roteiro de 15 minutos e guia do apresentador             |
+| Ordem | Incremento                          | Estado                                           | Critério de saída                                                    |
+| ----- | ----------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------- |
+| 1     | MVP-001.1 Bootstrap e reset         | `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`        | setup/start/stop/status/reset isolados e documentados                |
+| 2     | MVP-001.2 Identidade e shell visual | `IMPLEMENTED — VISUAL SHELL AVAILABLE`           | marca temporária, tokens, navegação honesta e shell desktop/notebook |
+| 3     | MVP-001.3 Identidades e massa demo  | `IMPLEMENTED — DEMO LOGIN AVAILABLE`             | login fictício, empresas, assignments e dados sem grant implícito    |
+| 4     | MVP-001.4 Dashboard executivo       | `IMPLEMENTED — EXECUTIVE DASHBOARD AVAILABLE`    | métricas reais, autorizadas e isoladas por empresa                   |
+| 5     | MVP-001.5 Dataset demonstrativo     | `IMPLEMENTED — DEMO DATASET AVAILABLE`           | massa determinística, segura, isolada e verificável                  |
+| 6     | MVP-001.6 Fluxos principais         | `IMPLEMENTED — SAFE CORE DEMO FLOWS AVAILABLE`   | login, contexto, dashboard, restrição segura, troca e logout         |
+| 7     | MVP-001.7 Roteiro e acceptance      | `IMPLEMENTED — DEMO MODE AND GO/NO-GO AVAILABLE` | smoke test, gate GO/NO-GO e guia do apresentador                     |
+| 8     | MVP-001.8 Estabilização final       | `NOT STARTED`                                    | ensaio aceito, pendências críticas encerradas e aceite final         |
 
 ## Dependências e gates
 
@@ -30,5 +31,5 @@ MVP-001.3 preparou identidades fictícias sem alterar o modelo de segurança. A 
 visão autorizada documentada na [matriz de métricas](../product/MVP-001_DASHBOARD_METRICS.md). A
 MVP-001.5 fornece o [dataset determinístico](../product/MVP-001_DEMO_DATASET.md). MVP-001.6 entrega
 os [fluxos essenciais seguros](../product/MVP-001_CORE_FLOWS.md), sem antecipar a proteção de backend
-da ETP-015.4 nem criar grants. MVP-001.7 permanece `NOT STARTED`; o protótipo completo ainda não
-está pronto.
+da ETP-015.4 nem criar grants. MVP-001.7 entrega o modo de apresentação e o gate operacional
+GO/NO-GO. MVP-001.8 permanece `NOT STARTED`; o protótipo completo ainda não está pronto.

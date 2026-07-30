@@ -1,6 +1,7 @@
 import { copyFileSync, existsSync, readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import process from 'node:process';
+import { runReadiness } from './demo-readiness.mjs';
 
 /* global console */
 
@@ -208,13 +209,33 @@ function status() {
   showUrls(env);
 }
 
-function verify() {
+function verifyData() {
   validateTools();
   const env = prepareEnvironment();
   verifyDataset(env);
 }
 
+async function verify() {
+  process.exitCode = await runReadiness({ report: args.has('--report') });
+}
+
+async function ready() {
+  start();
+  process.exitCode = await runReadiness({ report: args.has('--report') });
+  if (process.exitCode === 0) {
+    const env = prepareEnvironment();
+    showUrls(env);
+    info('Contas fictícias: Administrador Demo e Analista RH Demo. Consulte a documentação local.');
+    info('Roteiro: docs/demo/MVP-001_DEMO_OPERATOR_GUIDE.md.');
+  }
+}
+
+async function rehearse() {
+  process.exitCode = await runReadiness({ smokeOnly: true, report: args.has('--report') });
+}
+
 function reset() {
+  const startedAt = Date.now();
   validateTools();
   prepareEnvironment();
   if (!args.has('--confirm-reset')) {
@@ -228,15 +249,27 @@ function reset() {
   info('Dados demonstrativos removidos. Recriando o baseline local...');
   setup();
   start();
-  verify();
+  verifyData();
   info('Credenciais fictícias: consulte docs/product/MVP-001_DEMO_ACCOUNTS.md.');
+  info(`Reset concluído em ${Math.ceil((Date.now() - startedAt) / 1000)} segundos.`);
+  info('Próximo passo recomendado: pnpm demo:verify.');
 }
 
-const commands = { setup, start, stop, status, reset, verify };
+const commands = {
+  setup,
+  start,
+  stop,
+  status,
+  reset,
+  'data-verify': verifyData,
+  verify,
+  ready,
+  rehearse,
+};
 if (!command || !(command in commands)) {
   fail(
     'comando desconhecido.',
-    'Use pnpm demo:setup, demo:start, demo:stop, demo:status, demo:data:verify ou demo:reset -- --confirm-reset.',
+    'Use pnpm demo:setup, demo:start, demo:stop, demo:status, demo:data:verify, demo:verify, demo:ready, demo:rehearse ou demo:reset -- --confirm-reset.',
   );
 }
-commands[command]();
+await commands[command]();

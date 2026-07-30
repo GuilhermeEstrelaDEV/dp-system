@@ -8,4 +8,5 @@ afterEach(() => {
   queryClient.clear();
   sessionStorage.clear();
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });

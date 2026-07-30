@@ -22,6 +22,10 @@ hash real, sessão revogável e zero grants automáticos. Isso não conclui o pr
 - [x] lint, typecheck, testes e build da MVP-001.6 estão aprovados;
 - [ ] smoke tests confirmam dados, capabilities e zero vazamento entre empresas.
 
+A MVP-001.7 disponibiliza um gate operacional reproduzível que cobre readiness, dados, autenticação,
+isolamento, dashboard, logout e ausência de grants, com relatório sanitizado. Esses controles apoiam
+os itens ainda abertos, mas não substituem o ensaio humano e o aceite final da MVP-001.8.
+
 O fluxo estrutura → colaborador → contrato permanece pendente: suas APIs legadas ainda dependem da
 ETP-015.4 e não podem ser apresentadas como isoladas/autorizadas. A MVP-001.6 entrega o roteiro
 seguro possível sem grants; o gate final continua aberto.

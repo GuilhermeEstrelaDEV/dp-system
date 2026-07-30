@@ -2,9 +2,11 @@
 
 **Duração estimada:** 10 a 12 minutos. Este roteiro é técnico e será refinado em etapa futura.
 
+Pré-condição obrigatória: executar `pnpm demo:verify` e prosseguir somente com `DEMO STATUS: GO`.
+
 | Tempo | Ator/usuário       | Empresa/rota                     | Ação e dado                            | Resultado esperado                   | Capability/alternativa                                            |
 | ----- | ------------------ | -------------------------------- | -------------------------------------- | ------------------------------------ | ----------------------------------------------------------------- |
-| 1 min | apresentador       | terminal                         | confirmar `pnpm demo:status`           | quatro serviços saudáveis            | se falhar, `pnpm demo:start`                                      |
+| 1 min | apresentador       | terminal                         | confirmar `pnpm demo:verify`           | `DEMO STATUS: GO`                    | se falhar, aplicar contingência e não iniciar                     |
 | 2 min | Administrador Demo | `/login`                         | autenticar com conta local documentada | sessão real, duas empresas           | pública mínima; se falhar, reset demo                             |
 | 1 min | Administrador Demo | Horizonte, `/selecionar-empresa` | selecionar Horizonte                   | shell identifica Horizonte           | vínculo real                                                      |
 | 2 min | Administrador Demo | `/`                              | abrir dashboard                        | contexto Horizonte e estado restrito | zero grants; usar `demo:data:verify` como evidência dos agregados |

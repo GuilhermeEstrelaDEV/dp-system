@@ -465,6 +465,54 @@ button:disabled,
   box-shadow: var(--shadow-lg);
 }
 
+.demo-help {
+  position: fixed;
+  inset: 0;
+  z-index: var(--layer-toast);
+}
+.demo-help__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  background: rgb(7 28 44 / 64%);
+}
+.demo-help__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(28rem, 100%);
+  height: 100%;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background: white;
+  box-shadow: var(--shadow-lg);
+}
+.demo-help__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.demo-help__header h2 {
+  margin: 0.65rem 0 1rem;
+}
+.demo-help dl {
+  display: grid;
+  gap: 0.3rem;
+  margin: 1.5rem 0;
+}
+.demo-help dt {
+  margin-top: 0.7rem;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.demo-help dd {
+  margin: 0;
+}
+
 .mobile-navigation {
   position: fixed;
   inset: 0;
