@@ -114,19 +114,56 @@ function waitForPostgres() {
   );
 }
 
+function childEnvironment(env) {
+  return {
+    ...process.env,
+    ...env,
+    DATABASE_URL: databaseUrl(env),
+    DEMO_ENV: 'local-demo',
+    DEMO_MODE: 'true',
+    DEMO_SEED_ENABLED: 'true',
+  };
+}
+
+function verifyDataset(env, requireServices = true) {
+  info('Verificando integridade e isolamento do dataset demonstrativo...');
+  run('pnpm', ['--filter', '@dp-system/api', 'prisma:demo:verify'], {
+    env: childEnvironment(env),
+    correction: 'Execute pnpm demo:reset -- --confirm-reset para reconstruir o baseline.',
+  });
+  if (!requireServices) return;
+  const apiStatus = capture('curl', [
+    '--silent',
+    '--output',
+    process.platform === 'win32' ? 'NUL' : '/dev/null',
+    '--write-out',
+    '%{http_code}',
+    `http://localhost:${env.API_PORT}/api/v1/health/ready`,
+  ]);
+  const webStatus = capture('curl', [
+    '--silent',
+    '--output',
+    process.platform === 'win32' ? 'NUL' : '/dev/null',
+    '--write-out',
+    '%{http_code}',
+    `http://localhost:${env.WEB_PORT}`,
+  ]);
+  if (apiStatus !== '200' || webStatus !== '200') {
+    fail(
+      `readiness incompleta (API=${apiStatus ?? 'indisponível'}, frontend=${webStatus ?? 'indisponível'}).`,
+      'Execute pnpm demo:start e repita pnpm demo:data:verify.',
+    );
+  }
+  info('Dataset, API e frontend verificados com sucesso.');
+}
+
 function setup() {
   validateTools();
   const env = prepareEnvironment();
   info('Subindo somente o PostgreSQL da demonstração...');
   compose('up', '--detach', 'postgres');
   waitForPostgres();
-  const childEnv = {
-    ...process.env,
-    ...env,
-    DATABASE_URL: databaseUrl(env),
-    DEMO_ENV: 'local-demo',
-    DEMO_SEED_ENABLED: 'true',
-  };
+  const childEnv = childEnvironment(env);
   info('Gerando Prisma Client...');
   run('pnpm', ['prisma:generate'], { env: childEnv });
   info('Aplicando migrations existentes...');
@@ -135,6 +172,7 @@ function setup() {
   run('pnpm', ['prisma:seed'], { env: childEnv });
   info('Criando identidades e vínculos exclusivamente demonstrativos...');
   run('pnpm', ['prisma:seed:demo'], { env: childEnv });
+  verifyDataset(env, false);
   info('Setup concluído com massa fictícia local. Consulte docs/product/MVP-001_DEMO_ACCOUNTS.md.');
   showUrls(env);
   info('Execute pnpm demo:start para iniciar API e frontend.');
@@ -170,6 +208,12 @@ function status() {
   showUrls(env);
 }
 
+function verify() {
+  validateTools();
+  const env = prepareEnvironment();
+  verifyDataset(env);
+}
+
 function reset() {
   validateTools();
   prepareEnvironment();
@@ -183,13 +227,16 @@ function reset() {
   compose('down', '--volumes', '--remove-orphans');
   info('Dados demonstrativos removidos. Recriando o baseline local...');
   setup();
+  start();
+  verify();
+  info('Credenciais fictícias: consulte docs/product/MVP-001_DEMO_ACCOUNTS.md.');
 }
 
-const commands = { setup, start, stop, status, reset };
+const commands = { setup, start, stop, status, reset, verify };
 if (!command || !(command in commands)) {
   fail(
     'comando desconhecido.',
-    'Use pnpm demo:setup, demo:start, demo:stop, demo:status ou demo:reset -- --confirm-reset.',
+    'Use pnpm demo:setup, demo:start, demo:stop, demo:status, demo:data:verify ou demo:reset -- --confirm-reset.',
   );
 }
 commands[command]();

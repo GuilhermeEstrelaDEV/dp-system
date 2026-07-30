@@ -20,6 +20,7 @@ pnpm install --frozen-lockfile
 pnpm demo:setup
 pnpm demo:start
 pnpm demo:status
+pnpm demo:data:verify
 ```
 
 `demo:setup` valida ferramentas, cria `.env.demo.local` somente se ele não existir, inicia o
@@ -36,10 +37,9 @@ URLs padrão:
 - API: `http://localhost:53000/api/v1`;
 - readiness: `http://localhost:53000/api/v1/health/ready`.
 
-O seed atual cria catálogo, empresa e filial fictícios, mas **ainda não cria credenciais de login**.
-O setup executa o seed canônico e o seed local idempotente da MVP-001.3. Consulte as
-[contas demonstrativas](product/MVP-001_DEMO_ACCOUNTS.md). Nenhum grant de capability é criado. A mensagem do setup informa esse
-limite; a MVP-001.1 não simula autenticação funcional.
+O setup executa o catálogo canônico e o [dataset local determinístico](product/MVP-001_DEMO_DATASET.md),
+incluindo duas identidades, duas empresas e massa organizacional/operacional fictícia. Consulte as
+[contas demonstrativas](product/MVP-001_DEMO_ACCOUNTS.md). Nenhum grant de capability é criado.
 
 ## Operação
 
@@ -59,8 +59,12 @@ pnpm demo:reset -- --confirm-reset
 
 Sem `--confirm-reset`, o comando falha antes de remover dados. O reset aceita apenas
 `DEMO_ENV=local-demo` e `DEMO_PROJECT_NAME=dp-system-demo`, executa `down --volumes` no Compose
-dedicado e recria o baseline. Seu alvo é exclusivamente `dp-system-demo-postgres-data`; volumes do
+dedicado, recria o baseline, sobe API/frontend e executa `demo:data:verify`. Seu alvo é exclusivamente
+`dp-system-demo-postgres-data`; volumes do
 Compose padrão ou de outros projetos não são removidos.
+
+O seed exige ainda `DEMO_MODE=true`, banco `dp_system_demo` em host local e ambiente não produtivo.
+A data-base é `2026-07-01`.
 
 ## Recursos previsíveis
 

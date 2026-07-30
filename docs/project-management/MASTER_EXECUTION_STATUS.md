@@ -304,7 +304,7 @@
   ponta a ponta e reset ainda ausentes.
 - **Escopo:** [MUST/SHOULD/COULD/OUT](MVP-001_PROTOTYPE_SCOPE.md), limitado ao uso local e a dados
   fictícios.
-- **Plano:** cinco incrementos em [MVP-001_IMPLEMENTATION_BACKLOG.md](MVP-001_IMPLEMENTATION_BACKLOG.md).
+- **Plano:** sete incrementos em [MVP-001_IMPLEMENTATION_BACKLOG.md](MVP-001_IMPLEMENTATION_BACKLOG.md).
 - **Aceite e riscos:** [critérios mensuráveis](MVP-001_DEMO_ACCEPTANCE_CRITERIA.md) e
   [registro de riscos](MVP-001_DEMO_RISK_REGISTER.md).
 - **ETP-015.3:** `IMPLEMENTED AND MERGED`; Operational Deployment Gate
@@ -323,5 +323,8 @@
   automáticos.
 - **MVP-001.4 — `IMPLEMENTED — EXECUTIVE DASHBOARD AVAILABLE`:** resumo autenticado da empresa
   ativa, seções por capability, métricas persistidas, estados seguros e visualizações acessíveis.
-- **MVP-001.5 — `NOT STARTED`:** roteiro e acceptance final ainda não foram iniciados.
+- **MVP-001.5 — `IMPLEMENTED — DEMO DATASET AVAILABLE`:** duas empresas, 26 colaboradores e
+  contratos, massa de folha/conferência e verificador automatizado, sem grants automáticos.
+- **MVP-001.6 — `NOT STARTED`:** fluxos principais ainda não foram iniciados.
+- **MVP-001.7 — `NOT STARTED`:** roteiro e acceptance final ainda não foram iniciados.
 - **ETP-015.4 — `NOT STARTED`:** nenhuma autorização ou rota legada foi antecipada pelo MVP.

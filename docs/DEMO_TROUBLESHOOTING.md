@@ -10,6 +10,8 @@
 | API não fica saudável        | `dp-system-demo-api` unhealthy           | verificar logs, URL do banco e se `demo:setup` concluiu                                         |
 | frontend não acessa API      | erro CORS/rede                           | alinhar `WEB_PORT`, `API_PORT`, `CORS_ORIGIN` e `VITE_API_URL`                                  |
 | login falha após setup       | seed demo ausente ou API indisponível    | executar `pnpm demo:setup`, conferir `pnpm demo:status` e usar as contas fictícias documentadas |
+| dataset incompleto           | contagem, vínculo ou timeline divergente | executar `pnpm demo:data:verify`; se persistir, realizar o reset confirmado                     |
+| seed demo recusado           | gate local não confirmado                | validar `DEMO_ENV`, `DEMO_MODE`, banco local e `NODE_ENV` não produtivo                         |
 | reset recusado               | flag ausente ou ambiente não reconhecido | revisar `.env.demo.local` e usar `pnpm demo:reset -- --confirm-reset`                           |
 
 Comandos úteis:

@@ -1,17 +1,38 @@
-import { PrismaClient } from '@prisma/client';
+import {
+  PayrollReviewCycleStatus,
+  PayrollReviewEventType,
+  PayrollReviewFindingSeverity,
+  PayrollReviewFindingStatus,
+  PrismaClient,
+} from '@prisma/client';
 import { PasswordHasherService } from '../src/modules/auth/password-hasher.service';
 
 const prisma = new PrismaClient();
 const passwords = new PasswordHasherService();
+const referenceDate = new Date('2026-07-01T00:00:00.000Z');
 const validFrom = new Date('2026-01-01T00:00:00.000Z');
+
+const ids = {
+  companies: {
+    horizon: '10000000-0000-4000-8000-000000000001',
+    atlas: '10000000-0000-4000-8000-000000000002',
+  },
+  users: {
+    admin: '20000000-0000-4000-8000-000000000001',
+    hr: '20000000-0000-4000-8000-000000000002',
+  },
+} as const;
+
 const accounts = [
   {
+    id: ids.users.admin,
     email: process.env.DEMO_ADMIN_EMAIL ?? 'admin.demo@dp-system.local',
     password: process.env.DEMO_ADMIN_PASSWORD ?? 'DemoAdmin#2026!',
     displayName: 'Administrador Demo',
     roleCode: 'ADMINISTRATOR',
   },
   {
+    id: ids.users.hr,
     email: process.env.DEMO_HR_EMAIL ?? 'rh.demo@dp-system.local',
     password: process.env.DEMO_HR_PASSWORD ?? 'DemoRh#2026!',
     displayName: 'Analista RH Demo',
@@ -19,72 +40,500 @@ const accounts = [
   },
 ] as const;
 
-function assertLocalDemo() {
-  if (process.env.DEMO_ENV !== 'local-demo' || process.env.DEMO_SEED_ENABLED !== 'true')
-    throw new Error('Demo seed recusado: ambiente local nao confirmado');
+function demoId(group: string, sequence: number) {
+  return `${group}0000000-0000-4000-8000-${sequence.toString().padStart(12, '0')}`;
+}
+
+export function assertLocalDemo(environment: NodeJS.ProcessEnv = process.env) {
+  if (
+    environment.DEMO_ENV !== 'local-demo' ||
+    environment.DEMO_MODE !== 'true' ||
+    environment.DEMO_SEED_ENABLED !== 'true'
+  ) {
+    throw new Error('Demo seed recusado: modo local demonstrativo não confirmado');
+  }
+  if (environment.NODE_ENV === 'production') {
+    throw new Error('Demo seed recusado: ambiente de produção');
+  }
+  if (!environment.DATABASE_URL) throw new Error('Demo seed recusado: DATABASE_URL ausente');
+  const database = new URL(environment.DATABASE_URL);
+  if (
+    !['localhost', '127.0.0.1'].includes(database.hostname) ||
+    database.pathname !== '/dp_system_demo'
+  ) {
+    throw new Error('Demo seed recusado: banco não corresponde ao alvo local dp_system_demo');
+  }
   if (
     accounts.some(
       ({ email, password }) => !email.endsWith('@dp-system.local') || password.length < 12,
     )
-  )
-    throw new Error('Demo seed recusado: identidade ficticia invalida');
+  ) {
+    throw new Error('Demo seed recusado: identidade fictícia inválida');
+  }
 }
 
-async function assign(userId: string, companyId: string, roleId: string) {
+async function ensureAccount(account: (typeof accounts)[number]) {
+  const email = account.email.toLowerCase();
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    return prisma.user.update({
+      where: { id: existing.id },
+      data: { displayName: account.displayName, status: 'ACTIVE' },
+    });
+  }
+  return prisma.user.create({
+    data: {
+      id: account.id,
+      email,
+      displayName: account.displayName,
+      passwordHash: await passwords.hash(account.password),
+    },
+  });
+}
+
+async function assign(id: string, userId: string, companyId: string, roleId: string) {
   const existing = await prisma.userCompanyRole.findFirst({
     where: { userId, companyId, roleId, status: 'ACTIVE', validFrom },
   });
   if (existing) return;
   await prisma.userCompanyRole.create({
     data: {
+      id,
       userId,
       companyId,
       roleId,
       sourceType: 'SYSTEM',
-      sourceId: 'MVP-001.3-DEMO',
-      reason: 'Vinculo ficticio exclusivo do prototipo local demonstrativo',
-      correlationId: 'demo-seed-mvp-001-3',
-      approvalReference: 'MVP-001.3 local demo seed',
+      sourceId: 'MVP-001.5-DEMO',
+      reason: 'Vínculo fictício exclusivo do protótipo local demonstrativo',
+      correlationId: 'demo-seed-mvp-001-5',
+      approvalReference: 'MVP-001 local demo seed',
       validFrom,
     },
   });
 }
 
+async function seedOrganizations(companyId: string, companyKey: 'horizon' | 'atlas') {
+  const isHorizon = companyKey === 'horizon';
+  const branch = await prisma.branch.upsert({
+    where: { companyId_code: { companyId, code: isHorizon ? 'MATRIZ-DEMO' : 'ATLAS-MATRIZ' } },
+    update: { status: 'ACTIVE' },
+    create: {
+      id: demoId('3', isHorizon ? 1 : 2),
+      companyId,
+      code: isHorizon ? 'MATRIZ-DEMO' : 'ATLAS-MATRIZ',
+      name: isHorizon ? 'Matriz Horizonte Demonstrativa' : 'Matriz Atlas Demonstrativa',
+      address: { city: 'Cidade Demonstrativa', state: 'DF' },
+    },
+  });
+  const departmentNames = isHorizon
+    ? ['Recursos Humanos', 'Financeiro', 'Operações', 'Tecnologia', 'Comercial']
+    : ['Recursos Humanos', 'Operações', 'Administrativo'];
+  const positionNames = isHorizon
+    ? [
+        'Analista RH',
+        'Assistente DP',
+        'Analista Financeiro',
+        'Analista Operacional',
+        'Líder Operacional',
+        'Desenvolvedor',
+        'Executivo Comercial',
+        'Coordenador',
+      ]
+    : [
+        'Analista RH',
+        'Assistente Administrativo',
+        'Analista Operacional',
+        'Líder Operacional',
+        'Coordenador',
+      ];
+  const costCenterNames = isHorizon
+    ? ['Pessoas', 'Operação', 'Corporativo']
+    : ['Operação', 'Administrativo'];
+  const offset = isHorizon ? 0 : 100;
+  const departments = [];
+  for (const [index, name] of departmentNames.entries()) {
+    departments.push(
+      await prisma.department.upsert({
+        where: { companyId_code: { companyId, code: `DEMO-DEP-${index + 1}` } },
+        update: { name, branchId: branch.id, status: 'ACTIVE' },
+        create: {
+          id: demoId('4', offset + index + 1),
+          companyId,
+          branchId: branch.id,
+          code: `DEMO-DEP-${index + 1}`,
+          name,
+        },
+      }),
+    );
+  }
+  const positions = [];
+  for (const [index, name] of positionNames.entries()) {
+    positions.push(
+      await prisma.position.upsert({
+        where: { companyId_code: { companyId, code: `DEMO-POS-${index + 1}` } },
+        update: { name, status: 'ACTIVE' },
+        create: {
+          id: demoId('5', offset + index + 1),
+          companyId,
+          code: `DEMO-POS-${index + 1}`,
+          name,
+          description: 'Cargo fictício do protótipo local',
+        },
+      }),
+    );
+  }
+  const costCenters = [];
+  for (const [index, name] of costCenterNames.entries()) {
+    costCenters.push(
+      await prisma.costCenter.upsert({
+        where: { companyId_code: { companyId, code: `DEMO-CC-${index + 1}` } },
+        update: { name, status: 'ACTIVE' },
+        create: {
+          id: demoId('6', offset + index + 1),
+          companyId,
+          code: `DEMO-CC-${index + 1}`,
+          name,
+        },
+      }),
+    );
+  }
+  return { branch, departments, positions, costCenters };
+}
+
+async function seedPeople(
+  companyId: string,
+  companyKey: 'horizon' | 'atlas',
+  organization: Awaited<ReturnType<typeof seedOrganizations>>,
+) {
+  const isHorizon = companyKey === 'horizon';
+  const count = isHorizon ? 18 : 8;
+  const offset = isHorizon ? 0 : 100;
+  const contracts = [];
+  for (let index = 0; index < count; index += 1) {
+    const sequence = offset + index + 1;
+    const label = `${isHorizon ? 'H' : 'A'}${(index + 1).toString().padStart(2, '0')}`;
+    const employee = await prisma.employee.upsert({
+      where: { id: demoId('7', sequence) },
+      update: { legalName: `Colaborador Demo ${label}` },
+      create: {
+        id: demoId('7', sequence),
+        legalName: `Colaborador Demo ${label}`,
+        preferredName: `Demo ${label}`,
+      },
+    });
+    await prisma.employeeContact.upsert({
+      where: {
+        employeeId_type_value: {
+          employeeId: employee.id,
+          type: 'EMAIL',
+          value: `colaborador.${label.toLowerCase()}@dp-system.local`,
+        },
+      },
+      update: { status: 'ACTIVE', isPrimary: true },
+      create: {
+        id: demoId('7', 500 + sequence),
+        employeeId: employee.id,
+        type: 'EMAIL',
+        value: `colaborador.${label.toLowerCase()}@dp-system.local`,
+        isPrimary: true,
+      },
+    });
+    const ended = index >= count - (isHorizon ? 2 : 1);
+    contracts.push(
+      await prisma.employmentContract.upsert({
+        where: { id: demoId('8', sequence) },
+        update: { status: ended ? 'INACTIVE' : 'ACTIVE' },
+        create: {
+          id: demoId('8', sequence),
+          employeeId: employee.id,
+          companyId,
+          branchId: organization.branch.id,
+          departmentId: organization.departments[index % organization.departments.length]!.id,
+          positionId: organization.positions[index % organization.positions.length]!.id,
+          costCenterId: organization.costCenters[index % organization.costCenters.length]!.id,
+          registrationNumber: `DEMO-${label}`,
+          contractType: 'EMPLOYMENT',
+          employmentRegime: 'DEMONSTRATIVE',
+          startDate: new Date(Date.UTC(2024 + (index % 2), index % 12, 1 + (index % 20))),
+          endDate: ended ? new Date('2026-05-31T00:00:00.000Z') : null,
+          weeklyHours: index % 4 === 0 ? 30 : 40,
+          status: ended ? 'INACTIVE' : 'ACTIVE',
+        },
+      }),
+    );
+  }
+  return contracts;
+}
+
+async function seedAdmissions(
+  companyId: string,
+  contracts: Array<{ id: string; employeeId: string }>,
+  offset: number,
+) {
+  for (let index = 0; index < (offset === 0 ? 4 : 2); index += 1) {
+    const contract = contracts[index]!;
+    await prisma.admissionProcess.upsert({
+      where: { id: demoId('9', 500 + offset + index + 1) },
+      update: {},
+      create: {
+        id: demoId('9', 500 + offset + index + 1),
+        employeeId: contract.employeeId,
+        employmentContractId: contract.id,
+        companyId,
+        plannedAdmissionDate: new Date(Date.UTC(2026, index + 1, 10)),
+        effectiveAdmissionDate: new Date(Date.UTC(2026, index + 1, 10)),
+        status: 'COMPLETED',
+        operationalOwner: 'Equipe Demo',
+        notes: 'Processo fictício concluído para apresentação local',
+        completedAt: new Date(Date.UTC(2026, index + 1, 10, 15)),
+      },
+    });
+  }
+}
+
+async function seedPayroll(
+  companyId: string,
+  companyKey: 'horizon' | 'atlas',
+  creatorId: string,
+  contracts: Array<{ id: string }>,
+) {
+  const isHorizon = companyKey === 'horizon';
+  const offset = isHorizon ? 0 : 100;
+  const periodCount = isHorizon ? 6 : 4;
+  const cycleStatuses: PayrollReviewCycleStatus[] = isHorizon
+    ? ['OPEN', 'IN_REVIEW', 'SUBMITTED', 'APPROVED', 'REJECTED']
+    : ['OPEN', 'IN_REVIEW', 'APPROVED'];
+  const calendar = await prisma.payrollCalendar.upsert({
+    where: { companyId_name: { companyId, name: 'Calendário Demonstrativo' } },
+    update: { status: 'ACTIVE' },
+    create: {
+      id: demoId('9', offset + 1),
+      companyId,
+      name: 'Calendário Demonstrativo',
+    },
+  });
+  const runs = [];
+  for (let index = 0; index < periodCount; index += 1) {
+    const reference = new Date(Date.UTC(2026, 6 - index, 1));
+    const status = index % 3 === 0 ? 'OPEN' : index % 3 === 1 ? 'PROCESSING' : 'CLOSED';
+    const period = await prisma.payrollPeriod.upsert({
+      where: {
+        companyId_referenceDate_type: { companyId, referenceDate: reference, type: 'REGULAR' },
+      },
+      update: { status },
+      create: {
+        id: demoId('a', offset + index + 1),
+        companyId,
+        payrollCalendarId: calendar.id,
+        referenceDate: reference,
+        status,
+        engineVersion: 'demo-foundation-1',
+        parameterVersion: 'demo-2026-07',
+        openedAt: new Date(Date.UTC(2026, 5 - index, 20, 12)),
+        closedAt: status === 'CLOSED' ? new Date(Date.UTC(2026, 6 - index, 5, 12)) : null,
+      },
+    });
+    runs.push(
+      await prisma.payrollRun.upsert({
+        where: { payrollPeriodId_sequence: { payrollPeriodId: period.id, sequence: 1 } },
+        update: { status: 'COMPLETED' },
+        create: {
+          id: demoId('b', offset + index + 1),
+          payrollPeriodId: period.id,
+          sequence: 1,
+          status: 'COMPLETED',
+          engineVersion: 'demo-foundation-1',
+          parameterVersion: 'demo-2026-07',
+          startedAt: new Date(Date.UTC(2026, 6 - index, 2, 12)),
+          completedAt: new Date(Date.UTC(2026, 6 - index, 2, 13)),
+        },
+      }),
+    );
+  }
+  const cycles = [];
+  for (const [index, cycleStatus] of cycleStatuses.entries()) {
+    const sequence = offset + index + 1;
+    const occurredAt = new Date(Date.UTC(2026, 6 - index, 3, 14));
+    const cycle = await prisma.payrollReviewCycle.upsert({
+      where: { id: demoId('c', sequence) },
+      update: { status: cycleStatus },
+      create: {
+        id: demoId('c', sequence),
+        companyId,
+        payrollRunId: runs[index % runs.length]!.id,
+        status: cycleStatus,
+        createdBy: creatorId,
+        traceId: `demo-cycle-${companyKey}-${index + 1}`,
+        createdAt: occurredAt,
+        submissionNumber: ['SUBMITTED', 'APPROVED', 'REJECTED'].includes(cycleStatus) ? 1 : 0,
+        currentApprovalStage: cycleStatus === 'APPROVED' ? 2 : 0,
+      },
+    });
+    cycles.push(cycle);
+    for (const stage of [1, 2]) {
+      await prisma.payrollReviewApprovalStage.upsert({
+        where: { reviewCycleId_sequence: { reviewCycleId: cycle.id, sequence: stage } },
+        update: {},
+        create: {
+          id: demoId('f', sequence * 10 + stage),
+          reviewCycleId: cycle.id,
+          sequence: stage,
+          code: `V1_STAGE_${stage}`,
+          requiredCapability: 'payroll.review.approve',
+        },
+      });
+    }
+    const transition: Partial<Record<PayrollReviewCycleStatus, PayrollReviewEventType>> = {
+      IN_REVIEW: 'REVIEW_STARTED',
+      SUBMITTED: 'REVIEW_SUBMITTED',
+      APPROVED: 'REVIEW_APPROVED',
+      REJECTED: 'REVIEW_REJECTED',
+    };
+    await prisma.payrollReviewEvent.createMany({
+      data: [
+        {
+          id: demoId('e', sequence * 10 + 1),
+          companyId,
+          reviewCycleId: cycle.id,
+          actorId: creatorId,
+          traceId: `demo-event-${companyKey}-${index + 1}-open`,
+          eventType: 'REVIEW_CYCLE_OPENED',
+          nextState: { status: 'OPEN' },
+          occurredAt,
+          metadata: { source: 'MVP-001.5-demo-seed' },
+        },
+        ...(transition[cycleStatus]
+          ? [
+              {
+                id: demoId('e', sequence * 10 + 2),
+                companyId,
+                reviewCycleId: cycle.id,
+                actorId: creatorId,
+                traceId: `demo-event-${companyKey}-${index + 1}-transition`,
+                eventType: transition[cycleStatus]!,
+                previousState: { status: 'OPEN' },
+                nextState: { status: cycleStatus },
+                occurredAt: new Date(occurredAt.getTime() + 3_600_000),
+                metadata: { source: 'MVP-001.5-demo-seed' },
+              },
+            ]
+          : []),
+      ],
+      skipDuplicates: true,
+    });
+  }
+  const findingCount = isHorizon ? 6 : 2;
+  for (let index = 0; index < findingCount; index += 1) {
+    const sequence = offset + index + 1;
+    const resolved = isHorizon ? index >= 4 : index >= 1;
+    const cycle = cycles[index % cycles.length]!;
+    const finding = await prisma.payrollReviewFinding.upsert({
+      where: { id: demoId('d', sequence) },
+      update: {
+        status: resolved ? PayrollReviewFindingStatus.RESOLVED : PayrollReviewFindingStatus.OPEN,
+      },
+      create: {
+        id: demoId('d', sequence),
+        reviewCycleId: cycle.id,
+        companyId,
+        payrollRunId: cycle.payrollRunId,
+        employmentContractId: contracts[index % contracts.length]!.id,
+        severity:
+          index % 2 === 0
+            ? PayrollReviewFindingSeverity.BLOCKING
+            : PayrollReviewFindingSeverity.INFORMATIONAL,
+        status: resolved ? PayrollReviewFindingStatus.RESOLVED : PayrollReviewFindingStatus.OPEN,
+        code: `DEMO-${companyKey.toUpperCase()}-${index + 1}`,
+        title: `Achado demonstrativo ${index + 1}`,
+        description: 'Achado fictício para validação visual do protótipo local',
+        createdBy: creatorId,
+        createdAt: new Date(Date.UTC(2026, 6 - (index % 5), 4, 10)),
+        resolvedBy: resolved ? creatorId : null,
+        resolvedAt: resolved ? new Date(Date.UTC(2026, 6 - (index % 5), 5, 10)) : null,
+        resolutionReason: resolved ? 'Resolução fictícia do cenário demonstrativo' : null,
+        traceId: `demo-finding-${companyKey}-${index + 1}`,
+      },
+    });
+    await prisma.payrollReviewEvent.createMany({
+      data: [
+        {
+          id: demoId('e', 5000 + sequence * 10 + 1),
+          companyId,
+          reviewCycleId: cycle.id,
+          findingId: finding.id,
+          actorId: creatorId,
+          traceId: `demo-finding-event-${companyKey}-${index + 1}-open`,
+          eventType: 'FINDING_OPENED',
+          nextState: { status: 'OPEN' },
+          occurredAt: finding.createdAt,
+          metadata: { source: 'MVP-001.5-demo-seed' },
+        },
+        ...(resolved
+          ? [
+              {
+                id: demoId('e', 5000 + sequence * 10 + 2),
+                companyId,
+                reviewCycleId: cycle.id,
+                findingId: finding.id,
+                actorId: creatorId,
+                traceId: `demo-finding-event-${companyKey}-${index + 1}-resolved`,
+                eventType: PayrollReviewEventType.FINDING_RESOLVED,
+                previousState: { status: 'OPEN' },
+                nextState: { status: 'RESOLVED' },
+                occurredAt: finding.resolvedAt!,
+                metadata: { source: 'MVP-001.5-demo-seed' },
+              },
+            ]
+          : []),
+      ],
+      skipDuplicates: true,
+    });
+  }
+}
+
 async function main() {
   assertLocalDemo();
-  const primary = await prisma.company.findUniqueOrThrow({
+  const horizon = await prisma.company.findUniqueOrThrow({
     where: { taxId: '00.000.000/0001-00' },
   });
-  const secondary = await prisma.company.upsert({
+  if (horizon.id !== ids.companies.horizon) {
+    throw new Error(
+      'Demo seed recusado: execute demo:reset para reconstruir os IDs determinísticos',
+    );
+  }
+  const atlas = await prisma.company.upsert({
     where: { taxId: '11.111.111/0001-11' },
-    update: { legalName: 'Horizonte Servicos Demonstrativos Ltda.', tradeName: 'Horizonte Demo' },
+    update: {
+      legalName: 'Atlas Soluções Administrativas Demonstrativas Ltda.',
+      tradeName: 'Atlas Demo',
+      status: 'ACTIVE',
+    },
     create: {
-      legalName: 'Horizonte Servicos Demonstrativos Ltda.',
-      tradeName: 'Horizonte Demo',
+      id: ids.companies.atlas,
+      legalName: 'Atlas Soluções Administrativas Demonstrativas Ltda.',
+      tradeName: 'Atlas Demo',
       taxId: '11.111.111/0001-11',
     },
   });
-  const ids = new Map<string, string>();
-  for (const account of accounts) {
-    const passwordHash = await passwords.hash(account.password);
-    const user = await prisma.user.upsert({
-      where: { email: account.email.toLowerCase() },
-      update: { displayName: account.displayName, passwordHash, status: 'ACTIVE' },
-      create: {
-        email: account.email.toLowerCase(),
-        displayName: account.displayName,
-        passwordHash,
-      },
-    });
-    ids.set(account.roleCode, user.id);
-  }
+  const users = new Map<string, string>();
+  for (const account of accounts) users.set(account.roleCode, (await ensureAccount(account)).id);
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { code: 'ADMINISTRATOR' } });
   const hrRole = await prisma.role.findUniqueOrThrow({ where: { code: 'HR' } });
-  await assign(ids.get('ADMINISTRATOR')!, primary.id, adminRole.id);
-  await assign(ids.get('ADMINISTRATOR')!, secondary.id, adminRole.id);
-  await assign(ids.get('HR')!, primary.id, hrRole.id);
+  await assign(demoId('2', 101), users.get('ADMINISTRATOR')!, horizon.id, adminRole.id);
+  await assign(demoId('2', 102), users.get('ADMINISTRATOR')!, atlas.id, adminRole.id);
+  await assign(demoId('2', 103), users.get('HR')!, horizon.id, hrRole.id);
+
+  const horizonOrganization = await seedOrganizations(horizon.id, 'horizon');
+  const atlasOrganization = await seedOrganizations(atlas.id, 'atlas');
+  const horizonContracts = await seedPeople(horizon.id, 'horizon', horizonOrganization);
+  const atlasContracts = await seedPeople(atlas.id, 'atlas', atlasOrganization);
+  await seedAdmissions(horizon.id, horizonContracts, 0);
+  await seedAdmissions(atlas.id, atlasContracts, 100);
+  await seedPayroll(horizon.id, 'horizon', users.get('ADMINISTRATOR')!, horizonContracts);
+  await seedPayroll(atlas.id, 'atlas', users.get('ADMINISTRATOR')!, atlasContracts);
+
   console.log(
-    'Demo seed concluido: 2 identidades ficticias, 2 empresas e zero grants automaticos.',
+    `Demo dataset concluído em ${referenceDate.toISOString().slice(0, 10)}: 2 empresas, 26 colaboradores, 10 competências e zero grants automáticos.`,
   );
 }
 

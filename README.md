@@ -27,6 +27,7 @@ A MVP-001.1 oferece bootstrap isolado e reproduzível para demonstração local:
 pnpm demo:setup
 pnpm demo:start
 pnpm demo:status
+pnpm demo:data:verify
 pnpm demo:stop
 pnpm demo:reset -- --confirm-reset
 ```
@@ -35,6 +36,10 @@ Consulte o [guia da demonstração](docs/DEMO_LOCAL_SETUP.md) e o
 [troubleshooting](docs/DEMO_TROUBLESHOOTING.md) e as
 [contas fictícias](docs/product/MVP-001_DEMO_ACCOUNTS.md). A MVP-001.3 adiciona login local seguro,
 sem grants automáticos. Nenhuma configuração é adequada para produção.
+
+A MVP-001.5 fornece um [dataset determinístico](docs/product/MVP-001_DEMO_DATASET.md) para duas
+empresas. `pnpm demo:data:verify` valida contagens, isolamento, zero grants e readiness sem expor
+senhas ou criar autorização.
 
 ## Qualidade e validação
 
