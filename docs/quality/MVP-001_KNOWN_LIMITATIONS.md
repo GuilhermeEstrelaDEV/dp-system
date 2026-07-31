@@ -11,6 +11,7 @@
 | sem mobile completo/WCAG formal              | demonstração homologada para notebook/desktop  | Edge/Chrome, 1366×768, zoom 100%                        | iniciativa de acessibilidade |
 | sem produção/cloud/CI de deploy              | protótipo não pode ser publicado               | executar somente Compose local                          | iniciativa futura específica |
 | advisories transitivos de tooling/Prisma     | oito alertas moderados/altos, sem crítico      | não expor tooling; planejar upgrades compatíveis        | manutenção de dependências   |
+| sem validação gerencial concluída            | prioridades e continuidade não estão aprovadas | usar pacote executivo e registrar decisão explícita     | gestão do produto            |
 
 Nenhuma limitação autoriza bypass, dado real, concessão automática ou representação de recurso
 inexistente como funcional.

@@ -21,6 +21,8 @@ limitações explícitas.
 | MVP-R13 | relatório operacional expor segredo                | mitigado/alta         | sanitização testada, metadados mínimos e diretório local ignorado                    |
 | MVP-R14 | corrida entre Compose e porta publicada            | mitigado/alta         | start aguarda banco/API/web no host antes de liberar verificação                     |
 | MVP-R15 | bundle inicial acima de 500 kB                     | aceita/média          | cache aquecido; code splitting permanece em hardening futuro                         |
+| MVP-R16 | falha do runtime durante a apresentação            | mitigado/alta         | PPTX, PDF, screenshots e resumo testados sem serviços ao vivo                        |
+| MVP-R17 | afirmação executiva sem evidência                  | mitigado/alta         | mapa de evidências e exclusão explícita de ROI, prazo, custo e ganho não homologados |
 
 Riscos residuais, contingência e owner futuro estão detalhados em
 [limitações conhecidas](../quality/MVP-001_KNOWN_LIMITATIONS.md). Nenhum risco aceito autoriza

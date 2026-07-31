@@ -134,7 +134,7 @@ ativada pela migration. A ETP-015.4 permanece `NOT STARTED`.
 
 ## MVP-001 — Protótipo executivo local
 
-**Status:** `IN PROGRESS`.
+**Status:** `IMPLEMENTED — LOCAL PROTOTYPE READY FOR MANAGEMENT VALIDATION`.
 
 O diagnóstico e o [escopo do protótipo](project-management/MVP-001_PROTOTYPE_SCOPE.md) definem uma
 demonstração exclusivamente local. A MVP-001.1 está `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE` e a
@@ -146,10 +146,12 @@ criadas somente identidades fictícias e vínculos locais, sem grants automátic
 `IMPLEMENTED — SAFE CORE DEMO FLOWS AVAILABLE`, com roteiro autenticado e estados restritos seguros;
 MVP-001.7 está `IMPLEMENTED — DEMO MODE AND GO/NO-GO AVAILABLE`; MVP-001.8 está
 `IMPLEMENTED — PROTOTYPE STABILIZED`, com regressão, aceite e limitações registrados em `docs/quality`.
-A MVP-001.9 — Pacote de apresentação executiva está `NOT STARTED — PRESENTATION PACKAGE`, depende da
-estabilização e não autoriza implementação funcional, conforme o
-[backlog incremental](project-management/MVP-001_IMPLEMENTATION_BACKLOG.md). A MVP-001 permanece
-`IN PROGRESS` e ainda não está pronta para apresentação final.
+A MVP-001.9 — Pacote de apresentação executiva está
+`IMPLEMENTED — PRESENTATION PACKAGE AVAILABLE`, com deck de 15 slides, evidências rastreáveis,
+roteiro, contingência e coleta de feedback, conforme o
+[backlog incremental](project-management/MVP-001_IMPLEMENTATION_BACKLOG.md). A MVP-001 está
+`IMPLEMENTED — LOCAL PROTOTYPE READY FOR MANAGEMENT VALIDATION`; a validação gerencial e qualquer
+continuidade permanecem decisões futuras explícitas.
 
 ETP-015.3 está `IMPLEMENTED AND MERGED`. Seu Operational Deployment Gate permanece
 `PENDING FOR FUTURE TARGET ENVIRONMENT`; esse bloqueio de destino não impede a demonstração local.

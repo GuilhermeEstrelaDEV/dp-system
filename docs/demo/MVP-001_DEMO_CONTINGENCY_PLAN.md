@@ -12,3 +12,6 @@
 | Computador reiniciado    | `pnpm demo:ready`              | 3–6 min                                          | primeiro build pode exceder a janela                        |
 | Internet indisponível    | verificar imagens/dependências | runtime imediato se aquecido                     | sem cache prévio, usar alternativa verbal/visual            |
 | `DEMO STATUS: NO-GO`     | ler falhas exibidas            | conforme correção                                | nunca ignorar bloqueio de segurança                         |
+
+Para a reunião gerencial, os Planos A/B/C e o pacote offline estão consolidados em
+[MVP-001_PRESENTATION_CONTINGENCY](../presentation/MVP-001_PRESENTATION_CONTINGENCY.md).
