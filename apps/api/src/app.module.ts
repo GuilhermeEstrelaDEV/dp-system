@@ -33,6 +33,7 @@ import { PayrollClosuresModule } from './modules/payroll-closures/payroll-closur
 import { VariableCompensationModule } from './modules/variable-compensation/variable-compensation.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { AuthorizationRouteGuard } from './modules/auth/authorization-route.guard';
 
 @Module({
   imports: [
@@ -80,7 +81,9 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
   providers: [
     AppLoggerService,
     GracefulShutdownService,
+    AuthorizationRouteGuard,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useExisting: AuthorizationRouteGuard },
   ],
 })
 export class AppModule {}

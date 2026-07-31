@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { DiscoveryModule } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, type JwtModuleOptions } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
@@ -17,11 +18,14 @@ import { ActiveCompanyResolverService } from './active-company-resolver.service'
 import { CompanySelectionService } from './company-selection.service';
 import { AssignmentGovernanceService } from './assignment-governance.service';
 import { CapabilityCatalogService } from './capability-catalog.service';
+import { ActiveCompanyGuard } from './active-company.guard';
+import { RouteClassificationVerifierService } from './route-classification-verifier.service';
 
 type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
 
 @Module({
   imports: [
+    DiscoveryModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -51,6 +55,8 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
     CompanySelectionService,
     AssignmentGovernanceService,
     CapabilityCatalogService,
+    ActiveCompanyGuard,
+    RouteClassificationVerifierService,
   ],
   exports: [
     JwtModule,
@@ -65,6 +71,8 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
     CompanySelectionService,
     AssignmentGovernanceService,
     CapabilityCatalogService,
+    ActiveCompanyGuard,
+    RouteClassificationVerifierService,
   ],
 })
 export class AuthModule {}

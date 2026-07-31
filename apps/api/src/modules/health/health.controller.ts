@@ -1,10 +1,12 @@
 import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
+import { PublicRoute } from '../auth/route-access-policy';
 import { HealthService } from './health.service';
 
 @ApiTags('technical')
 @SkipThrottle()
+@PublicRoute()
 @Controller('health')
 export class HealthController {
   constructor(private readonly healthService: HealthService) {}

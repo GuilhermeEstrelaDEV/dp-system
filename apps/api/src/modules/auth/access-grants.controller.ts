@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import {
   CreateSubstitutionDto,
@@ -8,13 +8,9 @@ import {
 } from './access-grants.dto';
 import { AccessGrantsService } from './access-grants.service';
 import { CurrentPrincipal, RequireCapabilities } from './auth.decorators';
-import { CapabilitiesGuard } from './capabilities.guard';
-import { JwtAuthGuard } from './jwt-auth.guard';
 
 @ApiTags('access-grants')
-@ApiBearerAuth()
 @Controller('access-grants')
-@UseGuards(JwtAuthGuard, CapabilitiesGuard)
 export class AccessGrantsController {
   constructor(private readonly service: AccessGrantsService) {}
 

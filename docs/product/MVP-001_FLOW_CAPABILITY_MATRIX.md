@@ -17,5 +17,6 @@
 
 `platform.manage` não concede acesso e não é atribuído pelo seed. Seu uso no frontend impede que
 uma identidade sem grant invoque acidentalmente superfícies administrativas legadas. A proteção
-canônica de backend continua sendo condição da ETP-015.4; nenhuma rota é declarada segura apenas por
+canônica de backend da ETP-015.4 cobre as rotas já classificadas e bloqueia novos handlers sem
+política. As 129 rotas legadas permanecem nominalmente adiadas; nenhuma é declarada segura apenas por
 esse gate visual.

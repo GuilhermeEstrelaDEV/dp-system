@@ -1,11 +1,11 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import type { AuthenticatedPrincipal, RequestWithContext } from '../../common/http/request-context';
 import { CurrentPrincipal } from './auth.decorators';
 import { LoginDto, SelectCompanyDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { AuditWriterService } from './audit-writer.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { AuthenticatedRoute, PublicRoute } from './route-access-policy';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -16,6 +16,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @PublicRoute()
   async login(@Body() dto: LoginDto, @Req() request: RequestWithContext) {
     const { actorId, sessionId, ...token } = await this.auth.login(dto.email, dto.password);
     await this.audit.append({
@@ -35,22 +36,19 @@ export class AuthController {
   }
 
   @Get('me')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @AuthenticatedRoute()
   me(@CurrentPrincipal() principal: AuthenticatedPrincipal) {
     return this.auth.currentUser(principal);
   }
 
   @Get('companies')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @AuthenticatedRoute()
   companies(@CurrentPrincipal() principal: AuthenticatedPrincipal) {
     return this.auth.listCompanies(principal.actorId);
   }
 
   @Post('context')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @AuthenticatedRoute()
   async selectCompany(
     @CurrentPrincipal() principal: AuthenticatedPrincipal,
     @Body() dto: SelectCompanyDto,
@@ -66,8 +64,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @AuthenticatedRoute()
   async logout(@CurrentPrincipal() principal: AuthenticatedPrincipal) {
     const revoked = await this.auth.logout(principal);
     await this.audit.append({

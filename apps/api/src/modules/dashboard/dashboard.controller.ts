@@ -1,13 +1,12 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { CurrentPrincipal } from '../auth/auth.decorators';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequireActiveCompany } from '../auth/route-access-policy';
 import { DashboardService } from './dashboard.service';
 
 @ApiTags('dashboard')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@RequireActiveCompany()
 @Controller('dashboard')
 export class DashboardController {
   constructor(private readonly dashboard: DashboardService) {}

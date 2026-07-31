@@ -250,8 +250,8 @@
 
 ### ETP-015 — Authorization Foundation & Enterprise Isolation
 
-- **Status:** `IN PROGRESS`; especificação aprovada no PR #52, ETP-015.1, ETP-015.2 e ETP-015.3
-  implementadas; ETP-015.4 não iniciada.
+- **Status:** `IN PROGRESS`; especificação aprovada no PR #52, ETP-015.1–015.3 concluídas e
+  ETP-015.4 implementada; ETP-015.5 não iniciada.
 - **Governança:** BDP-AUTH-LEGACY e DAL-01 a DAL-14 estão `APPROVED`.
 - **Especificação:** `docs/project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md`.
 - **Arquitetura:** `docs/architecture/AUTHORIZATION_FOUNDATION_TECHNICAL_DESIGN.md` e
@@ -283,7 +283,10 @@
   29/07/2026, sem condições bloqueadoras. O PR #59 foi incorporado à `develop` no merge
   `f3a63d6243797c91e17ace40a715bdbf78478efb`, com CI aprovado. A classificação homologada é aplicada
   de forma explícita na migration e no seed da ETP-015.3.
-- **ETP-015.4 — `NOT STARTED`:** guards, decorators, allowlist e deny-by-default não foram antecipados.
+- **ETP-015.4 — `IMPLEMENTED — AUTHORIZATION PRIMITIVES AVAILABLE`:** metadata imutável, allowlist
+  pública nominal, composição JWT/empresa/capability, deny-by-default e verificador de 165 handlers.
+  As 129 rotas legadas permanecem nominalmente adiadas e nenhuma família foi migrada.
+- **ETP-015.5–015.10 — `NOT STARTED`:** isolamento de queries e etapas posteriores não foram antecipados.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,
@@ -309,7 +312,8 @@
   [registro de riscos](MVP-001_DEMO_RISK_REGISTER.md).
 - **ETP-015.3:** `IMPLEMENTED AND MERGED`; Operational Deployment Gate
   `PENDING FOR FUTURE TARGET ENVIRONMENT`. O gate de destino não bloqueia demo local.
-- **ETP-015.4:** `NOT STARTED`; nenhuma capability, guard ou migração de rota foi antecipada.
+- **ETP-015.4:** `IMPLEMENTED — AUTHORIZATION PRIMITIVES AVAILABLE`; nenhuma rota legada foi
+  declarada segura ou migrada, e a ETP-015.5 permanece `NOT STARTED`.
 - **Alterações funcionais desta etapa:** zero.
 - **MVP-001.1 — `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`:** comandos `demo:setup`, `demo:start`,
   `demo:stop`, `demo:status` e reset com confirmação operam um Compose exclusivamente local, com
@@ -338,4 +342,5 @@
   checklist, contingência, Q&A e coleta de feedback disponíveis em `docs/presentation`. A entrega é
   documental e de tooling; não inclui funcionalidade, grants, capabilities, produção, cloud,
   deploy ou ETP-015.4.
-- **ETP-015.4 — `NOT STARTED`:** nenhuma autorização ou rota legada foi antecipada pelo MVP.
+- **ETP-015.4 — `IMPLEMENTED — AUTHORIZATION PRIMITIVES AVAILABLE`:** entrega posterior ao MVP;
+  nenhuma família legada foi migrada e nenhum grant demonstrativo foi criado.

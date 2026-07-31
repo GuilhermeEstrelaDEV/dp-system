@@ -1,11 +1,10 @@
 # ETP-015 — Implementation Backlog
 
-**Status:** especificação aprovada; ETP-015.1 e ETP-015.2 concluídas; ETP-015.3 em execução
+**Status:** especificação aprovada; ETP-015.1–015.3 concluídas; ETP-015.4 implementada nesta branch
 
-**Revisão externa:** implementation candidate available in PR #61 — not merged. GA-01..GA-14 e
-PC-01..PC-21 estão `COMPLIANT IN PR #61`; GA-15 está `PARTIALLY COMPLIANT` até homologação operacional.
-O PR segue Draft, o [Operational Gate](ETP-015_3_OPERATIONAL_RELEASE_GATE.md) está `NOT READY`, o estado
-mesclado da ETP-015.3 permanece `READY TO START` e a ETP-015.4 permanece `NOT STARTED`.
+**Baseline:** ETP-015.3 foi incorporada à `develop` pelo PR #61. O
+[Operational Gate](ETP-015_3_OPERATIONAL_RELEASE_GATE.md) permanece pendente para ambiente de destino,
+sem bloquear o uso local. A ETP-015.4 implementa as primitivas canônicas sem iniciar a ETP-015.5.
 
 Cada entrega nasce de `develop` atualizada, possui branch/PR próprios e só avança após evidência do
 gate aplicável.
@@ -60,7 +59,7 @@ inclui capabilities, autorização de recursos, migração de endpoints, Prisma 
 
 ## ETP-015.3 — Capability Catalog and Assignments
 
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETED`
 
 **Gate de entrada:** `APPROVED`. GA-01..GA-15 foram homologadas em 29/07/2026 no pacote
 [ETP-015 Gate A — Capability Catalog and Assignments Data Model](ETP-015_GATE_A_DATA_MODEL_DECISION_PACKAGE.md),
@@ -81,10 +80,12 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Aceite:** nenhuma autorização por role name; concessão auditável.
 - **Rollback:** migration reversível sem apagar histórico; negar em ambiguidade.
 - **Evidências:** diff do seed, matriz de capabilities e testes PostgreSQL.
+- **Conclusão:** PR #61 incorporado à `develop`; migration `0016`, catálogo e assignments históricos
+  presentes, sem ativação automática de autorização ou ampliação de acesso.
 
 ## ETP-015.4 — Authorization Guards and Decorators
 
-**Status:** `NOT STARTED`
+**Status:** `IMPLEMENTED — AUTHORIZATION PRIMITIVES AVAILABLE`
 
 - **Objetivo:** padronizar allowlist pública, capability e deny-by-default.
 - **Dependências:** 015.1–015.3, DAL-01/02/05.
@@ -95,8 +96,13 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Aceite:** primitives reutilizáveis opt-in e regra para impedir rota nova sem classificação.
 - **Rollback:** desativar apenas enforcement da família, preservando JWT/isolamento ativados.
 - **Evidências:** unitários, E2E e inventário atualizado.
+- **Implementação:** metadata imutável, quatro decorators, três guards compostos, allowlist nominal,
+  manifesto de compatibilidade para 129 handlers e verificador de 165/165 rotas.
+- **Limite:** nenhuma família legada foi migrada e a ETP-015.5 permanece `NOT STARTED`.
 
 ## ETP-015.5 — Enterprise Query Isolation
+
+**Status:** `NOT STARTED`
 
 - **Objetivo:** filtrar empresa antes do lookup em repositories/casos de uso.
 - **Dependências:** 015.2/015.4, DAL-04/05.
@@ -110,6 +116,8 @@ estão concluídos. A implementação controlada está em validação na branch
 
 ## ETP-015.6 — Sensitive Data Projection and Masking
 
+**Status:** `NOT STARTED`
+
 - **Objetivo:** projeção mínima e acesso integral por capability adicional.
 - **Dependências:** 015.3–015.5, DAL-06 e limites BDP-001/011.
 - **Módulos afetados:** serializers/query projections e contratos compartilhados.
@@ -121,6 +129,8 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Evidências:** matriz de campos e testes de snapshot/segurança.
 
 ## ETP-015.7 — Authorization Audit Events
+
+**Status:** `NOT STARTED`
 
 - **Objetivo:** cobrir escritas críticas e leituras sensíveis.
 - **Dependências:** 015.1–015.6, DAL-07/08/13.
@@ -134,6 +144,8 @@ estão concluídos. A implementação controlada está em validação na branch
 
 ## ETP-015.8 — Payroll Closure P0 Migration
 
+**Status:** `NOT STARTED`
+
 - **Objetivo:** proteger `/payroll-closures` e delegar ao fechamento canônico.
 - **Dependências:** 015.1–015.7, BDP-014, DAL-09–14; Gate B/C.
 - **Módulos afetados:** payroll-closures, payroll-periods, OpenAPI e clientes existentes.
@@ -145,6 +157,8 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Evidências:** testes PostgreSQL, inventário de consumidores e plano de janela.
 
 ## ETP-015.9 — Legacy Route Rollout
+
+**Status:** `NOT STARTED`
 
 - **Objetivo:** migrar famílias restantes por prioridade P1–P4.
 - **Dependências:** 015.8 estável e BDPs de cada família.
@@ -167,6 +181,8 @@ Cada onda e cada família possuem PR, gate, rollback e aceite próprios. Uma fam
 impede outra sem dependência material.
 
 ## ETP-015.10 — Hardening and Legacy Removal Readiness
+
+**Status:** `NOT STARTED`
 
 - **Objetivo:** provar prontidão para enforcement global e futura remoção.
 - **Dependências:** 015.1–015.9 e Gate D.

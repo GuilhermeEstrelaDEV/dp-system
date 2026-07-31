@@ -2,6 +2,7 @@ import { Controller, Get, Module } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
+import { AuthorizationRouteGuard } from '../src/modules/auth/authorization-route.guard';
 import { createApplication } from '../src/app.factory';
 import { PrismaService } from '../src/prisma/prisma.service';
 
@@ -31,6 +32,8 @@ describe('technical platform integration', () => {
     moduleRef = await Test.createTestingModule({ imports: [TechnicalTestModule] })
       .overrideProvider(PrismaService)
       .useValue(prisma)
+      .overrideProvider(AuthorizationRouteGuard)
+      .useValue({ canActivate: () => true })
       .compile();
     app = await createApplication(async () => moduleRef.createNestApplication());
     await app.init();

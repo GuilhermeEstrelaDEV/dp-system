@@ -1,9 +1,9 @@
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { REQUIRED_CAPABILITIES } from '../auth/auth.decorators';
 import { CapabilitiesGuard } from '../auth/capabilities.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ROUTE_ACCESS_POLICY, type RouteAccessPolicy } from '../auth/route-access-policy';
 import { PayrollPeriodReadinessService } from './payroll-period-readiness.service';
 import { PayrollPeriodOperationalClosureService } from './payroll-period-operational-closure.service';
 import { PayrollPeriodControlledReopeningService } from './payroll-period-controlled-reopening.service';
@@ -42,10 +42,10 @@ describe('PayrollPeriodsController readiness contract', () => {
   it('declares the canonical capability and OpenAPI GET operation', () => {
     expect(
       Reflect.getMetadata(
-        REQUIRED_CAPABILITIES,
+        ROUTE_ACCESS_POLICY,
         PayrollPeriodsController.prototype.readiness,
-      ) as unknown,
-    ).toEqual(['payroll.period.close.readiness']);
+      ) as RouteAccessPolicy,
+    ).toMatchObject({ requiredCapabilities: ['payroll.period.close.readiness'] });
 
     const document = SwaggerModule.createDocument(
       app,
@@ -54,6 +54,20 @@ describe('PayrollPeriodsController readiness contract', () => {
     const operation = document.paths['/payroll-periods/{payrollPeriodId}/closure-readiness']?.get;
     expect(operation).toBeDefined();
     expect(operation?.responses['200']).toBeDefined();
+    expect(operation?.responses['401']).toBeDefined();
+    expect(operation?.responses['403']).toBeDefined();
+    expect(operation?.security).toEqual(
+      expect.arrayContaining([expect.objectContaining({ bearer: [] })]),
+    );
+    expect((operation as unknown as Record<string, unknown>)['x-access-classification']).toBe(
+      'CAPABILITY_PROTECTED',
+    );
+    expect((operation as unknown as Record<string, unknown>)['x-active-company-required']).toBe(
+      true,
+    );
+    expect((operation as unknown as Record<string, unknown>)['x-required-capabilities']).toBe(
+      'payroll.period.close.readiness',
+    );
     expect(operation?.parameters).toEqual(
       expect.arrayContaining([expect.objectContaining({ name: 'payrollRunId', in: 'query' })]),
     );
@@ -62,10 +76,10 @@ describe('PayrollPeriodsController readiness contract', () => {
   it('declares the authenticated operational close contract', () => {
     expect(
       Reflect.getMetadata(
-        REQUIRED_CAPABILITIES,
+        ROUTE_ACCESS_POLICY,
         PayrollPeriodsController.prototype.close,
-      ) as unknown,
-    ).toEqual(['payroll.period.close.execute']);
+      ) as RouteAccessPolicy,
+    ).toMatchObject({ requiredCapabilities: ['payroll.period.close.execute'] });
 
     const document = SwaggerModule.createDocument(
       app,
@@ -85,8 +99,8 @@ describe('PayrollPeriodsController readiness contract', () => {
 
   it('declares one authenticated canonical reopen operation', () => {
     expect(
-      Reflect.getMetadata(REQUIRED_CAPABILITIES, PayrollPeriodsController.prototype.reopen),
-    ).toEqual(['payroll.period.close.reopen']);
+      Reflect.getMetadata(ROUTE_ACCESS_POLICY, PayrollPeriodsController.prototype.reopen),
+    ).toMatchObject({ requiredCapabilities: ['payroll.period.close.reopen'] });
     const document = SwaggerModule.createDocument(
       app,
       new DocumentBuilder().setTitle('test').build(),
@@ -111,8 +125,8 @@ describe('PayrollPeriodsController readiness contract', () => {
       'historyManifest',
     ] as const) {
       expect(
-        Reflect.getMetadata(REQUIRED_CAPABILITIES, PayrollPeriodsController.prototype[handler]),
-      ).toEqual(['payroll.period.close.history']);
+        Reflect.getMetadata(ROUTE_ACCESS_POLICY, PayrollPeriodsController.prototype[handler]),
+      ).toMatchObject({ requiredCapabilities: ['payroll.period.close.history'] });
     }
     const document = SwaggerModule.createDocument(
       app,
