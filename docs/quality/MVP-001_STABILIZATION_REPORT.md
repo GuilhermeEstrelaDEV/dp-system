@@ -23,5 +23,6 @@ dataset segue fictício e as contas seguem com zero grants.
 
 Consulte a [matriz de regressão](MVP-001_REGRESSION_MATRIX.md), as
 [evidências](MVP-001_FINAL_ACCEPTANCE_EVIDENCE.md), o [registro de defeitos](MVP-001_DEFECT_REGISTER.md)
-e as [limitações](MVP-001_KNOWN_LIMITATIONS.md). O próximo incremento autorizado é apenas a
-MVP-001.9 — pacote de apresentação executiva.
+e as [limitações](MVP-001_KNOWN_LIMITATIONS.md). A MVP-001.9 foi concluída com o
+[pacote executivo](../presentation/MVP-001_PRESENTATION_PACKAGE_README.md); nenhuma evolução
+funcional foi autorizada por essa entrega.

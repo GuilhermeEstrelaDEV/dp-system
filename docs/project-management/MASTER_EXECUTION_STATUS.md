@@ -297,7 +297,7 @@
 
 ### MVP-001 — Protótipo executivo local
 
-- **Status:** `IN PROGRESS`.
+- **Status:** `IMPLEMENTED — LOCAL PROTOTYPE READY FOR MANAGEMENT VALIDATION`.
 - **Base auditada:** `origin/develop@9420edc`.
 - **Diagnóstico:** [estado atual](MVP-001_CURRENT_STATE_ASSESSMENT.md), com login e empresa ativa
   implementados, porém sem identidade/vínculo no seed; dashboard demonstrativo estático; fluxo
@@ -333,8 +333,9 @@
 - **MVP-001.8 — `IMPLEMENTED — PROTOTYPE STABILIZED`:** baseline limpa, regressão funcional,
   segurança, acessibilidade, performance, continuidade, logs e evidências finais aprovados. Todos os
   P1 foram corrigidos sem migration, grant, capability ou expansão funcional.
-- **MVP-001.9 — `NOT STARTED — PRESENTATION PACKAGE`:** etapa futura, dependente da MVP-001.8, para
-  roteiro executivo, narrativa, slides, guia, checklist, contingência, limitações, feedback,
-  evidências e decisão de encerramento. Não inclui funcionalidade, grants, capabilities, produção,
-  cloud, deploy ou ETP-015.4; nenhum material foi iniciado.
+- **MVP-001.9 — `IMPLEMENTED — PRESENTATION PACKAGE AVAILABLE`:** deck executivo de 15 slides,
+  fonte versionada, PPTX/PDF reproduzíveis, seis capturas reais, mapa de evidências, roteiro, guia,
+  checklist, contingência, Q&A e coleta de feedback disponíveis em `docs/presentation`. A entrega é
+  documental e de tooling; não inclui funcionalidade, grants, capabilities, produção, cloud,
+  deploy ou ETP-015.4.
 - **ETP-015.4 — `NOT STARTED`:** nenhuma autorização ou rota legada foi antecipada pelo MVP.

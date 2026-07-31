@@ -2,6 +2,8 @@
 
 O protótipo somente poderá ser declarado demonstrável quando houver evidência para todos os itens.
 
+**Estado final:** `IMPLEMENTED — LOCAL PROTOTYPE READY FOR MANAGEMENT VALIDATION`.
+
 A MVP-001.3 fornece autenticação e contexto empresarial demonstrativos com identidades fictícias,
 hash real, sessão revogável e zero grants automáticos. Isso não conclui o protótipo completo.
 
@@ -21,6 +23,7 @@ hash real, sessão revogável e zero grants automáticos. Isso não conclui o pr
 - [x] reset demonstrativo restaura o baseline e falha de forma segura fora do local;
 - [x] lint, typecheck, testes e build da MVP-001.6 estão aprovados;
 - [x] smoke tests confirmam dados, zero grants e zero vazamento entre empresas.
+- [x] pacote executivo rastreável, reproduzível e com contingência offline está disponível.
 
 A MVP-001.7 disponibiliza um gate operacional reproduzível que cobre readiness, dados, autenticação,
 isolamento, dashboard, logout e ausência de grants, com relatório sanitizado. Esses controles apoiam
@@ -30,3 +33,5 @@ O fluxo estrutura → colaborador → contrato permanece uma limitação aceita:
 dependem da ETP-015.4 e não podem ser apresentadas como isoladas/autorizadas. O aceite da MVP-001.8
 reconhece o bloqueio seguro como comportamento correto; não declara o CRUD como funcional. Evidências
 estão em [MVP-001_FINAL_ACCEPTANCE_EVIDENCE](../quality/MVP-001_FINAL_ACCEPTANCE_EVIDENCE.md).
+O aceite do pacote de apresentação está em
+[MVP-001_PRESENTATION_ACCEPTANCE_CRITERIA](../presentation/MVP-001_PRESENTATION_ACCEPTANCE_CRITERIA.md).

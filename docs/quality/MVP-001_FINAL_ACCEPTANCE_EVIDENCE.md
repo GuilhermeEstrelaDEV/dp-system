@@ -20,6 +20,6 @@
 
 ## Decisão
 
-Não há falha P0/P1 aberta. MVP-001.8 está estabilizada e libera somente a MVP-001.9 documental de
-apresentação. O protótipo completo continua `IN PROGRESS` até esse pacote; ETP-015.4 continua
-`NOT STARTED`.
+Não há falha P0/P1 aberta. MVP-001.8 está estabilizada. A MVP-001.9 documental foi concluída com
+[pacote executivo](../presentation/MVP-001_PRESENTATION_PACKAGE_README.md); o protótipo local está
+pronto para validação gerencial. ETP-015.4 continua `NOT STARTED`.

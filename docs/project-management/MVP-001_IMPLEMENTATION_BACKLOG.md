@@ -2,8 +2,8 @@
 
 ## Estado
 
-`IN PROGRESS`. Bootstrap, shell visual, login demonstrativo e dashboard executivo estão disponíveis.
-O protótipo completo ainda não está pronto.
+`IMPLEMENTED — LOCAL PROTOTYPE READY FOR MANAGEMENT VALIDATION`. Os nove incrementos locais estão
+disponíveis; validação gerencial e qualquer continuidade ainda dependem de decisão explícita.
 
 | Ordem | Incremento                                 | Estado                                           | Critério de saída                                                    |
 | ----- | ------------------------------------------ | ------------------------------------------------ | -------------------------------------------------------------------- |
@@ -15,7 +15,7 @@ O protótipo completo ainda não está pronto.
 | 6     | MVP-001.6 Fluxos principais                | `IMPLEMENTED — SAFE CORE DEMO FLOWS AVAILABLE`   | login, contexto, dashboard, restrição segura, troca e logout         |
 | 7     | MVP-001.7 Roteiro e acceptance             | `IMPLEMENTED — DEMO MODE AND GO/NO-GO AVAILABLE` | smoke test, gate GO/NO-GO e guia do apresentador                     |
 | 8     | MVP-001.8 Estabilização final              | `IMPLEMENTED — PROTOTYPE STABILIZED`             | ensaio aceito, pendências críticas encerradas e aceite final         |
-| 9     | MVP-001.9 Pacote de apresentação executiva | `NOT STARTED — PRESENTATION PACKAGE`             | materiais finais e decisão de encerramento, após estabilização       |
+| 9     | MVP-001.9 Pacote de apresentação executiva | `IMPLEMENTED — PRESENTATION PACKAGE AVAILABLE`   | deck, roteiro, evidências, contingência e feedback reproduzíveis     |
 
 ## Dependências e gates
 
@@ -27,14 +27,14 @@ O protótipo completo ainda não está pronto.
 
 ### MVP-001.9 — Pacote de apresentação executiva
 
-Etapa futura para preparar o roteiro executivo final, narrativa de negócio, sequência da
-demonstração, slides, guia do apresentador, checklist do dia, contingência consolidada, limitações,
-coleta de feedback, evidências finais e decisão de encerramento da MVP-001.
+Entrega do roteiro executivo final, narrativa de negócio, sequência da demonstração, slides, guia
+do apresentador, checklist do dia, contingência consolidada, limitações, coleta de feedback e
+evidências finais da MVP-001.
 
-Depende da MVP-001.8 concluída, protótipo estabilizado, critérios de aceite revisados, riscos
+Foi concluída após a MVP-001.8, com protótipo estabilizado, critérios de aceite revisados, riscos
 residuais documentados e `DEMO STATUS: GO`. Não inclui funcionalidades, módulos, APIs legadas,
-grants, capabilities, produção, cloud, deploy ou ETP-015.4. Seu status é `NOT STARTED`; nenhum
-material de apresentação foi criado nesta regularização.
+grants, capabilities, produção, cloud, deploy ou ETP-015.4. Seu status é
+`IMPLEMENTED — PRESENTATION PACKAGE AVAILABLE`.
 
 ## Sequência recomendada
 
@@ -45,5 +45,6 @@ MVP-001.5 fornece o [dataset determinístico](../product/MVP-001_DEMO_DATASET.md
 os [fluxos essenciais seguros](../product/MVP-001_CORE_FLOWS.md), sem antecipar a proteção de backend
 da ETP-015.4 nem criar grants. MVP-001.7 entrega o modo de apresentação e o gate operacional
 GO/NO-GO. MVP-001.8 estabilizou o protótipo, encerrou todos os P1 e registrou evidências e limitações
-em `docs/quality`. MVP-001.9 permanece `NOT STARTED — PRESENTATION PACKAGE`; o protótipo completo
-continua `IN PROGRESS` até esse pacote.
+em `docs/quality`. MVP-001.9 disponibiliza o
+[pacote de apresentação](../presentation/MVP-001_PRESENTATION_PACKAGE_README.md); o protótipo local
+está pronto para validação gerencial, sem representar prontidão produtiva.

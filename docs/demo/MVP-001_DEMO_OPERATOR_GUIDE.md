@@ -8,7 +8,7 @@
 4. Prossiga somente com `DEMO STATUS: GO`.
 5. Abra `http://localhost:55173`; não mantenha console ou ferramentas técnicas visíveis.
 
-## Durante (10–12 minutos)
+## Durante (aproximadamente 13 minutos)
 
 1. Entre manualmente como Administrador Demo.
 2. Selecione Horizonte e apresente o contexto e o dashboard restrito.
@@ -19,7 +19,8 @@
 7. Encerre a sessão.
 
 O painel não exibe senhas. Consulte as credenciais localmente antes da reunião, sem projetar o
-arquivo. Se um passo falhar, use o [plano de contingência](MVP-001_DEMO_CONTINGENCY_PLAN.md).
+arquivo. Use o [roteiro executivo final](../presentation/MVP-001_FINAL_DEMO_SCRIPT.md). Se um passo
+falhar, use a [contingência da apresentação](../presentation/MVP-001_PRESENTATION_CONTINGENCY.md).
 
 ## Depois
 

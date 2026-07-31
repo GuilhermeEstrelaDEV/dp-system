@@ -1,4 +1,7 @@
-# MVP-001 — Roteiro preliminar da demonstração
+# MVP-001 — Roteiro preliminar da demonstração (histórico)
+
+> Substituído pelo [roteiro executivo final](MVP-001_FINAL_DEMO_SCRIPT.md). Este arquivo é preservado
+> para rastreabilidade e não deve orientar a apresentação gerencial atual.
 
 **Duração estimada:** 10 a 12 minutos. Este roteiro é técnico e será refinado em etapa futura.
 

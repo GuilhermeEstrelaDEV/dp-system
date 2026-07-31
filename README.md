@@ -4,7 +4,7 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Estado atual: **MVP-001 em execução; MVP-001.8 estabilizada e MVP-001.9 ainda não iniciada**.
+Estado atual: **MVP-001 implementada localmente e pronta para validação gerencial**.
 
 ## Topologia planejada
 
@@ -50,8 +50,19 @@ Antes de apresentar, siga o [guia do operador](docs/demo/MVP-001_DEMO_OPERATOR_G
 `DEMO STATUS: GO` em `pnpm demo:verify`.
 
 A estabilização final, limitações e evidências técnicas estão no
-[relatório da MVP-001.8](docs/quality/MVP-001_STABILIZATION_REPORT.md). O sistema continua sendo um
-protótipo exclusivamente local; o pacote executivo da MVP-001.9 ainda não foi iniciado.
+[relatório da MVP-001.8](docs/quality/MVP-001_STABILIZATION_REPORT.md). O
+[pacote executivo da MVP-001.9](docs/presentation/MVP-001_PRESENTATION_PACKAGE_README.md) fornece
+deck, evidências, roteiro, contingência e instrumentos de feedback. O sistema continua sendo um
+protótipo exclusivamente local e não está pronto para produção.
+
+Para reproduzir os artefatos da apresentação:
+
+```powershell
+pnpm presentation:capture
+pnpm presentation:build
+pnpm presentation:pdf
+pnpm presentation:verify
+```
 
 ## Qualidade e validação
 
