@@ -42,15 +42,20 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           )
         : undefined;
 
-    this.logger.error(
-      'Unhandled request error',
-      exception instanceof Error ? exception.stack : undefined,
-      {
-        path: requestPath(request),
-        status,
-        correlationId: request.correlationId,
-      },
-    );
+    const logMetadata = {
+      path: requestPath(request),
+      status,
+      correlationId: request.correlationId,
+    };
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      this.logger.error(
+        'Unhandled request error',
+        exception instanceof Error ? exception.stack : undefined,
+        logMetadata,
+      );
+    } else {
+      this.logger.warn('Request rejected', 'HTTP', logMetadata);
+    }
 
     response.status(status).json({
       error: {

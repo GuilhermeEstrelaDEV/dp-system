@@ -93,8 +93,10 @@ export function LoginPage() {
           )}
           {isDemoMode && (
             <Card>
-              <Badge tone="warning">Ambiente de demonstração</Badge>
-              <strong>Conta demonstrativa</strong>
+              <div className="auth-form__demo-heading">
+                <Badge tone="warning">Ambiente de demonstração</Badge>
+                <strong>Conta demonstrativa</strong>
+              </div>
               <p>Administrador Demo · uso fictício e exclusivamente local.</p>
               <Button
                 onClick={() => setEmail('admin.demo@dp-system.local')}

@@ -50,7 +50,9 @@ pnpm demo:status
 pnpm demo:stop
 ```
 
-`demo:stop` preserva o volume. Um novo `demo:start` retoma os mesmos dados.
+`demo:stop` preserva o volume. Um novo `demo:start` retoma os mesmos dados. O start somente conclui
+após confirmar a porta PostgreSQL publicada e HTTP 200 da API e do frontend; cada dependência possui
+limite de espera e ação corretiva explícita.
 
 ## Reset seguro
 
@@ -72,6 +74,8 @@ A data-base é `2026-07-01`.
 `pnpm demo:verify` executa preflight, readiness, dataset e smoke autenticado sem modificar o banco.
 `pnpm demo:ready` inicia os serviços e executa o mesmo gate. `pnpm demo:rehearse` repete somente o
 ensaio funcional sobre o ambiente já saudável. Apresente apenas após o resultado `DEMO STATUS: GO`.
+Chamadas HTTP possuem timeout de 10 segundos e comandos externos, 120 segundos, evitando espera
+indefinida quando uma dependência congela.
 
 ## Recursos previsíveis
 

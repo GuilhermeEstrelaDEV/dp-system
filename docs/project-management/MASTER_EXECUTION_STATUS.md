@@ -330,7 +330,9 @@
   seguro. Escritas e consultas administrativas permanecem adiadas por zero grants e ETP-015.4.
 - **MVP-001.7 — `IMPLEMENTED — DEMO MODE AND GO/NO-GO AVAILABLE`:** modo visual condicional,
   verificação não destrutiva, smoke autenticado, relatório sanitizado e documentação operacional.
-- **MVP-001.8 — `NOT STARTED`:** estabilização e aceite final ainda não foram iniciados.
+- **MVP-001.8 — `IMPLEMENTED — PROTOTYPE STABILIZED`:** baseline limpa, regressão funcional,
+  segurança, acessibilidade, performance, continuidade, logs e evidências finais aprovados. Todos os
+  P1 foram corrigidos sem migration, grant, capability ou expansão funcional.
 - **MVP-001.9 — `NOT STARTED — PRESENTATION PACKAGE`:** etapa futura, dependente da MVP-001.8, para
   roteiro executivo, narrativa, slides, guia, checklist, contingência, limitações, feedback,
   evidências e decisão de encerramento. Não inclui funcionalidade, grants, capabilities, produção,

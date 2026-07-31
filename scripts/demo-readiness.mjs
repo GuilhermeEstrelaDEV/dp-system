@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import process from 'node:process';
 
-/* global console, fetch */
+/* global AbortSignal, console, fetch */
 
 const expected = {
   project: 'dp-system-demo',
@@ -11,6 +11,8 @@ const expected = {
   horizon: '10000000-0000-4000-8000-000000000001',
   atlas: '10000000-0000-4000-8000-000000000002',
 };
+const requestTimeoutMs = 10_000;
+const commandTimeoutMs = 120_000;
 
 export function sanitize(value) {
   return String(value)
@@ -55,6 +57,7 @@ function capture(program, args, options = {}) {
   return spawnSync(program, args, {
     encoding: 'utf8',
     shell: process.platform === 'win32',
+    timeout: commandTimeoutMs,
     ...options,
   });
 }
@@ -64,8 +67,11 @@ function commandCheck(program, args) {
   return response.status === 0 ? response.stdout.trim() : null;
 }
 
-async function request(url, options = {}) {
-  const response = await fetch(url, options);
+export async function request(url, options = {}) {
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(requestTimeoutMs),
+    ...options,
+  });
   const payload = await response.json().catch(() => undefined);
   return { status: response.status, data: payload?.data };
 }
@@ -355,10 +361,14 @@ export async function runReadiness({ report = false, smokeOnly = false } = {}) {
     );
   }
 
-  const apiReady = await fetch(`http://localhost:${env.API_PORT}/api/v1/health/ready`)
+  const apiReady = await fetch(`http://localhost:${env.API_PORT}/api/v1/health/ready`, {
+    signal: AbortSignal.timeout(requestTimeoutMs),
+  })
     .then((response) => response.status)
     .catch(() => 0);
-  const webReady = await fetch(`http://localhost:${env.WEB_PORT}`)
+  const webReady = await fetch(`http://localhost:${env.WEB_PORT}`, {
+    signal: AbortSignal.timeout(requestTimeoutMs),
+  })
     .then((response) => response.status)
     .catch(() => 0);
   checks.push(

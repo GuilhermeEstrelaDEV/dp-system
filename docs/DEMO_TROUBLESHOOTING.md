@@ -14,6 +14,8 @@
 | seed demo recusado           | gate local não confirmado                | validar `DEMO_ENV`, `DEMO_MODE`, banco local e `NODE_ENV` não produtivo                         |
 | reset recusado               | flag ausente ou ambiente não reconhecido | revisar `.env.demo.local` e usar `pnpm demo:reset -- --confirm-reset`                           |
 | gate retorna `NO-GO`         | uma dependência bloqueante falhou        | seguir a ação corretiva e o [plano de contingência](demo/MVP-001_DEMO_CONTINGENCY_PLAN.md)      |
+| porta local ainda não pronta | start expira aguardando banco/API/web    | conferir publicação com `pnpm demo:status`; repetir start após corrigir porta/container         |
+| verificação atinge timeout   | dependência não respondeu no limite      | consultar status e logs; não aumentar o limite para ocultar falha                               |
 
 Comandos úteis:
 
