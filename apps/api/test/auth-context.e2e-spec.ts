@@ -27,6 +27,13 @@ describe('authenticated company context integration', () => {
       updateMany: jest.fn(),
     },
     userCompanyRole: { findMany: jest.fn() },
+    permission: {
+      findFirst: jest.fn().mockResolvedValue({
+        code: 'delegation.manage',
+        scope: 'COMPANY',
+        status: 'ACTIVE',
+      }),
+    },
     auditLog: { create: jest.fn().mockResolvedValue({ id: 'audit-1' }) },
   };
 

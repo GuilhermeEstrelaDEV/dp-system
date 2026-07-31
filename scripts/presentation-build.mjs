@@ -44,6 +44,7 @@ function section(block, heading) {
 
 export function parseDeck(source) {
   return source
+    .replace(/\r\n?/gu, '\n')
     .split(/\n---\n/u)
     .filter((block) => /^## Slide /mu.test(block))
     .map((block) => {

@@ -1,9 +1,6 @@
-import { createParamDecorator, SetMetadata, type ExecutionContext } from '@nestjs/common';
+import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
 import type { AuthenticatedPrincipal, RequestWithContext } from '../../common/http/request-context';
-
-export const REQUIRED_CAPABILITIES = 'required-capabilities';
-export const RequireCapabilities = (...capabilities: string[]) =>
-  SetMetadata(REQUIRED_CAPABILITIES, capabilities);
+export { RequireCapabilities } from './route-access-policy';
 
 export const CurrentPrincipal = createParamDecorator(
   (_data: unknown, context: ExecutionContext): AuthenticatedPrincipal => {

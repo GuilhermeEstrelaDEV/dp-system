@@ -10,7 +10,6 @@ import {
   Post,
   Query,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import {
@@ -27,8 +26,6 @@ import {
 } from '@nestjs/swagger';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { CurrentPrincipal, RequireCapabilities } from '../auth/auth.decorators';
-import { CapabilitiesGuard } from '../auth/capabilities.guard';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   PayrollPeriodClosureReadinessQueryDto,
   PayrollPeriodClosureReadinessResponseDto,
@@ -73,7 +70,6 @@ export class PayrollPeriodsController {
   @Get(':payrollPeriodId/closure-readiness')
   @ApiBearerAuth()
   @ApiOkResponse({ type: PayrollPeriodClosureReadinessResponseDto })
-  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
   @RequireCapabilities('payroll.period.close.readiness')
   readiness(
     @Param('payrollPeriodId') payrollPeriodId: string,
@@ -91,7 +87,6 @@ export class PayrollPeriodsController {
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
   @ApiNotFoundResponse({ description: 'Period missing or outside the active company.' })
-  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
   @RequireCapabilities('payroll.period.close.history')
   history(
     @Param('payrollPeriodId') payrollPeriodId: string,
@@ -108,7 +103,6 @@ export class PayrollPeriodsController {
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()
-  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
   @RequireCapabilities('payroll.period.close.history')
   historyEvents(
     @Param('payrollPeriodId') payrollPeriodId: string,
@@ -126,7 +120,6 @@ export class PayrollPeriodsController {
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
   @ApiNotFoundResponse({ description: 'Period, version or manifest not found.' })
-  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
   @RequireCapabilities('payroll.period.close.history')
   historyManifest(
     @Param('payrollPeriodId') payrollPeriodId: string,
@@ -141,7 +134,6 @@ export class PayrollPeriodsController {
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()
-  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
   @RequireCapabilities('payroll.period.close.history')
   historyVersion(
     @Param('payrollPeriodId') payrollPeriodId: string,
@@ -176,7 +168,6 @@ export class PayrollPeriodsController {
   @ApiNotFoundResponse({ description: 'Period missing or outside the active company.' })
   @ApiConflictResponse({ description: 'Idempotency, consistency or concurrency conflict.' })
   @ApiUnprocessableEntityResponse({ description: 'Readiness or acknowledgement not met.' })
-  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
   @RequireCapabilities('payroll.period.close.execute')
   async close(
     @Param('payrollPeriodId') payrollPeriodId: string,
@@ -207,7 +198,6 @@ export class PayrollPeriodsController {
   @ApiForbiddenResponse()
   @ApiNotFoundResponse({ description: 'Period missing or outside the active company.' })
   @ApiConflictResponse({ description: 'State, evidence, idempotency or concurrency conflict.' })
-  @UseGuards(JwtAuthGuard, CapabilitiesGuard)
   @RequireCapabilities('payroll.period.close.reopen')
   async reopen(
     @Param('payrollPeriodId') payrollPeriodId: string,

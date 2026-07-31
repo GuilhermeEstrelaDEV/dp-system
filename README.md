@@ -21,6 +21,10 @@ Monorepo `pnpm` + Turborepo com aplicações em `apps/web` e `apps/api`, e pacot
 
 Consulte o [manual de instalação](docs/INSTALLATION.md) e o [relatório da ETP-002.1](docs/project-management/ETP-002_STAGE_01.md).
 
+A ETP-015.4 disponibiliza [metadata, decorators e guards canônicos](docs/security/ETP-015_4_AUTHORIZATION_GUARDS.md),
+uma [allowlist pública explícita](docs/security/ETP-015_4_PUBLIC_ALLOWLIST.md) e verificação automática
+de classificação. As APIs legadas continuam adiadas e não devem ser tratadas como migradas.
+
 ## Protótipo executivo local
 
 A MVP-001.1 oferece bootstrap isolado e reproduzível para demonstração local:

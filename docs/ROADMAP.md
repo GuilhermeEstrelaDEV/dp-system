@@ -102,7 +102,7 @@ concluída após a Final Acceptance.
 
 ## ETP-015 — Authorization Foundation & Enterprise Isolation
 
-**Status:** `IN PROGRESS` — ETP-015.1, ETP-015.2 e ETP-015.3 implementadas; ETP-015.4 não iniciada.
+**Status:** `IN PROGRESS` — ETP-015.1–015.3 concluídas; ETP-015.4 implementada; ETP-015.5 não iniciada.
 
 A ETP-015.3 foi incorporada à `develop` pelo PR #61. A migration 0016, o catálogo e os assignments
 estão implementados, sem grants automáticos. O
@@ -128,7 +128,9 @@ bloqueadoras. O subgate de classificação de risco e sensibilidade dos 19 códi
 no merge `f3a63d6243797c91e17ace40a715bdbf78478efb`, com CI aprovado. Todos os pré-requisitos
 documentais foram concluídos. A ETP-015.3 está `IMPLEMENTED AND MERGED`, com migration aditiva,
 catálogo interno e assignments históricos. Nenhuma rota, grant automático ou ampliação de acesso foi
-ativada pela migration. A ETP-015.4 permanece `NOT STARTED`.
+ativada pela migration. A ETP-015.4 está `IMPLEMENTED — AUTHORIZATION PRIMITIVES AVAILABLE`, com
+allowlist pública nominal, JWT, empresa ativa, capabilities `ALL`, deny-by-default e verificador de
+165 handlers. As 129 rotas legadas continuam `LEGACY_DEFERRED`; a ETP-015.5 permanece `NOT STARTED`.
 
 ## Próximas iniciativas propostas
 
@@ -155,7 +157,8 @@ continuidade permanecem decisões futuras explícitas.
 
 ETP-015.3 está `IMPLEMENTED AND MERGED`. Seu Operational Deployment Gate permanece
 `PENDING FOR FUTURE TARGET ENVIRONMENT`; esse bloqueio de destino não impede a demonstração local.
-ETP-015.4 permanece `NOT STARTED` e não integra o escopo do MVP-001.
+ETP-015.4 foi iniciada somente após a conclusão do MVP-001 e está implementada nesta branch; nenhuma
+família legada foi migrada e a ETP-015.5 permanece `NOT STARTED`.
 
 Permanecem propostas não vinculantes, sem autorização de implementação: **ETP-016 — Relatórios,
 dashboards e inteligência operacional** e **ETP-017 — Hardening, observabilidade e performance**.

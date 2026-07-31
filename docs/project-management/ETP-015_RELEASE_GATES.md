@@ -1,6 +1,6 @@
 # ETP-015 — Release Gates
 
-**Status:** Gate A aprovado; Gate B em formação; Gates C e D não iniciados
+**Status:** Gate A aprovado; ETP-015.4 implementada e Gate B ainda em formação; Gates C e D não iniciados
 
 ## Governança de evidências
 
@@ -39,6 +39,12 @@ Sem evidência, o resultado binário do item é `FAIL`.
 - [ ] nenhuma família foi ativada em massa.
 
 **Saída verificável:** testes unitários/E2E/PostgreSQL, OpenAPI e relatório pós-merge.
+
+**Evidência candidata da ETP-015.4:** [guards e decorators](../security/ETP-015_4_AUTHORIZATION_GUARDS.md),
+[inventário 165/165](../security/ETP-015_4_ROUTE_CLASSIFICATION_INVENTORY.md),
+[matriz negativa](../security/ETP-015_4_NEGATIVE_TEST_MATRIX.md) e
+[aceite](../security/ETP-015_4_ACCEPTANCE_EVIDENCE.md). O primeiro checkbox permanece aberto até o
+merge e a verificação pós-merge; nenhuma família foi ativada em massa.
 
 ## Gate C — P0 Migration and Security Validation
 

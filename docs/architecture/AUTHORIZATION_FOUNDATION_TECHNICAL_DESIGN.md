@@ -144,8 +144,11 @@ o mesmo caso de uso canônico. No fechamento, `/payroll-closures` deve delegar a
 readiness, close, reopen e history, preservando lock, idempotência, manifesto e auditoria. Não existe
 fallback ao `PayrollClosuresService` como regra paralela.
 
-Os módulos de payroll review e payroll periods são referências de integração. Módulos restantes são
-migrados na ordem registrada no backlog, sem guard global prematuro.
+Os módulos de payroll review e payroll periods são referências de integração. A ETP-015.4 introduziu
+um guard global com compatibilidade nominal: 36 handlers canônicos possuem metadata e 129 handlers
+legados conhecidos permanecem `LEGACY_DEFERRED`. O guard nega qualquer handler novo ausente das duas
+fontes, sem converter o legado em protegido. Módulos restantes são migrados na ordem registrada no
+backlog.
 
 ## 10. Segregação e grants
 
@@ -154,7 +157,15 @@ explícitos, temporários, expirados/revogados imediatamente e auditados no uso.
 capability de gestão, motivo e teto técnico. Nenhum grant copia papel, ignora empresa ou cria
 assignment permanente.
 
-## 11. Limites
+## 11. Primitivas implementadas na ETP-015.4
 
-Este desenho não atribui capabilities, não define cargos, não cria migration, não modifica rota e não
-autoriza implementação antes do Gate A.
+`ROUTE_ACCESS_POLICY` é a única metadata de classificação. `@PublicRoute()`,
+`@AuthenticatedRoute()`, `@RequireActiveCompany()` e `@RequireCapabilities()` compõem JWT, empresa
+ativa e catálogo com semântica `ALL`. A allowlist pública usa identificadores nominais, o verificador
+reconcilia discovery real do NestJS e OpenAPI expõe somente requisitos não sensíveis. Nenhum cache foi
+adicionado; revogação e vigência são resolvidas por requisição.
+
+## 12. Limites
+
+Este desenho não atribui capabilities, não define cargos, não cria migration e não migra famílias de
+negócio. Isolamento de queries, masking e auditoria de autorização permanecem nas ETP-015.5–015.7.

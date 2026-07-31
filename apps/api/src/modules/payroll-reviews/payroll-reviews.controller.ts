@@ -1,9 +1,7 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { CurrentPrincipal, RequireCapabilities } from '../auth/auth.decorators';
-import { CapabilitiesGuard } from '../auth/capabilities.guard';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   CreatePayrollReviewFindingDto,
   PayrollReviewDecisionDto,
@@ -13,8 +11,6 @@ import {
 import { PayrollReviewsService } from './payroll-reviews.service';
 
 @ApiTags('payroll-reviews')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard, CapabilitiesGuard)
 @Controller()
 export class PayrollReviewsController {
   constructor(private readonly service: PayrollReviewsService) {}
