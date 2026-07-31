@@ -609,6 +609,12 @@ button:disabled,
 .auth-form .ui-button {
   margin-top: 0.7rem;
 }
+.auth-form__demo-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
 .selection-page {
   min-height: 100vh;
   padding: 1.25rem clamp(1rem, 4vw, 4rem);

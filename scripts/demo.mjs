@@ -33,10 +33,11 @@ function run(program, commandArgs, options = {}) {
   }
 }
 
-function capture(program, commandArgs) {
+function capture(program, commandArgs, options = {}) {
   const result = spawnSync(program, commandArgs, {
     encoding: 'utf8',
     shell: process.platform === 'win32',
+    ...options,
   });
   return result.status === 0 ? result.stdout.trim() : null;
 }
@@ -115,6 +116,42 @@ function waitForPostgres() {
   );
 }
 
+function waitForTcpPort(port, service) {
+  info(`Aguardando ${service} na porta local ${port}...`);
+  const probe =
+    "const net=require('node:net');const socket=net.createConnection({host:'127.0.0.1',port:Number(process.argv[1])});socket.once('connect',()=>{socket.destroy();process.exit(0)});socket.once('error',()=>process.exit(1));setTimeout(()=>process.exit(1),1000).unref();";
+  for (let attempt = 1; attempt <= 60; attempt += 1) {
+    if (capture('node', ['-e', probe, String(port)], { shell: false }) !== null) return;
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
+  }
+  fail(
+    `${service} não ficou acessível na porta local ${port} em 60 segundos.`,
+    `Execute pnpm demo:status e confira a publicação da porta ${port}.`,
+  );
+}
+
+function waitForHttp(url, service) {
+  info(`Aguardando readiness de ${service}...`);
+  for (let attempt = 1; attempt <= 60; attempt += 1) {
+    const status = capture('curl', [
+      '--silent',
+      '--max-time',
+      '2',
+      '--output',
+      process.platform === 'win32' ? 'NUL' : '/dev/null',
+      '--write-out',
+      '%{http_code}',
+      url,
+    ]);
+    if (status === '200') return;
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
+  }
+  fail(
+    `${service} não respondeu HTTP 200 em 60 segundos.`,
+    'Execute pnpm demo:status e consulte os logs do container correspondente.',
+  );
+}
+
 function childEnvironment(env) {
   return {
     ...process.env,
@@ -190,6 +227,9 @@ function start() {
   const env = prepareEnvironment();
   info('Construindo e iniciando os containers da demonstração...');
   compose('up', '--detach', '--build');
+  waitForTcpPort(env.POSTGRES_PORT, 'PostgreSQL');
+  waitForHttp(`http://localhost:${env.API_PORT}/api/v1/health/ready`, 'API');
+  waitForHttp(`http://localhost:${env.WEB_PORT}`, 'frontend');
   showUrls(env);
   info('Use pnpm demo:status para inspecionar e pnpm demo:stop para interromper.');
 }

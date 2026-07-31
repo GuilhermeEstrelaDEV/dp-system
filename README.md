@@ -4,7 +4,7 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Estado atual: **ETP-014 concluída — próxima iniciativa em descoberta, sem implementação aprovada**.
+Estado atual: **MVP-001 em execução; MVP-001.8 estabilizada e MVP-001.9 ainda não iniciada**.
 
 ## Topologia planejada
 
@@ -12,10 +12,12 @@ Monorepo `pnpm` + Turborepo com aplicações em `apps/web` e `apps/api`, e pacot
 
 ## Fundação técnica disponível
 
-- React/Vite, Tailwind e React Router com application shell responsivo, dashboard demonstrativo, rotas de placeholder e fallback visual, sem integração com API.
-- NestJS com Swagger, logger estruturado, tratamento global de erros, JWT apenas estrutural e health check técnico.
-- Prisma 6.19.0, PostgreSQL, migration e seed restritos a identidade de plataforma.
-- Docker Compose e Dockerfiles configurados; execução de contêineres aguarda Docker Desktop no ambiente.
+- React/Vite e React Router com shell responsivo, login, empresa ativa, dashboard e fluxos de folha
+  protegidos conforme as capabilities existentes.
+- NestJS com OpenAPI, logger estruturado, erros correlacionados, autenticação JWT, contexto empresarial,
+  RBAC opt-in, auditoria e health checks.
+- Prisma 6.19.0 e PostgreSQL 16 com 16 migrations; o seed demo é local, fictício e não cria grants.
+- Docker Compose dedicado à demonstração local, com PostgreSQL, Redis, API e frontend isolados.
 
 Consulte o [manual de instalação](docs/INSTALLATION.md) e o [relatório da ETP-002.1](docs/project-management/ETP-002_STAGE_01.md).
 
@@ -46,6 +48,10 @@ senhas ou criar autorização.
 
 Antes de apresentar, siga o [guia do operador](docs/demo/MVP-001_DEMO_OPERATOR_GUIDE.md) e exija
 `DEMO STATUS: GO` em `pnpm demo:verify`.
+
+A estabilização final, limitações e evidências técnicas estão no
+[relatório da MVP-001.8](docs/quality/MVP-001_STABILIZATION_REPORT.md). O sistema continua sendo um
+protótipo exclusivamente local; o pacote executivo da MVP-001.9 ainda não foi iniciado.
 
 ## Qualidade e validação
 

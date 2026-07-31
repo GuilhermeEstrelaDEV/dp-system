@@ -2,7 +2,9 @@
 
 **Duração estimada:** 10 a 12 minutos. Este roteiro é técnico e será refinado em etapa futura.
 
-Pré-condição obrigatória: executar `pnpm demo:verify` e prosseguir somente com `DEMO STATUS: GO`.
+Pré-condição obrigatória: executar `pnpm demo:verify -- --report` e prosseguir somente com
+`DEMO STATUS: GO`. Consultar também o
+[relatório de estabilização](../quality/MVP-001_STABILIZATION_REPORT.md) antes do ensaio executivo.
 
 | Tempo | Ator/usuário       | Empresa/rota                     | Ação e dado                            | Resultado esperado                   | Capability/alternativa                                            |
 | ----- | ------------------ | -------------------------------- | -------------------------------------- | ------------------------------------ | ----------------------------------------------------------------- |

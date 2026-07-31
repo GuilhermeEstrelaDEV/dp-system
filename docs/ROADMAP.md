@@ -144,7 +144,8 @@ criadas somente identidades fictícias e vínculos locais, sem grants automátic
 `IMPLEMENTED — EXECUTIVE DASHBOARD AVAILABLE`, com métricas autorizadas e isoladas. A MVP-001.5 está
 `IMPLEMENTED — DEMO DATASET AVAILABLE`; MVP-001.6 está
 `IMPLEMENTED — SAFE CORE DEMO FLOWS AVAILABLE`, com roteiro autenticado e estados restritos seguros;
-MVP-001.7 está `IMPLEMENTED — DEMO MODE AND GO/NO-GO AVAILABLE`; MVP-001.8 permanece `NOT STARTED`.
+MVP-001.7 está `IMPLEMENTED — DEMO MODE AND GO/NO-GO AVAILABLE`; MVP-001.8 está
+`IMPLEMENTED — PROTOTYPE STABILIZED`, com regressão, aceite e limitações registrados em `docs/quality`.
 A MVP-001.9 — Pacote de apresentação executiva está `NOT STARTED — PRESENTATION PACKAGE`, depende da
 estabilização e não autoriza implementação funcional, conforme o
 [backlog incremental](project-management/MVP-001_IMPLEMENTATION_BACKLOG.md). A MVP-001 permanece
