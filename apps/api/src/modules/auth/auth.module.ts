@@ -20,6 +20,8 @@ import { AssignmentGovernanceService } from './assignment-governance.service';
 import { CapabilityCatalogService } from './capability-catalog.service';
 import { ActiveCompanyGuard } from './active-company.guard';
 import { RouteClassificationVerifierService } from './route-classification-verifier.service';
+import { EnterpriseScopeFactory } from './enterprise-scope';
+import { AccessGrantsRepository } from './access-grants.repository';
 
 type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
 
@@ -57,6 +59,8 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
     CapabilityCatalogService,
     ActiveCompanyGuard,
     RouteClassificationVerifierService,
+    EnterpriseScopeFactory,
+    AccessGrantsRepository,
   ],
   exports: [
     JwtModule,
@@ -73,6 +77,8 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
     CapabilityCatalogService,
     ActiveCompanyGuard,
     RouteClassificationVerifierService,
+    EnterpriseScopeFactory,
+    AccessGrantsRepository,
   ],
 })
 export class AuthModule {}

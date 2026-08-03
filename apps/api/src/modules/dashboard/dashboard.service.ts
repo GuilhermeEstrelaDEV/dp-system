@@ -1,7 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import type { PayrollReviewEventType } from '@prisma/client';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
-import { PrismaService } from '../../prisma/prisma.service';
+import type { EnterpriseScope } from '../auth/enterprise-scope';
+import { DashboardRepository } from './dashboard.repository';
 import type { DashboardDataPoint, DashboardSummary } from './dashboard.types';
 
 const eventLabels: Record<PayrollReviewEventType, string> = {
@@ -22,17 +23,16 @@ const eventLabels: Record<PayrollReviewEventType, string> = {
 
 @Injectable()
 export class DashboardService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly repository: DashboardRepository) {}
 
-  async summary(principal: AuthenticatedPrincipal, now = new Date()): Promise<DashboardSummary> {
-    if (!principal.activeCompanyId) throw new ForbiddenException('Empresa ativa obrigatória');
-    const companyId = principal.activeCompanyId;
+  async summary(
+    scope: EnterpriseScope,
+    principal: AuthenticatedPrincipal,
+    now = new Date(),
+  ): Promise<DashboardSummary> {
     const canViewReviews = principal.permissions.includes('payroll.review.view');
     const canViewPeriods = principal.permissions.includes('payroll.period.close.view');
-    const company = await this.prisma.company.findFirst({
-      where: { id: companyId, status: 'ACTIVE' },
-      select: { id: true, tradeName: true },
-    });
+    const company = await this.repository.findActiveCompany(scope);
     if (!company) throw new NotFoundException('Empresa não encontrada');
 
     const result: DashboardSummary = {
@@ -44,26 +44,17 @@ export class DashboardService {
       },
       access: canViewReviews || canViewPeriods ? 'AVAILABLE' : 'RESTRICTED',
     };
-    if (canViewReviews) result.review = await this.reviewSummary(companyId, now);
-    if (canViewPeriods) result.payrollPeriod = await this.periodSummary(companyId);
+    if (canViewReviews) result.review = await this.reviewSummary(scope, now);
+    if (canViewPeriods) result.payrollPeriod = await this.periodSummary(scope);
     return result;
   }
 
-  private async reviewSummary(companyId: string, now: Date) {
+  private async reviewSummary(scope: EnterpriseScope, now: Date) {
     const months = this.lastSixMonths(now);
     const [cycles, openFindings, events] = await Promise.all([
-      this.prisma.payrollReviewCycle.groupBy({
-        by: ['status'],
-        where: { companyId },
-        _count: { _all: true },
-        orderBy: { status: 'asc' },
-      }),
-      this.prisma.payrollReviewFinding.count({ where: { companyId, status: 'OPEN' } }),
-      this.prisma.payrollReviewEvent.findMany({
-        where: { companyId, occurredAt: { gte: months[0]!.start, lt: months[5]!.end } },
-        select: { eventType: true, occurredAt: true },
-        orderBy: { occurredAt: 'desc' },
-      }),
+      this.repository.reviewStatusCounts(scope),
+      this.repository.openFindingCount(scope),
+      this.repository.reviewEvents(scope, months[0]!.start, months[5]!.end),
     ]);
     const total = cycles.reduce((sum, item) => sum + item._count._all, 0);
     const timeline = new Map(months.map(({ key }) => [key, 0]));
@@ -102,13 +93,8 @@ export class DashboardService {
     };
   }
 
-  private async periodSummary(companyId: string) {
-    const periods = await this.prisma.payrollPeriod.groupBy({
-      by: ['status'],
-      where: { companyId },
-      _count: { _all: true },
-      orderBy: { status: 'asc' },
-    });
+  private async periodSummary(scope: EnterpriseScope) {
+    const periods = await this.repository.payrollPeriodStatusCounts(scope);
     const total = periods.reduce((sum, item) => sum + item._count._all, 0);
     return {
       metrics: [

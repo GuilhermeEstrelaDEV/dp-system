@@ -251,7 +251,7 @@
 ### ETP-015 — Authorization Foundation & Enterprise Isolation
 
 - **Status:** `IN PROGRESS`; especificação aprovada no PR #52, ETP-015.1–015.3 concluídas e
-  ETP-015.4 implementada; ETP-015.5 não iniciada.
+  ETP-015.4–015.5 implementadas.
 - **Governança:** BDP-AUTH-LEGACY e DAL-01 a DAL-14 estão `APPROVED`.
 - **Especificação:** `docs/project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md`.
 - **Arquitetura:** `docs/architecture/AUTHORIZATION_FOUNDATION_TECHNICAL_DESIGN.md` e
@@ -286,7 +286,12 @@
 - **ETP-015.4 — `IMPLEMENTED — AUTHORIZATION PRIMITIVES AVAILABLE`:** metadata imutável, allowlist
   pública nominal, composição JWT/empresa/capability, deny-by-default e verificador de 165 handlers.
   As 129 rotas legadas permanecem nominalmente adiadas e nenhuma família foi migrada.
-- **ETP-015.5–015.10 — `NOT STARTED`:** isolamento de queries e etapas posteriores não foram antecipados.
+- **ETP-015.5 — `IMPLEMENTED — ENTERPRISE QUERY ISOLATION AVAILABLE`:** `EnterpriseScope` canônico,
+  filtro empresarial anterior ao lookup e repositories explícitos nos módulos auth/contexto,
+  grants, assignments e dashboard, com testes unitários, HTTP e PostgreSQL de duas empresas. As 129
+  rotas legadas continuam adiadas e não são declaradas seguras.
+- **ETP-015.6–015.10 — `NOT STARTED`:** masking, eventos de auditoria de autorização e rollout das
+  famílias não foram antecipados.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,
@@ -313,7 +318,9 @@
 - **ETP-015.3:** `IMPLEMENTED AND MERGED`; Operational Deployment Gate
   `PENDING FOR FUTURE TARGET ENVIRONMENT`. O gate de destino não bloqueia demo local.
 - **ETP-015.4:** `IMPLEMENTED — AUTHORIZATION PRIMITIVES AVAILABLE`; nenhuma rota legada foi
-  declarada segura ou migrada, e a ETP-015.5 permanece `NOT STARTED`.
+  declarada segura ou migrada.
+- **ETP-015.5:** `IMPLEMENTED — ENTERPRISE QUERY ISOLATION AVAILABLE` somente no recorte canônico;
+  as 129 rotas legadas permanecem adiadas e a ETP-015.6 permanece `NOT STARTED`.
 - **Alterações funcionais desta etapa:** zero.
 - **MVP-001.1 — `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`:** comandos `demo:setup`, `demo:start`,
   `demo:stop`, `demo:status` e reset com confirmação operam um Compose exclusivamente local, com

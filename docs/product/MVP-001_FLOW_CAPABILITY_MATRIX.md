@@ -18,5 +18,6 @@
 `platform.manage` não concede acesso e não é atribuído pelo seed. Seu uso no frontend impede que
 uma identidade sem grant invoque acidentalmente superfícies administrativas legadas. A proteção
 canônica de backend da ETP-015.4 cobre as rotas já classificadas e bloqueia novos handlers sem
-política. As 129 rotas legadas permanecem nominalmente adiadas; nenhuma é declarada segura apenas por
-esse gate visual.
+política. A ETP-015.5 força `EnterpriseScope` e filtro anterior ao lookup no dashboard e nas demais
+superfícies canônicas migradas. As 129 rotas legadas permanecem nominalmente adiadas; nenhuma é
+declarada segura apenas por esses controles.

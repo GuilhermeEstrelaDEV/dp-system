@@ -30,7 +30,7 @@ identificadas pelo arquivo, controller e handler naquela matriz e herdam, para e
 - capability: não homologada para ativação nesta entrega;
 - público legítimo: não;
 - legado: sim;
-- estado de migração: adiado para ETP-015.5 ou etapa posterior da família;
+- estado de migração: adiado para a etapa posterior da família (ETP-015.8/015.9);
 - risco: o risco do perfil registrado na matriz histórica;
 - decisão: compatibilidade nominal, sem falsa proteção e sem migração funcional.
 
@@ -87,3 +87,7 @@ recebe `BLOCKED_UNCLASSIFIED`, não executa o caso de uso e produz apenas diagn�
 
 O inventário executável e os testes de reconciliação são a autoridade para impedir divergência futura
 entre esta fotografia, os controllers e a classificação em runtime.
+
+A ETP-015.5 não altera esta classificação nem a contagem de handlers. Ela aplica isolamento às
+superfícies canônicas selecionadas; os 129 handlers acima continuam `LEGACY_DEFERRED` e não são
+declarados seguros por essa fundação.

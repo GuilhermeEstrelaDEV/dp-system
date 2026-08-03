@@ -1,10 +1,11 @@
 # ETP-015 — Implementation Backlog
 
-**Status:** especificação aprovada; ETP-015.1–015.3 concluídas; ETP-015.4 implementada nesta branch
+**Status:** especificação aprovada; ETP-015.1–015.3 concluídas; ETP-015.4–015.5 implementadas
 
 **Baseline:** ETP-015.3 foi incorporada à `develop` pelo PR #61. O
 [Operational Gate](ETP-015_3_OPERATIONAL_RELEASE_GATE.md) permanece pendente para ambiente de destino,
-sem bloquear o uso local. A ETP-015.4 implementa as primitivas canônicas sem iniciar a ETP-015.5.
+sem bloquear o uso local. A ETP-015.4 implementa as primitivas canônicas e a ETP-015.5 aplica
+isolamento empresarial ao recorte canônico aprovado, sem iniciar a ETP-015.6.
 
 Cada entrega nasce de `develop` atualizada, possui branch/PR próprios e só avança após evidência do
 gate aplicável.
@@ -98,11 +99,12 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Evidências:** unitários, E2E e inventário atualizado.
 - **Implementação:** metadata imutável, quatro decorators, três guards compostos, allowlist nominal,
   manifesto de compatibilidade para 129 handlers e verificador de 165/165 rotas.
-- **Limite:** nenhuma família legada foi migrada e a ETP-015.5 permanece `NOT STARTED`.
+- **Limite:** nenhuma família legada foi migrada; o isolamento do recorte canônico pertence à
+  ETP-015.5.
 
 ## ETP-015.5 — Enterprise Query Isolation
 
-**Status:** `NOT STARTED`
+**Status:** `IMPLEMENTED — ENTERPRISE QUERY ISOLATION AVAILABLE`
 
 - **Objetivo:** filtrar empresa antes do lookup em repositories/casos de uso.
 - **Dependências:** 015.2/015.4, DAL-04/05.
@@ -113,6 +115,15 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Aceite:** nenhuma query empresarial ampla; `404` uniforme.
 - **Rollback:** adapter de query anterior somente se mantiver filtro seguro.
 - **Evidências:** SQL/Prisma revisado, testes e planos de consulta.
+- **Implementação:** `EnterpriseScope` canônico e imutável; repositories explícitos para grants e
+  dashboard; company derivada do contexto em assignments; relações empresariais validadas na mesma
+  transação; verificador de anti-patterns estáveis.
+- **Recorte migrado:** auth/contexto, grants temporários e emergenciais, assignments empresariais e
+  dashboard. Payroll review e payroll periods já atendiam o padrão e foram revalidados.
+- **Testes:** unitários, E2E HTTP e PostgreSQL 16 com duas empresas cobrem list/detail/write,
+  enumeração cruzada, `404` uniforme, rollback e ausência de mutação cross-tenant.
+- **Limite:** 129 handlers `LEGACY_DEFERRED` permanecem fora do recorte; nenhuma rota, capability,
+  migration, DTO, masking ou evento novo de auditoria foi introduzido.
 
 ## ETP-015.6 — Sensitive Data Projection and Masking
 

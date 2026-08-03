@@ -2,6 +2,8 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import type { AuditWriterService } from './audit-writer.service';
 import { AssignmentGovernanceService } from './assignment-governance.service';
+import { createActiveCompanyContext } from './active-company-context';
+import { EnterpriseScopeFactory } from './enterprise-scope';
 
 describe('AssignmentGovernanceService', () => {
   const rolePermissionCreate = jest.fn();
@@ -9,7 +11,7 @@ describe('AssignmentGovernanceService', () => {
   const rolePermissionUpdate = jest.fn();
   const userCompanyRoleCreate = jest.fn();
   const userCompanyRoleFindFirst = jest.fn();
-  const userCompanyRoleUpdate = jest.fn();
+  const userCompanyRoleUpdateMany = jest.fn();
   const append = jest.fn();
   const roleFindUnique = jest.fn();
   const permissionFindFirst = jest.fn();
@@ -24,7 +26,7 @@ describe('AssignmentGovernanceService', () => {
     userCompanyRole: {
       create: userCompanyRoleCreate,
       findFirst: userCompanyRoleFindFirst,
-      update: userCompanyRoleUpdate,
+      updateMany: userCompanyRoleUpdateMany,
     },
     role: { findUnique: roleFindUnique },
     permission: { findFirst: permissionFindFirst },
@@ -51,6 +53,16 @@ describe('AssignmentGovernanceService', () => {
     reason: 'approved request',
     validFrom: new Date('2026-07-29T12:00:00.000Z'),
   };
+  const scope = new EnterpriseScopeFactory().create(
+    createActiveCompanyContext({
+      userId: principal.actorId,
+      companyId: principal.activeCompanyId!,
+      assignmentIds: ['assignment'],
+      selectionSource: 'SESSION_TOKEN',
+      resolvedAt: '2026-08-03T00:00:00.000Z',
+    }),
+    principal,
+  );
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -96,7 +108,8 @@ describe('AssignmentGovernanceService', () => {
     userCompanyRoleCreate.mockResolvedValue(assignment);
     await expect(
       service.createUserCompanyRole(
-        { ...provenance, userId: 'user', companyId: 'company', roleId: 'role' },
+        scope,
+        { ...provenance, userId: 'user', roleId: 'role' },
         principal,
       ),
     ).resolves.toBe(assignment);
@@ -104,6 +117,9 @@ describe('AssignmentGovernanceService', () => {
       expect.objectContaining({ action: 'USER_COMPANY_ROLE_ASSIGNED', entityId: 'assignment' }),
       tx,
     );
+    expect(userCompanyRoleCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({ companyId: 'company', userId: 'user' }),
+    });
   });
 
   it('rejects incomplete provenance and invalid half-open windows before writing', async () => {
@@ -159,7 +175,8 @@ describe('AssignmentGovernanceService', () => {
     userFindFirst.mockResolvedValue(null);
     await expect(
       service.createUserCompanyRole(
-        { ...provenance, userId: 'inactive', companyId: 'company', roleId: 'role' },
+        scope,
+        { ...provenance, userId: 'inactive', roleId: 'role' },
         principal,
       ),
     ).rejects.toBeInstanceOf(NotFoundException);
@@ -189,9 +206,23 @@ describe('AssignmentGovernanceService', () => {
   it('does not revoke an absent or already inactive assignment', async () => {
     userCompanyRoleFindFirst.mockResolvedValue(null);
     await expect(
-      service.revokeUserCompanyRole('missing', 'reason', principal),
+      service.revokeUserCompanyRole(scope, 'missing', 'reason', principal),
     ).rejects.toBeInstanceOf(NotFoundException);
-    expect(userCompanyRoleUpdate).not.toHaveBeenCalled();
+    expect(userCompanyRoleUpdateMany).not.toHaveBeenCalled();
+  });
+
+  it('keeps the company predicate in enterprise assignment revocation', async () => {
+    const current = { id: 'assignment', companyId: 'company', status: 'ACTIVE' };
+    const revoked = { ...current, status: 'REVOKED' };
+    userCompanyRoleFindFirst.mockResolvedValueOnce(current).mockResolvedValueOnce(revoked);
+    userCompanyRoleUpdateMany.mockResolvedValue({ count: 1 });
+    await expect(
+      service.revokeUserCompanyRole(scope, 'assignment', 'revoked by governance', principal),
+    ).resolves.toBe(revoked);
+    expect(userCompanyRoleUpdateMany).toHaveBeenCalledWith({
+      where: { id: 'assignment', companyId: 'company', status: 'ACTIVE' },
+      data: expect.objectContaining({ status: 'REVOKED', revokedByUserId: 'actor' }),
+    });
   });
 
   it('propagates audit failure so the transaction can roll back', async () => {
