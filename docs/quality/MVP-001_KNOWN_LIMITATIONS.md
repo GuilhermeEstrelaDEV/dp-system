@@ -10,6 +10,8 @@
 | offline depende de cache prévio              | primeira instalação/build pode exigir internet | executar `demo:ready` antes de desconectar                     | operação local               |
 | sem mobile completo/WCAG formal              | demonstração homologada para notebook/desktop  | Edge/Chrome, 1366×768, zoom 100%                               | iniciativa de acessibilidade |
 | sem produção/cloud/CI de deploy              | protótipo não pode ser publicado               | executar somente Compose local                                 | iniciativa futura específica |
+| sem auditoria de leitura sensível/masking    | consultas demo não geram evidência material    | manter dados fictícios e aguardar ETP-015.6                    | ETP-015.6                    |
+| append-only sem trigger dedicado             | DBA ainda pode alterar logs por acesso direto  | writer único + verifier; hardening exige migration aprovada    | hardening futuro             |
 | advisories transitivos de tooling/Prisma     | oito alertas moderados/altos, sem crítico      | não expor tooling; planejar upgrades compatíveis               | manutenção de dependências   |
 | sem validação gerencial concluída            | prioridades e continuidade não estão aprovadas | usar pacote executivo e registrar decisão explícita            | gestão do produto            |
 

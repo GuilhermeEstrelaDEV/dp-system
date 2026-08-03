@@ -16,7 +16,14 @@ describe('AuthorizationService', () => {
   };
 
   it('authorizes an effective capability', () => {
-    expect(() => service.requireCapability(principal, 'payroll.view')).not.toThrow();
+    expect(service.requireCapability(principal, 'payroll.view')).toEqual({
+      companyId: 'company-a',
+      outcome: 'ALLOWED',
+      requiredCapabilities: ['payroll.view'],
+      satisfiedCapabilities: ['payroll.view'],
+      effectiveGrantIds: [],
+      reasonCode: 'CAPABILITIES_SATISFIED',
+    });
   });
 
   it('denies absent capabilities by default', () => {

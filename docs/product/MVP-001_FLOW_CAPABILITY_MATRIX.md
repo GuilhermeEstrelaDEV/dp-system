@@ -21,3 +21,7 @@ canônica de backend da ETP-015.4 cobre as rotas já classificadas e bloqueia no
 política. A ETP-015.5 força `EnterpriseScope` e filtro anterior ao lookup no dashboard e nas demais
 superfícies canônicas migradas. As 129 rotas legadas permanecem nominalmente adiadas; nenhuma é
 declarada segura apenas por esses controles.
+
+A ETP-015.7 registra os eventos canônicos de autenticação e das escritas críticas já disponíveis,
+sem alterar a experiência visual ou conceder capabilities. Leituras do dashboard e da folha não
+passam a ser auditadas como sensíveis até a classificação e o masking da ETP-015.6.

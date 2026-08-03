@@ -9,6 +9,7 @@ import { randomUUID } from 'node:crypto';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditWriterService } from '../auth/audit-writer.service';
+import type { AuditEventCode } from '../auth/audit-event.catalog';
 import { AuthorizationService } from '../auth/authorization.service';
 import {
   PayrollReviewFindingFoundation,
@@ -39,6 +40,20 @@ const CAPABILITIES = {
   close: 'payroll.review.close',
   reopen: 'payroll.review.reopen',
 } as const;
+
+const WORKFLOW_AUDIT_EVENTS = {
+  REVIEW_STARTED: 'PAYROLL_REVIEW_STARTED',
+  REVIEW_SUBMITTED: 'PAYROLL_REVIEW_SUBMITTED',
+  REVIEW_APPROVED: 'PAYROLL_REVIEW_APPROVED',
+  REVIEW_REJECTED: 'PAYROLL_REVIEW_REJECTED',
+  REVIEW_CLOSED: 'PAYROLL_REVIEW_CLOSED',
+  REVIEW_REOPENED: 'PAYROLL_REVIEW_REOPENED',
+} as const satisfies Record<string, AuditEventCode>;
+
+const FINDING_AUDIT_EVENTS = {
+  FINDING_RESOLVED: 'PAYROLL_REVIEW_FINDING_RESOLVED',
+  FINDING_REOPENED: 'PAYROLL_REVIEW_FINDING_REOPENED',
+} as const satisfies Record<string, AuditEventCode>;
 
 @Injectable()
 export class PayrollReviewsService {
@@ -600,7 +615,7 @@ export class PayrollReviewsService {
     await this.audit.append(
       {
         principal,
-        action: `PAYROLL_${input.eventType}`,
+        action: WORKFLOW_AUDIT_EVENTS[input.eventType],
         entityType: 'PayrollReviewCycle',
         entityId: previous.id,
         previousState: { status: previous.status },
@@ -727,7 +742,7 @@ export class PayrollReviewsService {
         await this.audit.append(
           {
             principal,
-            action: `PAYROLL_REVIEW_${eventType}`,
+            action: FINDING_AUDIT_EVENTS[eventType],
             entityType: 'PayrollReviewFinding',
             entityId: findingId,
             previousState: { status: persisted.status },

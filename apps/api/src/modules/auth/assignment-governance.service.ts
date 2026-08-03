@@ -47,8 +47,9 @@ export class AssignmentGovernanceService {
           action: 'ROLE_PERMISSION_ASSIGNED',
           entityType: 'RolePermission',
           entityId: assignment.id,
-          nextState: this.snapshot(assignment),
+          nextState: { status: assignment.status },
           reason: input.reason,
+          reasonCode: 'ASSIGNMENT_CREATED',
           metadata: { source: input.sourceType },
         },
         tx,
@@ -77,11 +78,13 @@ export class AssignmentGovernanceService {
       await this.audit.append(
         {
           principal,
+          scope,
           action: 'USER_COMPANY_ROLE_ASSIGNED',
           entityType: 'UserCompanyRole',
           entityId: assignment.id,
-          nextState: this.snapshot(assignment),
+          nextState: { status: assignment.status },
           reason: input.reason,
+          reasonCode: 'ASSIGNMENT_CREATED',
           metadata: { source: input.sourceType },
         },
         tx,
@@ -115,9 +118,10 @@ export class AssignmentGovernanceService {
           action: 'ROLE_PERMISSION_REVOKED',
           entityType: 'RolePermission',
           entityId: id,
-          previousState: this.snapshot(current),
-          nextState: this.snapshot(assignment),
+          previousState: { status: current.status },
+          nextState: { status: assignment.status },
           reason,
+          reasonCode: 'ASSIGNMENT_REVOKED',
         },
         tx,
       );
@@ -156,12 +160,14 @@ export class AssignmentGovernanceService {
       await this.audit.append(
         {
           principal,
+          scope,
           action: 'USER_COMPANY_ROLE_REVOKED',
           entityType: 'UserCompanyRole',
           entityId: id,
-          previousState: this.snapshot(current),
-          nextState: this.snapshot(assignment),
+          previousState: { status: current.status },
+          nextState: { status: assignment.status },
           reason,
+          reasonCode: 'ASSIGNMENT_REVOKED',
         },
         tx,
       );
@@ -263,9 +269,5 @@ export class AssignmentGovernanceService {
     ) {
       throw new NotFoundException('Empresa não encontrada');
     }
-  }
-
-  private snapshot(value: object): Prisma.InputJsonObject {
-    return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonObject;
   }
 }

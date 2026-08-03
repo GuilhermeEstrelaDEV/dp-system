@@ -1,6 +1,6 @@
 # ETP-015 — Implementation Backlog
 
-**Status:** especificação aprovada; ETP-015.1–015.3 concluídas; ETP-015.4–015.5 implementadas
+**Status:** especificação aprovada; ETP-015.1–015.3 concluídas; ETP-015.4, ETP-015.5 e ETP-015.7 implementadas
 
 **Baseline:** ETP-015.3 foi incorporada à `develop` pelo PR #61. O
 [Operational Gate](ETP-015_3_OPERATIONAL_RELEASE_GATE.md) permanece pendente para ambiente de destino,
@@ -127,14 +127,14 @@ estão concluídos. A implementação controlada está em validação na branch
 
 ## ETP-015.7 — Authorization Audit Events
 
-**Status:** `NOT STARTED — NEXT AUTHORIZED INCREMENT`
+**Status:** `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`
 
 - **Objetivo:** cobrir escritas críticas canônicas, estabelecer a fundação de auditoria de autorização
   e preparar a auditoria de leituras sensíveis. Nesta etapa, somente leituras com classificação
   material previamente aprovada podem ser cobertas.
 - **Dependências:** 015.1–015.5, DAL-07/08/13.
 - **Módulos afetados:** `AuditWriterService`, sanitizer e casos de uso.
-- **Banco esperado:** campos/índices somente se Gate A comprovar necessidade.
+- **Banco:** nenhuma migration; `AuditLog` e índices existentes foram suficientes no ensaio local.
 - **Testes:** atomicidade, rollback, metadata proibida e grant usado.
 - **Riscos:** PII em logs e volume excessivo.
 - **Aceite:** eventos allowlist, trace completo e falha crítica atômica.
@@ -143,10 +143,16 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Limites:** a fundação não depende de masking. `AuditWriterService`, sanitizador, catálogo de
   eventos, envelope e atomicidade pertencem a esta etapa. Leituras sem classificação aprovada e a
   cobertura integral das leituras sensíveis ficam adiadas para a ETP-015.6.
+- **Entrega:** 26 códigos canônicos, decisão efetiva imutável, metadata por allowlist, verificador
+  AST, manifesto de produtores e rollback atômico, sem migration ou nova capability.
+- **Evidências:** [arquitetura](../security/ETP-015_7_AUTHORIZATION_AUDIT_EVENTS.md),
+  [catálogo](../security/ETP-015_7_AUDIT_EVENT_CATALOG.md),
+  [inventário](../security/ETP-015_7_AUDIT_COVERAGE_INVENTORY.md) e
+  [aceite](../security/ETP-015_7_ACCEPTANCE_EVIDENCE.md).
 
 ## ETP-015.6 — Sensitive Data Projection and Masking
 
-**Status:** `NOT STARTED — DEPENDS ON ETP-015.7 AUDIT FOUNDATION`
+**Status:** `NOT STARTED — NEXT AUTHORIZED INCREMENT`
 
 - **Objetivo:** ativar projeção mínima, masking e acesso integral por capability adicional, por família
   aprovada, auditando as leituras sensíveis pelo catálogo e writer entregues na ETP-015.7.

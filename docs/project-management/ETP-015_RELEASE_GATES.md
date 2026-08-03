@@ -1,6 +1,6 @@
 # ETP-015 — Release Gates
 
-**Status:** Gate A aprovado; ETP-015.4–015.5 implementadas e Gate B ainda em formação; Gates C e D não iniciados
+**Status:** Gate A aprovado; ETP-015.4, ETP-015.5 e ETP-015.7 implementadas; Gate B ainda em formação; Gates C e D não iniciados
 
 ## Governança de evidências
 
@@ -51,6 +51,13 @@ checkbox; nenhuma família foi ativada em massa.
 [matriz negativa](../security/ETP-015_5_NEGATIVE_TEST_MATRIX.md) e
 [aceite](../security/ETP-015_5_ACCEPTANCE_EVIDENCE.md). O Gate B não é declarado concluído nesta
 entrega: o pós-merge e os itens ainda abertos continuam necessários.
+
+**Evidência candidata da ETP-015.7:** [fundação de auditoria](../security/ETP-015_7_AUTHORIZATION_AUDIT_EVENTS.md),
+[catálogo](../security/ETP-015_7_AUDIT_EVENT_CATALOG.md),
+[inventário](../security/ETP-015_7_AUDIT_COVERAGE_INVENTORY.md),
+[matriz negativa](../security/ETP-015_7_NEGATIVE_TEST_MATRIX.md) e
+[aceite](../security/ETP-015_7_ACCEPTANCE_EVIDENCE.md). A entrega cobre decisões efetivas e grants
+usados em escritas críticas; o Gate B permanece aberto até a evidência pós-merge consolidada.
 
 ## Sequência governada entre ETP-015.7 e ETP-015.6
 

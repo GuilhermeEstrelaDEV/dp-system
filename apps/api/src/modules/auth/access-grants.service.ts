@@ -6,6 +6,7 @@ import type { CreateSubstitutionDto, GrantEmergencyAccessDto } from './access-gr
 import { AccessGrantsRepository } from './access-grants.repository';
 import { AuditWriterService } from './audit-writer.service';
 import { AuthorizationService } from './authorization.service';
+import type { EffectiveAuthorizationContext } from './effective-authorization-context';
 import type { EnterpriseScope } from './enterprise-scope';
 
 const DELEGATION_CAPABILITY = 'delegation.manage';
@@ -21,8 +22,8 @@ export class AccessGrantsService {
   ) {}
 
   async listSubstitutions(scope: EnterpriseScope, principal: AuthenticatedPrincipal) {
-    this.requireScope(scope, principal, DELEGATION_CAPABILITY);
-    await this.expireSubstitutions(scope, principal);
+    const authorization = this.requireScope(scope, principal, DELEGATION_CAPABILITY);
+    await this.expireSubstitutions(scope, principal, authorization);
     return this.repository.listSubstitutions(scope);
   }
 
@@ -31,7 +32,7 @@ export class AccessGrantsService {
     principal: AuthenticatedPrincipal,
     dto: CreateSubstitutionDto,
   ) {
-    this.requireScope(scope, principal, DELEGATION_CAPABILITY);
+    const authorization = this.requireScope(scope, principal, DELEGATION_CAPABILITY);
     if (dto.holderUserId === dto.substituteUserId) {
       throw new BadRequestException('Titular e substituto devem ser diferentes');
     }
@@ -72,11 +73,14 @@ export class AccessGrantsService {
       await this.audit.append(
         {
           principal,
+          scope,
+          authorization,
           action: 'SUBSTITUTION_CREATED',
           entityType: 'TemporarySubstitution',
           entityId: created.id,
-          nextState: this.snapshot(created),
+          nextState: { status: created.status },
           reason: dto.reason,
+          reasonCode: 'GRANT_CREATED',
           metadata: {
             capabilities: created.capabilities,
             startsAt: created.startsAt.toISOString(),
@@ -96,7 +100,7 @@ export class AccessGrantsService {
     id: string,
     reason: string,
   ) {
-    this.requireScope(scope, principal, DELEGATION_CAPABILITY);
+    const authorization = this.requireScope(scope, principal, DELEGATION_CAPABILITY);
     return this.audit.transaction(async (tx) => {
       const current = await this.repository.findActiveSubstitution(scope, id, tx);
       if (!current) throw new NotFoundException('Concessão não encontrada');
@@ -115,12 +119,15 @@ export class AccessGrantsService {
       await this.audit.append(
         {
           principal,
+          scope,
+          authorization,
           action: 'SUBSTITUTION_REVOKED',
           entityType: 'TemporarySubstitution',
           entityId: id,
-          previousState: this.snapshot(current),
-          nextState: this.snapshot(next),
+          previousState: { status: current.status },
+          nextState: { status: next.status },
           reason,
+          reasonCode: 'GRANT_REVOKED',
         },
         tx,
       );
@@ -129,8 +136,8 @@ export class AccessGrantsService {
   }
 
   async listEmergencyAccesses(scope: EnterpriseScope, principal: AuthenticatedPrincipal) {
-    this.requireScope(scope, principal, EMERGENCY_CAPABILITY);
-    await this.expireEmergencyAccesses(scope, principal);
+    const authorization = this.requireScope(scope, principal, EMERGENCY_CAPABILITY);
+    await this.expireEmergencyAccesses(scope, principal, authorization);
     return this.repository.listEmergencyAccesses(scope);
   }
 
@@ -139,7 +146,7 @@ export class AccessGrantsService {
     principal: AuthenticatedPrincipal,
     dto: GrantEmergencyAccessDto,
   ) {
-    this.requireScope(scope, principal, EMERGENCY_CAPABILITY);
+    const authorization = this.requireScope(scope, principal, EMERGENCY_CAPABILITY);
     if (dto.beneficiaryUserId === principal.actorId) {
       throw new BadRequestException('Auto concessão emergencial não é permitida');
     }
@@ -179,11 +186,14 @@ export class AccessGrantsService {
       await this.audit.append(
         {
           principal,
+          scope,
+          authorization,
           action: 'EMERGENCY_ACCESS_GRANTED',
           entityType: 'EmergencyAccess',
           entityId: created.id,
-          nextState: this.snapshot(created),
+          nextState: { status: created.status },
           reason: dto.reason,
+          reasonCode: 'GRANT_CREATED',
           metadata: {
             capabilities: created.capabilities,
             startsAt: created.startsAt.toISOString(),
@@ -203,7 +213,7 @@ export class AccessGrantsService {
     id: string,
     reason: string,
   ) {
-    this.requireScope(scope, principal, EMERGENCY_CAPABILITY);
+    const authorization = this.requireScope(scope, principal, EMERGENCY_CAPABILITY);
     return this.audit.transaction(async (tx) => {
       const current = await this.repository.findActiveEmergencyAccess(scope, id, tx);
       if (!current) throw new NotFoundException('Concessão não encontrada');
@@ -222,12 +232,15 @@ export class AccessGrantsService {
       await this.audit.append(
         {
           principal,
+          scope,
+          authorization,
           action: 'EMERGENCY_ACCESS_REVOKED',
           entityType: 'EmergencyAccess',
           entityId: id,
-          previousState: this.snapshot(current),
-          nextState: this.snapshot(next),
+          previousState: { status: current.status },
+          nextState: { status: next.status },
           reason,
+          reasonCode: 'GRANT_REVOKED',
         },
         tx,
       );
@@ -239,8 +252,8 @@ export class AccessGrantsService {
     scope: EnterpriseScope,
     principal: AuthenticatedPrincipal,
     capability: string,
-  ): void {
-    this.authorization.requireCapability(principal, capability);
+  ): EffectiveAuthorizationContext {
+    const authorization = this.authorization.requireCapability(principal, capability);
     if (
       !principal.activeCompanyId ||
       principal.activeCompanyId !== scope.companyId ||
@@ -248,6 +261,7 @@ export class AccessGrantsService {
     ) {
       throw new NotFoundException('Empresa não encontrada');
     }
+    return authorization;
   }
 
   private async assertKnownCapabilities(
@@ -259,7 +273,11 @@ export class AccessGrantsService {
       throw new BadRequestException('Capability desconhecida');
   }
 
-  private async expireSubstitutions(scope: EnterpriseScope, principal: AuthenticatedPrincipal) {
+  private async expireSubstitutions(
+    scope: EnterpriseScope,
+    principal: AuthenticatedPrincipal,
+    authorization: EffectiveAuthorizationContext,
+  ) {
     await this.audit.transaction(async (tx) => {
       const expired = await this.repository.findExpiredSubstitutions(scope, new Date(), tx);
       for (const grant of expired) {
@@ -268,11 +286,14 @@ export class AccessGrantsService {
         await this.audit.append(
           {
             principal,
+            scope,
+            authorization,
             action: 'SUBSTITUTION_EXPIRED',
             entityType: 'TemporarySubstitution',
             entityId: grant.id,
-            previousState: this.snapshot(grant),
-            nextState: this.snapshot(next),
+            previousState: { status: grant.status },
+            nextState: { status: next.status },
+            reasonCode: 'GRANT_EXPIRED',
           },
           tx,
         );
@@ -280,7 +301,11 @@ export class AccessGrantsService {
     });
   }
 
-  private async expireEmergencyAccesses(scope: EnterpriseScope, principal: AuthenticatedPrincipal) {
+  private async expireEmergencyAccesses(
+    scope: EnterpriseScope,
+    principal: AuthenticatedPrincipal,
+    authorization: EffectiveAuthorizationContext,
+  ) {
     await this.audit.transaction(async (tx) => {
       const expired = await this.repository.findExpiredEmergencyAccesses(scope, new Date(), tx);
       for (const grant of expired) {
@@ -289,19 +314,18 @@ export class AccessGrantsService {
         await this.audit.append(
           {
             principal,
+            scope,
+            authorization,
             action: 'EMERGENCY_ACCESS_EXPIRED',
             entityType: 'EmergencyAccess',
             entityId: grant.id,
-            previousState: this.snapshot(grant),
-            nextState: this.snapshot(next),
+            previousState: { status: grant.status },
+            nextState: { status: next.status },
+            reasonCode: 'GRANT_EXPIRED',
           },
           tx,
         );
       }
     });
-  }
-
-  private snapshot(value: object): Prisma.InputJsonObject {
-    return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonObject;
   }
 }
