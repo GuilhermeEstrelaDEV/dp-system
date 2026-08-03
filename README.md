@@ -25,6 +25,11 @@ A ETP-015.4 disponibiliza [metadata, decorators e guards canônicos](docs/securi
 uma [allowlist pública explícita](docs/security/ETP-015_4_PUBLIC_ALLOWLIST.md) e verificação automática
 de classificação. As APIs legadas continuam adiadas e não devem ser tratadas como migradas.
 
+A ETP-015.5 adiciona um
+[escopo empresarial canônico](docs/security/ETP-015_5_ENTERPRISE_QUERY_ISOLATION.md), repositories
+com filtro anterior ao lookup e uma [matriz negativa](docs/security/ETP-015_5_NEGATIVE_TEST_MATRIX.md)
+para os módulos migrados. A entrega não altera rotas nem torna seguros os 129 handlers legados.
+
 ## Protótipo executivo local
 
 A MVP-001.1 oferece bootstrap isolado e reproduzível para demonstração local:

@@ -7,6 +7,8 @@ import { IdentitySessionService } from './identity-session.service';
 import { PasswordHasherService } from './password-hasher.service';
 import { ActiveCompanyResolverService } from './active-company-resolver.service';
 
+const NO_ACTIVE_COMPANY_ID = '00000000-0000-0000-0000-000000000000';
+
 export interface AccessTokenPayload {
   sub: string;
   activeCompanyId?: string;
@@ -78,7 +80,7 @@ export class AuthService {
         displayName: true,
         companyRoles: {
           where: {
-            companyId: principal.activeCompanyId ?? undefined,
+            companyId: principal.activeCompanyId ?? NO_ACTIVE_COMPANY_ID,
             status: 'ACTIVE',
             validFrom: { lte: now },
             OR: [{ validTo: null }, { validTo: { gt: now } }],

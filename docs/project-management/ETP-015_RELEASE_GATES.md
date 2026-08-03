@@ -1,6 +1,6 @@
 # ETP-015 — Release Gates
 
-**Status:** Gate A aprovado; ETP-015.4 implementada e Gate B ainda em formação; Gates C e D não iniciados
+**Status:** Gate A aprovado; ETP-015.4–015.5 implementadas e Gate B ainda em formação; Gates C e D não iniciados
 
 ## Governança de evidências
 
@@ -29,7 +29,7 @@ Sem evidência, o resultado binário do item é `FAIL`.
 
 ## Gate B — Identity, Company and Capability Foundation
 
-- [ ] ETP-015.1 a 015.4 mescladas e verificadas em `develop`;
+- [x] ETP-015.1 a 015.4 mescladas e verificadas em `develop`;
 - [ ] token/principal/sessão e trace testados;
 - [ ] empresa ativa validada por assignment vigente;
 - [ ] capabilities resolvidas no backend e grants vigentes auditados;
@@ -43,8 +43,14 @@ Sem evidência, o resultado binário do item é `FAIL`.
 **Evidência candidata da ETP-015.4:** [guards e decorators](../security/ETP-015_4_AUTHORIZATION_GUARDS.md),
 [inventário 165/165](../security/ETP-015_4_ROUTE_CLASSIFICATION_INVENTORY.md),
 [matriz negativa](../security/ETP-015_4_NEGATIVE_TEST_MATRIX.md) e
-[aceite](../security/ETP-015_4_ACCEPTANCE_EVIDENCE.md). O primeiro checkbox permanece aberto até o
-merge e a verificação pós-merge; nenhuma família foi ativada em massa.
+[aceite](../security/ETP-015_4_ACCEPTANCE_EVIDENCE.md). A incorporação pelo PR #76 satisfaz o primeiro
+checkbox; nenhuma família foi ativada em massa.
+
+**Evidência candidata da ETP-015.5:** [isolamento empresarial](../security/ETP-015_5_ENTERPRISE_QUERY_ISOLATION.md),
+[inventário de acesso](../security/ETP-015_5_DATA_ACCESS_INVENTORY.md),
+[matriz negativa](../security/ETP-015_5_NEGATIVE_TEST_MATRIX.md) e
+[aceite](../security/ETP-015_5_ACCEPTANCE_EVIDENCE.md). O Gate B não é declarado concluído nesta
+entrega: o pós-merge e os itens ainda abertos continuam necessários.
 
 ## Gate C — P0 Migration and Security Validation
 

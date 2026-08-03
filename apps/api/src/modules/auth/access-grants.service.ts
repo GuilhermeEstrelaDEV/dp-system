@@ -2,10 +2,11 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { ConfigService } from '@nestjs/config';
 import type { Prisma } from '@prisma/client';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
-import { PrismaService } from '../../prisma/prisma.service';
 import type { CreateSubstitutionDto, GrantEmergencyAccessDto } from './access-grants.dto';
+import { AccessGrantsRepository } from './access-grants.repository';
 import { AuditWriterService } from './audit-writer.service';
 import { AuthorizationService } from './authorization.service';
+import type { EnterpriseScope } from './enterprise-scope';
 
 const DELEGATION_CAPABILITY = 'delegation.manage';
 const EMERGENCY_CAPABILITY = 'emergency_access.manage';
@@ -13,35 +14,51 @@ const EMERGENCY_CAPABILITY = 'emergency_access.manage';
 @Injectable()
 export class AccessGrantsService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly repository: AccessGrantsRepository,
     private readonly audit: AuditWriterService,
     private readonly authorization: AuthorizationService,
     private readonly config: ConfigService,
   ) {}
 
-  async listSubstitutions(principal: AuthenticatedPrincipal) {
-    const companyId = this.requireCompany(principal, DELEGATION_CAPABILITY);
-    await this.expireSubstitutions(principal, companyId);
-    return this.prisma.temporarySubstitution.findMany({
-      where: { companyId },
-      orderBy: { createdAt: 'desc' },
-    });
+  async listSubstitutions(scope: EnterpriseScope, principal: AuthenticatedPrincipal) {
+    this.requireScope(scope, principal, DELEGATION_CAPABILITY);
+    await this.expireSubstitutions(scope, principal);
+    return this.repository.listSubstitutions(scope);
   }
 
-  async createSubstitution(principal: AuthenticatedPrincipal, dto: CreateSubstitutionDto) {
-    const companyId = this.requireCompany(principal, DELEGATION_CAPABILITY);
+  async createSubstitution(
+    scope: EnterpriseScope,
+    principal: AuthenticatedPrincipal,
+    dto: CreateSubstitutionDto,
+  ) {
+    this.requireScope(scope, principal, DELEGATION_CAPABILITY);
     if (dto.holderUserId === dto.substituteUserId) {
       throw new BadRequestException('Titular e substituto devem ser diferentes');
     }
     if (dto.expiresAt <= dto.startsAt) throw new BadRequestException('Vigência inválida');
-    const permitted = await this.resolveUserCapabilities(dto.holderUserId, companyId);
-    if (dto.capabilities.some((capability) => !permitted.has(capability))) {
-      throw new BadRequestException('Substituição contém capability não pertencente ao titular');
-    }
     return this.audit.transaction(async (tx) => {
-      const created = await tx.temporarySubstitution.create({
-        data: {
-          companyId,
+      const now = new Date();
+      const members = await this.repository.activeMembershipUserIds(
+        scope,
+        [dto.holderUserId, dto.substituteUserId],
+        now,
+        tx,
+      );
+      if (!members.has(dto.holderUserId) || !members.has(dto.substituteUserId)) {
+        throw new NotFoundException('Usuário não encontrado');
+      }
+      const permitted = await this.repository.resolveUserCapabilities(
+        scope,
+        dto.holderUserId,
+        now,
+        tx,
+      );
+      if (dto.capabilities.some((capability) => !permitted.has(capability))) {
+        throw new BadRequestException('Substituição contém capability não pertencente ao titular');
+      }
+      const created = await this.repository.createSubstitution(
+        scope,
+        {
           holderUserId: dto.holderUserId,
           substituteUserId: dto.substituteUserId,
           grantedByUserId: principal.actorId,
@@ -50,7 +67,8 @@ export class AccessGrantsService {
           expiresAt: dto.expiresAt,
           reason: dto.reason,
         },
-      });
+        tx,
+      );
       await this.audit.append(
         {
           principal,
@@ -72,22 +90,28 @@ export class AccessGrantsService {
     });
   }
 
-  async revokeSubstitution(principal: AuthenticatedPrincipal, id: string, reason: string) {
-    const companyId = this.requireCompany(principal, DELEGATION_CAPABILITY);
+  async revokeSubstitution(
+    scope: EnterpriseScope,
+    principal: AuthenticatedPrincipal,
+    id: string,
+    reason: string,
+  ) {
+    this.requireScope(scope, principal, DELEGATION_CAPABILITY);
     return this.audit.transaction(async (tx) => {
-      const current = await tx.temporarySubstitution.findFirst({
-        where: { id, companyId, status: 'ACTIVE' },
-      });
+      const current = await this.repository.findActiveSubstitution(scope, id, tx);
       if (!current) throw new NotFoundException('Concessão não encontrada');
-      const next = await tx.temporarySubstitution.update({
-        where: { id },
-        data: {
+      const next = await this.repository.revokeSubstitution(
+        scope,
+        id,
+        {
           status: 'REVOKED',
           revokedAt: new Date(),
           revokedByUserId: principal.actorId,
           revocationReason: reason,
         },
-      });
+        tx,
+      );
+      if (!next) throw new NotFoundException('Concessão não encontrada');
       await this.audit.append(
         {
           principal,
@@ -104,17 +128,18 @@ export class AccessGrantsService {
     });
   }
 
-  async listEmergencyAccesses(principal: AuthenticatedPrincipal) {
-    const companyId = this.requireCompany(principal, EMERGENCY_CAPABILITY);
-    await this.expireEmergencyAccesses(principal, companyId);
-    return this.prisma.emergencyAccess.findMany({
-      where: { companyId },
-      orderBy: { createdAt: 'desc' },
-    });
+  async listEmergencyAccesses(scope: EnterpriseScope, principal: AuthenticatedPrincipal) {
+    this.requireScope(scope, principal, EMERGENCY_CAPABILITY);
+    await this.expireEmergencyAccesses(scope, principal);
+    return this.repository.listEmergencyAccesses(scope);
   }
 
-  async grantEmergencyAccess(principal: AuthenticatedPrincipal, dto: GrantEmergencyAccessDto) {
-    const companyId = this.requireCompany(principal, EMERGENCY_CAPABILITY);
+  async grantEmergencyAccess(
+    scope: EnterpriseScope,
+    principal: AuthenticatedPrincipal,
+    dto: GrantEmergencyAccessDto,
+  ) {
+    this.requireScope(scope, principal, EMERGENCY_CAPABILITY);
     if (dto.beneficiaryUserId === principal.actorId) {
       throw new BadRequestException('Auto concessão emergencial não é permitida');
     }
@@ -128,11 +153,20 @@ export class AccessGrantsService {
         'Acesso emergencial não pode delegar sua própria administração',
       );
     }
-    await this.assertKnownCapabilities(dto.capabilities);
     return this.audit.transaction(async (tx) => {
-      const created = await tx.emergencyAccess.create({
-        data: {
-          companyId,
+      const members = await this.repository.activeMembershipUserIds(
+        scope,
+        [dto.beneficiaryUserId],
+        now,
+        tx,
+      );
+      if (!members.has(dto.beneficiaryUserId)) {
+        throw new NotFoundException('Usuário não encontrado');
+      }
+      await this.assertKnownCapabilities(dto.capabilities, tx);
+      const created = await this.repository.createEmergencyAccess(
+        scope,
+        {
           beneficiaryUserId: dto.beneficiaryUserId,
           grantedByUserId: principal.actorId,
           capabilities: [...new Set(dto.capabilities)].sort(),
@@ -140,7 +174,8 @@ export class AccessGrantsService {
           expiresAt: dto.expiresAt,
           reason: dto.reason,
         },
-      });
+        tx,
+      );
       await this.audit.append(
         {
           principal,
@@ -162,22 +197,28 @@ export class AccessGrantsService {
     });
   }
 
-  async revokeEmergencyAccess(principal: AuthenticatedPrincipal, id: string, reason: string) {
-    const companyId = this.requireCompany(principal, EMERGENCY_CAPABILITY);
+  async revokeEmergencyAccess(
+    scope: EnterpriseScope,
+    principal: AuthenticatedPrincipal,
+    id: string,
+    reason: string,
+  ) {
+    this.requireScope(scope, principal, EMERGENCY_CAPABILITY);
     return this.audit.transaction(async (tx) => {
-      const current = await tx.emergencyAccess.findFirst({
-        where: { id, companyId, status: 'ACTIVE' },
-      });
+      const current = await this.repository.findActiveEmergencyAccess(scope, id, tx);
       if (!current) throw new NotFoundException('Concessão não encontrada');
-      const next = await tx.emergencyAccess.update({
-        where: { id },
-        data: {
+      const next = await this.repository.revokeEmergencyAccess(
+        scope,
+        id,
+        {
           status: 'REVOKED',
           revokedAt: new Date(),
           revokedByUserId: principal.actorId,
           revocationReason: reason,
         },
-      });
+        tx,
+      );
+      if (!next) throw new NotFoundException('Concessão não encontrada');
       await this.audit.append(
         {
           principal,
@@ -194,62 +235,36 @@ export class AccessGrantsService {
     });
   }
 
-  private requireCompany(principal: AuthenticatedPrincipal, capability: string): string {
+  private requireScope(
+    scope: EnterpriseScope,
+    principal: AuthenticatedPrincipal,
+    capability: string,
+  ): void {
     this.authorization.requireCapability(principal, capability);
-    if (!principal.activeCompanyId) throw new NotFoundException('Empresa não encontrada');
-    return principal.activeCompanyId;
+    if (
+      !principal.activeCompanyId ||
+      principal.activeCompanyId !== scope.companyId ||
+      principal.actorId !== scope.actorId
+    ) {
+      throw new NotFoundException('Empresa não encontrada');
+    }
   }
 
-  private async resolveUserCapabilities(userId: string, companyId: string): Promise<Set<string>> {
-    const now = new Date();
-    const assignments = await this.prisma.userCompanyRole.findMany({
-      where: {
-        userId,
-        companyId,
-        status: 'ACTIVE',
-        validFrom: { lte: now },
-        OR: [{ validTo: null }, { validTo: { gt: now } }],
-      },
-      select: {
-        role: {
-          select: {
-            permissions: {
-              where: {
-                status: 'ACTIVE',
-                validFrom: { lte: now },
-                OR: [{ validTo: null }, { validTo: { gt: now } }],
-                permission: { status: 'ACTIVE' },
-              },
-              select: { permission: { select: { code: true } } },
-            },
-          },
-        },
-      },
-    });
-    if (!assignments.length) throw new NotFoundException('Usuário não encontrado');
-    return new Set(
-      assignments.flatMap(({ role }) => role.permissions.map(({ permission }) => permission.code)),
-    );
-  }
-
-  private async assertKnownCapabilities(capabilities: string[]): Promise<void> {
-    const count = await this.prisma.permission.count({
-      where: { code: { in: [...new Set(capabilities)] } },
-    });
+  private async assertKnownCapabilities(
+    capabilities: string[],
+    tx: Prisma.TransactionClient,
+  ): Promise<void> {
+    const count = await this.repository.countActiveCompanyCapabilities(capabilities, tx);
     if (count !== new Set(capabilities).size)
       throw new BadRequestException('Capability desconhecida');
   }
 
-  private async expireSubstitutions(principal: AuthenticatedPrincipal, companyId: string) {
+  private async expireSubstitutions(scope: EnterpriseScope, principal: AuthenticatedPrincipal) {
     await this.audit.transaction(async (tx) => {
-      const expired = await tx.temporarySubstitution.findMany({
-        where: { companyId, status: 'ACTIVE', expiresAt: { lte: new Date() } },
-      });
+      const expired = await this.repository.findExpiredSubstitutions(scope, new Date(), tx);
       for (const grant of expired) {
-        const next = await tx.temporarySubstitution.update({
-          where: { id: grant.id },
-          data: { status: 'EXPIRED' },
-        });
+        const next = await this.repository.expireSubstitution(scope, grant.id, tx);
+        if (!next) continue;
         await this.audit.append(
           {
             principal,
@@ -265,16 +280,12 @@ export class AccessGrantsService {
     });
   }
 
-  private async expireEmergencyAccesses(principal: AuthenticatedPrincipal, companyId: string) {
+  private async expireEmergencyAccesses(scope: EnterpriseScope, principal: AuthenticatedPrincipal) {
     await this.audit.transaction(async (tx) => {
-      const expired = await tx.emergencyAccess.findMany({
-        where: { companyId, status: 'ACTIVE', expiresAt: { lte: new Date() } },
-      });
+      const expired = await this.repository.findExpiredEmergencyAccesses(scope, new Date(), tx);
       for (const grant of expired) {
-        const next = await tx.emergencyAccess.update({
-          where: { id: grant.id },
-          data: { status: 'EXPIRED' },
-        });
+        const next = await this.repository.expireEmergencyAccess(scope, grant.id, tx);
+        if (!next) continue;
         await this.audit.append(
           {
             principal,

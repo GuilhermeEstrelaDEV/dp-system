@@ -93,7 +93,8 @@ explícito, que repete capability, empresa e policy.
 
 ## 6. Repositórios e isolamento
 
-Portas de aplicação recebem `ApplicationActorContext`; adaptadores Prisma aplicam `companyId` no
+Portas de aplicação recebem `EnterpriseScope`, criado somente a partir de principal e
+`ActiveCompanyContext` canônicos; adaptadores Prisma aplicam `companyId` no
 `where` da primeira consulta. Detalhes usam chave composta lógica `{ id, companyId }`; listas não
 aceitam empresa livre do cliente. Relações indiretas resolvem a empresa por join dentro da query ou
 transação. Pós-filtragem e “buscar por ID, depois comparar” não são o padrão aceitável quando o filtro
@@ -165,7 +166,21 @@ ativa e catálogo com semântica `ALL`. A allowlist pública usa identificadores
 reconcilia discovery real do NestJS e OpenAPI expõe somente requisitos não sensíveis. Nenhum cache foi
 adicionado; revogação e vigência são resolvidas por requisição.
 
-## 12. Limites
+## 12. Isolamento implementado na ETP-015.5
+
+`EnterpriseScope` transporta `actorId`, `companyId`, `sessionId`, `traceId` e assignments vigentes,
+sem aceitar `companyId` de DTO/path como autoridade. Grants, assignments empresariais e dashboard
+usam repositories com predicado empresarial anterior ao lookup; writes usam predicado composto e
+validam a contagem na mesma transação. Relações de substituição e emergência validam todos os atores
+na empresa ativa. Payroll review e payroll periods já atendiam ao padrão e foram revalidados.
+
+O verificador estático cobre os anti-patterns estáveis do recorte e os testes PostgreSQL usam duas
+empresas. A lista completa, exceções e patterns vinculantes estão em
+`docs/security/ETP-015_5_DATA_ACCESS_INVENTORY.md`. Nenhuma API legada foi promovida de
+`LEGACY_DEFERRED`.
+
+## 13. Limites
 
 Este desenho não atribui capabilities, não define cargos, não cria migration e não migra famílias de
-negócio. Isolamento de queries, masking e auditoria de autorização permanecem nas ETP-015.5–015.7.
+negócio. Masking e auditoria de autorização permanecem nas ETP-015.6–015.7; a migração das famílias
+legadas continua nas ondas ETP-015.8–015.10.

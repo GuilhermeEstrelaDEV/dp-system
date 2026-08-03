@@ -102,7 +102,7 @@ concluída após a Final Acceptance.
 
 ## ETP-015 — Authorization Foundation & Enterprise Isolation
 
-**Status:** `IN PROGRESS` — ETP-015.1–015.3 concluídas; ETP-015.4 implementada; ETP-015.5 não iniciada.
+**Status:** `IN PROGRESS` — ETP-015.1–015.3 concluídas; ETP-015.4 e ETP-015.5 implementadas.
 
 A ETP-015.3 foi incorporada à `develop` pelo PR #61. A migration 0016, o catálogo e os assignments
 estão implementados, sem grants automáticos. O
@@ -130,7 +130,10 @@ documentais foram concluídos. A ETP-015.3 está `IMPLEMENTED AND MERGED`, com m
 catálogo interno e assignments históricos. Nenhuma rota, grant automático ou ampliação de acesso foi
 ativada pela migration. A ETP-015.4 está `IMPLEMENTED — AUTHORIZATION PRIMITIVES AVAILABLE`, com
 allowlist pública nominal, JWT, empresa ativa, capabilities `ALL`, deny-by-default e verificador de
-165 handlers. As 129 rotas legadas continuam `LEGACY_DEFERRED`; a ETP-015.5 permanece `NOT STARTED`.
+165 handlers. A ETP-015.5 está `IMPLEMENTED — ENTERPRISE QUERY ISOLATION AVAILABLE`: o escopo
+empresarial canônico, repositories explícitos e testes com duas empresas cobrem auth/contexto,
+grants, assignments e dashboard. As 129 rotas legadas continuam `LEGACY_DEFERRED`; ETP-015.6–015.10
+permanecem `NOT STARTED`.
 
 ## Próximas iniciativas propostas
 
@@ -157,8 +160,8 @@ continuidade permanecem decisões futuras explícitas.
 
 ETP-015.3 está `IMPLEMENTED AND MERGED`. Seu Operational Deployment Gate permanece
 `PENDING FOR FUTURE TARGET ENVIRONMENT`; esse bloqueio de destino não impede a demonstração local.
-ETP-015.4 foi iniciada somente após a conclusão do MVP-001 e está implementada nesta branch; nenhuma
-família legada foi migrada e a ETP-015.5 permanece `NOT STARTED`.
+ETP-015.4 foi iniciada somente após a conclusão do MVP-001. A ETP-015.5 implementa isolamento no
+recorte canônico aprovado; nenhuma família legada foi migrada e a ETP-015.6 permanece `NOT STARTED`.
 
 Permanecem propostas não vinculantes, sem autorização de implementação: **ETP-016 — Relatórios,
 dashboards e inteligência operacional** e **ETP-017 — Hardening, observabilidade e performance**.

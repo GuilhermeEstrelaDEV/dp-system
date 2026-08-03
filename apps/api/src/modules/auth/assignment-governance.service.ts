@@ -7,6 +7,7 @@ import {
 import type { AssignmentSourceType, Prisma } from '@prisma/client';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { AuditWriterService } from './audit-writer.service';
+import type { EnterpriseScope } from './enterprise-scope';
 
 interface AssignmentProvenance {
   sourceType: AssignmentSourceType;
@@ -26,7 +27,6 @@ export interface CreateRolePermissionAssignment extends AssignmentProvenance {
 
 export interface CreateUserCompanyRoleAssignment extends AssignmentProvenance {
   userId: string;
-  companyId: string;
   roleId: string;
 }
 
@@ -57,16 +57,26 @@ export class AssignmentGovernanceService {
     });
   }
 
-  createUserCompanyRole(input: CreateUserCompanyRoleAssignment, principal: AuthenticatedPrincipal) {
+  createUserCompanyRole(
+    scope: EnterpriseScope,
+    input: CreateUserCompanyRoleAssignment,
+    principal: AuthenticatedPrincipal,
+  ) {
     this.assertInput(input);
+    this.assertScope(scope, principal);
     return this.runTransaction(async (tx) => {
-      await this.assertUserCompanyRoleTargets(tx, input);
+      await this.assertUserCompanyRoleTargets(tx, scope, input);
       const assignment = await tx.userCompanyRole.create({
-        data: { ...input, correlationId: principal.traceId, assignedByUserId: principal.actorId },
+        data: {
+          ...input,
+          companyId: scope.companyId,
+          correlationId: principal.traceId,
+          assignedByUserId: principal.actorId,
+        },
       });
       await this.audit.append(
         {
-          principal: { ...principal, activeCompanyId: input.companyId },
+          principal,
           action: 'USER_COMPANY_ROLE_ASSIGNED',
           entityType: 'UserCompanyRole',
           entityId: assignment.id,
@@ -116,17 +126,21 @@ export class AssignmentGovernanceService {
   }
 
   revokeUserCompanyRole(
+    scope: EnterpriseScope,
     id: string,
     reason: string,
     principal: AuthenticatedPrincipal,
     revokedAt = new Date(),
   ) {
     this.assertRevocationReason(reason);
+    this.assertScope(scope, principal);
     return this.runTransaction(async (tx) => {
-      const current = await tx.userCompanyRole.findFirst({ where: { id, status: 'ACTIVE' } });
+      const current = await tx.userCompanyRole.findFirst({
+        where: { id, companyId: scope.companyId, status: 'ACTIVE' },
+      });
       if (!current) throw new NotFoundException('Assignment não encontrado');
-      const assignment = await tx.userCompanyRole.update({
-        where: { id },
+      const affected = await tx.userCompanyRole.updateMany({
+        where: { id, companyId: scope.companyId, status: 'ACTIVE' },
         data: {
           status: 'REVOKED',
           revokedAt,
@@ -134,9 +148,14 @@ export class AssignmentGovernanceService {
           revokeReason: reason,
         },
       });
+      if (affected.count !== 1) throw new NotFoundException('Assignment não encontrado');
+      const assignment = await tx.userCompanyRole.findFirst({
+        where: { id, companyId: scope.companyId },
+      });
+      if (!assignment) throw new NotFoundException('Assignment não encontrado');
       await this.audit.append(
         {
-          principal: { ...principal, activeCompanyId: current.companyId },
+          principal,
           action: 'USER_COMPANY_ROLE_REVOKED',
           entityType: 'UserCompanyRole',
           entityId: id,
@@ -192,12 +211,13 @@ export class AssignmentGovernanceService {
 
   private async assertUserCompanyRoleTargets(
     tx: Prisma.TransactionClient,
+    scope: EnterpriseScope,
     input: CreateUserCompanyRoleAssignment,
   ): Promise<void> {
     const [user, company, role, approver] = await Promise.all([
       tx.user.findFirst({ where: { id: input.userId, status: 'ACTIVE' }, select: { id: true } }),
       tx.company.findFirst({
-        where: { id: input.companyId, status: 'ACTIVE' },
+        where: { id: scope.companyId, status: 'ACTIVE' },
         select: { id: true },
       }),
       tx.role.findUnique({ where: { id: input.roleId }, select: { id: true } }),
@@ -233,6 +253,16 @@ export class AssignmentGovernanceService {
 
   private assertRevocationReason(reason: string): void {
     if (!reason.trim()) throw new BadRequestException('Motivo da revogação é obrigatório');
+  }
+
+  private assertScope(scope: EnterpriseScope, principal: AuthenticatedPrincipal): void {
+    if (
+      !principal.activeCompanyId ||
+      principal.activeCompanyId !== scope.companyId ||
+      principal.actorId !== scope.actorId
+    ) {
+      throw new NotFoundException('Empresa não encontrada');
+    }
   }
 
   private snapshot(value: object): Prisma.InputJsonObject {
