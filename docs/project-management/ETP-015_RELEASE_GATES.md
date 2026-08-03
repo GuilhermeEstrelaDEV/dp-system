@@ -52,6 +52,22 @@ checkbox; nenhuma família foi ativada em massa.
 [aceite](../security/ETP-015_5_ACCEPTANCE_EVIDENCE.md). O Gate B não é declarado concluído nesta
 entrega: o pós-merge e os itens ainda abertos continuam necessários.
 
+## Sequência governada entre ETP-015.7 e ETP-015.6
+
+- a entrada da ETP-015.7 exige a ETP-015.5 implementada e as ETP-015.1–015.4 disponíveis;
+- a ETP-015.7 não exige a ETP-015.6: ela estabelece a fundação atômica de auditoria e cobre escritas
+  críticas canônicas;
+- somente leituras sensíveis com classificação material previamente aprovada podem ser auditadas na
+  ETP-015.7;
+- a entrada da ETP-015.6 exige a fundação da ETP-015.7 disponível, e nenhuma leitura sensível pode ser
+  ativada sem a auditoria correspondente;
+- a ETP-015.6 reutiliza o writer, catálogo, envelope, sanitizador e atomicidade da ETP-015.7, sem
+  implementação paralela;
+- a ETP-015.8 depende das duas etapas concluídas na ordem ETP-015.7 → ETP-015.6.
+
+Esta regularização documental não aprova Gate B, C ou D, não inicia incremento produtivo e não
+flexibiliza qualquer requisito de segurança existente.
+
 ## Gate C — P0 Migration and Security Validation
 
 - [ ] consumidores conhecidos e potenciais de `/payroll-closures` registrados;

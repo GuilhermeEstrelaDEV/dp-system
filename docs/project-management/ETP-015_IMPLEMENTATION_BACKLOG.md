@@ -125,26 +125,14 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Limite:** 129 handlers `LEGACY_DEFERRED` permanecem fora do recorte; nenhuma rota, capability,
   migration, DTO, masking ou evento novo de auditoria foi introduzido.
 
-## ETP-015.6 — Sensitive Data Projection and Masking
-
-**Status:** `NOT STARTED`
-
-- **Objetivo:** projeção mínima e acesso integral por capability adicional.
-- **Dependências:** 015.3–015.5, DAL-06 e limites BDP-001/011.
-- **Módulos afetados:** serializers/query projections e contratos compartilhados.
-- **Banco esperado:** nenhum por padrão.
-- **Testes:** campo allowlisted, masking, capability integral e cache entre empresas.
-- **Riscos:** inferir política final de PII.
-- **Aceite:** somente campos homologados; itens bloqueados permanecem fora.
-- **Rollback:** reduzir projeção; nunca ampliar dados para compatibilidade.
-- **Evidências:** matriz de campos e testes de snapshot/segurança.
-
 ## ETP-015.7 — Authorization Audit Events
 
-**Status:** `NOT STARTED`
+**Status:** `NOT STARTED — NEXT AUTHORIZED INCREMENT`
 
-- **Objetivo:** cobrir escritas críticas e leituras sensíveis.
-- **Dependências:** 015.1–015.6, DAL-07/08/13.
+- **Objetivo:** cobrir escritas críticas canônicas, estabelecer a fundação de auditoria de autorização
+  e preparar a auditoria de leituras sensíveis. Nesta etapa, somente leituras com classificação
+  material previamente aprovada podem ser cobertas.
+- **Dependências:** 015.1–015.5, DAL-07/08/13.
 - **Módulos afetados:** `AuditWriterService`, sanitizer e casos de uso.
 - **Banco esperado:** campos/índices somente se Gate A comprovar necessidade.
 - **Testes:** atomicidade, rollback, metadata proibida e grant usado.
@@ -152,13 +140,54 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Aceite:** eventos allowlist, trace completo e falha crítica atômica.
 - **Rollback:** reduzir evento não crítico; não separar auditoria de escrita crítica.
 - **Evidências:** testes PostgreSQL e amostras sanitizadas.
+- **Limites:** a fundação não depende de masking. `AuditWriterService`, sanitizador, catálogo de
+  eventos, envelope e atomicidade pertencem a esta etapa. Leituras sem classificação aprovada e a
+  cobertura integral das leituras sensíveis ficam adiadas para a ETP-015.6.
+
+## ETP-015.6 — Sensitive Data Projection and Masking
+
+**Status:** `NOT STARTED — DEPENDS ON ETP-015.7 AUDIT FOUNDATION`
+
+- **Objetivo:** ativar projeção mínima, masking e acesso integral por capability adicional, por família
+  aprovada, auditando as leituras sensíveis pelo catálogo e writer entregues na ETP-015.7.
+- **Dependências:** 015.3–015.5, fundação da ETP-015.7, DAL-06 e limites BDP-001/011.
+- **Módulos afetados:** serializers/query projections e contratos compartilhados.
+- **Banco esperado:** nenhum por padrão.
+- **Testes:** campo allowlisted, masking, capability integral, auditoria da leitura e cache entre
+  empresas.
+- **Riscos:** inferir política final de PII ou criar uma trilha de auditoria paralela.
+- **Aceite:** somente campos homologados; itens bloqueados permanecem fora; toda leitura sensível
+  ativada possui auditoria correspondente.
+- **Rollback:** reduzir projeção; nunca ampliar dados para compatibilidade.
+- **Evidências:** matriz de campos e testes de snapshot/segurança.
+- **Limites:** esta etapa reutiliza, sem reimplementar, `AuditWriterService`, catálogo de eventos,
+  envelope, sanitizador e atomicidade da ETP-015.7.
+
+> A ordem de execução não segue a ordem numérica entre 015.6 e 015.7. A ETP-015.7 deve ser
+> implementada primeiro para estabelecer auditoria atômica, catálogo de eventos, sanitização e
+> rastreabilidade das escritas críticas. A ETP-015.6 utiliza essa fundação para ativar projeções e
+> leituras sensíveis por família.
+
+## Matriz de dependências da sequência vigente
+
+| Etapa  | Depende de                      | Entrega principal                         | Limite                                     |
+| ------ | ------------------------------- | ----------------------------------------- | ------------------------------------------ |
+| 015.5  | 015.2 e 015.4                   | isolamento empresarial                    | sem masking ou nova auditoria funcional    |
+| 015.7  | 015.1–015.5 e DAL-07/08/13      | fundação de auditoria e escritas críticas | leituras não classificadas permanecem fora |
+| 015.6  | 015.3–015.5 e fundação da 015.7 | projeção, masking e leituras sensíveis    | somente por família aprovada               |
+| 015.8  | 015.1–015.5, 015.7 e 015.6      | migração P0 do fechamento                 | sem rollout geral                          |
+| 015.9  | 015.8 estável e BDPs aplicáveis | ondas legadas                             | execução por família                       |
+| 015.10 | 015.1–015.9 e Gate D            | hardening e prontidão de remoção          | sem remoção automática                     |
+
+A direção é única: fundação ETP-015.7 → rollout de leituras sensíveis ETP-015.6. Não existe
+dependência circular.
 
 ## ETP-015.8 — Payroll Closure P0 Migration
 
 **Status:** `NOT STARTED`
 
 - **Objetivo:** proteger `/payroll-closures` e delegar ao fechamento canônico.
-- **Dependências:** 015.1–015.7, BDP-014, DAL-09–14; Gate B/C.
+- **Dependências:** 015.1–015.5, 015.7 e 015.6, BDP-014, DAL-09–14; Gate B/C.
 - **Módulos afetados:** payroll-closures, payroll-periods, OpenAPI e clientes existentes.
 - **Banco esperado:** nenhum modelo paralelo; reutilizar persistence da ETP-014.
 - **Testes:** contratos, `401/403/404`, close/reopen/replay/concorrência e auditoria.
@@ -213,7 +242,7 @@ impede outra sem dependência material.
 4. 015.4 decorators/guards;
 5. 015.5 isolamento de repositories;
 6. 015.7 fundação de auditoria necessária ao enforcement;
-7. 015.6 projeção/masking por família (pode ocorrer em paralelo somente após 015.5/015.7);
+7. 015.6 projeção/masking por família, iniciada somente após a fundação da 015.7 estar disponível;
 8. 015.8 fechamento P0;
 9. 015.9a–d, sequencial por prioridade e independente por família aprovada;
 10. 015.10 hardening e prontidão de remoção.

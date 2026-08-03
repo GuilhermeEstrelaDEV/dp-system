@@ -179,8 +179,30 @@ empresas. A lista completa, exceções e patterns vinculantes estão em
 `docs/security/ETP-015_5_DATA_ACCESS_INVENTORY.md`. Nenhuma API legada foi promovida de
 `LEGACY_DEFERRED`.
 
-## 13. Limites
+## 13. Sequência arquitetural vigente
+
+1. principal e sessão (ETP-015.1);
+2. empresa ativa (ETP-015.2);
+3. catálogo e assignments (ETP-015.3);
+4. guards e decorators (ETP-015.4);
+5. isolamento empresarial (ETP-015.5);
+6. auditoria atômica (ETP-015.7);
+7. projeção e masking (ETP-015.6);
+8. migração P0 (ETP-015.8);
+9. rollout legado (ETP-015.9);
+10. hardening (ETP-015.10).
+
+A auditoria das escritas críticas canônicas precede masking. A ETP-015.7 estabelece writer, catálogo,
+envelope, sanitização e atomicidade; ela não depende da ETP-015.6. Leituras sensíveis somente entram
+nesse primeiro recorte quando já possuem classificação material aprovada.
+
+A ETP-015.6 reutiliza essa fundação ao introduzir projeção e masking por família e não cria writer
+paralelo. O evento recebe o principal, a empresa, a decisão de autorização e a finalidade já
+resolvidos pelo caso de uso; a auditoria não consulta novamente grants. A cobertura de leituras é
+incremental e a cobertura integral das leituras sensíveis permanece na ETP-015.6.
+
+## 14. Limites
 
 Este desenho não atribui capabilities, não define cargos, não cria migration e não migra famílias de
-negócio. Masking e auditoria de autorização permanecem nas ETP-015.6–015.7; a migração das famílias
-legadas continua nas ondas ETP-015.8–015.10.
+negócio. Auditoria de autorização e masking permanecem, respectivamente, nas ETP-015.7 e ETP-015.6;
+a migração das famílias legadas continua nas ondas ETP-015.8–015.10.
