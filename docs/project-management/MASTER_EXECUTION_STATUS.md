@@ -274,7 +274,7 @@
 - **Follow-ups da ETP-015.2:** revogação dedicada, provenance, unicidade temporal, múltiplos
   assignments, política futura de assignment canônico, evolução controlada das fontes empresariais
   e semântica futura de `404` permanecem abertos.
-- **ETP-015.3 — `IMPLEMENTED AND MERGED`:** PR #61 incorporou a migration aditiva `0016`, catálogo
+- **ETP-015.3 — `COMPLETED — IMPLEMENTED AND MERGED`:** PR #61 incorporou a migration aditiva `0016`, catálogo
   canônico, assignments históricos, constraints temporais e serviços internos, sem grant automático
   ou ampliação de acesso pela migration.
 - **Gate A — `APPROVED`:** GA-01..GA-15 homologadas por Guilherme Estrela em 29/07/2026, sem
@@ -290,8 +290,16 @@
   filtro empresarial anterior ao lookup e repositories explícitos nos módulos auth/contexto,
   grants, assignments e dashboard, com testes unitários, HTTP e PostgreSQL de duas empresas. As 129
   rotas legadas continuam adiadas e não são declaradas seguras.
-- **ETP-015.6–015.10 — `NOT STARTED`:** masking, eventos de auditoria de autorização e rollout das
-  famílias não foram antecipados.
+- **ETP-015.7 — `NOT STARTED — NEXT AUTHORIZED INCREMENT`:** será a fundação de auditoria atômica e
+  cobrirá escritas críticas canônicas; somente leituras com classificação material aprovada poderão
+  entrar nesse primeiro recorte.
+- **ETP-015.6 — `NOT STARTED — DEPENDS ON ETP-015.7 AUDIT FOUNDATION`:** projeção, masking e cobertura
+  completa de leituras sensíveis reutilizarão o writer, catálogo, sanitizador e atomicidade da
+  ETP-015.7, sem implementação paralela.
+- **ETP-015.8 — `NOT STARTED`; ETP-015.9 — `NOT STARTED`; ETP-015.10 — `NOT STARTED`:** rollout P0,
+  ondas legadas e hardening não foram antecipados.
+- **Próximo passo:** Iniciar a ETP-015.7 — Authorization Audit Events somente após o merge da
+  regularização documental da ordem ETP-015.7 → ETP-015.6.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,
@@ -315,12 +323,13 @@
 - **Plano:** nove incrementos em [MVP-001_IMPLEMENTATION_BACKLOG.md](MVP-001_IMPLEMENTATION_BACKLOG.md).
 - **Aceite e riscos:** [critérios mensuráveis](MVP-001_DEMO_ACCEPTANCE_CRITERIA.md) e
   [registro de riscos](MVP-001_DEMO_RISK_REGISTER.md).
-- **ETP-015.3:** `IMPLEMENTED AND MERGED`; Operational Deployment Gate
+- **ETP-015.3:** `COMPLETED — IMPLEMENTED AND MERGED`; Operational Deployment Gate
   `PENDING FOR FUTURE TARGET ENVIRONMENT`. O gate de destino não bloqueia demo local.
 - **ETP-015.4:** `IMPLEMENTED — AUTHORIZATION PRIMITIVES AVAILABLE`; nenhuma rota legada foi
   declarada segura ou migrada.
 - **ETP-015.5:** `IMPLEMENTED — ENTERPRISE QUERY ISOLATION AVAILABLE` somente no recorte canônico;
-  as 129 rotas legadas permanecem adiadas e a ETP-015.6 permanece `NOT STARTED`.
+  as 129 rotas legadas permanecem adiadas. A ETP-015.7 é o próximo incremento autorizado após a
+  regularização documental; a ETP-015.6 permanece não iniciada e depende dessa fundação de auditoria.
 - **Alterações funcionais desta etapa:** zero.
 - **MVP-001.1 — `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`:** comandos `demo:setup`, `demo:start`,
   `demo:stop`, `demo:status` e reset com confirmação operam um Compose exclusivamente local, com

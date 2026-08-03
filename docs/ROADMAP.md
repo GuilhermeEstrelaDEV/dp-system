@@ -126,14 +126,23 @@ e assignments foi homologado em 29/07/2026: GA-01..GA-15 estão `APPROVED`, sem 
 bloqueadoras. O subgate de classificação de risco e sensibilidade dos 19 códigos está
 `APPROVED — READY FOR CONTROLLED MIGRATION`. O PR #59 foi incorporado à `develop` em 29/07/2026,
 no merge `f3a63d6243797c91e17ace40a715bdbf78478efb`, com CI aprovado. Todos os pré-requisitos
-documentais foram concluídos. A ETP-015.3 está `IMPLEMENTED AND MERGED`, com migration aditiva,
+documentais foram concluídos. A ETP-015.3 está `COMPLETED — IMPLEMENTED AND MERGED`, com migration aditiva,
 catálogo interno e assignments históricos. Nenhuma rota, grant automático ou ampliação de acesso foi
 ativada pela migration. A ETP-015.4 está `IMPLEMENTED — AUTHORIZATION PRIMITIVES AVAILABLE`, com
 allowlist pública nominal, JWT, empresa ativa, capabilities `ALL`, deny-by-default e verificador de
 165 handlers. A ETP-015.5 está `IMPLEMENTED — ENTERPRISE QUERY ISOLATION AVAILABLE`: o escopo
 empresarial canônico, repositories explícitos e testes com duas empresas cobrem auth/contexto,
-grants, assignments e dashboard. As 129 rotas legadas continuam `LEGACY_DEFERRED`; ETP-015.6–015.10
-permanecem `NOT STARTED`.
+grants, assignments e dashboard. As 129 rotas legadas continuam `LEGACY_DEFERRED`; as etapas
+restantes permanecem sem implementação, na seguinte ordem governada:
+
+- **ETP-015.7:** `NOT STARTED — NEXT AUTHORIZED INCREMENT`;
+- **ETP-015.6:** `NOT STARTED — DEPENDS ON ETP-015.7 AUDIT FOUNDATION`;
+- **ETP-015.8:** `NOT STARTED`;
+- **ETP-015.9:** `NOT STARTED`;
+- **ETP-015.10:** `NOT STARTED`.
+
+Iniciar a ETP-015.7 — Authorization Audit Events somente após o merge da regularização documental da
+ordem ETP-015.7 → ETP-015.6.
 
 ## Próximas iniciativas propostas
 
@@ -158,10 +167,12 @@ roteiro, contingência e coleta de feedback, conforme o
 `IMPLEMENTED — LOCAL PROTOTYPE READY FOR MANAGEMENT VALIDATION`; a validação gerencial e qualquer
 continuidade permanecem decisões futuras explícitas.
 
-ETP-015.3 está `IMPLEMENTED AND MERGED`. Seu Operational Deployment Gate permanece
+ETP-015.3 está `COMPLETED — IMPLEMENTED AND MERGED`. Seu Operational Deployment Gate permanece
 `PENDING FOR FUTURE TARGET ENVIRONMENT`; esse bloqueio de destino não impede a demonstração local.
 ETP-015.4 foi iniciada somente após a conclusão do MVP-001. A ETP-015.5 implementa isolamento no
-recorte canônico aprovado; nenhuma família legada foi migrada e a ETP-015.6 permanece `NOT STARTED`.
+recorte canônico aprovado; nenhuma família legada foi migrada. A ETP-015.7 é o próximo incremento
+autorizado após esta regularização documental, e a ETP-015.6 permanece não iniciada e dependente da
+fundação de auditoria da ETP-015.7.
 
 Permanecem propostas não vinculantes, sem autorização de implementação: **ETP-016 — Relatórios,
 dashboards e inteligência operacional** e **ETP-017 — Hardening, observabilidade e performance**.
