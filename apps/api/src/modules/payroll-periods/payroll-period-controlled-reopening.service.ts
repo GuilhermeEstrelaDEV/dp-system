@@ -234,7 +234,7 @@ export class PayrollPeriodControlledReopeningService {
               nextState: { status: 'OPEN', closureVersion: next.version },
               reason,
               metadata: {
-                outcome: {
+                details: {
                   previousClosureId: closure.id,
                   newClosureId: next.id,
                   previousManifestId: manifest.id,

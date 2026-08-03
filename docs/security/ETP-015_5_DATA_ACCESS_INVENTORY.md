@@ -83,8 +83,16 @@ dados de domínio.
 ### `LEGACY_DEFERRED` / `OUT OF SCOPE`
 
 - os 129 handlers do manifesto e seus repositories históricos;
-- masking, auditoria de autorização da ETP-015.7, rollout P0/P1–P4, cache novo, novos endpoints,
-  frontend e migrations.
+- masking e leituras sensíveis da ETP-015.6, rollout P0/P1–P4, cache novo, novos endpoints,
+  frontend e migrations. A fundação de auditoria da ETP-015.7 cobre somente os produtores
+  canônicos inventariados, sem tornar seguro o acesso legado.
 
 Nenhuma área do recorte está `BLOCKED BY BUSINESS DECISION`. A classificação não declara os módulos
 legados seguros e não reduz o trabalho das ondas posteriores.
+
+## Revalidação pela ETP-015.7
+
+Auth/contexto, grants, assignments, payroll review e payroll period mantêm filtro empresarial antes
+do lookup. O evento recebe a empresa do `EnterpriseScope` nos produtores de autorização ou do scope
+canônico já validado no agregado de folha. Cross-tenant continua `404` uniforme e nenhum evento de
+negação persiste o identificador estrangeiro.

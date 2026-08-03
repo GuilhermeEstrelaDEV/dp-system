@@ -201,8 +201,16 @@ paralelo. O evento recebe o principal, a empresa, a decisão de autorização e 
 resolvidos pelo caso de uso; a auditoria não consulta novamente grants. A cobertura de leituras é
 incremental e a cobertura integral das leituras sensíveis permanece na ETP-015.6.
 
+### Implementação da ETP-015.7
+
+O desenho foi materializado com `AUDIT_EVENT_CATALOG`, `AuditEventEnvelope`,
+`EffectiveAuthorizationContext`, `AuditWriterService` e `AuthorizationAuditVerifierService`. O
+writer adiciona a versão, categoria, resultado, capabilities e grants efetivos; eventos críticos
+exigem o transaction client do caso de uso. O catálogo preserva os códigos históricos, e os mapas
+de payroll eliminam composição dinâmica. Nenhuma leitura sensível foi ativada.
+
 ## 14. Limites
 
 Este desenho não atribui capabilities, não define cargos, não cria migration e não migra famílias de
-negócio. Auditoria de autorização e masking permanecem, respectivamente, nas ETP-015.7 e ETP-015.6;
+negócio. A auditoria de autorização está implementada na ETP-015.7; masking permanece na ETP-015.6;
 a migração das famílias legadas continua nas ondas ETP-015.8–015.10.

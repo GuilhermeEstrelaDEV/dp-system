@@ -251,7 +251,7 @@
 ### ETP-015 — Authorization Foundation & Enterprise Isolation
 
 - **Status:** `IN PROGRESS`; especificação aprovada no PR #52, ETP-015.1–015.3 concluídas e
-  ETP-015.4–015.5 implementadas.
+  ETP-015.4, ETP-015.5 e ETP-015.7 implementadas.
 - **Governança:** BDP-AUTH-LEGACY e DAL-01 a DAL-14 estão `APPROVED`.
 - **Especificação:** `docs/project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md`.
 - **Arquitetura:** `docs/architecture/AUTHORIZATION_FOUNDATION_TECHNICAL_DESIGN.md` e
@@ -290,16 +290,17 @@
   filtro empresarial anterior ao lookup e repositories explícitos nos módulos auth/contexto,
   grants, assignments e dashboard, com testes unitários, HTTP e PostgreSQL de duas empresas. As 129
   rotas legadas continuam adiadas e não são declaradas seguras.
-- **ETP-015.7 — `NOT STARTED — NEXT AUTHORIZED INCREMENT`:** será a fundação de auditoria atômica e
-  cobrirá escritas críticas canônicas; somente leituras com classificação material aprovada poderão
-  entrar nesse primeiro recorte.
-- **ETP-015.6 — `NOT STARTED — DEPENDS ON ETP-015.7 AUDIT FOUNDATION`:** projeção, masking e cobertura
+- **ETP-015.7 — `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`:** catálogo fechado de 26
+  eventos, envelope tipado, decisão efetiva imutável, metadata deny-by-default, writer único,
+  verificador AST e rollback atômico cobrem os produtores canônicos. Não houve migration, endpoint,
+  capability, frontend ou auditoria de leitura sensível.
+- **ETP-015.6 — `NOT STARTED — NEXT AUTHORIZED INCREMENT`:** projeção, masking e cobertura
   completa de leituras sensíveis reutilizarão o writer, catálogo, sanitizador e atomicidade da
   ETP-015.7, sem implementação paralela.
 - **ETP-015.8 — `NOT STARTED`; ETP-015.9 — `NOT STARTED`; ETP-015.10 — `NOT STARTED`:** rollout P0,
   ondas legadas e hardening não foram antecipados.
-- **Próximo passo:** Iniciar a ETP-015.7 — Authorization Audit Events somente após o merge da
-  regularização documental da ordem ETP-015.7 → ETP-015.6.
+- **Próximo passo:** iniciar a ETP-015.6 — Sensitive Data Projection and Masking somente após o merge
+  da fundação ETP-015.7, sem antecipar a ETP-015.8.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,
@@ -328,8 +329,8 @@
 - **ETP-015.4:** `IMPLEMENTED — AUTHORIZATION PRIMITIVES AVAILABLE`; nenhuma rota legada foi
   declarada segura ou migrada.
 - **ETP-015.5:** `IMPLEMENTED — ENTERPRISE QUERY ISOLATION AVAILABLE` somente no recorte canônico;
-  as 129 rotas legadas permanecem adiadas. A ETP-015.7 é o próximo incremento autorizado após a
-  regularização documental; a ETP-015.6 permanece não iniciada e depende dessa fundação de auditoria.
+  as 129 rotas legadas permanecem adiadas. A ETP-015.7 disponibiliza a fundação de auditoria; a
+  ETP-015.6 permanece não iniciada e é o próximo incremento autorizado.
 - **Alterações funcionais desta etapa:** zero.
 - **MVP-001.1 — `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`:** comandos `demo:setup`, `demo:start`,
   `demo:stop`, `demo:status` e reset com confirmação operam um Compose exclusivamente local, com

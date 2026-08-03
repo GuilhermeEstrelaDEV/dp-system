@@ -91,3 +91,7 @@ entre esta fotografia, os controllers e a classificação em runtime.
 A ETP-015.5 não altera esta classificação nem a contagem de handlers. Ela aplica isolamento às
 superfícies canônicas selecionadas; os 129 handlers acima continuam `LEGACY_DEFERRED` e não são
 declarados seguros por essa fundação.
+
+A ETP-015.7 também não altera rotas ou classificações. Os 36 handlers canônicos continuam sob as
+mesmas políticas; seus produtores de escrita crítica passam a usar o catálogo e writer atômico. Os
+129 handlers legados não recebem cobertura implícita de auditoria.

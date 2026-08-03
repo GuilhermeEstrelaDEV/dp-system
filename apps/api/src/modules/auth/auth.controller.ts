@@ -31,6 +31,7 @@ export class AuthController {
       action: 'AUTH_LOGIN_SUCCEEDED',
       entityType: 'Session',
       entityId: sessionId,
+      reasonCode: 'AUTHENTICATION_SUCCEEDED',
     });
     return token;
   }
@@ -59,6 +60,7 @@ export class AuthController {
       action: 'AUTH_COMPANY_SELECTED',
       entityType: 'Company',
       entityId: dto.companyId,
+      reasonCode: 'COMPANY_CONTEXT_SELECTED',
     });
     return token;
   }
@@ -72,6 +74,7 @@ export class AuthController {
       action: 'AUTH_LOGOUT_SUCCEEDED',
       entityType: 'Session',
       entityId: principal.sessionId,
+      reasonCode: 'SESSION_TERMINATED',
     });
     return { revoked };
   }

@@ -20,7 +20,14 @@ O principal inclui `ipAddress` e `userAgent`. Por padrão, o IP vem da conexão 
 
 `EmergencyAccess` preserva beneficiário, concedente, empresa, capabilities, motivo, vigência e revogação. Auto concessão e delegação de `emergency_access.manage` são proibidas. `EMERGENCY_ACCESS_MAX_HOURS`, limitado entre 1 e 24 horas, define o teto técnico e usa 8 horas por padrão.
 
-Grants vencidos deixam de participar do contexto imediatamente pela consulta de vigência. Listagens administrativas reconciliam o status para `EXPIRED` e gravam auditoria. Uso de capability proveniente de grant gera `ACCESS_GRANT_USED`.
+Grants vencidos deixam de participar do contexto imediatamente pela consulta de vigência. Listagens administrativas reconciliam o status para `EXPIRED` e gravam auditoria. Desde a ETP-015.7, os IDs dos grants efetivamente usados integram a decisão imutável e a metadata do evento crítico correspondente; não há evento `ACCESS_GRANT_USED` separado fora da transação de negócio.
+
+## Evolução pela ETP-015.7
+
+O `AuditWriterService` é o único adapter de `AuditLog`, usa catálogo fechado, envelope tipado e
+allowlist por evento. Assignments, grants e mutações de folha exigem o transaction client do caso de
+uso, de modo que falha da auditoria causa rollback integral. O append-only continua garantido na
+camada de aplicação e por verificador AST; não existe trigger dedicado nesta versão.
 
 ## Endpoints
 

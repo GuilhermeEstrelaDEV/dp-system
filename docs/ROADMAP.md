@@ -102,7 +102,7 @@ concluída após a Final Acceptance.
 
 ## ETP-015 — Authorization Foundation & Enterprise Isolation
 
-**Status:** `IN PROGRESS` — ETP-015.1–015.3 concluídas; ETP-015.4 e ETP-015.5 implementadas.
+**Status:** `IN PROGRESS` — ETP-015.1–015.3 concluídas; ETP-015.4, ETP-015.5 e ETP-015.7 implementadas.
 
 A ETP-015.3 foi incorporada à `develop` pelo PR #61. A migration 0016, o catálogo e os assignments
 estão implementados, sem grants automáticos. O
@@ -132,17 +132,20 @@ ativada pela migration. A ETP-015.4 está `IMPLEMENTED — AUTHORIZATION PRIMITI
 allowlist pública nominal, JWT, empresa ativa, capabilities `ALL`, deny-by-default e verificador de
 165 handlers. A ETP-015.5 está `IMPLEMENTED — ENTERPRISE QUERY ISOLATION AVAILABLE`: o escopo
 empresarial canônico, repositories explícitos e testes com duas empresas cobrem auth/contexto,
-grants, assignments e dashboard. As 129 rotas legadas continuam `LEGACY_DEFERRED`; as etapas
+grants, assignments e dashboard. A ETP-015.7 está
+`IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`, com catálogo fechado de 26 eventos,
+decisão efetiva imutável, metadata deny-by-default e rollback atômico das escritas críticas, sem
+migration ou auditoria de leitura sensível. As 129 rotas legadas continuam `LEGACY_DEFERRED`; as etapas
 restantes permanecem sem implementação, na seguinte ordem governada:
 
-- **ETP-015.7:** `NOT STARTED — NEXT AUTHORIZED INCREMENT`;
-- **ETP-015.6:** `NOT STARTED — DEPENDS ON ETP-015.7 AUDIT FOUNDATION`;
+- **ETP-015.7:** `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`;
+- **ETP-015.6:** `NOT STARTED — NEXT AUTHORIZED INCREMENT`;
 - **ETP-015.8:** `NOT STARTED`;
 - **ETP-015.9:** `NOT STARTED`;
 - **ETP-015.10:** `NOT STARTED`.
 
-Iniciar a ETP-015.7 — Authorization Audit Events somente após o merge da regularização documental da
-ordem ETP-015.7 → ETP-015.6.
+Após o merge desta entrega, o próximo incremento autorizado é a ETP-015.6 — Sensitive Data
+Projection and Masking, reutilizando a fundação da ETP-015.7 e sem antecipar a ETP-015.8.
 
 ## Próximas iniciativas propostas
 
@@ -170,9 +173,8 @@ continuidade permanecem decisões futuras explícitas.
 ETP-015.3 está `COMPLETED — IMPLEMENTED AND MERGED`. Seu Operational Deployment Gate permanece
 `PENDING FOR FUTURE TARGET ENVIRONMENT`; esse bloqueio de destino não impede a demonstração local.
 ETP-015.4 foi iniciada somente após a conclusão do MVP-001. A ETP-015.5 implementa isolamento no
-recorte canônico aprovado; nenhuma família legada foi migrada. A ETP-015.7 é o próximo incremento
-autorizado após esta regularização documental, e a ETP-015.6 permanece não iniciada e dependente da
-fundação de auditoria da ETP-015.7.
+recorte canônico aprovado; nenhuma família legada foi migrada. A ETP-015.7 implementa a fundação de
+auditoria atômica; a ETP-015.6 permanece não iniciada e passa a ser o próximo incremento autorizado.
 
 Permanecem propostas não vinculantes, sem autorização de implementação: **ETP-016 — Relatórios,
 dashboards e inteligência operacional** e **ETP-017 — Hardening, observabilidade e performance**.

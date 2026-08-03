@@ -7,7 +7,6 @@ import {
 import { Reflector } from '@nestjs/core';
 import type { RequestWithContext } from '../../common/http/request-context';
 import { AuthorizationService } from './authorization.service';
-import { AuditWriterService } from './audit-writer.service';
 import { CapabilityCatalogService } from './capability-catalog.service';
 import { ROUTE_ACCESS_POLICY, type RouteAccessPolicy } from './route-access-policy';
 
@@ -16,7 +15,6 @@ export class CapabilitiesGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly authorization: AuthorizationService,
-    private readonly audit: AuditWriterService,
     private readonly catalog: CapabilityCatalogService,
   ) {}
 
@@ -27,7 +25,8 @@ export class CapabilitiesGuard implements CanActivate {
     ]);
     const required = policy?.requiredCapabilities;
     if (policy?.classification !== 'CAPABILITY_PROTECTED' || !required?.length) return false;
-    const principal = context.switchToHttp().getRequest<RequestWithContext>().principal;
+    const request = context.switchToHttp().getRequest<RequestWithContext>();
+    const principal = request.principal;
     if (!principal) return false;
     for (const capability of required) {
       let catalogEntry;
@@ -47,18 +46,7 @@ export class CapabilitiesGuard implements CanActivate {
       }
       this.authorization.requireCapability(principal, capability);
     }
-    for (const grant of principal.accessGrants) {
-      const used = required.filter((capability) => grant.capabilities.includes(capability));
-      if (used.length) {
-        await this.audit.append({
-          principal,
-          action: 'ACCESS_GRANT_USED',
-          entityType: grant.type === 'SUBSTITUTION' ? 'TemporarySubstitution' : 'EmergencyAccess',
-          entityId: grant.id,
-          metadata: { capabilities: used, grantType: grant.type },
-        });
-      }
-    }
+    request.authorizationDecision = this.authorization.requireCapabilities(principal, required);
     return true;
   }
 }

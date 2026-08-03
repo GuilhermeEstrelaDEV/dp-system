@@ -50,7 +50,6 @@ describe('CapabilitiesGuard', () => {
     const guard = new CapabilitiesGuard(
       reflector as unknown as Reflector,
       new AuthorizationService(),
-      { append: jest.fn() } as never,
       { requireActive } as unknown as CapabilityCatalogService,
     );
     const execution = {
@@ -66,7 +65,6 @@ describe('CapabilitiesGuard', () => {
     const guard = new CapabilitiesGuard(
       reflector as unknown as Reflector,
       new AuthorizationService(),
-      { append: jest.fn() } as never,
       { requireActive: jest.fn() } as unknown as CapabilityCatalogService,
     );
     await expect(guard.canActivate(context())).resolves.toBe(false);
@@ -77,7 +75,6 @@ describe('CapabilitiesGuard', () => {
     const guard = new CapabilitiesGuard(
       reflector as unknown as Reflector,
       new AuthorizationService(),
-      { append: jest.fn() } as never,
       {
         requireActive: jest.fn().mockResolvedValue({ scope: 'COMPANY' }),
       } as unknown as CapabilityCatalogService,

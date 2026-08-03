@@ -30,6 +30,12 @@ A ETP-015.5 adiciona um
 com filtro anterior ao lookup e uma [matriz negativa](docs/security/ETP-015_5_NEGATIVE_TEST_MATRIX.md)
 para os módulos migrados. A entrega não altera rotas nem torna seguros os 129 handlers legados.
 
+A ETP-015.7 disponibiliza a
+[fundação canônica de eventos de autorização](docs/security/ETP-015_7_AUTHORIZATION_AUDIT_EVENTS.md),
+com [catálogo fechado](docs/security/ETP-015_7_AUDIT_EVENT_CATALOG.md), metadata deny-by-default e
+atomicidade obrigatória para escritas críticas. Leituras sensíveis e masking permanecem reservados
+à ETP-015.6.
+
 ## Protótipo executivo local
 
 A MVP-001.1 oferece bootstrap isolado e reproduzível para demonstração local:
