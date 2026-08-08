@@ -294,10 +294,13 @@
   eventos, envelope tipado, decisão efetiva imutável, metadata deny-by-default, writer único,
   verificador AST e rollback atômico cobrem os produtores canônicos. Não houve migration, endpoint,
   capability, frontend ou auditoria de leitura sensível.
-- **ETP-015.6 — `BLOCKED — FIELD CLASSIFICATION DECISIONS REQUIRED`:** o
+- **ETP-015.6 —
+  `BLOCKED — FIELD CLASSIFICATION DECISION PACKAGE PREPARED; AWAITING HUMAN APPROVAL`:** o
   [gate de classificação](../security/ETP-015_6_CLASSIFICATION_GATE_REPORT.md) confirmou que não há
   matriz material por campo, regra de máscara, capability integral ou evento de leitura homologado.
-  BDP-001 e BDP-011 permanecem pendentes; zero leitura sensível foi ativada.
+  O [pacote de decisão](../security/ETP-015_6_FIELD_CLASSIFICATION_DECISION_PACKAGE.md) inventaria 33
+  endpoints e formaliza 110 decisões `FC-*` sem aprovação automática. BDP-001 e BDP-011 permanecem
+  pendentes; zero leitura sensível foi ativada.
 - **ETP-015.8 — `NOT STARTED`; ETP-015.9 — `NOT STARTED`; ETP-015.10 — `NOT STARTED`:** rollout P0,
   ondas legadas e hardening não foram antecipados.
 - **Próximo passo:** homologar a classificação por campo, projeções mínimas, máscaras, capability de

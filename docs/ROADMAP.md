@@ -139,14 +139,17 @@ migration ou auditoria de leitura sensível. As 129 rotas legadas continuam `LEG
 restantes permanecem sem implementação, na seguinte ordem governada:
 
 - **ETP-015.7:** `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`;
-- **ETP-015.6:** `BLOCKED — FIELD CLASSIFICATION DECISIONS REQUIRED`;
+- **ETP-015.6:**
+  `BLOCKED — FIELD CLASSIFICATION DECISION PACKAGE PREPARED; AWAITING HUMAN APPROVAL`;
 - **ETP-015.8:** `NOT STARTED`;
 - **ETP-015.9:** `NOT STARTED`;
 - **ETP-015.10:** `NOT STARTED`.
 
 O gate de classificação da ETP-015.6 confirmou que DAL-06/07/08 não definem campos, máscaras,
 capability integral ou eventos de leitura por família. BDP-001 e BDP-011 continuam pendentes; por
-isso, a implementação permanece bloqueada e a ETP-015.8 não pode ser iniciada.
+isso, a implementação permanece bloqueada e a ETP-015.8 não pode ser iniciada. O
+[pacote formal de decisão](security/ETP-015_6_FIELD_CLASSIFICATION_DECISION_PACKAGE.md) e suas
+matrizes cobrem 110 decisões `FC-*`, todas aguardando homologação humana.
 
 ## Próximas iniciativas propostas
 
