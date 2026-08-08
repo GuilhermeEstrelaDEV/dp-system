@@ -1,54 +1,56 @@
-# ETP-015.6 — BDP Decision Gaps
+# ETP-015.6 — BDP Decision Gap Reconciliation
+
+**Status:** `RECONCILED FOR APPROVED MINIMAL IMPLEMENTATION`
+
+**Approver:** `PROJECT_OWNER`
+
+**Decision date:** `2026-08-08`
 
 **BDP-001:** `PENDING`
 
 **BDP-011:** `PENDING`
 
-**ETP-015.6:** `BLOCKED_PENDING_DECISION`
+The field homologation does not resolve either BDP globally. It only determines whether each dependency is needed to produce the approved MINIMAL contracts.
 
-This document identifies material decisions that cannot be inferred from code or general practice. It neither resolves nor changes either BDP.
+## BDP-001 reconciliation
 
-## BDP MATERIAL DECISIONS REQUIRED
+| Decision / field                                           | MINIMAL outcome                                    | Reconciliation classification           | Residual dependency                              |
+| ---------------------------------------------------------- | -------------------------------------------------- | --------------------------------------- | ------------------------------------------------ |
+| FC-061 `payrollCalculationItemId`                          | OMIT                                               | RESOLVED BY OMIT DECISION               | future exposure remains STILL BLOCKED BY BDP-001 |
+| FC-061 `employmentContractId`                              | OMIT                                               | RESOLVED BY OMIT DECISION               | future exposure remains STILL BLOCKED BY BDP-001 |
+| FC-106 `employees[]`                                       | OMIT                                               | RESOLVED BY OMIT DECISION               | future exposure remains STILL BLOCKED BY BDP-001 |
+| Future CPF, birth date, address, bank and dependant fields | absent from the approved 33-endpoint MINIMAL scope | OUT OF APPROVED IMPLEMENTATION SCOPE    | STILL BLOCKED BY BDP-001                         |
+| FC-106 `payrollRunId` and `reviewCycleId`                  | structural references only                         | RESOLVED BY MINIMAL STRUCTURAL DECISION | no person expansion is authorized                |
 
-### BDP-001 — official personal-data sources
+BDP-001 therefore does not block implementation of the approved MINIMAL projections. It remains a mandatory gate for any future source resolution, person-reference expansion or new personal-data field.
 
-The current decision asks DP to confirm the official source of CPF, date of birth, address, bank data and dependants. The 33 canonical response surfaces do not currently expose named fields for those datasets, but references, free text and metadata can become carriers as the modules evolve.
+## BDP-011 reconciliation
 
-| Dependent FC items             | Decision that can be made now                                         | Decision requiring BDP-001                                                              | Impossible with current evidence                                         |
-| ------------------------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| FC-061..FC-068                 | decide whether opaque employment/calculation references are needed    | whether dereferencing may expose official employee/personal data                        | field-level projection of future CPF/birth/address/bank/dependant values |
-| FC-073..FC-074, FC-076..FC-079 | decide whether event/decision/invalidation provenance is required     | whether free-text reasons or metadata may contain personal data from an official source | a safe mask for unspecified free text                                    |
-| FC-087..FC-092                 | decide structural readiness/blocker projection                        | whether related entity references/metadata may identify a person                        | masking unknown metadata values                                          |
-| FC-102, FC-105..FC-106         | decide whether warning/manifest references are operationally required | whether employee/reference arrays may be resolved to personal data                      | presentation of future official personal-data sources                    |
+| Decision / field                                                 | MINIMAL outcome                                                                   | Reconciliation classification           | Residual dependency                                                                            |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| FC-030, FC-033 grant reasons                                     | OMIT                                                                              | RESOLVED BY OMIT DECISION               | future exposure remains STILL BLOCKED BY BDP-011                                               |
+| FC-052 activity description                                      | OMIT                                                                              | RESOLVED BY OMIT DECISION               | future content exposure remains STILL BLOCKED BY BDP-011                                       |
+| FC-064, FC-067 finding text/reason                               | OMIT                                                                              | RESOLVED BY OMIT DECISION               | future exposure remains STILL BLOCKED BY BDP-011                                               |
+| FC-071, FC-073, FC-074 actor/text/metadata                       | OMIT as recorded in each mixed decision                                           | RESOLVED BY OMIT DECISION               | future exposure remains STILL BLOCKED BY BDP-011                                               |
+| FC-077, FC-079 decision/invalidation actor and reason            | OMIT as recorded                                                                  | RESOLVED BY OMIT DECISION               | future exposure remains STILL BLOCKED BY BDP-011                                               |
+| FC-088, FC-089, FC-091, FC-092 messages, entity IDs and metadata | OMIT as recorded                                                                  | RESOLVED BY OMIT DECISION               | future exposure remains STILL BLOCKED BY BDP-011                                               |
+| FC-098, FC-101, FC-102 actors/reasons/trace                      | OMIT as recorded                                                                  | RESOLVED BY OMIT DECISION               | future exposure remains STILL BLOCKED BY BDP-011                                               |
+| FC-103, FC-104 manifest content                                  | structural/aggregate allowlist only                                               | RESOLVED BY MINIMAL STRUCTURAL DECISION | free text, actors and metadata remain STILL BLOCKED BY BDP-011                                 |
+| FC-105 financial totals                                          | OMIT                                                                              | OUT OF APPROVED IMPLEMENTATION SCOPE    | future financial/privacy decision required; BDP-011 remains applicable                         |
+| FC-109 reason and actor                                          | OMIT                                                                              | RESOLVED BY OMIT DECISION               | future exposure remains STILL BLOCKED BY BDP-011                                               |
+| CP-01..CP-06                                                     | minimal/no-cache policies approved; FULL cache prohibited                         | RESOLVED BY MINIMAL STRUCTURAL DECISION | final retention/export/disposal remains STILL BLOCKED BY BDP-011                               |
+| AR-03                                                            | semantics and minimal metadata approved; existing append-only preservation reused | RESOLVED BY MINIMAL STRUCTURAL DECISION | automated retention, disposal, export or richer event content remains STILL BLOCKED BY BDP-011 |
+| AR-01/02/04..10                                                  | not activated for MINIMAL                                                         | OUT OF APPROVED IMPLEMENTATION SCOPE    | any future activation requires the applicable privacy/retention gate                           |
 
-Affected decisions must remain blocked if they would expose or derive BDP-001 datasets. No generic personal-data assumption closes this dependency.
+BDP-011 does not block the approved MINIMAL implementation because every unresolved content category is omitted or outside scope. AR-03 can be emitted through the existing ETP-015.7 append-only writer without introducing a retention, disposal or export policy. This conclusion does not approve a retention period.
 
-### BDP-011 — LGPD, sensitive access and retention
+## Residual material blockers
 
-BDP-011 requires a human policy for document retention, medical-data access, disposal, export and LGPD. It directly affects field visibility, read audit retention and client-side storage.
+There is no residual material decision required to produce the five approved MINIMAL contracts. Residual BDP dependencies apply only to future exposure, FULL/cache expansion, masking, retention, disposal, export or fields explicitly marked blocked.
 
-| Dependent FC/items | Decision that can be made now                          | Decision requiring BDP-011                                                     | Impossible with current evidence                                      |
-| ------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| FC-003..FC-015     | document current identity/session fields and consumers | retention/cache/export constraints for identity and network metadata           | final retention/erasure schedule                                      |
-| FC-020..FC-035     | document grant provenance and validity fields          | retention and access to grant reasons and actor history                        | final archival/disposal rule                                          |
-| FC-050..FC-052     | document aggregate/recent-activity use                 | whether activity text is sensitive and how long it may remain cached           | final masked representation for unconstrained descriptions            |
-| FC-053..FC-080     | document workflow evidence and current UI use          | visibility/retention/export of actor names, reasons and event metadata         | definitive treatment of variable metadata and free text               |
-| FC-081..FC-110     | document closure/history/manifest contracts            | retention/export and cache policy for timeline, totals, references and reasons | final retention of immutable evidence versus data-subject obligations |
-| AR-01..AR-10       | propose event boundaries and allowlisted metadata      | which reads are mandatory to audit and event retention                         | retention period and disposal/export process                          |
-| CP-01..CP-06       | document current client storage/cache                  | permitted cache profiles, TTL and persistence                                  | legal/privacy acceptance of FULL client cache                         |
+## Guardrails
 
-## Decisions not blocked solely by the BDPs
-
-Humans can still decide structural necessities for opaque IDs, booleans, enums, timestamps and version counters when the decision does not claim a personal-data classification or retention policy. They can also reject a field, keep FULL blocked, or request a narrower DTO. Such decisions must not be represented as resolving BDP-001 or BDP-011.
-
-## Decisions that remain impossible now
-
-- final masks for document, phone, email, address, bank, salary, name or financial values;
-- a universal field-classification taxonomy derived from the permission taxonomy;
-- final sensitive-read retention and export policy;
-- authorization of integral payloads from an action capability without explicit semantic approval;
-- safe allowlists for unconstrained `metadata` or free-text content without source/content governance.
-
-## Exit conditions
-
-Every affected FC, AR and CP decision must either cite a resolved BDP/version or remain explicitly blocked. BDP-001 and BDP-011 continue in [Business Decisions Pending](../project-management/BUSINESS_DECISIONS_PENDING.md) and are not approved by this package.
+- An approved OMIT/BLOCKED decision is an implementation requirement, not an authorization for later exposure.
+- No generic taxonomy, mask, legal basis or retention rule is inferred.
+- Any future change to a blocked subfield requires a new human decision and the applicable BDP evidence.
+- BDP-001 and BDP-011 remain pending in [Business Decisions Pending](../project-management/BUSINESS_DECISIONS_PENDING.md).

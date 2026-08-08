@@ -294,17 +294,15 @@
   eventos, envelope tipado, decisão efetiva imutável, metadata deny-by-default, writer único,
   verificador AST e rollback atômico cobrem os produtores canônicos. Não houve migration, endpoint,
   capability, frontend ou auditoria de leitura sensível.
-- **ETP-015.6 —
-  `BLOCKED — FIELD CLASSIFICATION DECISION PACKAGE PREPARED; AWAITING HUMAN APPROVAL`:** o
-  [gate de classificação](../security/ETP-015_6_CLASSIFICATION_GATE_REPORT.md) confirmou que não há
-  matriz material por campo, regra de máscara, capability integral ou evento de leitura homologado.
-  O [pacote de decisão](../security/ETP-015_6_FIELD_CLASSIFICATION_DECISION_PACKAGE.md) inventaria 33
-  endpoints e formaliza 110 decisões `FC-*` sem aprovação automática. BDP-001 e BDP-011 permanecem
-  pendentes; zero leitura sensível foi ativada.
+- **ETP-015.6 — `HUMAN DECISIONS APPROVED — READY FOR APPROVED MINIMAL IMPLEMENTATION`:** 110/110
+  decisões `FC-*`, capabilities limitadas aos contratos mínimos, AR-01..10 e CP-01..06 foram
+  homologados pelo `PROJECT_OWNER` em 2026-08-08. As cinco famílias estão prontas segundo a
+  [reconciliação](../security/ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md). BDP-001 e BDP-011
+  permanecem pendentes para exposições futuras; nenhum runtime foi implementado nesta homologação.
 - **ETP-015.8 — `NOT STARTED`; ETP-015.9 — `NOT STARTED`; ETP-015.10 — `NOT STARTED`:** rollout P0,
   ondas legadas e hardening não foram antecipados.
-- **Próximo passo:** homologar a classificação por campo, projeções mínimas, máscaras, capability de
-  acesso integral e auditoria de leitura para o recorte canônico. A ETP-015.8 permanece não iniciada.
+- **Próximo passo:** implementar a ETP-015.6 exclusivamente contra a matriz `MINIMAL` homologada. A
+  ETP-015.8 permanece não iniciada.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,

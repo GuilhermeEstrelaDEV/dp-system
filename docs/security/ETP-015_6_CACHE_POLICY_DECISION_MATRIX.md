@@ -1,33 +1,53 @@
 # ETP-015.6 — Cache Policy Decision Matrix
 
-**Status:** `PENDING HUMAN DECISION`
+**Status:** `APPROVED`
 
-**Runtime/cache changes:** none
+**Approver:** `PROJECT_OWNER`
 
-## Current evidence
+**Decision date:** `2026-08-08`
 
-- Authentication persists the token and principal/company summaries in `sessionStorage` key `dp-system.session.v1`.
-- Company selection and logout call `queryClient.clear()`, which is the current cross-company cleanup mechanism.
-- Dashboard uses `['dashboard-summary', activeCompanyId]`.
-- Payroll review uses resource keys such as `['review-cycles', runId]`, `['review-cycle', reviewId]` and `['review-history', reviewId]`; company is not embedded in those keys.
-- Payroll-period history uses resource/version keys such as `['period-history', payrollPeriodId]`, `['period-readiness', payrollPeriodId]`, `['period-history-version', payrollPeriodId, version]`, `['period-history-events', payrollPeriodId, version]` and `['period-manifest', payrollPeriodId, version]`; company is not embedded in those keys.
-- No dedicated policy for profile (minimal/masked/full), TTL, revocation invalidation or grant expiry was found.
+**Runtime/cache changes in this branch:** none
 
-These facts are implementation evidence, not approved cache policy.
+## Homologated decisions
 
-## Family matrix
+| Decision | FC range       | Policy        | Storage                                                                                      | Required key/scope                                                                  | Required invalidation                                                                                        | FULL cache | Approver      | Date       |
+| -------- | -------------- | ------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ---------- | ------------- | ---------- |
+| CP-01    | FC-001..FC-015 | CACHE MINIMAL | `sessionStorage` only; never `localStorage`                                                  | current actor/session and selected company                                          | logout removes session; company switch replaces context and clears queries; revocation must prevent reuse    | PROHIBITED | PROJECT_OWNER | 2026-08-08 |
+| CP-02    | FC-016..FC-018 | CACHE MINIMAL | current `sessionStorage` session only                                                        | current actor/session membership set                                                | replace after material membership/context change; clear on logout                                            | PROHIBITED | PROJECT_OWNER | 2026-08-08 |
+| CP-03    | FC-020..FC-035 | NO CACHE      | none                                                                                         | not applicable                                                                      | no client copy may survive expiry or revocation                                                              | PROHIBITED | PROJECT_OWNER | 2026-08-08 |
+| CP-04    | FC-036..FC-052 | CACHE MINIMAL | React Query memory only                                                                      | companyId + actorId + resource + `profile=MINIMAL`                                  | company switch, logout and material authorization change                                                     | PROHIBITED | PROJECT_OWNER | 2026-08-08 |
+| CP-05    | FC-053..FC-080 | CACHE MINIMAL | React Query memory only                                                                      | companyId + actorId + resource + `profile=MINIMAL`                                  | company switch, logout, material authorization change and relevant mutations                                 | PROHIBITED | PROJECT_OWNER | 2026-08-08 |
+| CP-06    | FC-081..FC-110 | MIXED         | readiness/token: transient memory only; history/version/manifest MINIMAL: React Query memory | companyId + actorId + payrollPeriodId + version when applicable + `profile=MINIMAL` | company switch, logout, authorization change, close and reopen invalidate related readiness/history/manifest | PROHIBITED | PROJECT_OWNER | 2026-08-08 |
 
-| Decision | FC range       | Flow                 | Existing cache                       | Key / scope                                 | User                | Session               | Profile     | TTL                                  | Current invalidators                        | Company switch                               | Logout             | Revocation / grant expiry                                        | Human options                                                            | Risk                                                                       | Human decision |
-| -------- | -------------- | -------------------- | ------------------------------------ | ------------------------------------------- | ------------------- | --------------------- | ----------- | ------------------------------------ | ------------------------------------------- | -------------------------------------------- | ------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------- | -------------- |
-| CP-01    | FC-001..FC-015 | identity context     | `sessionStorage`                     | `dp-system.session.v1`; browser tab         | implicit in payload | current token/session | not encoded | browser-tab lifetime                 | login/context writes; local logout removes  | replaces session and clears QueryClient      | removes and clears | no proactive invalidation evidenced                              | NO CACHE; CACHE MINIMAL; CACHE MASKED; CACHE FULL; FULL CACHE PROHIBITED | token/identity exposure and stale authorization                            | PENDING        |
-| CP-02    | FC-016..FC-018 | selectable companies | `sessionStorage` within auth session | same key; browser tab                       | implicit            | current token/session | not encoded | browser-tab lifetime                 | auth flow writes                            | replaces and clears QueryClient              | removes and clears | no proactive invalidation evidenced                              | same five options                                                        | stale membership/company visibility                                        | PENDING        |
-| CP-03    | FC-020..FC-035 | grants/assignments   | no canonical web cache found         | none evidenced                              | undecided           | undecided             | absent      | absent                               | absent                                      | global clear would apply if QueryClient used | global clear       | critical: expiry/revocation must invalidate any future FULL copy | same five options                                                        | stale grant can preserve excess visibility                                 | PENDING        |
-| CP-04    | FC-036..FC-052 | dashboard            | React Query                          | company included                            | principal implicit  | token implicit        | not encoded | library default; no policy evidenced | refetch/invalidation lifecycle              | global clear plus new company key            | global clear       | no targeted capability/grant invalidation                        | same five options                                                        | aggregates/activity may survive authorization changes until invalidated    | PENDING        |
-| CP-05    | FC-053..FC-080 | payroll review       | React Query                          | run/review resource IDs; company absent     | principal implicit  | token implicit        | not encoded | library default; no policy evidenced | workflow mutations invalidate cycle/history | global clear is relied upon                  | global clear       | no targeted grant expiry/revocation invalidation                 | same five options                                                        | resource-only keys and stale FULL profile could cross authorization epochs | PENDING        |
-| CP-06    | FC-081..FC-110 | payroll periods      | React Query                          | period/version resource IDs; company absent | principal implicit  | token implicit        | not encoded | library default; no policy evidenced | close/reopen invalidate history/readiness   | global clear is relied upon                  | global clear       | no targeted grant expiry/revocation invalidation                 | same five options                                                        | history/manifest data may remain after access changes                      | PENDING        |
+## Mandatory field limits
 
-## Decisions required before caching masked or FULL data
+### CP-01 and CP-02
 
-For each CP item, homologate whether caching is allowed, the exact projection profile in the key, company/actor/session components, TTL, garbage-collection duration, invalidators, behavior on company switch/logout, immediate response to user/session revocation, substitution/emergency expiry and whether persistent browser storage is prohibited.
+- FC-005, FC-007..FC-012 and FC-015 must never be stored in the public session contract.
+- The access token remains limited to the existing authenticated session contract and is never written to logs or audit metadata.
+- Available companies may remain only for the current session and must remain membership-filtered.
 
-Any `CACHE FULL` alternative that depends on a capability or temporary grant has a stale-authorization risk. The conservative proposal is `FULL CACHE PROHIBITED` until all invalidators are proven, but this is `PROPOSAL ONLY — REQUIRES HUMAN APPROVAL`.
+### CP-03
+
+- No grant-list payload is cached by the client.
+- A future cache requires a new human gate and must prove immediate expiry/revocation invalidation.
+
+### CP-04
+
+- FC-052 never enters cache while blocked.
+- Static/system-controlled FC-043 may be cached only in the MINIMAL profile.
+- No payload is persisted in `sessionStorage` or `localStorage`.
+
+### CP-05
+
+- Only the homologated MINIMAL projection may enter memory.
+- Cache identity must not rely solely on run/review IDs; company, actor and profile are mandatory.
+- No FULL profile may reuse a MINIMAL cache entry.
+
+### CP-06
+
+- Readiness must be revalidated before critical close/reopen execution.
+- `consistencyToken` is retained only for the lifetime needed by the active operation and is not persistently cached.
+- Close/reopen invalidates readiness, history, version, event and manifest entries for the affected period.
+
+No runtime cache is altered by this document.
