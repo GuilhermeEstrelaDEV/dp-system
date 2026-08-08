@@ -294,13 +294,14 @@
   eventos, envelope tipado, decisão efetiva imutável, metadata deny-by-default, writer único,
   verificador AST e rollback atômico cobrem os produtores canônicos. Não houve migration, endpoint,
   capability, frontend ou auditoria de leitura sensível.
-- **ETP-015.6 — `NOT STARTED — NEXT AUTHORIZED INCREMENT`:** projeção, masking e cobertura
-  completa de leituras sensíveis reutilizarão o writer, catálogo, sanitizador e atomicidade da
-  ETP-015.7, sem implementação paralela.
+- **ETP-015.6 — `BLOCKED — FIELD CLASSIFICATION DECISIONS REQUIRED`:** o
+  [gate de classificação](../security/ETP-015_6_CLASSIFICATION_GATE_REPORT.md) confirmou que não há
+  matriz material por campo, regra de máscara, capability integral ou evento de leitura homologado.
+  BDP-001 e BDP-011 permanecem pendentes; zero leitura sensível foi ativada.
 - **ETP-015.8 — `NOT STARTED`; ETP-015.9 — `NOT STARTED`; ETP-015.10 — `NOT STARTED`:** rollout P0,
   ondas legadas e hardening não foram antecipados.
-- **Próximo passo:** iniciar a ETP-015.6 — Sensitive Data Projection and Masking somente após o merge
-  da fundação ETP-015.7, sem antecipar a ETP-015.8.
+- **Próximo passo:** homologar a classificação por campo, projeções mínimas, máscaras, capability de
+  acesso integral e auditoria de leitura para o recorte canônico. A ETP-015.8 permanece não iniciada.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,
@@ -330,7 +331,7 @@
   declarada segura ou migrada.
 - **ETP-015.5:** `IMPLEMENTED — ENTERPRISE QUERY ISOLATION AVAILABLE` somente no recorte canônico;
   as 129 rotas legadas permanecem adiadas. A ETP-015.7 disponibiliza a fundação de auditoria; a
-  ETP-015.6 permanece não iniciada e é o próximo incremento autorizado.
+  ETP-015.6 permanece não iniciada e bloqueada por decisões materiais de classificação.
 - **Alterações funcionais desta etapa:** zero.
 - **MVP-001.1 — `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`:** comandos `demo:setup`, `demo:start`,
   `demo:stop`, `demo:status` e reset com confirmação operam um Compose exclusivamente local, com

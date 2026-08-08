@@ -139,13 +139,14 @@ migration ou auditoria de leitura sensível. As 129 rotas legadas continuam `LEG
 restantes permanecem sem implementação, na seguinte ordem governada:
 
 - **ETP-015.7:** `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`;
-- **ETP-015.6:** `NOT STARTED — NEXT AUTHORIZED INCREMENT`;
+- **ETP-015.6:** `BLOCKED — FIELD CLASSIFICATION DECISIONS REQUIRED`;
 - **ETP-015.8:** `NOT STARTED`;
 - **ETP-015.9:** `NOT STARTED`;
 - **ETP-015.10:** `NOT STARTED`.
 
-Após o merge desta entrega, o próximo incremento autorizado é a ETP-015.6 — Sensitive Data
-Projection and Masking, reutilizando a fundação da ETP-015.7 e sem antecipar a ETP-015.8.
+O gate de classificação da ETP-015.6 confirmou que DAL-06/07/08 não definem campos, máscaras,
+capability integral ou eventos de leitura por família. BDP-001 e BDP-011 continuam pendentes; por
+isso, a implementação permanece bloqueada e a ETP-015.8 não pode ser iniciada.
 
 ## Próximas iniciativas propostas
 
@@ -174,7 +175,8 @@ ETP-015.3 está `COMPLETED — IMPLEMENTED AND MERGED`. Seu Operational Deployme
 `PENDING FOR FUTURE TARGET ENVIRONMENT`; esse bloqueio de destino não impede a demonstração local.
 ETP-015.4 foi iniciada somente após a conclusão do MVP-001. A ETP-015.5 implementa isolamento no
 recorte canônico aprovado; nenhuma família legada foi migrada. A ETP-015.7 implementa a fundação de
-auditoria atômica; a ETP-015.6 permanece não iniciada e passa a ser o próximo incremento autorizado.
+auditoria atômica. A ETP-015.6 permanece não iniciada e está bloqueada pelo gate de classificação de
+campos, sem antecipação da ETP-015.8.
 
 Permanecem propostas não vinculantes, sem autorização de implementação: **ETP-016 — Relatórios,
 dashboards e inteligência operacional** e **ETP-017 — Hardening, observabilidade e performance**.

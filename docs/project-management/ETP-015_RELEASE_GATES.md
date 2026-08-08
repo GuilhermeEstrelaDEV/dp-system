@@ -72,6 +72,14 @@ usados em escritas críticas; o Gate B permanece aberto até a evidência pós-m
   implementação paralela;
 - a ETP-015.8 depende das duas etapas concluídas na ordem ETP-015.7 → ETP-015.6.
 
+### Resultado do gate de classificação da ETP-015.6
+
+O [relatório de classificação](../security/ETP-015_6_CLASSIFICATION_GATE_REPORT.md) confirmou que a
+fundação técnica da ETP-015.7 está disponível, mas as decisões materiais exigidas por DAL-06/07/08
+não existem por campo e família. BDP-001 e BDP-011 permanecem pendentes; não há máscara, capability
+de acesso integral ou evento de leitura sensível homologado. A ETP-015.6 permanece `NOT STARTED` e
+`BLOCKED — FIELD CLASSIFICATION DECISIONS REQUIRED`; a ETP-015.8 não foi iniciada.
+
 Esta regularização documental não aprova Gate B, C ou D, não inicia incremento produtivo e não
 flexibiliza qualquer requisito de segurança existente.
 

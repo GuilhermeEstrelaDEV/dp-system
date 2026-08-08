@@ -152,7 +152,7 @@ estão concluídos. A implementação controlada está em validação na branch
 
 ## ETP-015.6 — Sensitive Data Projection and Masking
 
-**Status:** `NOT STARTED — NEXT AUTHORIZED INCREMENT`
+**Status:** `BLOCKED — FIELD CLASSIFICATION DECISIONS REQUIRED`
 
 - **Objetivo:** ativar projeção mínima, masking e acesso integral por capability adicional, por família
   aprovada, auditando as leituras sensíveis pelo catálogo e writer entregues na ETP-015.7.
@@ -168,6 +168,11 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Evidências:** matriz de campos e testes de snapshot/segurança.
 - **Limites:** esta etapa reutiliza, sem reimplementar, `AuditWriterService`, catálogo de eventos,
   envelope, sanitizador e atomicidade da ETP-015.7.
+- **Gate de classificação:** o
+  [relatório do gate](../security/ETP-015_6_CLASSIFICATION_GATE_REPORT.md) inventariou 33 endpoints
+  canônicos e confirmou ausência de classificação material por campo, máscara, capability integral e
+  evento de leitura homologados. BDP-001/011 continuam pendentes; implementação e ETP-015.8 não foram
+  iniciadas.
 
 > A ordem de execução não segue a ordem numérica entre 015.6 e 015.7. A ETP-015.7 deve ser
 > implementada primeiro para estabelecer auditoria atômica, catálogo de eventos, sanitização e
