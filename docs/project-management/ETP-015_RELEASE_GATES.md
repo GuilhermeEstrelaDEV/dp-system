@@ -74,14 +74,13 @@ usados em escritas críticas; o Gate B permanece aberto até a evidência pós-m
 
 ### Resultado do gate de classificação da ETP-015.6
 
-O [relatório de classificação](../security/ETP-015_6_CLASSIFICATION_GATE_REPORT.md) confirmou que a
-fundação técnica da ETP-015.7 está disponível, mas as decisões materiais exigidas por DAL-06/07/08
-não existem por campo e família. BDP-001 e BDP-011 permanecem pendentes; não há máscara, capability
-de acesso integral ou evento de leitura sensível homologado. O
-[pacote de decisão](../security/ETP-015_6_FIELD_CLASSIFICATION_DECISION_PACKAGE.md) está preparado com
-110 decisões `FC-*`, todas pendentes. A ETP-015.6 permanece `NOT STARTED` e
-`BLOCKED — FIELD CLASSIFICATION DECISION PACKAGE PREPARED; AWAITING HUMAN APPROVAL`; a ETP-015.8 não
-foi iniciada.
+O [relatório de classificação](../security/ETP-015_6_CLASSIFICATION_GATE_REPORT.md) originou o
+[pacote de decisão](../security/ETP-015_6_FIELD_CLASSIFICATION_DECISION_PACKAGE.md). Em 2026-08-08, o
+`PROJECT_OWNER` homologou 110/110 FCs, as capabilities limitadas aos contratos `MINIMAL`, AR-01..10 e
+CP-01..06. A [reconciliação](../security/ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md) marcou
+as cinco famílias como prontas para implementação mínima controlada. BDP-001/011 continuam pendentes
+para campos omitidos e exposições futuras. A ETP-015.6 permanece sem runtime e está
+`HUMAN DECISIONS APPROVED — READY FOR APPROVED MINIMAL IMPLEMENTATION`; a ETP-015.8 não foi iniciada.
 
 Esta regularização documental não aprova Gate B, C ou D, não inicia incremento produtivo e não
 flexibiliza qualquer requisito de segurança existente.

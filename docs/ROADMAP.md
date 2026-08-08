@@ -140,16 +140,16 @@ restantes permanecem sem implementação, na seguinte ordem governada:
 
 - **ETP-015.7:** `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`;
 - **ETP-015.6:**
-  `BLOCKED — FIELD CLASSIFICATION DECISION PACKAGE PREPARED; AWAITING HUMAN APPROVAL`;
+  `HUMAN DECISIONS APPROVED — READY FOR APPROVED MINIMAL IMPLEMENTATION`;
 - **ETP-015.8:** `NOT STARTED`;
 - **ETP-015.9:** `NOT STARTED`;
 - **ETP-015.10:** `NOT STARTED`.
 
-O gate de classificação da ETP-015.6 confirmou que DAL-06/07/08 não definem campos, máscaras,
-capability integral ou eventos de leitura por família. BDP-001 e BDP-011 continuam pendentes; por
-isso, a implementação permanece bloqueada e a ETP-015.8 não pode ser iniciada. O
-[pacote formal de decisão](security/ETP-015_6_FIELD_CLASSIFICATION_DECISION_PACKAGE.md) e suas
-matrizes cobrem 110 decisões `FC-*`, todas aguardando homologação humana.
+O [registro de homologação](security/ETP-015_6_HUMAN_APPROVAL_RECORD.md) confirma 110/110 decisões
+`FC-*` aprovadas pelo `PROJECT_OWNER` em 2026-08-08. A
+[reconciliação de readiness](security/ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md) concluiu
+que as cinco famílias podem implementar os contratos `MINIMAL` sem inventar política. BDP-001 e
+BDP-011 permanecem pendentes para exposições futuras; a ETP-015.8 permanece `NOT STARTED`.
 
 ## Próximas iniciativas propostas
 

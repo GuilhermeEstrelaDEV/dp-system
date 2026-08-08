@@ -1,20 +1,25 @@
 # ETP-015.6 — Field Classification Decision Package
 
-**Status:** `READY FOR HUMAN DECISION — NOT APPROVED`
+**Status:** `HUMAN DECISIONS APPROVED — READY FOR APPROVED MINIMAL IMPLEMENTATION`
 
-**ETP-015.6:** `BLOCKED — FIELD CLASSIFICATION DECISION PACKAGE PREPARED; AWAITING HUMAN APPROVAL`
+**ETP-015.6:** `HUMAN DECISIONS APPROVED — READY FOR APPROVED MINIMAL IMPLEMENTATION`
 
 **ETP-015.8:** `NOT STARTED`
 
 **Baseline:** `origin/develop@d071344` (PR #81)
 
-**Nature:** documentary evidence and proposals only; no runtime effect
+**Homologation:** `PROJECT_OWNER`, `2026-08-08`, 110/110 decisions approved
+
+**Nature:** binding documentary policy for a future controlled implementation; no runtime effect in this branch
+
+**Approval evidence:** [human record](ETP-015_6_HUMAN_APPROVAL_RECORD.md) and
+[implementation readiness](ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md)
 
 ## Objective and authority boundary
 
 This package turns the classification gate into reviewable decisions for the 33 canonical endpoints. It records actual response surfaces, known consumers, evidence gaps and conservative alternatives. It does not classify a field, approve a purpose, select a mask, grant full access, choose a capability, create an audit event or define a cache policy.
 
-Every `FC-*` item is `PENDING HUMAN DECISION`. The expression `PROPOSAL ONLY — REQUIRES HUMAN APPROVAL` has no approval force. Until the corresponding decisions are homologated, the implementation state is `BLOCKED_PENDING_DECISION` and the current runtime remains unchanged.
+Every `FC-*` item was homologated by the Project Owner on 2026-08-08. The authoritative result is the [approval matrix](ETP-015_6_FIELD_CLASSIFICATION_APPROVAL_MATRIX.md): 110 `APPROVED`, zero pending and zero rejected. Approval of `OMIT` or a blocked subfield preserves the prohibition on exposure; it does not approve future FULL access. Runtime remains unchanged in this branch.
 
 ## Sources inspected
 
@@ -35,7 +40,7 @@ The permission taxonomy `STANDARD | SENSITIVE | RESTRICTED` classifies permissio
 
 The authoritative decision rows are in the [approval matrix](ETP-015_6_FIELD_CLASSIFICATION_APPROVAL_MATRIX.md). IDs are stable and map to one field or a materially equivalent group. A group is used only when fields share origin, purpose, consumer and exposure semantics. The matrix contains the type, origin, company scope, current purpose, consumer, documentary source, current exposure, risk and required decision for every group.
 
-Human decision values supported by the form are `APPROVED`, `REJECTED` or `NEEDS CHANGE`; none is preselected. Projection outcomes are `NECESSARY`, `OPTIONAL`, `CURRENTLY RETURNED WITHOUT PROVEN USE`, `BLOCKED` or `INTERNAL`. Contract outcomes are `OMIT`, `NULL`, `MASKED`, `FULL` or `NOT APPLICABLE`.
+The form originally supported `APPROVED`, `REJECTED` or `NEEDS CHANGE`. All 110 decisions are now `APPROVED` with approver role and date. Projection and contract outcomes are concrete per row, including mixed groups whose allowed structural fields are FULL and whose remaining subfields are OMIT/BLOCKED.
 
 ## Verified endpoint inventory
 
@@ -149,26 +154,26 @@ The approval matrix expands each referenced FC ID into its exact field path, typ
 
 ## Family decision summaries
 
-| Family               | Purpose candidates supported by code                                       | Projection concern                                                                | FULL/capability concern                                                         | Audit concern                                                                  | Cache concern                                                                               | State                      |
-| -------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | -------------------------- |
-| AUTH / CONTEXT       | authentication, session identity, company selection, authorization context | `/auth/me` exposes technical/session context beyond current visible UI            | no existing capability explicitly authorizes integral identity/session data     | no approved sensitive-read event                                               | session storage contains identity/token data                                                | `BLOCKED_PENDING_DECISION` |
-| GRANTS / ASSIGNMENTS | administrative grant lifecycle                                             | raw Prisma records and no proven web consumer                                     | manage capabilities authorize operations, not demonstrably every returned field | list reads have no read event                                                  | no frontend cache evidenced; intermediaries remain undecided                                | `BLOCKED_PENDING_DECISION` |
-| DASHBOARD            | executive operational summary                                              | aggregate fields are consumed, but activity descriptions need purpose review      | `platform.read` is related, not evidence of FULL sensitive data                 | no dashboard-read event                                                        | React Query cache is company-keyed but TTL/profile policy is not homologated                | `BLOCKED_PENDING_DECISION` |
-| PAYROLL REVIEW       | review, finding resolution and decision timeline                           | nested records expose actors, reasons, metadata and internal trace data           | workflow capabilities authorize actions, not integral response fields           | write events exist; read events do not                                         | React Query keys use resources, not company/profile; global clear handles company switch    | `BLOCKED_PENDING_DECISION` |
-| PAYROLL PERIODS      | readiness, closure, reopening and history                                  | explicit DTOs still expose operational reasons, totals, references and trace data | closure capabilities authorize use cases, not integral sensitive fields         | write events exist; history/readiness/manifest reads lack approved read events | React Query keys use period/version, not company/profile; stale-grant behavior is undecided | `BLOCKED_PENDING_DECISION` |
+| Family               | Purpose candidates supported by code                                       | Projection concern                                                     | FULL/capability concern                                                | Audit concern                       | Cache concern          | State                                       |
+| -------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------- | ---------------------- | ------------------------------------------- |
+| AUTH / CONTEXT       | authentication, session identity, company selection, authorization context | technical/session fields explicitly omitted                            | own-principal authentication/membership; no artificial FULL capability | AR-01/02 not activated for MINIMAL  | CP-01/02 CACHE MINIMAL | `READY FOR APPROVED MINIMAL IMPLEMENTATION` |
+| GRANTS / ASSIGNMENTS | administrative grant lifecycle                                             | raw Prisma replaced by approved minimal contract                       | matching manage capability limited to MINIMAL                          | AR-03 semantics approved            | CP-03 NO CACHE         | `READY FOR APPROVED MINIMAL IMPLEMENTATION` |
+| DASHBOARD            | executive operational summary                                              | FC-052 omitted; FC-043 static-only                                     | `platform.read` limited to MINIMAL                                     | AR-04 not activated for MINIMAL     | CP-04 CACHE MINIMAL    | `READY FOR APPROVED MINIMAL IMPLEMENTATION` |
+| PAYROLL REVIEW       | review, finding resolution and decision timeline                           | actors, reasons, metadata, trace and personal refs omitted as recorded | view/action capabilities limited to MINIMAL                            | AR-05..07 not activated for MINIMAL | CP-05 CACHE MINIMAL    | `READY FOR APPROVED MINIMAL IMPLEMENTATION` |
+| PAYROLL PERIODS      | readiness, closure, reopening and history                                  | text, actors, metadata, totals and person arrays omitted as recorded   | period capabilities limited to matching MINIMAL use case               | AR-08..10 not activated for MINIMAL | CP-06 MIXED MINIMAL    | `READY FOR APPROVED MINIMAL IMPLEMENTATION` |
 
 ## Purpose codes proposed for human decision
 
 These codes merely normalize current technical uses; they do not claim a legal basis.
 
-| Code        | Description                                         | Use case / consumer             | Required FC range      | Status                   |
-| ----------- | --------------------------------------------------- | ------------------------------- | ---------------------- | ------------------------ |
-| PUR-AUTH    | authenticate and maintain local session             | auth service / web auth context | FC-001..FC-015, FC-019 | `PENDING HUMAN DECISION` |
-| PUR-COMPANY | select active company                               | company selector                | FC-016..FC-018         | `PENDING HUMAN DECISION` |
-| PUR-GRANT   | administer substitution/emergency grants            | access-grants API               | FC-020..FC-035         | `PENDING HUMAN DECISION` |
-| PUR-DASH    | present executive operational summary               | dashboard                       | FC-036..FC-052         | `PENDING HUMAN DECISION` |
-| PUR-REVIEW  | operate payroll review and evidence timeline        | review API/UI                   | FC-053..FC-080         | `PENDING HUMAN DECISION` |
-| PUR-CLOSE   | evaluate, close, reopen and inspect payroll periods | period API/UI                   | FC-081..FC-110         | `PENDING HUMAN DECISION` |
+| Code        | Description                                         | Use case / consumer             | Required FC range      | Status     |
+| ----------- | --------------------------------------------------- | ------------------------------- | ---------------------- | ---------- |
+| PUR-AUTH    | authenticate and maintain local session             | auth service / web auth context | FC-001..FC-015, FC-019 | `APPROVED` |
+| PUR-COMPANY | select active company                               | company selector                | FC-016..FC-018         | `APPROVED` |
+| PUR-GRANT   | administer substitution/emergency grants            | access-grants API               | FC-020..FC-035         | `APPROVED` |
+| PUR-DASH    | present executive operational summary               | dashboard                       | FC-036..FC-052         | `APPROVED` |
+| PUR-REVIEW  | operate payroll review and evidence timeline        | review API/UI                   | FC-053..FC-080         | `APPROVED` |
+| PUR-CLOSE   | evaluate, close, reopen and inspect payroll periods | period API/UI                   | FC-081..FC-110         | `APPROVED` |
 
 ## Decision format and conservative alternatives
 
@@ -176,27 +181,27 @@ For every FC item, reviewers must select classification, purpose, minimal projec
 
 - `A — OMIT`: remove the member from the response; this is a breaking contract change for consumers that dereference it.
 - `B — NULL`: preserve the member but change its value/type semantics; consumers must distinguish null from absent and empty.
-- `C — MASKED`: preserve a recognizable representation; exact revealed characters or value bands remain `PENDING HUMAN DECISION`.
+- `C — MASKED`: historical alternative rejected for the approved MINIMAL profile; any future mask requires a new human decision.
 - `D — FULL WITH CAPABILITY`: requires explicit capability semantics, deny-by-default enforcement, audit and cache decisions.
 - `E — BLOCK UNTIL FUTURE DECISION`: keep implementation blocked when evidence is insufficient.
 - `NOT APPLICABLE`: only after a human confirms no masking/full-access dimension applies.
 
 The conservative Codex proposal is `PROPOSAL ONLY — REQUIRES HUMAN APPROVAL`: retain only fields proven necessary by current consumers, block new FULL exposure, avoid persistent/cache copies, require material read auditing, and do not treat a general management capability as universal. It does not change current runtime until approved and implemented in a later branch.
 
-No approved mask exists for document, phone, email, address, bank account, salary, name or financial value. No number of revealed characters, rounding rule or replacement token is proposed as final policy.
+No masking was approved for the MINIMAL contracts. Fields not approved as FULL are omitted or remain blocked; no character-reveal, rounding or replacement rule is authorized.
 
-## Completion criteria for human homologation
+## Homologation completion
 
-ETP-015.6 can leave the decision gate only when:
+The decision gate was completed on 2026-08-08 because:
 
-1. every FC row has a human decision, rationale, approver and date;
-2. field classification categories are explicitly approved or a documented taxonomy gap is resolved;
-3. every endpoint has an approved minimal projection and omission/null/masked/full contract;
-4. every FULL path has explicit capability semantics or remains blocked;
-5. sensitive reads have an approved event or an explicit decision that auditing is not required;
-6. cache keys, scope, TTL and invalidators are approved, including company switch, logout and revocation;
-7. BDP-001/BDP-011 dependencies are resolved or the affected FC items remain blocked;
-8. ETP-015.8 remains not started until ETP-015.6 is implemented and accepted.
+1. every FC row has decision, concrete policy, approver and date;
+2. all field classifications and purposes are explicit;
+3. every endpoint has an approved MINIMAL projection and omission/null/full contract;
+4. capability semantics are bounded to the matching MINIMAL contract;
+5. AR-01..10 have explicit activation decisions, including approved AR-03 semantics;
+6. CP-01..06 define storage, scope and invalidation requirements;
+7. BDP-001/BDP-011 gaps are reconciled by omission or remain blocked only for future exposure;
+8. ETP-015.8 remains `NOT STARTED`.
 
 ## Explicit non-deliverables
 

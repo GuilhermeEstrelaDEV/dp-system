@@ -153,7 +153,7 @@ estão concluídos. A implementação controlada está em validação na branch
 ## ETP-015.6 — Sensitive Data Projection and Masking
 
 **Status:**
-`BLOCKED — FIELD CLASSIFICATION DECISION PACKAGE PREPARED; AWAITING HUMAN APPROVAL`
+`HUMAN DECISIONS APPROVED — READY FOR APPROVED MINIMAL IMPLEMENTATION`
 
 - **Objetivo:** ativar projeção mínima, masking e acesso integral por capability adicional, por família
   aprovada, auditando as leituras sensíveis pelo catálogo e writer entregues na ETP-015.7.
@@ -177,8 +177,10 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Pacote de decisão:** o
   [pacote formal](../security/ETP-015_6_FIELD_CLASSIFICATION_DECISION_PACKAGE.md) e a
   [matriz de homologação](../security/ETP-015_6_FIELD_CLASSIFICATION_APPROVAL_MATRIX.md) registram
-  110 decisões `FC-*`, todas `PENDING HUMAN DECISION`; a preparação documental não desbloqueia a
-  implementação.
+  110 decisões `FC-*`, todas `APPROVED` por `PROJECT_OWNER` em 2026-08-08. O
+  [registro humano](../security/ETP-015_6_HUMAN_APPROVAL_RECORD.md) preserva OMIT/BLOCKED, e a
+  [reconciliação](../security/ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md) libera somente a
+  futura implementação controlada dos contratos `MINIMAL`. Nenhum runtime foi iniciado.
 
 > A ordem de execução não segue a ordem numérica entre 015.6 e 015.7. A ETP-015.7 deve ser
 > implementada primeiro para estabelecer auditoria atômica, catálogo de eventos, sanitização e
