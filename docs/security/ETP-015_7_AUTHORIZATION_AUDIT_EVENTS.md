@@ -91,8 +91,9 @@ sequenceDiagram
   dados estruturados allowlisted.
 - Assignments globais não possuem capability empresarial aprovada; continuam serviços internos,
   sem controller público, e registram contexto do operador sem inventar nova capability.
-- A ETP-015.6 é o próximo incremento autorizado e deverá reutilizar estes contratos para qualquer
-  leitura sensível homologada.
+- A ETP-015.6 deverá reutilizar estes contratos para qualquer leitura sensível homologada. Seu
+  [gate de classificação](ETP-015_6_CLASSIFICATION_GATE_REPORT.md) foi executado e bloqueou o runtime
+  até existirem decisões materiais por campo e família.
 
 ## Referências
 
