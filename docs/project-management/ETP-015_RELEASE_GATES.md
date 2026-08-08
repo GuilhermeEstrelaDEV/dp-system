@@ -77,8 +77,11 @@ usados em escritas críticas; o Gate B permanece aberto até a evidência pós-m
 O [relatório de classificação](../security/ETP-015_6_CLASSIFICATION_GATE_REPORT.md) confirmou que a
 fundação técnica da ETP-015.7 está disponível, mas as decisões materiais exigidas por DAL-06/07/08
 não existem por campo e família. BDP-001 e BDP-011 permanecem pendentes; não há máscara, capability
-de acesso integral ou evento de leitura sensível homologado. A ETP-015.6 permanece `NOT STARTED` e
-`BLOCKED — FIELD CLASSIFICATION DECISIONS REQUIRED`; a ETP-015.8 não foi iniciada.
+de acesso integral ou evento de leitura sensível homologado. O
+[pacote de decisão](../security/ETP-015_6_FIELD_CLASSIFICATION_DECISION_PACKAGE.md) está preparado com
+110 decisões `FC-*`, todas pendentes. A ETP-015.6 permanece `NOT STARTED` e
+`BLOCKED — FIELD CLASSIFICATION DECISION PACKAGE PREPARED; AWAITING HUMAN APPROVAL`; a ETP-015.8 não
+foi iniciada.
 
 Esta regularização documental não aprova Gate B, C ou D, não inicia incremento produtivo e não
 flexibiliza qualquer requisito de segurança existente.

@@ -152,7 +152,8 @@ estão concluídos. A implementação controlada está em validação na branch
 
 ## ETP-015.6 — Sensitive Data Projection and Masking
 
-**Status:** `BLOCKED — FIELD CLASSIFICATION DECISIONS REQUIRED`
+**Status:**
+`BLOCKED — FIELD CLASSIFICATION DECISION PACKAGE PREPARED; AWAITING HUMAN APPROVAL`
 
 - **Objetivo:** ativar projeção mínima, masking e acesso integral por capability adicional, por família
   aprovada, auditando as leituras sensíveis pelo catálogo e writer entregues na ETP-015.7.
@@ -173,6 +174,11 @@ estão concluídos. A implementação controlada está em validação na branch
   canônicos e confirmou ausência de classificação material por campo, máscara, capability integral e
   evento de leitura homologados. BDP-001/011 continuam pendentes; implementação e ETP-015.8 não foram
   iniciadas.
+- **Pacote de decisão:** o
+  [pacote formal](../security/ETP-015_6_FIELD_CLASSIFICATION_DECISION_PACKAGE.md) e a
+  [matriz de homologação](../security/ETP-015_6_FIELD_CLASSIFICATION_APPROVAL_MATRIX.md) registram
+  110 decisões `FC-*`, todas `PENDING HUMAN DECISION`; a preparação documental não desbloqueia a
+  implementação.
 
 > A ordem de execução não segue a ordem numérica entre 015.6 e 015.7. A ETP-015.7 deve ser
 > implementada primeiro para estabelecer auditoria atômica, catálogo de eventos, sanitização e
