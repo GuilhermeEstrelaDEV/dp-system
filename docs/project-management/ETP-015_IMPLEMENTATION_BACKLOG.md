@@ -1,7 +1,7 @@
 # ETP-015 — Implementation Backlog
 
 **Status:** especificação aprovada; ETP-015.1–015.3 concluídas; ETP-015.4–015.7 implementadas; Gate B
-`APPROVED — SECURITY — 2026-08-10`; Gate C `NOT STARTED`
+`APPROVED — SECURITY — 2026-08-10`; Gate C `TECHNICALLY VERIFIED — HUMAN APPROVAL PENDING`
 
 **Baseline:** ETP-015.3 foi incorporada à `develop` pelo PR #61. O
 [Operational Gate](ETP-015_3_OPERATIONAL_RELEASE_GATE.md) permanece pendente para ambiente de destino,
@@ -183,7 +183,7 @@ estão concluídos. A implementação controlada está em validação na branch
   [reconciliação](../security/ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md) libera somente a
   implementação controlada dos contratos `MINIMAL`. O runtime aprovado está documentado em
   [ETP-015_6_SENSITIVE_DATA_PROJECTION_AND_MASKING.md](../security/ETP-015_6_SENSITIVE_DATA_PROJECTION_AND_MASKING.md):
-  33 rotas, CP-01..06, AR-03 e zero masking. A ETP-015.8 não foi iniciada.
+  33 rotas, CP-01..06, AR-03 e zero masking. Esse era o estado anterior ao recorte P0 da ETP-015.8.
 
 > A ordem de execução não segue a ordem numérica entre 015.6 e 015.7. A ETP-015.7 deve ser
 > implementada primeiro para estabelecer auditoria atômica, catálogo de eventos, sanitização e
@@ -206,12 +206,12 @@ dependência circular.
 
 ## ETP-015.8 — Payroll Closure P0 Migration
 
-**Status:** `NOT STARTED — AUTHORIZED TO START UNDER GATE C`
+**Status:** `IMPLEMENTED IN PR — GATE C HUMAN APPROVAL PENDING`
 
 O [registro de Segurança](../security/ETP-015_GATE_B_SECURITY_APPROVAL.md) removeu o blocker humano de
-entrada. Gate C permanece `NOT STARTED` e `NOT APPROVED`; seus requisitos próprios de implementação,
-evidência e aprovações continuam integralmente aplicáveis. BDP-001 e BDP-011 permanecem `PENDING`, e
-BDP-014 permanece `APPROVED — VERSION 1`.
+entrada. Gate C está `TECHNICALLY VERIFIED — HUMAN APPROVAL PENDING`; sua revisão humana continua
+integralmente aplicável. BDP-001 e BDP-011 permanecem `PENDING`, e BDP-014 permanece
+`APPROVED — VERSION 1`.
 
 - **Objetivo:** proteger `/payroll-closures` e delegar ao fechamento canônico.
 - **Dependências:** 015.1–015.5, 015.7 e 015.6, BDP-014, DAL-09–14; Gate B/C.
@@ -222,6 +222,11 @@ BDP-014 permanece `APPROVED — VERSION 1`.
 - **Aceite:** uma única regra canônica, cinco capabilities e telemetria segura.
 - **Rollback:** restaurar adapter/envelope, nunca serviço legado independente.
 - **Evidências:** testes PostgreSQL, inventário de consumidores e plano de janela.
+- **Implementação:** quatro aliases agora são adapters deprecated, classificados com capabilities,
+  sem Prisma ou regra paralela; `/folha/fechamentos` usa readiness/history/close/reopen canônicos.
+- **Gate C:** 8 itens técnicos `PASS`; revisão de Segurança, Produto e DP permanece
+  `PENDING HUMAN APPROVAL`. Isto não marca a etapa como `COMPLETED` antes de aprovação, merge e
+  verificação pós-merge.
 
 ## ETP-015.9 — Legacy Route Rollout
 

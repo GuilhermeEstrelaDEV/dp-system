@@ -94,7 +94,6 @@ export const appRoutes: RouteObject[] = [
               { path: 'folha/parametros', element: <PayrollPage /> },
               { path: 'folha/lancamentos', element: <PayrollPage /> },
               { path: 'folha/execucoes', element: <PayrollPage /> },
-              { path: 'folha/fechamentos', element: <PayrollPage /> },
               { path: 'folha/remuneracao-variavel', element: <PayrollPage /> },
             ],
           },
@@ -109,6 +108,7 @@ export const appRoutes: RouteObject[] = [
           {
             element: <CapabilityRoute capability="payroll.period.close.history" />,
             children: [
+              { path: 'folha/fechamentos', element: <PayrollPage /> },
               {
                 path: 'folha/competencias/:payrollPeriodId/historico',
                 element: <PayrollPeriodHistoryPage />,

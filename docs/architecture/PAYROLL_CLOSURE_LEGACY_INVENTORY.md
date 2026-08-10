@@ -128,12 +128,16 @@ de entrada e resposta conforme a BDP-014. `validate`, `open` e toda a família
 canônico de reabertura controlada. A mudança de nome do parâmetro não altera a URI. Essa conversão foi
 expressamente autorizada para resolver a colisão; nenhuma outra rota legada foi adaptada ou removida.
 
-## 13. Superfície pública da Fase 6
+## 13. Superfície pública da Fase 6 e migração P0 posterior
 
-O histórico canônico foi adicionado exclusivamente à família `/payroll-periods`. A família legada
-`/payroll-closures` permanece inalterada e não fornece as projeções canônicas de evidência.
-`/payroll-closures` permanecem inalterados e ainda não delegam ao orquestrador. Seus consumidores,
-telemetria e janela de migração continuam pendentes; nenhuma remoção ou redirecionamento ocorreu.
+Na Fase 6, o histórico canônico foi adicionado exclusivamente a `/payroll-periods` e a família
+`/payroll-closures` permaneceu inalterada. Posteriormente, a ETP-015.8 converteu os quatro handlers em
+adapters temporários: continuam na mesma URI, agora protegidos/deprecated, projetam somente `MINIMAL`
+e delegam aos serviços canônicos. Não houve remoção ou redirecionamento HTTP.
+
+A listagem exige `payrollPeriodId`; o detalhe resolve apenas UUID de versão canônica dentro da empresa.
+Close/reopen exigem toda evidência e `Idempotency-Key` canônicos. Consumidores não versionados e a
+janela de remoção permanecem pendentes do Gate C.
 
 ## 14. Continuidade documental
 

@@ -41,6 +41,11 @@ com [catálogo fechado](docs/security/ETP-015_7_AUDIT_EVENT_CATALOG.md), metadat
 atomicidade obrigatória para escritas críticas. Leituras sensíveis e masking permanecem reservados
 à ETP-015.6.
 
+A ETP-015.8 implementa os quatro aliases temporários de
+[fechamento P0](docs/security/ETP-015_8_PAYROLL_CLOSURE_P0_MIGRATION.md) como adapters deprecated que
+delegam exclusivamente ao fluxo canônico. As [evidências do Gate C](docs/security/ETP-015_GATE_C_TECHNICAL_EVIDENCE.md)
+estão tecnicamente verificadas, mas a aprovação humana de Segurança, Produto e DP permanece pendente.
+
 ## Protótipo executivo local
 
 A MVP-001.1 oferece bootstrap isolado e reproduzível para demonstração local:

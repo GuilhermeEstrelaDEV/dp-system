@@ -21,6 +21,12 @@ import { PayrollPeriodsService } from './payroll-periods.service';
     PayrollPeriodControlledReopeningService,
     PayrollPeriodHistoryService,
   ],
-  exports: [PayrollPeriodsService, PayrollPeriodClosurePersistenceService],
+  exports: [
+    PayrollPeriodsService,
+    PayrollPeriodClosurePersistenceService,
+    PayrollPeriodOperationalClosureService,
+    PayrollPeriodControlledReopeningService,
+    PayrollPeriodHistoryService,
+  ],
 })
 export class PayrollPeriodsModule {}
