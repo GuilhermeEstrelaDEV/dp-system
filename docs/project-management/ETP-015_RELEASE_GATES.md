@@ -1,7 +1,7 @@
 # ETP-015 — Release Gates
 
-**Status:** Gate A aprovado; Gate B tecnicamente verificado e pendente de aprovação de Segurança;
-Gates C e D não iniciados
+**Status:** Gates A e B aprovados; Gate B com verificação técnica `8/8 PASS` e aprovação de Segurança
+em 2026-08-10; Gates C e D não iniciados
 
 ## Governança de evidências
 
@@ -39,14 +39,16 @@ Sem evidência, o resultado binário do item é `FAIL`.
 - [x] seed cria zero concessão;
 - [x] nenhuma família foi ativada em massa.
 
-- **Gate B technical verification:** `COMPLETE`;
-- **Gate B approval:** `PENDING — SECURITY`;
+- **Gate B:** `APPROVED`;
+- **Technical verification:** `COMPLETE — 8/8 PASS`;
+- **Security approval:** `APPROVED — 2026-08-10`;
 - **Gate C:** `NOT STARTED`;
-- **ETP-015.8:** `NOT STARTED`.
+- **ETP-015.8:** `NOT STARTED — AUTHORIZED TO START UNDER GATE C`.
 
 **Evidência consolidada:** [relatório pós-merge](../security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md)
 e [aceite técnico](../security/ETP-015_GATE_B_TECHNICAL_ACCEPTANCE.md). O resultado técnico é
-`8 PASS / 0 FAIL`; ele não substitui a aprovação humana de Segurança.
+`8 PASS / 0 FAIL`. A decisão humana está no
+[registro de aprovação de Segurança](../security/ETP-015_GATE_B_SECURITY_APPROVAL.md).
 
 **Saída verificável:** testes unitários/E2E/PostgreSQL, OpenAPI e relatório pós-merge.
 
@@ -59,15 +61,16 @@ checkbox; nenhuma família foi ativada em massa.
 **Evidência candidata da ETP-015.5:** [isolamento empresarial](../security/ETP-015_5_ENTERPRISE_QUERY_ISOLATION.md),
 [inventário de acesso](../security/ETP-015_5_DATA_ACCESS_INVENTORY.md),
 [matriz negativa](../security/ETP-015_5_NEGATIVE_TEST_MATRIX.md) e
-[aceite](../security/ETP-015_5_ACCEPTANCE_EVIDENCE.md). O Gate B não é declarado concluído nesta
-entrega: o pós-merge e os itens ainda abertos continuam necessários.
+[aceite](../security/ETP-015_5_ACCEPTANCE_EVIDENCE.md). À época dessa entrega, o Gate B ainda não era
+declarado concluído: a evidência pós-merge e os itens então abertos continuavam necessários.
 
 **Evidência candidata da ETP-015.7:** [fundação de auditoria](../security/ETP-015_7_AUTHORIZATION_AUDIT_EVENTS.md),
 [catálogo](../security/ETP-015_7_AUDIT_EVENT_CATALOG.md),
 [inventário](../security/ETP-015_7_AUDIT_COVERAGE_INVENTORY.md),
 [matriz negativa](../security/ETP-015_7_NEGATIVE_TEST_MATRIX.md) e
 [aceite](../security/ETP-015_7_ACCEPTANCE_EVIDENCE.md). A entrega cobre decisões efetivas e grants
-usados em escritas críticas; o Gate B permanece aberto até a evidência pós-merge consolidada.
+usados em escritas críticas; à época, o Gate B permanecia aberto até a evidência pós-merge
+consolidada.
 
 ## Sequência governada entre ETP-015.7 e ETP-015.6
 
@@ -93,10 +96,13 @@ para campos omitidos e exposições futuras. A ETP-015.6 está
 `IMPLEMENTED — APPROVED MINIMAL DATA PROJECTION AVAILABLE`: as 33 rotas usam `MINIMAL`, somente AR-03
 foi ativado e CP-01..06 foram aplicadas. A ETP-015.8 não foi iniciada.
 
-Esta regularização documental não aprova Gate B, C ou D, não inicia incremento produtivo e não
-flexibiliza qualquer requisito de segurança existente.
+O Gate B foi aprovado posteriormente por Segurança em 2026-08-10. Essa decisão não aprova Gate C ou
+D, não inicia incremento produtivo e não flexibiliza qualquer requisito de segurança existente.
 
 ## Gate C — P0 Migration and Security Validation
+
+**Status:** `NOT STARTED — NOT APPROVED`. A aprovação do Gate B não satisfaz automaticamente nenhum
+item abaixo.
 
 - [ ] consumidores conhecidos e potenciais de `/payroll-closures` registrados;
 - [ ] adapter preserva contrato necessário e delega exclusivamente ao canônico;

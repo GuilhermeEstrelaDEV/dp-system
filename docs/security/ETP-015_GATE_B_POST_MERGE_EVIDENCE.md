@@ -7,8 +7,10 @@
 - **Aprovador do Gate B:** Segurança;
 - **Resultado técnico:** `8 PASS / 0 FAIL`.
 
-Esta evidência consolida o estado pós-merge das ETP-015.1 a ETP-015.7. Ela não aprova o Gate B,
-não inicia o Gate C e não inicia a ETP-015.8.
+Esta evidência consolida o estado pós-merge das ETP-015.1 a ETP-015.7. A consolidação técnica, por si
+só, não aprovava o Gate B. A decisão humana posterior está registrada em
+[ETP-015_GATE_B_SECURITY_APPROVAL.md](ETP-015_GATE_B_SECURITY_APPROVAL.md); ela não inicia o Gate C
+nem a ETP-015.8.
 
 ## Resultado binário
 
@@ -69,5 +71,17 @@ criado.
 - o `format:check` global de `develop` lista 418 arquivos históricos fora do formato atual. Esta
   entrega valida Prettier somente nos documentos alterados e não modifica runtime para corrigir o
   baseline;
-- ETP-015.8 está bloqueada até aprovação humana do Gate B por Segurança;
-- nenhum resultado deste documento substitui a aprovação humana.
+- a aprovação humana do Gate B não aprova nem inicia o Gate C;
+- ETP-015.8 permanece não iniciada, com entrada autorizada sob o Gate C após o merge do registro de
+  aprovação.
+
+## Security Human Decision
+
+- **Status:** `APPROVED`;
+- **Date:** 2026-08-10;
+- **Role:** Security;
+- **Evidence:** [formal approval record](ETP-015_GATE_B_SECURITY_APPROVAL.md).
+
+O Gate B está aprovado e a entrada da ETP-015.8 está autorizada sob o Gate C. O Gate C permanece
+`NOT STARTED` e `NOT APPROVED`; ETP-015.9 e ETP-015.10 permanecem `NOT STARTED` e não autorizadas.
+Produção, cloud e deploy não estão autorizados. Os resultados técnicos acima permanecem inalterados.

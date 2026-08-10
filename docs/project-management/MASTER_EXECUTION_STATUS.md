@@ -301,15 +301,17 @@
   permanecem pendentes para exposições futuras. As 33 rotas canônicas usam presenters `MINIMAL`,
   CP-01..06 e OpenAPI explícito; somente AR-03 (`ACCESS_GRANTS_VIEWED`) foi ativado. Não houve
   migration, capability, grant ou assignment.
-- **Gate B — `TECHNICALLY VERIFIED — PENDING SECURITY APPROVAL`:** oito itens técnicos pós-merge
-  possuem evidência binária `PASS`, consolidada em
-  [ETP-015_GATE_B_POST_MERGE_EVIDENCE.md](../security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md). A
-  aprovação humana de Segurança continua pendente e Gate C não foi iniciado.
-- **ETP-015.8 — `NOT STARTED — BLOCKED UNTIL GATE B SECURITY APPROVAL`; ETP-015.9 — `NOT STARTED`;
+- **Gate B — `APPROVED — SECURITY — 2026-08-10`:** oito itens técnicos pós-merge possuem evidência
+  binária `PASS`, consolidada em
+  [ETP-015_GATE_B_POST_MERGE_EVIDENCE.md](../security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md), e a
+  [decisão humana](../security/ETP-015_GATE_B_SECURITY_APPROVAL.md) aprovou o Gate B. Gate C permanece
+  `NOT STARTED` e `NOT APPROVED`.
+- **ETP-015.8 — `NOT STARTED — AUTHORIZED TO START UNDER GATE C`; ETP-015.9 — `NOT STARTED`;
   ETP-015.10 — `NOT STARTED`:** rollout P0,
   ondas legadas e hardening não foram antecipados.
-- **Próximo passo:** revisão humana de Segurança do Gate B. A ETP-015.8 permanece não iniciada e não
-  pode avançar antes da aprovação explícita.
+- **Próximo passo:** iniciar a ETP-015.8 em branch própria, sob o Gate C. A autorização de entrada não
+  inicia nem aprova o Gate C e não autoriza ETP-015.9/015.10, produção, cloud ou deploy. BDP-001 e
+  BDP-011 permanecem `PENDING`; BDP-014 permanece `APPROVED — VERSION 1`.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,

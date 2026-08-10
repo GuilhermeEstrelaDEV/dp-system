@@ -2,11 +2,14 @@
 
 ## Status
 
-**GATE B — TECHNICALLY VERIFIED — READY FOR SECURITY APPROVAL**
+**GATE B — APPROVED**
 
-**Human approval:** `PENDING — SECURITY`
+**Technical verification:** `COMPLETE — 8/8 PASS`
 
-Este documento não marca o Gate B como `APPROVED`, `PASSED` ou `CLOSED`.
+**Human approval:** `APPROVED — SECURITY — 2026-08-10`
+
+**Approval record:**
+[ETP-015_GATE_B_SECURITY_APPROVAL.md](ETP-015_GATE_B_SECURITY_APPROVAL.md)
 
 ## Baseline e rastreabilidade
 
@@ -54,7 +57,8 @@ Este documento não marca o Gate B como `APPROVED`, `PASSED` ou `CLOSED`.
 - BDP-001/011 e follow-ups de sessão permanecem fora do escopo;
 - 129 handlers `LEGACY_DEFERRED` não são declarados protegidos;
 - a ETP-015.3 ainda requer homologação operacional em ambiente de destino antes de uso equivalente;
-- Segurança deve revisar as evidências e registrar decisão humana explícita.
+- a decisão humana de Segurança foi registrada em 2026-08-10, sem alterar os riscos residuais.
 
-Até essa aprovação, Gate C e ETP-015.8 permanecem `NOT STARTED`. A aprovação técnica registrada aqui
-não autoriza implementação, rollout, migration ou alteração runtime.
+Gate C permanece `NOT STARTED` e `NOT APPROVED`. A ETP-015.8 permanece `NOT STARTED`, com entrada
+autorizada sob o Gate C após o merge do registro de aprovação. A aprovação não autoriza ETP-015.9,
+ETP-015.10, produção, cloud ou deploy e não altera runtime.
