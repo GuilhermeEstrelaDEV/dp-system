@@ -141,7 +141,9 @@ restantes permanecem sem implementação, na seguinte ordem governada:
 
 - **ETP-015.7:** `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`;
 - **ETP-015.6:** `IMPLEMENTED — APPROVED MINIMAL DATA PROJECTION AVAILABLE`;
-- **ETP-015.8:** `NOT STARTED`;
+- **Gate B:** `APPROVED — SECURITY — 2026-08-10`;
+- **Gate C:** `NOT STARTED`;
+- **ETP-015.8:** `NOT STARTED — AUTHORIZED TO START UNDER GATE C`;
 - **ETP-015.9:** `NOT STARTED`;
 - **ETP-015.10:** `NOT STARTED`.
 
@@ -151,8 +153,12 @@ O [registro de homologação](security/ETP-015_6_HUMAN_APPROVAL_RECORD.md) confi
 que as cinco famílias podem implementar os contratos `MINIMAL` sem inventar política. BDP-001 e
 BDP-011 permanecem pendentes para exposições futuras. A
 [implementação mínima](security/ETP-015_6_SENSITIVE_DATA_PROJECTION_AND_MASKING.md) aplica as 110
-decisões nas 33 rotas, ativa somente AR-03, implementa CP-01..06 e mantém zero masking. A ETP-015.8
-permanece `NOT STARTED` e é o próximo incremento permitido após o merge.
+decisões nas 33 rotas, ativa somente AR-03, implementa CP-01..06 e mantém zero masking. A
+[evidência pós-merge](security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md) registrou `8 PASS / 0 FAIL`, e
+o [registro humano](security/ETP-015_GATE_B_SECURITY_APPROVAL.md) aprovou o Gate B. A ETP-015.8
+permanece `NOT STARTED`, autorizada a iniciar somente sob o Gate C, que permanece `NOT STARTED` e não
+aprovado. ETP-015.9/015.10 não estão autorizadas; BDP-001 e BDP-011 permanecem `PENDING`, e BDP-014
+permanece `APPROVED — VERSION 1`.
 
 ## Próximas iniciativas propostas
 
