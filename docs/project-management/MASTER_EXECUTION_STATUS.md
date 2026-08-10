@@ -251,7 +251,7 @@
 ### ETP-015 — Authorization Foundation & Enterprise Isolation
 
 - **Status:** `IN PROGRESS`; especificação aprovada no PR #52, ETP-015.1–015.3 concluídas e
-  ETP-015.4, ETP-015.5 e ETP-015.7 implementadas.
+  ETP-015.4–015.8 implementadas nos recortes aprovados.
 - **Governança:** BDP-AUTH-LEGACY e DAL-01 a DAL-14 estão `APPROVED`.
 - **Especificação:** `docs/project-management/ETP-015_AUTHORIZATION_FOUNDATION_AND_ENTERPRISE_ISOLATION.md`.
 - **Arquitetura:** `docs/architecture/AUTHORIZATION_FOUNDATION_TECHNICAL_DESIGN.md` e
@@ -304,14 +304,18 @@
 - **Gate B — `APPROVED — SECURITY — 2026-08-10`:** oito itens técnicos pós-merge possuem evidência
   binária `PASS`, consolidada em
   [ETP-015_GATE_B_POST_MERGE_EVIDENCE.md](../security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md), e a
-  [decisão humana](../security/ETP-015_GATE_B_SECURITY_APPROVAL.md) aprovou o Gate B. Gate C permanece
-  `NOT STARTED` e `NOT APPROVED`.
-- **ETP-015.8 — `NOT STARTED — AUTHORIZED TO START UNDER GATE C`; ETP-015.9 — `NOT STARTED`;
-  ETP-015.10 — `NOT STARTED`:** rollout P0,
-  ondas legadas e hardening não foram antecipados.
-- **Próximo passo:** iniciar a ETP-015.8 em branch própria, sob o Gate C. A autorização de entrada não
-  inicia nem aprova o Gate C e não autoriza ETP-015.9/015.10, produção, cloud ou deploy. BDP-001 e
-  BDP-011 permanecem `PENDING`; BDP-014 permanece `APPROVED — VERSION 1`.
+  [decisão humana](../security/ETP-015_GATE_B_SECURITY_APPROVAL.md) aprovou o Gate B.
+- **ETP-015.8 — `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`:** os quatro aliases P0 são
+  adapters deprecated para history/close/reopen canônicos, com JWT, empresa, capability, projeção
+  `MINIMAL`, telemetria segura e consumidor frontend migrado. O inventário agora contém 31 handlers
+  por capability e 125 deferred. Não houve migration, capability, grant, assignment ou evento novo.
+- **Gate C — `APPROVED — SECURITY / PRODUCT / DP — 2026-08-10`:** 8/8 itens técnicos `PASS`, 0
+  `FAIL`; a [homologação humana](../security/ETP-015_GATE_C_HUMAN_APPROVAL.md) foi registrada sem
+  condições bloqueadoras.
+- **ETP-015.9 / ETP-015.10 — `NOT STARTED — NOT AUTHORIZED`:** ondas e hardening não iniciados.
+- **Próximo passo:** merge do PR #86 e verificação pós-merge; a ETP-015.8 ainda não está `COMPLETED`.
+  Produção, cloud, deploy, remoção de legado, Gate D e etapas seguintes não estão autorizados.
+  BDP-001/011 permanecem `PENDING`; BDP-014 está `APPROVED — VERSION 1`.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,

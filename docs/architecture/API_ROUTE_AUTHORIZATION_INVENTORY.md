@@ -20,7 +20,8 @@
 | Payroll readiness     | `GET /payroll-periods/:payrollPeriodId/closure-readiness`            | Autenticada e empresarial | JWT, capability, serviço e `404`                                         |
 | Payroll period close  | `POST /payroll-periods/:payrollPeriodId/close`                       | Autenticada e empresarial | JWT, `payroll.period.close.execute`, empresa ativa, idempotência e `404` |
 | Payroll configuration | demais rotas de competências, rubricas e parâmetros                  | Ainda legada              | Não migrada para evitar quebra                                           |
-| Payroll operation     | lançamentos, execuções e fechamentos                                 | Ainda legada              | Prioridade para fase do workflow                                         |
+| Payroll operation P0  | quatro aliases sob `/payroll-closures`                               | Autenticada e empresarial | adapters deprecated, capabilities de history/execute/reopen e `404`      |
+| Payroll operation P1+ | lançamentos, execuções e demais operações                            | Ainda legada              | fora da ETP-015.8                                                        |
 | Payroll review        | quatorze rotas incluindo fechamento, reabertura e histórico          | Autenticada e empresarial | JWT, capability, policy e `404`                                          |
 | Variable compensation | todas sob `/variable-compensation`                                   | Ainda legada              | BDP-006 continua pendente                                                |
 
@@ -81,3 +82,11 @@ estado de prontidão para uma decisão futura. A iniciativa continua sem aprova�
 As 33 rotas canônicas de auth/contexto, grants, dashboard, payroll review e payroll periods usam o
 perfil `MINIMAL` homologado. Esta classificação não altera o estado dos 129 handlers
 `LEGACY_DEFERRED`, não cria nova capability e não converte rota legada em canônica.
+
+## ETP-015.8 — fechamento P0
+
+Quatro handlers deixaram `LEGACY_DEFERRED` e agora são `CAPABILITY_PROTECTED`: dois usam
+`payroll.period.close.history`, close usa `payroll.period.close.execute` e reopen usa
+`payroll.period.close.reopen`. O total atual é 4 public, 5 authenticated, 31 capability e 125
+deferred, totalizando 165. A URI é compatível/deprecated; a autoridade é sempre empresa/principal e
+serviço canônico. Não houve assignment automático.

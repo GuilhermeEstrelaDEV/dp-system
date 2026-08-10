@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import type { AuthenticatedPrincipal } from '../src/common/http/request-context';
 import { AuditWriterService } from '../src/modules/auth/audit-writer.service';
 import { AuthorizationService } from '../src/modules/auth/authorization.service';
+import { PayrollClosuresService } from '../src/modules/payroll-closures/payroll-closures.service';
 import { PayrollPeriodClosureRepository } from '../src/modules/payroll-periods/payroll-period-closure.repository';
 import { PayrollPeriodControlledReopeningService } from '../src/modules/payroll-periods/payroll-period-controlled-reopening.service';
 import type { PrismaService } from '../src/prisma/prisma.service';
@@ -16,6 +17,9 @@ describeDatabase('controlled reopening on PostgreSQL', () => {
     new AuditWriterService(prisma as unknown as PrismaService),
     new AuthorizationService(),
   );
+  const legacyAdapter = new PayrollClosuresService({} as never, {} as never, service, {
+    observe: <T>(_context: unknown, work: () => Promise<T>) => work(),
+  } as never);
 
   async function fixture(referenceDate: Date) {
     const company = await prisma.company.findFirstOrThrow();
@@ -163,5 +167,24 @@ describeDatabase('controlled reopening on PostgreSQL', () => {
         where: { payrollPeriodId: data.period.id },
       }),
     ).toBe(2);
+  });
+
+  it('serializes a legacy adapter and canonical reopen as one operation', async () => {
+    const data = await fixture(new Date('2101-03-01'));
+    const key = '44444444-4444-4444-8444-444444444444';
+    const command = {
+      reason: 'Concorrência entre aliases',
+      expectedConsistencyToken: data.period.updatedAt.toISOString(),
+      expectedClosureVersion: 1,
+    };
+    const results = await Promise.all([
+      legacyAdapter.reopen(data.period.id, command, key, data.principal),
+      service.reopen(data.period.id, command, key, data.principal),
+    ]);
+    expect(new Set(results.map((result) => result.newClosureId)).size).toBe(1);
+    expect(results.map((result) => result.idempotentReplay).sort()).toEqual([false, true]);
+    await expect(
+      prisma.payrollPeriodClosureVersion.count({ where: { payrollPeriodId: data.period.id } }),
+    ).resolves.toBe(2);
   });
 });

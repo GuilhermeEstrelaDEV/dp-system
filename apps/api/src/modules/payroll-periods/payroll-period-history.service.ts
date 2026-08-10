@@ -74,6 +74,16 @@ export class PayrollPeriodHistoryService {
     };
   }
 
+  async findByClosureId(closureId: string, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, HISTORY_CAPABILITY);
+    const reference = await this.prisma.payrollPeriodClosureVersion.findFirst({
+      where: { id: closureId, companyId: principal.activeCompanyId! },
+      select: { payrollPeriodId: true, version: true },
+    });
+    if (!reference) throw new NotFoundException('Versão de fechamento não encontrada');
+    return this.find(reference.payrollPeriodId, reference.version, principal);
+  }
+
   async events(payrollPeriodId: string, closureVersion: number, principal: AuthenticatedPrincipal) {
     await this.period(payrollPeriodId, principal);
     const version = await this.version(payrollPeriodId, closureVersion, principal);

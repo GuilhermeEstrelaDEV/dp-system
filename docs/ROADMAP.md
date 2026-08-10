@@ -102,7 +102,7 @@ concluída após a Final Acceptance.
 
 ## ETP-015 — Authorization Foundation & Enterprise Isolation
 
-**Status:** `IN PROGRESS` — ETP-015.1–015.3 concluídas; ETP-015.4, ETP-015.5 e ETP-015.7 implementadas.
+**Status:** `IN PROGRESS` — ETP-015.1–015.3 concluídas; ETP-015.4–015.8 implementadas nos recortes aprovados.
 
 A ETP-015.3 foi incorporada à `develop` pelo PR #61. A migration 0016, o catálogo e os assignments
 estão implementados, sem grants automáticos. O
@@ -136,16 +136,16 @@ grants, assignments e dashboard. A ETP-015.7 está
 `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`, com catálogo fechado de 27 eventos após
 a ativação homologada de AR-03,
 decisão efetiva imutável, metadata deny-by-default e rollback atômico das escritas críticas, sem
-migration ou auditoria de leitura sensível. As 129 rotas legadas continuam `LEGACY_DEFERRED`; as etapas
-restantes permanecem sem implementação, na seguinte ordem governada:
+migration ou auditoria de leitura sensível. A ETP-015.8 converte quatro handlers P0 em adapters
+canônicos, deixando 125 rotas `LEGACY_DEFERRED`; as etapas restantes seguem a ordem governada:
 
 - **ETP-015.7:** `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`;
 - **ETP-015.6:** `IMPLEMENTED — APPROVED MINIMAL DATA PROJECTION AVAILABLE`;
 - **Gate B:** `APPROVED — SECURITY — 2026-08-10`;
-- **Gate C:** `NOT STARTED`;
-- **ETP-015.8:** `NOT STARTED — AUTHORIZED TO START UNDER GATE C`;
-- **ETP-015.9:** `NOT STARTED`;
-- **ETP-015.10:** `NOT STARTED`.
+- **Gate C:** `APPROVED — SECURITY / PRODUCT / DP — 2026-08-10`;
+- **ETP-015.8:** `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`;
+- **ETP-015.9:** `NOT STARTED — NOT AUTHORIZED`;
+- **ETP-015.10:** `NOT STARTED — NOT AUTHORIZED`.
 
 O [registro de homologação](security/ETP-015_6_HUMAN_APPROVAL_RECORD.md) confirma 110/110 decisões
 `FC-*` aprovadas pelo `PROJECT_OWNER` em 2026-08-08. A
@@ -155,10 +155,13 @@ BDP-011 permanecem pendentes para exposições futuras. A
 [implementação mínima](security/ETP-015_6_SENSITIVE_DATA_PROJECTION_AND_MASKING.md) aplica as 110
 decisões nas 33 rotas, ativa somente AR-03, implementa CP-01..06 e mantém zero masking. A
 [evidência pós-merge](security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md) registrou `8 PASS / 0 FAIL`, e
-o [registro humano](security/ETP-015_GATE_B_SECURITY_APPROVAL.md) aprovou o Gate B. A ETP-015.8
-permanece `NOT STARTED`, autorizada a iniciar somente sob o Gate C, que permanece `NOT STARTED` e não
-aprovado. ETP-015.9/015.10 não estão autorizadas; BDP-001 e BDP-011 permanecem `PENDING`, e BDP-014
-permanece `APPROVED — VERSION 1`.
+o [registro humano](security/ETP-015_GATE_B_SECURITY_APPROVAL.md) aprovou o Gate B. A
+[migração P0](security/ETP-015_8_PAYROLL_CLOSURE_P0_MIGRATION.md) está implementada em PR com oito
+itens técnicos `PASS`. A [homologação humana](security/ETP-015_GATE_C_HUMAN_APPROVAL.md) de Segurança,
+Produto e DP aprovou o Gate C em 2026-08-10. O merge e a verificação pós-merge permanecem pendentes;
+ETP-015.8 ainda não está `COMPLETED`. ETP-015.9/015.10, remoção de legado, produção, cloud e deploy não
+estão autorizados; BDP-001 e BDP-011 permanecem `PENDING`, e BDP-014 permanece
+`APPROVED — VERSION 1`.
 
 ## Próximas iniciativas propostas
 

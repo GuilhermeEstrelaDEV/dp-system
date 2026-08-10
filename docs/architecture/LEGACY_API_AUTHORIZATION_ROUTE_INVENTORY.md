@@ -2,7 +2,7 @@
 
 **Natureza:** descoberta somente documental da iniciativa provisória INIT-AUTH-LEGACY
 **Base auditada:** `origin/develop@a2ce83e`
-**Estado:** não homologado; nenhuma capability ou migração está autorizada por este documento
+**Estado histórico da base:** inventário original preservado. Reconciliação P0 atual ao final.
 
 ## Método e resultados
 
@@ -235,12 +235,19 @@ global `/api/v1`. Cada linha aponta para arquivo, método e chamada real.
 4. `POST /payroll-periods/:id/validate` sobrepõe readiness sem o mesmo contrato empresarial.
 5. `POST /payroll-periods/:id/open` pode contornar a reabertura controlada se alcançar período
    fechado; deve permanecer bloqueado até análise e teste.
-6. criação de execução, alteração de lançamento, rubrica, parâmetro e remuneração variável precisam
-   comprovar bloqueio por competência `CLOSED` em todos os caminhos.
-7. controllers legados aceitam empresa do cliente ou descobrem escopo após lookup, sem principal
-   autenticado; isso impede deny-by-default e pode revelar recursos.
-8. somente health e login são candidatas públicas legítimas. Swagger é superfície técnica fora dos
-   controllers de módulo e permanece configurável.
+
+## Reconciliação ETP-015.8
+
+As linhas 91–94 preservam a fotografia de descoberta. No runtime atual, os quatro handlers
+`PayrollClosuresController` deixaram o allowlist deferred, possuem a capability candidata aprovada e
+delegam exclusivamente a history/close/reopen canônicos. O bypass indicado nos itens 1–3 foi fechado;
+as URIs continuam aliases deprecated. Itens 4–5 permanecem fora do recorte e não foram migrados.
+
+Contagem atual do verificador: **4 PUBLIC / 5 AUTHENTICATED / 31 CAPABILITY / 125 LEGACY_DEFERRED /
+165 TOTAL**. ETP-015.9 não foi iniciada. 6. criação de execução, alteração de lançamento, rubrica, parâmetro e remuneração variável precisam
+comprovar bloqueio por competência `CLOSED` em todos os caminhos. 7. controllers legados aceitam empresa do cliente ou descobrem escopo após lookup, sem principal
+autenticado; isso impede deny-by-default e pode revelar recursos. 8. somente health e login são candidatas públicas legítimas. Swagger é superfície técnica fora dos
+controllers de módulo e permanece configurável.
 
 ## Separação por prontidão
 

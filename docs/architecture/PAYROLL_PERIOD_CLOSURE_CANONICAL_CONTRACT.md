@@ -216,6 +216,10 @@ As rotas inventariadas em [PAYROLL_CLOSURE_LEGACY_INVENTORY.md](PAYROLL_CLOSURE_
 - sem regra legal ou cálculo novo.
 
 As Fases 2 e 3 concretizam a consulta e sua fundação persistente interna. A Fase 4 implementa
+`POST /payroll-periods/:id/close` com readiness transacional, advisory lock, idempotência, manifesto,
+eventos e auditoria atômica. A migration 0015 adiciona `PayrollPeriodClosureVersion`, manifesto,
+eventos, acknowledgements e idempotência, preservando a tabela legada `payroll_period_closures`. O
+manifesto usa `sha256-canonical-json-v1`, e evidências são append-only no PostgreSQL.
 
 ### Reabertura canônica
 
@@ -223,10 +227,12 @@ As Fases 2 e 3 concretizam a consulta e sua fundação persistente interna. A Fa
 `payroll.period.close.reopen`, `Idempotency-Key`, motivo, token de consistência e versão esperada. A
 operação preserva a evidência anterior, registra invalidação operacional append-only e cria nova
 versão `OPEN` sem execução ou review. A URI anterior foi preservada, mas o contrato legado foi
-substituído sem fallback.
-`POST /payroll-periods/:id/close` com readiness transacional, advisory lock, idempotência, manifesto,
-eventos e auditoria atômica. A migration 0015 adiciona `PayrollPeriodClosureVersion`, manifesto,
-eventos, acknowledgements e idempotência, preservando a tabela legada
-`payroll_period_closures`. O manifesto usa `sha256-canonical-json-v1`, e evidências são append-only
-no PostgreSQL. Reabertura, histórico HTTP, adaptação das demais rotas legadas e frontend continuam
-não implementados.
+substituído sem fallback. A Fase 6 adiciona histórico HTTP e frontend canônicos.
+
+## 16. Adapters P0 da ETP-015.8
+
+Os aliases `/payroll-closures` passaram a delegar diretamente aos casos de uso deste contrato sem
+regra, persistência ou transação próprias. O contrato antigo incompleto não é emulado: run, token,
+versão, acknowledgements e key são obrigatórios e nunca sintetizados. Leituras reutilizam as mesmas
+projeções `MINIMAL`; `reason` de fechamento pode apenas preencher `note`. O consumidor interno usa as
+URIs canônicas. As URIs legadas permanecem deprecated até decisão humana e janela posterior.

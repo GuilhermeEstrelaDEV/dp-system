@@ -164,4 +164,22 @@ describe('PayrollPeriodHistoryService', () => {
       expect.objectContaining({ where: { id: 'period', companyId: 'company' } }),
     );
   });
+  it('resolves a legacy closure ID only inside the active company', async () => {
+    prisma.payrollPeriodClosureVersion.findFirst
+      .mockResolvedValueOnce({ payrollPeriodId: 'period', version: 1 })
+      .mockResolvedValueOnce(record);
+    await expect(service.findByClosureId('closure', principal)).resolves.toMatchObject({
+      id: 'closure',
+      version: 1,
+    });
+    expect(prisma.payrollPeriodClosureVersion.findFirst).toHaveBeenNthCalledWith(1, {
+      where: { id: 'closure', companyId: 'company' },
+      select: { payrollPeriodId: true, version: true },
+    });
+
+    prisma.payrollPeriodClosureVersion.findFirst.mockResolvedValueOnce(null);
+    await expect(service.findByClosureId('foreign-closure', principal)).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
 });

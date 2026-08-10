@@ -6,19 +6,19 @@ const describeDatabase = databaseUrl ? describe : describe.skip;
 describeDatabase('payroll period closure persistence on PostgreSQL', () => {
   const prisma = new PrismaClient({ datasourceUrl: databaseUrl });
   const ids = {
-    company: '10000000-0000-4000-8000-000000000001',
-    otherCompany: '10000000-0000-4000-8000-000000000002',
-    user: '20000000-0000-4000-8000-000000000001',
-    calendar: '30000000-0000-4000-8000-000000000001',
-    otherCalendar: '30000000-0000-4000-8000-000000000002',
-    period: '40000000-0000-4000-8000-000000000001',
-    otherPeriod: '40000000-0000-4000-8000-000000000002',
-    run: '50000000-0000-4000-8000-000000000001',
-    review: '60000000-0000-4000-8000-000000000001',
-    closure: '70000000-0000-4000-8000-000000000001',
-    manifest: '80000000-0000-4000-8000-000000000001',
-    event: '90000000-0000-4000-8000-000000000001',
-    warning: 'a0000000-0000-4000-8000-000000000001',
+    company: 'f1000000-0000-4000-8000-000000000001',
+    otherCompany: 'f1000000-0000-4000-8000-000000000002',
+    user: 'f2000000-0000-4000-8000-000000000001',
+    calendar: 'f3000000-0000-4000-8000-000000000001',
+    otherCalendar: 'f3000000-0000-4000-8000-000000000002',
+    period: 'f4000000-0000-4000-8000-000000000001',
+    otherPeriod: 'f4000000-0000-4000-8000-000000000002',
+    run: 'f5000000-0000-4000-8000-000000000001',
+    review: 'f6000000-0000-4000-8000-000000000001',
+    closure: 'f7000000-0000-4000-8000-000000000001',
+    manifest: 'f8000000-0000-4000-8000-000000000001',
+    event: 'f9000000-0000-4000-8000-000000000001',
+    warning: 'fa000000-0000-4000-8000-000000000001',
   } as const;
 
   beforeAll(async () => {
@@ -56,7 +56,7 @@ describeDatabase('payroll period closure persistence on PostgreSQL', () => {
       prisma.$executeRawUnsafe(`
         INSERT INTO "payroll_period_closure_versions"
         ("id", "company_id", "payroll_period_id", "version", "status", "consistency_token", "created_by", "created_at", "updated_at")
-        VALUES ('70000000-0000-4000-8000-000000000002', '${ids.company}', '${ids.period}', 2, 'OPEN', 'token-2', '${ids.user}', now(), now())
+        VALUES ('f7000000-0000-4000-8000-000000000002', '${ids.company}', '${ids.period}', 2, 'OPEN', 'token-2', '${ids.user}', now(), now())
       `),
     ).rejects.toThrow();
 
@@ -64,7 +64,7 @@ describeDatabase('payroll period closure persistence on PostgreSQL', () => {
       prisma.$executeRawUnsafe(`
         INSERT INTO "payroll_period_closure_versions"
         ("id", "company_id", "payroll_period_id", "version", "status", "consistency_token", "created_by", "created_at", "updated_at")
-        VALUES ('70000000-0000-4000-8000-000000000003', '${ids.otherCompany}', '${ids.period}', 3, 'OPEN', 'token-3', '${ids.user}', now(), now())
+        VALUES ('f7000000-0000-4000-8000-000000000003', '${ids.otherCompany}', '${ids.period}', 3, 'OPEN', 'token-3', '${ids.user}', now(), now())
       `),
     ).rejects.toThrow('payroll period closure company mismatch');
   });
@@ -100,12 +100,12 @@ describeDatabase('payroll period closure persistence on PostgreSQL', () => {
   it('rejects evidence and idempotency records with a mismatched company', async () => {
     await expect(
       prisma.$executeRawUnsafe(
-        `INSERT INTO "payroll_period_closure_events" ("id", "company_id", "payroll_period_closure_id", "event_type", "payload", "actor_user_id", "trace_id") VALUES ('90000000-0000-4000-8000-000000000009', '${ids.otherCompany}', '${ids.closure}', 'PERIOD_READINESS_EVALUATED', '{}', '${ids.user}', 'trace-mismatch')`,
+        `INSERT INTO "payroll_period_closure_events" ("id", "company_id", "payroll_period_closure_id", "event_type", "payload", "actor_user_id", "trace_id") VALUES ('f9000000-0000-4000-8000-000000000009', '${ids.otherCompany}', '${ids.closure}', 'PERIOD_READINESS_EVALUATED', '{}', '${ids.user}', 'trace-mismatch')`,
       ),
     ).rejects.toThrow('evidence company mismatch');
     await expect(
       prisma.$executeRawUnsafe(
-        `INSERT INTO "payroll_period_closure_idempotencies" ("id", "company_id", "payroll_period_id", "operation_type", "idempotency_key_hash", "request_fingerprint") VALUES ('b0000000-0000-4000-8000-000000000009', '${ids.otherCompany}', '${ids.period}', 'CLOSE', '${'d'.repeat(64)}', '${'e'.repeat(64)}')`,
+        `INSERT INTO "payroll_period_closure_idempotencies" ("id", "company_id", "payroll_period_id", "operation_type", "idempotency_key_hash", "request_fingerprint") VALUES ('fb000000-0000-4000-8000-000000000009', '${ids.otherCompany}', '${ids.period}', 'CLOSE', '${'d'.repeat(64)}', '${'e'.repeat(64)}')`,
       ),
     ).rejects.toThrow('idempotency company mismatch');
   });
@@ -114,30 +114,30 @@ describeDatabase('payroll period closure persistence on PostgreSQL', () => {
     const keyHash = 'b'.repeat(64);
     const fingerprint = 'c'.repeat(64);
     await prisma.$executeRawUnsafe(
-      `INSERT INTO "payroll_period_closure_idempotencies" ("id", "company_id", "payroll_period_id", "operation_type", "idempotency_key_hash", "request_fingerprint") VALUES ('b0000000-0000-4000-8000-000000000001', '${ids.company}', '${ids.period}', 'CLOSE', '${keyHash}', '${fingerprint}')`,
+      `INSERT INTO "payroll_period_closure_idempotencies" ("id", "company_id", "payroll_period_id", "operation_type", "idempotency_key_hash", "request_fingerprint") VALUES ('fb000000-0000-4000-8000-000000000001', '${ids.company}', '${ids.period}', 'CLOSE', '${keyHash}', '${fingerprint}')`,
     );
     await expect(
       prisma.$executeRawUnsafe(
-        `INSERT INTO "payroll_period_closure_idempotencies" ("id", "company_id", "payroll_period_id", "operation_type", "idempotency_key_hash", "request_fingerprint") VALUES ('b0000000-0000-4000-8000-000000000002', '${ids.company}', '${ids.period}', 'CLOSE', '${keyHash}', '${fingerprint}')`,
+        `INSERT INTO "payroll_period_closure_idempotencies" ("id", "company_id", "payroll_period_id", "operation_type", "idempotency_key_hash", "request_fingerprint") VALUES ('fb000000-0000-4000-8000-000000000002', '${ids.company}', '${ids.period}', 'CLOSE', '${keyHash}', '${fingerprint}')`,
       ),
     ).rejects.toThrow();
     await prisma.$executeRawUnsafe(
-      `INSERT INTO "payroll_period_closure_idempotencies" ("id", "company_id", "payroll_period_id", "operation_type", "idempotency_key_hash", "request_fingerprint") VALUES ('b0000000-0000-4000-8000-000000000003', '${ids.company}', '${ids.period}', 'REOPEN', '${keyHash}', '${fingerprint}')`,
+      `INSERT INTO "payroll_period_closure_idempotencies" ("id", "company_id", "payroll_period_id", "operation_type", "idempotency_key_hash", "request_fingerprint") VALUES ('fb000000-0000-4000-8000-000000000003', '${ids.company}', '${ids.period}', 'REOPEN', '${keyHash}', '${fingerprint}')`,
     );
     await prisma.$executeRawUnsafe(
-      `INSERT INTO "payroll_period_closure_idempotencies" ("id", "company_id", "payroll_period_id", "operation_type", "idempotency_key_hash", "request_fingerprint") VALUES ('b0000000-0000-4000-8000-000000000004', '${ids.otherCompany}', '${ids.otherPeriod}', 'CLOSE', '${keyHash}', '${fingerprint}')`,
+      `INSERT INTO "payroll_period_closure_idempotencies" ("id", "company_id", "payroll_period_id", "operation_type", "idempotency_key_hash", "request_fingerprint") VALUES ('fb000000-0000-4000-8000-000000000004', '${ids.otherCompany}', '${ids.otherPeriod}', 'CLOSE', '${keyHash}', '${fingerprint}')`,
     );
     await prisma.$executeRawUnsafe(
-      `UPDATE "payroll_period_closure_idempotencies" SET "status" = 'COMPLETED', "response_reference" = '${ids.closure}', "completed_at" = now() WHERE "id" = 'b0000000-0000-4000-8000-000000000001'`,
+      `UPDATE "payroll_period_closure_idempotencies" SET "status" = 'COMPLETED', "response_reference" = '${ids.closure}', "completed_at" = now() WHERE "id" = 'fb000000-0000-4000-8000-000000000001'`,
     );
     await expect(
       prisma.$executeRawUnsafe(
-        `UPDATE "payroll_period_closure_idempotencies" SET "response_reference" = 'changed' WHERE "id" = 'b0000000-0000-4000-8000-000000000001'`,
+        `UPDATE "payroll_period_closure_idempotencies" SET "response_reference" = 'changed' WHERE "id" = 'fb000000-0000-4000-8000-000000000001'`,
       ),
     ).rejects.toThrow('immutable');
     await expect(
       prisma.$executeRawUnsafe(
-        `DELETE FROM "payroll_period_closure_idempotencies" WHERE "id" = 'b0000000-0000-4000-8000-000000000001'`,
+        `DELETE FROM "payroll_period_closure_idempotencies" WHERE "id" = 'fb000000-0000-4000-8000-000000000001'`,
       ),
     ).rejects.toThrow('cannot be deleted');
   });

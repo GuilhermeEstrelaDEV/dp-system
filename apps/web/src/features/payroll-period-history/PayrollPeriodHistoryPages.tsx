@@ -1,11 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ApiClientError } from '@/lib/api';
 import { minimalProjectionKey, minimalProjectionScopeKey } from '@/lib/projectionCache';
-import { payrollPeriodHistoryApi, type ClosureEvent } from './api';
+import {
+  createPayrollClosureIdempotencyKey,
+  payrollPeriodHistoryApi,
+  type ClosureEvent,
+} from './api';
 
 const eventLabel: Record<string, string> = {
   PERIOD_CLOSURE_STARTED: 'Fechamento iniciado',
@@ -44,9 +48,30 @@ function Timeline({ events }: { events: ClosureEvent[] }) {
 
 export function PayrollPeriodHistoryPage() {
   const { payrollPeriodId = '' } = useParams();
+  return (
+    <section>
+      <PageHeader
+        title="Histórico de Fechamentos"
+        description="Versões e evidências imutáveis da competência."
+      />
+      <PayrollPeriodHistoryPanel payrollPeriodId={payrollPeriodId} />
+    </section>
+  );
+}
+
+export function PayrollPeriodHistoryPanel({ payrollPeriodId }: { payrollPeriodId: string }) {
   const auth = useAuth();
   const client = useQueryClient();
   const [reason, setReason] = useState('');
+  const [closeNote, setCloseNote] = useState('');
+  const [payrollRunId, setPayrollRunId] = useState('');
+  const [warningAcknowledgements, setWarningAcknowledgements] = useState<string[]>([]);
+  const [closeIdempotencyKey, setCloseIdempotencyKey] = useState(() =>
+    createPayrollClosureIdempotencyKey(),
+  );
+  const [reopenIdempotencyKey, setReopenIdempotencyKey] = useState(() =>
+    createPayrollClosureIdempotencyKey(),
+  );
   const historyKey = minimalProjectionKey(
     auth.activeCompanyId,
     auth.user?.actorId,
@@ -58,6 +83,7 @@ export function PayrollPeriodHistoryPage() {
     auth.user?.actorId,
     'period-readiness',
     payrollPeriodId,
+    payrollRunId,
   );
   const history = useQuery({
     queryKey: historyKey,
@@ -65,43 +91,69 @@ export function PayrollPeriodHistoryPage() {
   });
   const readiness = useQuery({
     queryKey: readinessKey,
-    queryFn: () => payrollPeriodHistoryApi.readiness(payrollPeriodId),
-    enabled: auth.hasCapability('payroll.period.close.readiness'),
+    queryFn: () => payrollPeriodHistoryApi.readiness(payrollPeriodId, payrollRunId.trim()),
+    enabled: Boolean(payrollPeriodId) && auth.hasCapability('payroll.period.close.readiness'),
   });
   const refresh = () => {
     void client.invalidateQueries({
       queryKey: minimalProjectionScopeKey(auth.activeCompanyId, auth.user?.actorId),
     });
   };
+  useEffect(() => {
+    setWarningAcknowledgements([]);
+    setCloseIdempotencyKey(createPayrollClosureIdempotencyKey());
+  }, [payrollPeriodId, payrollRunId, closeNote]);
+  useEffect(() => {
+    setReopenIdempotencyKey(createPayrollClosureIdempotencyKey());
+  }, [payrollPeriodId, reason]);
   const close = useMutation({
     mutationFn: () =>
-      payrollPeriodHistoryApi.close(
-        payrollPeriodId,
-        readiness.data!,
-        history.data?.versions.at(-1)?.version ?? 0,
-      ),
-    onSuccess: refresh,
+      payrollPeriodHistoryApi.close({
+        periodId: payrollPeriodId,
+        payrollRunId: payrollRunId.trim(),
+        readiness: readiness.data!,
+        expectedClosureVersion: history.data?.versions.at(-1)?.version ?? 0,
+        warningAcknowledgements,
+        idempotencyKey: closeIdempotencyKey,
+        ...(closeNote.trim() ? { note: closeNote.trim() } : {}),
+      }),
+    onSuccess: () => {
+      setCloseNote('');
+      setWarningAcknowledgements([]);
+      setCloseIdempotencyKey(createPayrollClosureIdempotencyKey());
+      refresh();
+    },
   });
   const reopen = useMutation({
     mutationFn: (version: number) =>
-      payrollPeriodHistoryApi.reopen(
-        payrollPeriodId,
-        reason.trim(),
-        readiness.data!.consistencyToken,
-        version,
-      ),
+      payrollPeriodHistoryApi.reopen({
+        periodId: payrollPeriodId,
+        reason: reason.trim(),
+        consistencyToken: readiness.data!.consistencyToken,
+        expectedClosureVersion: version,
+        idempotencyKey: reopenIdempotencyKey,
+      }),
     onSuccess: () => {
       setReason('');
+      setReopenIdempotencyKey(createPayrollClosureIdempotencyKey());
       refresh();
     },
   });
   const active = history.data?.versions.find((version) => version.isActive);
+  const requiredAcknowledgements = readiness.data?.acknowledgementsRequired ?? [];
+  const acknowledgementsComplete = requiredAcknowledgements.every((code) =>
+    warningAcknowledgements.includes(code),
+  );
   return (
-    <section>
-      <PageHeader
-        title="Histórico de Fechamentos"
-        description="Versões e evidências imutáveis da competência."
-      />
+    <section aria-label="Fechamento canônico da competência">
+      <label>
+        Execução de folha
+        <input
+          value={payrollRunId}
+          onChange={(event) => setPayrollRunId(event.target.value)}
+          placeholder="UUID da execução concluída"
+        />
+      </label>
       {history.isLoading ? <p role="status">Carregando histórico…</p> : null}
       {history.isError ? <ErrorView error={history.error} /> : null}
       {history.data?.versions.length === 0 ? <p>Nenhum fechamento registrado.</p> : null}
@@ -115,6 +167,32 @@ export function PayrollPeriodHistoryPage() {
               <li key={item.code}>{item.code}</li>
             ))}
           </ul>
+          {readiness.data.warnings.length ? (
+            <fieldset>
+              <legend>Warnings que exigem reconhecimento explícito</legend>
+              {readiness.data.warnings.map((item) => {
+                const required = requiredAcknowledgements.includes(item.code);
+                return (
+                  <label key={item.code}>
+                    <input
+                      type="checkbox"
+                      checked={warningAcknowledgements.includes(item.code)}
+                      disabled={!required}
+                      onChange={(event) => {
+                        setWarningAcknowledgements((current) =>
+                          event.target.checked
+                            ? [...current, item.code]
+                            : current.filter((code) => code !== item.code),
+                        );
+                      }}
+                    />
+                    {item.code}
+                    {required ? ' (obrigatório)' : ''}
+                  </label>
+                );
+              })}
+            </fieldset>
+          ) : null}
           {active?.predecessor && !readiness.data.isReady ? (
             <p>Nova execução e novo review são obrigatórios.</p>
           ) : null}
@@ -140,22 +218,50 @@ export function PayrollPeriodHistoryPage() {
               {version.successor?.version ?? '—'}
             </p>
             <nav className="flex gap-2">
-              <Link to={`versoes/${version.version}`}>Visualizar</Link>
+              <Link
+                to={`/folha/competencias/${payrollPeriodId}/historico/versoes/${version.version}`}
+              >
+                Visualizar
+              </Link>
               {version.manifest ? (
-                <Link to={`versoes/${version.version}/manifesto`}>Manifesto</Link>
+                <Link
+                  to={`/folha/competencias/${payrollPeriodId}/historico/versoes/${version.version}/manifesto`}
+                >
+                  Manifesto
+                </Link>
               ) : null}
-              <Link to={`versoes/${version.version}/eventos`}>Eventos</Link>
+              <Link
+                to={`/folha/competencias/${payrollPeriodId}/historico/versoes/${version.version}/eventos`}
+              >
+                Eventos
+              </Link>
             </nav>
           </li>
         ))}
       </ol>
-      {active?.status === 'OPEN' && auth.hasCapability('payroll.period.close.execute') ? (
-        <button
-          disabled={!readiness.data?.isReady || close.isPending}
-          onClick={() => close.mutate()}
+      {(!active || active.status === 'OPEN') &&
+      auth.hasCapability('payroll.period.close.execute') ? (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            close.mutate();
+          }}
         >
-          Fechar competência
-        </button>
+          <label>
+            Nota de fechamento (opcional)
+            <textarea value={closeNote} onChange={(event) => setCloseNote(event.target.value)} />
+          </label>
+          <button
+            disabled={
+              !payrollRunId.trim() ||
+              !readiness.data?.isReady ||
+              !acknowledgementsComplete ||
+              close.isPending
+            }
+          >
+            Fechar competência
+          </button>
+        </form>
       ) : null}
       {active?.status === 'CLOSED' && auth.hasCapability('payroll.period.close.reopen') ? (
         <form

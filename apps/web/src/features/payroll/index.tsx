@@ -4,7 +4,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
 import { payrollPeriodsApi, type CreatePayrollPeriod } from './payroll-periods';
-import { payrollClosuresApi } from './payroll-closures';
 import { payrollRunsApi, type CreatePayrollRun } from './payroll-runs';
 import { payrollInputsApi, type CreatePayrollInput } from './payroll-inputs';
 import {
@@ -14,6 +13,7 @@ import {
 } from './payroll-parameters';
 import { payrollRubricsApi, type CreatePayrollRubric, type PayrollRubric } from './payroll-rubrics';
 import { VariableCompensationPanel } from '@/features/variable-compensation';
+import { PayrollPeriodHistoryPanel } from '@/features/payroll-period-history/PayrollPeriodHistoryPages';
 
 const payrollPages = [
   ['competencias', 'Competências', '/folha/competencias', '/payroll-periods'],
@@ -22,7 +22,7 @@ const payrollPages = [
   ['lancamentos', 'Lançamentos', '/folha/lancamentos', '/payroll-inputs'],
   ['execucoes', 'Execuções', '/folha/execucoes', '/payroll-runs'],
   ['conferencia', 'Conferência', '/folha/conferencia', '/payroll-reviews'],
-  ['fechamentos', 'Fechamentos', '/folha/fechamentos', '/payroll-closures'],
+  ['fechamentos', 'Fechamentos', '/folha/fechamentos', '/payroll-periods'],
   [
     'remuneracao-variavel',
     'Remuneração variável',
@@ -704,97 +704,26 @@ function PayrollParametersPanel() {
 }
 
 function PayrollClosuresPanel() {
-  const client = useQueryClient();
   const [payrollPeriodId, setPayrollPeriodId] = useState('');
-  const [reason, setReason] = useState('');
-  const [reopenPeriodId, setReopenPeriodId] = useState<string>();
-  const [reopenReason, setReopenReason] = useState('');
-  const closures = useQuery({
-    queryKey: ['payroll-closures', payrollPeriodId],
-    enabled: Boolean(payrollPeriodId),
-    queryFn: () =>
-      payrollClosuresApi.list(new URLSearchParams({ payrollPeriodId, page: '1', pageSize: '20' })),
-  });
-  const refresh = () => void client.invalidateQueries({ queryKey: ['payroll-closures'] });
-  const close = useMutation({
-    mutationFn: ({ id, value }: { id: string; value: string }) =>
-      payrollClosuresApi.close(id, value),
-    onSuccess: refresh,
-  });
-  const reopen = useMutation({
-    mutationFn: ({ id, value }: { id: string; value: string }) =>
-      payrollClosuresApi.reopen(id, value),
-    onSuccess: () => {
-      setReopenPeriodId(undefined);
-      setReopenReason('');
-      refresh();
-    },
-  });
   return (
     <section className="mt-6" aria-labelledby="payroll-section-title">
       <h2 id="payroll-section-title">Fechamentos</h2>
       <p>
         O fechamento é histórico e torna a competência imutável. Reaberturas exigem justificativa.
       </p>
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (payrollPeriodId.trim())
-            close.mutate({ id: payrollPeriodId.trim(), value: reason.trim() });
-        }}
-        className="grid gap-2"
-      >
-        <label>
-          Competência
-          <input
-            value={payrollPeriodId}
-            onChange={(event) => setPayrollPeriodId(event.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Justificativa de fechamento (opcional)
-          <textarea value={reason} onChange={(event) => setReason(event.target.value)} />
-        </label>
-        <button disabled={close.isPending}>Fechar competência</button>
-        {close.isError ? <p role="alert">{close.error.message}</p> : null}
-      </form>
-      {closures.isLoading ? <p role="status">Carregando histórico…</p> : null}
-      {closures.isError ? <p role="alert">{closures.error.message}</p> : null}
-      <ul aria-label="Histórico de fechamentos">
-        {closures.data?.items.map((item) => (
-          <li key={item.id}>
-            <strong>{item.action}</strong> — motor {item.engineVersion} · parâmetros{' '}
-            {item.parameterVersion ?? 'não informado'}
-            {item.reason ? <p>Justificativa: {item.reason}</p> : null}
-            {item.action === 'CLOSED' ? (
-              <button onClick={() => setReopenPeriodId(item.payrollPeriodId)}>
-                Reabrir competência
-              </button>
-            ) : null}
-          </li>
-        ))}
-      </ul>
-      {reopenPeriodId ? (
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (reopenReason.trim())
-              reopen.mutate({ id: reopenPeriodId, value: reopenReason.trim() });
-          }}
-        >
-          <label>
-            Justificativa para reabertura
-            <input
-              value={reopenReason}
-              onChange={(event) => setReopenReason(event.target.value)}
-              required
-            />
-          </label>
-          <button disabled={!reopenReason.trim() || reopen.isPending}>Confirmar reabertura</button>
-          {reopen.isError ? <p role="alert">{reopen.error.message}</p> : null}
-        </form>
-      ) : null}
+      <label>
+        Competência
+        <input
+          value={payrollPeriodId}
+          onChange={(event) => setPayrollPeriodId(event.target.value)}
+          placeholder="UUID da competência"
+        />
+      </label>
+      {payrollPeriodId.trim() ? (
+        <PayrollPeriodHistoryPanel payrollPeriodId={payrollPeriodId.trim()} />
+      ) : (
+        <p>Informe a competência para carregar o fluxo canônico.</p>
+      )}
     </section>
   );
 }

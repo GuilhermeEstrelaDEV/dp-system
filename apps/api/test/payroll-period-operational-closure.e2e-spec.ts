@@ -2,6 +2,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import type { AuthenticatedPrincipal } from '../src/common/http/request-context';
 import type { AuditWriterService } from '../src/modules/auth/audit-writer.service';
 import { AuthorizationService } from '../src/modules/auth/authorization.service';
+import { PayrollClosuresService } from '../src/modules/payroll-closures/payroll-closures.service';
 import { PayrollPeriodClosureRepository } from '../src/modules/payroll-periods/payroll-period-closure.repository';
 import { PayrollPeriodOperationalClosureService } from '../src/modules/payroll-periods/payroll-period-operational-closure.service';
 import { PayrollPeriodReadinessService } from '../src/modules/payroll-periods/payroll-period-readiness.service';
@@ -82,6 +83,12 @@ describeDatabase('payroll period operational closure on PostgreSQL', () => {
     readiness,
     audit as unknown as AuditWriterService,
     authorization,
+  );
+  const legacyAdapter = new PayrollClosuresService(
+    {} as never,
+    service,
+    {} as never,
+    { observe: <T>(_context: unknown, work: () => Promise<T>) => work() } as never,
   );
 
   beforeAll(async () => {
@@ -367,5 +374,23 @@ describeDatabase('payroll period operational closure on PostgreSQL', () => {
     await expect(
       prisma.$executeRaw`DELETE FROM "payroll_period_closure_events" WHERE "id" = ${event.id}::uuid`,
     ).rejects.toThrow('append-only');
+  });
+
+  it('serializes a legacy adapter and canonical close as one operation', async () => {
+    const item = await fixture(6);
+    const key = '77777777-7777-4777-8777-777777777777';
+    const dto = {
+      payrollPeriodId: item.periodId,
+      ...command(item.runId, item.token),
+    };
+    const results = await Promise.all([
+      legacyAdapter.close(dto, key, principal),
+      service.close(item.periodId, command(item.runId, item.token), key, principal),
+    ]);
+    expect(new Set(results.map((result) => result.closureId)).size).toBe(1);
+    expect(results.map((result) => result.idempotentReplay).sort()).toEqual([false, true]);
+    await expect(
+      prisma.payrollPeriodClosureVersion.count({ where: { payrollPeriodId: item.periodId } }),
+    ).resolves.toBe(1);
   });
 });

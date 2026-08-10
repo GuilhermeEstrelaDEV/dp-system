@@ -1,116 +1,136 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { PayrollPage } from './index';
+import { renderWithRouter } from '@/test/renderWithRouter';
 
-const { apiRequest } = vi.hoisted(() => ({ apiRequest: vi.fn() }));
-vi.mock('@/lib/api', () => ({ apiRequest }));
-
-function renderPage() {
-  return render(
-    <QueryClientProvider
-      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
-    >
-      <MemoryRouter initialEntries={['/folha/fechamentos']}>
-        <PayrollPage />
-      </MemoryRouter>
-    </QueryClientProvider>,
-  );
-}
-
-const emptyPage = {
-  items: [],
-  pagination: { page: 1, pageSize: 20, totalItems: 0, totalPages: 0 },
+const meta = { correlationId: 'trace-ui', timestamp: new Date(0).toISOString(), path: '/api/v1' };
+const response = (data: unknown) =>
+  new Response(JSON.stringify({ data, meta }), {
+    status: 200,
+    headers: { 'content-type': 'application/json' },
+  });
+const capabilities = [
+  'platform.manage',
+  'payroll.period.close.history',
+  'payroll.period.close.readiness',
+  'payroll.period.close.execute',
+  'payroll.period.close.reopen',
+];
+const readiness = {
+  isReady: true,
+  consistencyToken: 'consistency-token',
+  selectedPayrollRun: { id: 'run-1', sequence: 1 },
+  blockers: [],
+  warnings: [{ code: 'VARIABLE_PAY_PENDING' }],
+  acknowledgementsRequired: ['VARIABLE_PAY_PENDING'],
+};
+const openHistory = {
+  payrollPeriodId: 'period-1',
+  versions: [
+    {
+      id: 'closure-1',
+      version: 1,
+      status: 'OPEN',
+      isActive: true,
+      openedAt: new Date(0).toISOString(),
+      closedAt: null,
+      reopenedAt: null,
+      supersededAt: null,
+      payrollRun: null,
+      review: null,
+      predecessor: null,
+      successor: null,
+      manifest: null,
+      events: [],
+    },
+  ],
 };
 
-describe('Payroll closures page', () => {
-  beforeEach(() => {
-    apiRequest.mockReset();
-    apiRequest.mockResolvedValue(emptyPage);
+describe('Payroll closures canonical page', () => {
+  beforeEach(() => vi.restoreAllMocks());
+
+  it('protects the migrated route with the canonical history capability', async () => {
+    renderWithRouter('/folha/fechamentos', true, ['platform.manage']);
+    expect(await screen.findByRole('heading', { name: 'Acesso restrito' })).toBeInTheDocument();
   });
 
-  it('renders the demonstrative notice, navigation and closure history', async () => {
-    apiRequest.mockResolvedValueOnce({
-      items: [
+  it('requires explicit evidence and calls only the canonical close route', async () => {
+    const fetchMock = vi.fn((input: string | URL | Request, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes('closure-readiness')) return Promise.resolve(response(readiness));
+      if (url.endsWith('/close') && init?.method === 'POST') return Promise.resolve(response({}));
+      return Promise.resolve(response(openHistory));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    renderWithRouter('/folha/fechamentos', true, capabilities);
+
+    fireEvent.change(screen.getByLabelText('Competência'), { target: { value: 'period-1' } });
+    fireEvent.change(await screen.findByLabelText('Execução de folha'), {
+      target: { value: 'run-1' },
+    });
+    const closeButton = screen.getByRole('button', { name: 'Fechar competência' });
+    expect(closeButton).toBeDisabled();
+    fireEvent.click(await screen.findByLabelText('VARIABLE_PAY_PENDING (obrigatório)'));
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      const call = fetchMock.mock.calls.find(
+        ([url, init]) =>
+          String(url).endsWith('/payroll-periods/period-1/close') && init?.method === 'POST',
+      );
+      expect(call).toBeDefined();
+      expect(new Headers(call?.[1]?.headers).get('Idempotency-Key')).toEqual(expect.any(String));
+      expect(JSON.parse(String(call?.[1]?.body))).toEqual({
+        payrollRunId: 'run-1',
+        expectedConsistencyToken: 'consistency-token',
+        expectedClosureVersion: 1,
+        warningAcknowledgements: [{ warningCode: 'VARIABLE_PAY_PENDING', acknowledged: true }],
+      });
+    });
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/payroll-closures'))).toBe(
+      false,
+    );
+  });
+
+  it('requires a reason and sends the canonical reopening evidence', async () => {
+    const closedHistory = {
+      ...openHistory,
+      versions: [
         {
-          id: 'closure-1',
-          payrollPeriodId: 'period-1',
-          action: 'CLOSED',
-          reason: 'Fechamento demonstrativo',
-          engineVersion: 'foundation-v1',
-          parameterVersion: 'snapshot-v1',
+          ...openHistory.versions[0],
+          status: 'CLOSED',
+          closedAt: new Date(1).toISOString(),
         },
       ],
-      pagination: { page: 1, pageSize: 20, totalItems: 1, totalPages: 1 },
+    };
+    const fetchMock = vi.fn((input: string | URL | Request, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes('closure-readiness')) return Promise.resolve(response(readiness));
+      if (url.endsWith('/reopen') && init?.method === 'POST') return Promise.resolve(response({}));
+      return Promise.resolve(response(closedHistory));
     });
-    renderPage();
+    vi.stubGlobal('fetch', fetchMock);
+    renderWithRouter('/folha/fechamentos', true, capabilities);
     fireEvent.change(screen.getByLabelText('Competência'), { target: { value: 'period-1' } });
 
-    expect(await screen.findByRole('listitem')).toHaveTextContent('Fechamento demonstrativo');
-    expect(screen.getByText(/motor foundation-v1/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Fechamentos' })).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
-    expect(screen.getByRole('note')).toHaveTextContent(
-      'não representa folha de pagamento homologada',
-    );
-  });
-
-  it('submits a valid closure and exposes API conflicts', async () => {
-    apiRequest.mockImplementation((path: string, init?: RequestInit) => {
-      if (path === '/payroll-closures' && init?.method === 'POST') {
-        return Promise.reject(new Error('Não há execução concluída para fechar a competência'));
-      }
-      return Promise.resolve(emptyPage);
+    const reopenButton = await screen.findByRole('button', { name: 'Reabrir competência' });
+    expect(reopenButton).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Motivo da reabertura'), {
+      target: { value: 'Correção operacional necessária' },
     });
-    renderPage();
-    fireEvent.change(screen.getByLabelText('Competência'), { target: { value: 'period-1' } });
-    fireEvent.change(screen.getByLabelText('Justificativa de fechamento (opcional)'), {
-      target: { value: 'Revisão demonstrativa' },
+    fireEvent.click(reopenButton);
+
+    await waitFor(() => {
+      const call = fetchMock.mock.calls.find(
+        ([url, init]) =>
+          String(url).endsWith('/payroll-periods/period-1/reopen') && init?.method === 'POST',
+      );
+      expect(call).toBeDefined();
+      expect(new Headers(call?.[1]?.headers).get('Idempotency-Key')).toEqual(expect.any(String));
+      expect(JSON.parse(String(call?.[1]?.body))).toEqual({
+        reason: 'Correção operacional necessária',
+        expectedConsistencyToken: 'consistency-token',
+        expectedClosureVersion: 1,
+      });
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Fechar competência' }));
-
-    await waitFor(() =>
-      expect(apiRequest).toHaveBeenCalledWith('/payroll-closures', {
-        method: 'POST',
-        body: JSON.stringify({ payrollPeriodId: 'period-1', reason: 'Revisão demonstrativa' }),
-      }),
-    );
-    expect(await screen.findByRole('alert')).toHaveTextContent('execução concluída');
-  });
-
-  it('requires a justification before reopening and posts it when provided', async () => {
-    apiRequest
-      .mockResolvedValueOnce({
-        items: [
-          {
-            id: 'closure-1',
-            payrollPeriodId: 'period-1',
-            action: 'CLOSED',
-            engineVersion: 'foundation-v1',
-          },
-        ],
-        pagination: { page: 1, pageSize: 20, totalItems: 1, totalPages: 1 },
-      })
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce(emptyPage);
-    renderPage();
-    fireEvent.change(screen.getByLabelText('Competência'), { target: { value: 'period-1' } });
-    fireEvent.click(await screen.findByRole('button', { name: 'Reabrir competência' }));
-
-    expect(screen.getByRole('button', { name: 'Confirmar reabertura' })).toBeDisabled();
-    fireEvent.change(screen.getByLabelText('Justificativa para reabertura'), {
-      target: { value: 'Correção demonstrativa' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Confirmar reabertura' }));
-
-    await waitFor(() =>
-      expect(apiRequest).toHaveBeenCalledWith('/payroll-closures/period-1/reopen', {
-        method: 'POST',
-        body: JSON.stringify({ reason: 'Correção demonstrativa' }),
-      }),
-    );
   });
 });

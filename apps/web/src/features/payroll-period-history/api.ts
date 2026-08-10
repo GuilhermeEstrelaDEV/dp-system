@@ -48,13 +48,13 @@ export type SafeManifest = {
 export type Readiness = {
   isReady: boolean;
   consistencyToken: string;
-  selectedPayrollRun: { id: string } | null;
+  selectedPayrollRun: { id: string; sequence?: number } | null;
   blockers: Array<{ code: string }>;
   warnings: Array<{ code: string }>;
   acknowledgementsRequired: string[];
 };
 
-const key = () => globalThis.crypto.randomUUID();
+export const createPayrollClosureIdempotencyKey = () => globalThis.crypto.randomUUID();
 export const payrollPeriodHistoryApi = {
   list: (periodId: string) => apiRequest<ClosureHistory>(`/payroll-periods/${periodId}/history`),
   version: (periodId: string, version: number) =>
@@ -65,32 +65,49 @@ export const payrollPeriodHistoryApi = {
     ),
   manifest: (periodId: string, version: number) =>
     apiRequest<SafeManifest>(`/payroll-periods/${periodId}/history/${version}/manifest`),
-  readiness: (periodId: string) =>
-    apiRequest<Readiness>(`/payroll-periods/${periodId}/closure-readiness`),
-  close: (periodId: string, readiness: Readiness, expectedClosureVersion: number) => {
-    if (!readiness.selectedPayrollRun) throw new Error('Nova execução completa é obrigatória.');
-    return apiRequest(`/payroll-periods/${periodId}/close`, {
+  readiness: (periodId: string, payrollRunId?: string) => {
+    const query = payrollRunId ? `?${new URLSearchParams({ payrollRunId })}` : '';
+    return apiRequest<Readiness>(`/payroll-periods/${periodId}/closure-readiness${query}`);
+  },
+  close: (input: {
+    periodId: string;
+    payrollRunId: string;
+    readiness: Readiness;
+    expectedClosureVersion: number;
+    warningAcknowledgements: readonly string[];
+    idempotencyKey: string;
+    note?: string;
+  }) => {
+    if (!input.payrollRunId) throw new Error('A execução precisa ser selecionada explicitamente.');
+    return apiRequest(`/payroll-periods/${input.periodId}/close`, {
       method: 'POST',
-      headers: { 'Idempotency-Key': key() },
+      headers: { 'Idempotency-Key': input.idempotencyKey },
       body: JSON.stringify({
-        payrollRunId: readiness.selectedPayrollRun.id,
-        expectedConsistencyToken: readiness.consistencyToken,
-        expectedClosureVersion,
-        warningAcknowledgements: readiness.acknowledgementsRequired.map((warningCode) => ({
+        payrollRunId: input.payrollRunId,
+        expectedConsistencyToken: input.readiness.consistencyToken,
+        expectedClosureVersion: input.expectedClosureVersion,
+        warningAcknowledgements: input.warningAcknowledgements.map((warningCode) => ({
           warningCode,
           acknowledged: true,
         })),
+        ...(input.note ? { note: input.note } : {}),
       }),
     });
   },
-  reopen: (periodId: string, reason: string, token: string, version: number) =>
-    apiRequest(`/payroll-periods/${periodId}/reopen`, {
+  reopen: (input: {
+    periodId: string;
+    reason: string;
+    consistencyToken: string;
+    expectedClosureVersion: number;
+    idempotencyKey: string;
+  }) =>
+    apiRequest(`/payroll-periods/${input.periodId}/reopen`, {
       method: 'POST',
-      headers: { 'Idempotency-Key': key() },
+      headers: { 'Idempotency-Key': input.idempotencyKey },
       body: JSON.stringify({
-        reason,
-        expectedConsistencyToken: token,
-        expectedClosureVersion: version,
+        reason: input.reason,
+        expectedConsistencyToken: input.consistencyToken,
+        expectedClosureVersion: input.expectedClosureVersion,
       }),
     }),
 };
