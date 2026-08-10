@@ -301,10 +301,15 @@
   permanecem pendentes para exposições futuras. As 33 rotas canônicas usam presenters `MINIMAL`,
   CP-01..06 e OpenAPI explícito; somente AR-03 (`ACCESS_GRANTS_VIEWED`) foi ativado. Não houve
   migration, capability, grant ou assignment.
-- **ETP-015.8 — `NOT STARTED`; ETP-015.9 — `NOT STARTED`; ETP-015.10 — `NOT STARTED`:** rollout P0,
+- **Gate B — `TECHNICALLY VERIFIED — PENDING SECURITY APPROVAL`:** oito itens técnicos pós-merge
+  possuem evidência binária `PASS`, consolidada em
+  [ETP-015_GATE_B_POST_MERGE_EVIDENCE.md](../security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md). A
+  aprovação humana de Segurança continua pendente e Gate C não foi iniciado.
+- **ETP-015.8 — `NOT STARTED — BLOCKED UNTIL GATE B SECURITY APPROVAL`; ETP-015.9 — `NOT STARTED`;
+  ETP-015.10 — `NOT STARTED`:** rollout P0,
   ondas legadas e hardening não foram antecipados.
-- **Próximo passo:** revisar e mesclar a implementação mínima da ETP-015.6; depois iniciar a ETP-015.8.
-  A ETP-015.8 permanece não iniciada nesta entrega.
+- **Próximo passo:** revisão humana de Segurança do Gate B. A ETP-015.8 permanece não iniciada e não
+  pode avançar antes da aprovação explícita.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,

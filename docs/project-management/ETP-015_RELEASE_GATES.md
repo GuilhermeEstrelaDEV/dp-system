@@ -1,6 +1,7 @@
 # ETP-015 — Release Gates
 
-**Status:** Gate A aprovado; ETP-015.4, ETP-015.5 e ETP-015.7 implementadas; Gate B ainda em formação; Gates C e D não iniciados
+**Status:** Gate A aprovado; Gate B tecnicamente verificado e pendente de aprovação de Segurança;
+Gates C e D não iniciados
 
 ## Governança de evidências
 
@@ -30,13 +31,22 @@ Sem evidência, o resultado binário do item é `FAIL`.
 ## Gate B — Identity, Company and Capability Foundation
 
 - [x] ETP-015.1 a 015.4 mescladas e verificadas em `develop`;
-- [ ] token/principal/sessão e trace testados;
-- [ ] empresa ativa validada por assignment vigente;
-- [ ] capabilities resolvidas no backend e grants vigentes auditados;
-- [ ] allowlist pública mínima e deny-by-default testados;
-- [ ] `401`/`403`/`404` uniformes no envelope global;
-- [ ] seed cria zero concessão;
-- [ ] nenhuma família foi ativada em massa.
+- [x] token/principal/sessão e trace testados;
+- [x] empresa ativa validada por assignment vigente;
+- [x] capabilities resolvidas no backend e grants vigentes auditados;
+- [x] allowlist pública mínima e deny-by-default testados;
+- [x] `401`/`403`/`404` uniformes no envelope global;
+- [x] seed cria zero concessão;
+- [x] nenhuma família foi ativada em massa.
+
+- **Gate B technical verification:** `COMPLETE`;
+- **Gate B approval:** `PENDING — SECURITY`;
+- **Gate C:** `NOT STARTED`;
+- **ETP-015.8:** `NOT STARTED`.
+
+**Evidência consolidada:** [relatório pós-merge](../security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md)
+e [aceite técnico](../security/ETP-015_GATE_B_TECHNICAL_ACCEPTANCE.md). O resultado técnico é
+`8 PASS / 0 FAIL`; ele não substitui a aprovação humana de Segurança.
 
 **Saída verificável:** testes unitários/E2E/PostgreSQL, OpenAPI e relatório pós-merge.
 

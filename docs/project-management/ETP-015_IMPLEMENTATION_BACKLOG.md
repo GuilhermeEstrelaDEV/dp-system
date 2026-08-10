@@ -1,6 +1,7 @@
 # ETP-015 — Implementation Backlog
 
-**Status:** especificação aprovada; ETP-015.1–015.3 concluídas; ETP-015.4, ETP-015.5 e ETP-015.7 implementadas
+**Status:** especificação aprovada; ETP-015.1–015.3 concluídas; ETP-015.4–015.7 implementadas; Gate B
+tecnicamente verificado e pendente de aprovação de Segurança
 
 **Baseline:** ETP-015.3 foi incorporada à `develop` pelo PR #61. O
 [Operational Gate](ETP-015_3_OPERATIONAL_RELEASE_GATE.md) permanece pendente para ambiente de destino,
@@ -205,7 +206,7 @@ dependência circular.
 
 ## ETP-015.8 — Payroll Closure P0 Migration
 
-**Status:** `NOT STARTED`
+**Status:** `NOT STARTED — BLOCKED UNTIL GATE B SECURITY APPROVAL`
 
 - **Objetivo:** proteger `/payroll-closures` e delegar ao fechamento canônico.
 - **Dependências:** 015.1–015.5, 015.7 e 015.6, BDP-014, DAL-09–14; Gate B/C.
