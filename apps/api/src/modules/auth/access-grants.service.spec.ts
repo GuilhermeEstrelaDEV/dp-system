@@ -16,6 +16,9 @@ describe('AccessGrantsService', () => {
   const createEmergencyAccess = jest.fn();
   const findActiveSubstitution = jest.fn();
   const revokeSubstitution = jest.fn();
+  const listSubstitutions = jest.fn();
+  const findExpiredSubstitutions = jest.fn();
+  const expireSubstitution = jest.fn();
   const append = jest.fn();
   const tx = { marker: 'transaction' };
   const repository = {
@@ -26,6 +29,9 @@ describe('AccessGrantsService', () => {
     createEmergencyAccess,
     findActiveSubstitution,
     revokeSubstitution,
+    listSubstitutions,
+    findExpiredSubstitutions,
+    expireSubstitution,
   } as unknown as AccessGrantsRepository;
   const audit = {
     append,
@@ -55,17 +61,23 @@ describe('AccessGrantsService', () => {
     principal,
   );
 
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    findExpiredSubstitutions.mockResolvedValue([]);
+  });
 
   it('creates a substitution only when holder and substitute belong to the active company', async () => {
     activeMembershipUserIds.mockResolvedValue(new Set(['holder', 'substitute']));
     resolveUserCapabilities.mockResolvedValue(new Set(['payroll.review.view']));
     const record = {
       id: 'grant',
+      holderUserId: 'holder',
+      substituteUserId: 'substitute',
       capabilities: ['payroll.review.view'],
       startsAt: new Date(Date.now() + 1000),
       expiresAt: new Date(Date.now() + 5000),
       status: 'ACTIVE',
+      revokedAt: null,
     };
     createSubstitution.mockResolvedValue(record);
     await expect(
@@ -77,7 +89,16 @@ describe('AccessGrantsService', () => {
         expiresAt: record.expiresAt,
         reason: 'coverage',
       }),
-    ).resolves.toEqual(record);
+    ).resolves.toEqual({
+      id: 'grant',
+      holderUserId: 'holder',
+      substituteUserId: 'substitute',
+      capabilities: ['payroll.review.view'],
+      startsAt: record.startsAt.toISOString(),
+      expiresAt: record.expiresAt.toISOString(),
+      status: 'ACTIVE',
+      revokedAt: null,
+    });
     expect(createSubstitution).toHaveBeenCalledWith(
       scope,
       expect.not.objectContaining({ companyId: expect.anything() }),
@@ -177,5 +198,27 @@ describe('AccessGrantsService', () => {
     await expect(service.listSubstitutions(otherScope, principal)).rejects.toBeInstanceOf(
       NotFoundException,
     );
+  });
+
+  it('projects list results and appends AR03 even when the result is empty', async () => {
+    listSubstitutions.mockResolvedValue([]);
+
+    await expect(service.listSubstitutions(scope, principal)).resolves.toEqual([]);
+    expect(append).toHaveBeenCalledTimes(1);
+    expect(append).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'ACCESS_GRANTS_VIEWED',
+        entityId: scope.companyId,
+        reasonCode: 'SENSITIVE_READ_COMPLETED',
+        metadata: { grantType: 'SUBSTITUTION', projectionProfile: 'MINIMAL' },
+      }),
+    );
+  });
+
+  it('does not return a sensitive read when AR03 persistence fails', async () => {
+    listSubstitutions.mockResolvedValue([]);
+    append.mockRejectedValueOnce(new Error('audit unavailable'));
+
+    await expect(service.listSubstitutions(scope, principal)).rejects.toThrow('audit unavailable');
   });
 });

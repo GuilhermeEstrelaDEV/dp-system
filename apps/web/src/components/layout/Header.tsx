@@ -85,7 +85,6 @@ export function Header(props: HeaderProps) {
           <span className="user-menu__copy">
             <strong>{actorLabel}</strong>
             <small>{auth.user?.email}</small>
-            <small>{auth.user?.roleCodes?.join(', ') || 'Sem papel ativo'}</small>
           </span>
           <Button onClick={() => void auth.logout()} type="button" variant="ghost">
             Sair

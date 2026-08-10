@@ -1,6 +1,6 @@
 export type DashboardMetric = { value: number; label: string; description: string };
 export type DashboardDataPoint = { key: string; label: string; value: number };
-export type DashboardActivity = { type: string; occurredAt: string; description: string };
+export type DashboardActivity = { type: string; occurredAt: string };
 
 export type DashboardSummary = {
   context: { companyId: string; companyName: string; generatedAt: string; timezone: 'UTC' };

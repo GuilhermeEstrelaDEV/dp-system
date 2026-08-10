@@ -1,6 +1,6 @@
 # ETP-015.6 — Implementation Readiness Reconciliation
 
-**Result:** `HUMAN DECISIONS APPROVED — READY FOR APPROVED MINIMAL IMPLEMENTATION`
+**Result:** `IMPLEMENTED — APPROVED MINIMAL DATA PROJECTION AVAILABLE`
 
 **Assessment date:** `2026-08-08`
 
@@ -45,4 +45,6 @@ The next authorized increment is the functional implementation of ETP-015.6 stri
 
 ## Global gate
 
-All five families are `READY FOR APPROVED MINIMAL IMPLEMENTATION`; zero families are blocked for the approved profile.
+All five families progressed from `READY FOR APPROVED MINIMAL IMPLEMENTATION` to
+`IMPLEMENTED — APPROVED MINIMAL DATA PROJECTION AVAILABLE`; zero families were broadened beyond the
+approved profile. ETP-015.8 remains `NOT STARTED` until this implementation is accepted and merged.

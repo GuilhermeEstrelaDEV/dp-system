@@ -22,6 +22,7 @@ export const AUTHORIZATION_AUDIT_PRODUCER_MANIFEST = Object.freeze({
     'USER_COMPANY_ROLE_REVOKED',
   ],
   'src/modules/auth/access-grants.service.ts': [
+    'ACCESS_GRANTS_VIEWED',
     'SUBSTITUTION_CREATED',
     'SUBSTITUTION_REVOKED',
     'SUBSTITUTION_EXPIRED',

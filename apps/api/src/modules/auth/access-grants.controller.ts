@@ -1,21 +1,36 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import {
   CreateSubstitutionDto,
+  EmergencyAccessMinimalResponseDto,
   GrantEmergencyAccessDto,
   RevokeAccessDto,
+  SubstitutionMinimalResponseDto,
 } from './access-grants.dto';
 import { AccessGrantsService } from './access-grants.service';
 import { CurrentEnterpriseScope, CurrentPrincipal, RequireCapabilities } from './auth.decorators';
 import type { EnterpriseScope } from './enterprise-scope';
 
 @ApiTags('access-grants')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse()
+@ApiForbiddenResponse()
+@ApiNotFoundResponse()
 @Controller('access-grants')
 export class AccessGrantsController {
   constructor(private readonly service: AccessGrantsService) {}
 
   @Get('substitutions')
+  @ApiOkResponse({ type: SubstitutionMinimalResponseDto, isArray: true })
   @RequireCapabilities('delegation.manage')
   listSubstitutions(
     @CurrentEnterpriseScope() scope: EnterpriseScope,
@@ -25,6 +40,7 @@ export class AccessGrantsController {
   }
 
   @Post('substitutions')
+  @ApiCreatedResponse({ type: SubstitutionMinimalResponseDto })
   @RequireCapabilities('delegation.manage')
   createSubstitution(
     @CurrentEnterpriseScope() scope: EnterpriseScope,
@@ -35,6 +51,7 @@ export class AccessGrantsController {
   }
 
   @Post('substitutions/:id/revoke')
+  @ApiCreatedResponse({ type: SubstitutionMinimalResponseDto })
   @RequireCapabilities('delegation.manage')
   revokeSubstitution(
     @CurrentEnterpriseScope() scope: EnterpriseScope,
@@ -46,6 +63,7 @@ export class AccessGrantsController {
   }
 
   @Get('emergency')
+  @ApiOkResponse({ type: EmergencyAccessMinimalResponseDto, isArray: true })
   @RequireCapabilities('emergency_access.manage')
   listEmergency(
     @CurrentEnterpriseScope() scope: EnterpriseScope,
@@ -55,6 +73,7 @@ export class AccessGrantsController {
   }
 
   @Post('emergency')
+  @ApiCreatedResponse({ type: EmergencyAccessMinimalResponseDto })
   @RequireCapabilities('emergency_access.manage')
   grantEmergency(
     @CurrentEnterpriseScope() scope: EnterpriseScope,
@@ -65,6 +84,7 @@ export class AccessGrantsController {
   }
 
   @Post('emergency/:id/revoke')
+  @ApiCreatedResponse({ type: EmergencyAccessMinimalResponseDto })
   @RequireCapabilities('emergency_access.manage')
   revokeEmergency(
     @CurrentEnterpriseScope() scope: EnterpriseScope,

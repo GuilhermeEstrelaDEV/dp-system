@@ -133,14 +133,14 @@ allowlist pública nominal, JWT, empresa ativa, capabilities `ALL`, deny-by-defa
 165 handlers. A ETP-015.5 está `IMPLEMENTED — ENTERPRISE QUERY ISOLATION AVAILABLE`: o escopo
 empresarial canônico, repositories explícitos e testes com duas empresas cobrem auth/contexto,
 grants, assignments e dashboard. A ETP-015.7 está
-`IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`, com catálogo fechado de 26 eventos,
+`IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`, com catálogo fechado de 27 eventos após
+a ativação homologada de AR-03,
 decisão efetiva imutável, metadata deny-by-default e rollback atômico das escritas críticas, sem
 migration ou auditoria de leitura sensível. As 129 rotas legadas continuam `LEGACY_DEFERRED`; as etapas
 restantes permanecem sem implementação, na seguinte ordem governada:
 
 - **ETP-015.7:** `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`;
-- **ETP-015.6:**
-  `HUMAN DECISIONS APPROVED — READY FOR APPROVED MINIMAL IMPLEMENTATION`;
+- **ETP-015.6:** `IMPLEMENTED — APPROVED MINIMAL DATA PROJECTION AVAILABLE`;
 - **ETP-015.8:** `NOT STARTED`;
 - **ETP-015.9:** `NOT STARTED`;
 - **ETP-015.10:** `NOT STARTED`.
@@ -149,7 +149,10 @@ O [registro de homologação](security/ETP-015_6_HUMAN_APPROVAL_RECORD.md) confi
 `FC-*` aprovadas pelo `PROJECT_OWNER` em 2026-08-08. A
 [reconciliação de readiness](security/ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md) concluiu
 que as cinco famílias podem implementar os contratos `MINIMAL` sem inventar política. BDP-001 e
-BDP-011 permanecem pendentes para exposições futuras; a ETP-015.8 permanece `NOT STARTED`.
+BDP-011 permanecem pendentes para exposições futuras. A
+[implementação mínima](security/ETP-015_6_SENSITIVE_DATA_PROJECTION_AND_MASKING.md) aplica as 110
+decisões nas 33 rotas, ativa somente AR-03, implementa CP-01..06 e mantém zero masking. A ETP-015.8
+permanece `NOT STARTED` e é o próximo incremento permitido após o merge.
 
 ## Próximas iniciativas propostas
 
@@ -178,8 +181,8 @@ ETP-015.3 está `COMPLETED — IMPLEMENTED AND MERGED`. Seu Operational Deployme
 `PENDING FOR FUTURE TARGET ENVIRONMENT`; esse bloqueio de destino não impede a demonstração local.
 ETP-015.4 foi iniciada somente após a conclusão do MVP-001. A ETP-015.5 implementa isolamento no
 recorte canônico aprovado; nenhuma família legada foi migrada. A ETP-015.7 implementa a fundação de
-auditoria atômica. A ETP-015.6 permanece não iniciada e está bloqueada pelo gate de classificação de
-campos, sem antecipação da ETP-015.8.
+auditoria atômica. A ETP-015.6 implementa o perfil `MINIMAL` homologado nas 33 rotas canônicas, sem
+antecipação da ETP-015.8.
 
 Permanecem propostas não vinculantes, sem autorização de implementação: **ETP-016 — Relatórios,
 dashboards e inteligência operacional** e **ETP-017 — Hardening, observabilidade e performance**.

@@ -5,10 +5,11 @@ import { Alert, Badge, Button, Card, EmptyState, Skeleton } from '@/components/c
 import { StatCard } from '@/components/common/StatCard';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ApiClientError, apiRequest } from '@/lib/api';
+import { minimalProjectionKey } from '@/lib/projectionCache';
 
 type Metric = { value: number; label: string; description: string };
 type Point = { key: string; label: string; value: number };
-type Activity = { type: string; occurredAt: string; description: string };
+type Activity = { type: string; occurredAt: string };
 type DashboardSummary = {
   context: { companyId: string; companyName: string; generatedAt: string; timezone: 'UTC' };
   access: 'AVAILABLE' | 'RESTRICTED';
@@ -52,7 +53,7 @@ export function DashboardPage() {
   const auth = useAuth();
   const company = auth.companies.find(({ id }) => id === auth.activeCompanyId);
   const query = useQuery({
-    queryKey: ['dashboard-summary', auth.activeCompanyId],
+    queryKey: minimalProjectionKey(auth.activeCompanyId, auth.user?.actorId, 'dashboard-summary'),
     queryFn: ({ signal }) => apiRequest<DashboardSummary>('/dashboard/summary', { signal }),
     enabled: Boolean(auth.activeCompanyId),
     retry: (count, error) =>
@@ -143,7 +144,7 @@ export function DashboardPage() {
                 <ul className="dashboard-activity">
                   {summary.review.recentActivity.map((activity) => (
                     <li key={`${activity.type}-${activity.occurredAt}`}>
-                      <span>{activity.description}</span>
+                      <span>{activity.type}</span>
                       <time dateTime={activity.occurredAt}>
                         {new Intl.DateTimeFormat('pt-BR', {
                           dateStyle: 'short',

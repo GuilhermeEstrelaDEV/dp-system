@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ApiClientError } from '@/lib/api';
+import { minimalProjectionKey, minimalProjectionScopeKey } from '@/lib/projectionCache';
 import { payrollPeriodHistoryApi, type ClosureEvent } from './api';
 
 const eventLabel: Record<string, string> = {
@@ -34,11 +35,7 @@ function Timeline({ events }: { events: ClosureEvent[] }) {
           <br />
           <time dateTime={event.occurredAt}>
             {new Date(event.occurredAt).toLocaleString('pt-BR')}
-          </time>{' '}
-          · {event.actor.displayName}
-          {event.traceId ? (
-            <small className="block">Trace: {event.traceId.slice(0, 12)}…</small>
-          ) : null}
+          </time>
         </li>
       ))}
     </ol>
@@ -50,18 +47,31 @@ export function PayrollPeriodHistoryPage() {
   const auth = useAuth();
   const client = useQueryClient();
   const [reason, setReason] = useState('');
+  const historyKey = minimalProjectionKey(
+    auth.activeCompanyId,
+    auth.user?.actorId,
+    'period-history',
+    payrollPeriodId,
+  );
+  const readinessKey = minimalProjectionKey(
+    auth.activeCompanyId,
+    auth.user?.actorId,
+    'period-readiness',
+    payrollPeriodId,
+  );
   const history = useQuery({
-    queryKey: ['period-history', payrollPeriodId],
+    queryKey: historyKey,
     queryFn: () => payrollPeriodHistoryApi.list(payrollPeriodId),
   });
   const readiness = useQuery({
-    queryKey: ['period-readiness', payrollPeriodId],
+    queryKey: readinessKey,
     queryFn: () => payrollPeriodHistoryApi.readiness(payrollPeriodId),
     enabled: auth.hasCapability('payroll.period.close.readiness'),
   });
   const refresh = () => {
-    void client.invalidateQueries({ queryKey: ['period-history', payrollPeriodId] });
-    void client.invalidateQueries({ queryKey: ['period-readiness', payrollPeriodId] });
+    void client.invalidateQueries({
+      queryKey: minimalProjectionScopeKey(auth.activeCompanyId, auth.user?.actorId),
+    });
   };
   const close = useMutation({
     mutationFn: () =>
@@ -102,7 +112,7 @@ export function PayrollPeriodHistoryPage() {
           </strong>
           <ul>
             {readiness.data.blockers.map((item) => (
-              <li key={item.code}>{item.message}</li>
+              <li key={item.code}>{item.code}</li>
             ))}
           </ul>
           {active?.predecessor && !readiness.data.isReady ? (
@@ -118,8 +128,7 @@ export function PayrollPeriodHistoryPage() {
               {version.reopenedAt ? <span>Reaberta</span> : null}
             </h2>
             <p>
-              {version.status} · {version.actor.displayName} ·{' '}
-              {new Date(version.openedAt).toLocaleString('pt-BR')}
+              {version.status} · {new Date(version.openedAt).toLocaleString('pt-BR')}
             </p>
             <p>
               Execução: {version.payrollRun?.sequence ?? 'nova execução obrigatória'} · Review:{' '}
@@ -172,9 +181,16 @@ export function PayrollPeriodHistoryPage() {
 
 export function PayrollPeriodVersionPage() {
   const { payrollPeriodId = '', closureVersion = '0' } = useParams();
+  const auth = useAuth();
   const version = Number(closureVersion);
   const query = useQuery({
-    queryKey: ['period-history-version', payrollPeriodId, version],
+    queryKey: minimalProjectionKey(
+      auth.activeCompanyId,
+      auth.user?.actorId,
+      'period-history-version',
+      payrollPeriodId,
+      version,
+    ),
     queryFn: () => payrollPeriodHistoryApi.version(payrollPeriodId, version),
   });
   return (
@@ -187,7 +203,6 @@ export function PayrollPeriodVersionPage() {
       {query.data ? (
         <>
           <p>Status: {query.data.status}</p>
-          <p>Ator: {query.data.actor.displayName}</p>
           <p>Execução: {query.data.payrollRun?.id ?? '—'}</p>
           <p>Review: {query.data.review?.id ?? '—'}</p>
           <Timeline events={query.data.events} />
@@ -200,9 +215,16 @@ export function PayrollPeriodVersionPage() {
 }
 export function PayrollPeriodEventsPage() {
   const { payrollPeriodId = '', closureVersion = '0' } = useParams();
+  const auth = useAuth();
   const version = Number(closureVersion);
   const query = useQuery({
-    queryKey: ['period-history-events', payrollPeriodId, version],
+    queryKey: minimalProjectionKey(
+      auth.activeCompanyId,
+      auth.user?.actorId,
+      'period-history-events',
+      payrollPeriodId,
+      version,
+    ),
     queryFn: () => payrollPeriodHistoryApi.events(payrollPeriodId, version),
   });
   return (
@@ -222,9 +244,16 @@ export function PayrollPeriodEventsPage() {
 }
 export function PayrollPeriodManifestPage() {
   const { payrollPeriodId = '', closureVersion = '0' } = useParams();
+  const auth = useAuth();
   const version = Number(closureVersion);
   const query = useQuery({
-    queryKey: ['period-manifest', payrollPeriodId, version],
+    queryKey: minimalProjectionKey(
+      auth.activeCompanyId,
+      auth.user?.actorId,
+      'period-manifest',
+      payrollPeriodId,
+      version,
+    ),
     queryFn: () => payrollPeriodHistoryApi.manifest(payrollPeriodId, version),
   });
   return (
@@ -247,10 +276,6 @@ export function PayrollPeriodManifestPage() {
           <dt>Acknowledgements</dt>
           <dd>
             {query.data.acknowledgements.map((item) => item.warningCode).join(', ') || 'Nenhum'}
-          </dd>
-          <dt>Totais</dt>
-          <dd>
-            <pre>{JSON.stringify(query.data.totals, null, 2)}</pre>
           </dd>
           <dt>Referências</dt>
           <dd>

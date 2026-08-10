@@ -252,11 +252,8 @@ export class PayrollPeriodControlledReopeningService {
             next.id,
             next.version,
             manifest,
-            reason,
             reopenedAt,
-            principal.actorId,
             updatedPeriod.updatedAt.toISOString(),
-            principal.traceId,
             false,
           );
         },
@@ -304,22 +301,14 @@ export class PayrollPeriodControlledReopeningService {
         409,
       );
     }
-    const reopenedEvent = await tx.payrollPeriodClosureEvent.findFirst({
-      where: { payrollPeriodClosureId: next.id, eventType: 'PERIOD_REOPENED' },
-      orderBy: { createdAt: 'desc' },
-    });
-    const payload = reopenedEvent?.payload as Record<string, unknown> | undefined;
     return this.response(
       payrollPeriodId,
       previous,
       next.id,
       next.version,
       manifest,
-      typeof payload?.reason === 'string' ? payload.reason : '',
       previous.reopenedAt ?? next.createdAt,
-      reopenedEvent?.actorUserId ?? next.createdBy,
       period!.updatedAt.toISOString(),
-      reopenedEvent?.traceId ?? '',
       true,
     );
   }
@@ -330,11 +319,8 @@ export class PayrollPeriodControlledReopeningService {
     newClosureId: string,
     newClosureVersion: number,
     manifest: { id: string; payloadHash: string },
-    reason: string,
     reopenedAt: Date,
-    reopenedBy: string,
     consistencyToken: string,
-    traceId: string,
     idempotentReplay: boolean,
   ): ReopenPayrollPeriodResponseDto {
     return {
@@ -346,13 +332,10 @@ export class PayrollPeriodControlledReopeningService {
       status: 'OPEN',
       previousManifestId: manifest.id,
       previousManifestHash: manifest.payloadHash,
-      reason,
       reopenedAt: reopenedAt.toISOString(),
-      reopenedBy,
       consistencyToken,
       requiresNewPayrollRun: true,
       requiresNewPayrollReview: true,
-      traceId,
       idempotentReplay,
     };
   }

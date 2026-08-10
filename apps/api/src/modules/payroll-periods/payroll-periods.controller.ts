@@ -33,6 +33,7 @@ import {
 import { PayrollPeriodReadinessService } from './payroll-period-readiness.service';
 import {
   PayrollPeriodHistoryEventsResponseDto,
+  PayrollPeriodClosureVersionMinimalDto,
   PayrollPeriodHistoryResponseDto,
   PayrollPeriodManifestResponseDto,
 } from './payroll-period-history.dto';
@@ -130,7 +131,10 @@ export class PayrollPeriodsController {
   }
   @Get(':payrollPeriodId/history/:closureVersion')
   @ApiBearerAuth()
-  @ApiOkResponse({ description: 'Complete safe projection for one closure version.' })
+  @ApiOkResponse({
+    type: PayrollPeriodClosureVersionMinimalDto,
+    description: 'Complete approved minimal projection for one closure version.',
+  })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
   @ApiNotFoundResponse()

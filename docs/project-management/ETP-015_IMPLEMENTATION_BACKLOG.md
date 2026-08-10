@@ -153,15 +153,15 @@ estão concluídos. A implementação controlada está em validação na branch
 ## ETP-015.6 — Sensitive Data Projection and Masking
 
 **Status:**
-`HUMAN DECISIONS APPROVED — READY FOR APPROVED MINIMAL IMPLEMENTATION`
+`IMPLEMENTED — APPROVED MINIMAL DATA PROJECTION AVAILABLE`
 
-- **Objetivo:** ativar projeção mínima, masking e acesso integral por capability adicional, por família
-  aprovada, auditando as leituras sensíveis pelo catálogo e writer entregues na ETP-015.7.
+- **Objetivo:** aplicar somente a projeção `MINIMAL` homologada por família e ativar exclusivamente o
+  evento de leitura AR-03 no writer entregue pela ETP-015.7.
 - **Dependências:** 015.3–015.5, fundação da ETP-015.7, DAL-06 e limites BDP-001/011.
 - **Módulos afetados:** serializers/query projections e contratos compartilhados.
 - **Banco esperado:** nenhum por padrão.
-- **Testes:** campo allowlisted, masking, capability integral, auditoria da leitura e cache entre
-  empresas.
+- **Testes:** allowlist de 110 campos, omissão, capabilities da operação, AR-03, cache entre empresa e
+  ator, frontend e respostas negativas.
 - **Riscos:** inferir política final de PII ou criar uma trilha de auditoria paralela.
 - **Aceite:** somente campos homologados; itens bloqueados permanecem fora; toda leitura sensível
   ativada possui auditoria correspondente.
@@ -172,15 +172,17 @@ estão concluídos. A implementação controlada está em validação na branch
 - **Gate de classificação:** o
   [relatório do gate](../security/ETP-015_6_CLASSIFICATION_GATE_REPORT.md) inventariou 33 endpoints
   canônicos e confirmou ausência de classificação material por campo, máscara, capability integral e
-  evento de leitura homologados. BDP-001/011 continuam pendentes; implementação e ETP-015.8 não foram
-  iniciadas.
+  evento de leitura homologados. BDP-001/011 continuam pendentes para ampliações futuras; a matriz
+  posterior homologou a execução mínima sem masking e sem perfil integral.
 - **Pacote de decisão:** o
   [pacote formal](../security/ETP-015_6_FIELD_CLASSIFICATION_DECISION_PACKAGE.md) e a
   [matriz de homologação](../security/ETP-015_6_FIELD_CLASSIFICATION_APPROVAL_MATRIX.md) registram
   110 decisões `FC-*`, todas `APPROVED` por `PROJECT_OWNER` em 2026-08-08. O
   [registro humano](../security/ETP-015_6_HUMAN_APPROVAL_RECORD.md) preserva OMIT/BLOCKED, e a
   [reconciliação](../security/ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md) libera somente a
-  futura implementação controlada dos contratos `MINIMAL`. Nenhum runtime foi iniciado.
+  implementação controlada dos contratos `MINIMAL`. O runtime aprovado está documentado em
+  [ETP-015_6_SENSITIVE_DATA_PROJECTION_AND_MASKING.md](../security/ETP-015_6_SENSITIVE_DATA_PROJECTION_AND_MASKING.md):
+  33 rotas, CP-01..06, AR-03 e zero masking. A ETP-015.8 não foi iniciada.
 
 > A ordem de execução não segue a ordem numérica entre 015.6 e 015.7. A ETP-015.7 deve ser
 > implementada primeiro para estabelecer auditoria atômica, catálogo de eventos, sanitização e

@@ -86,7 +86,8 @@ describe('payroll period public history', () => {
     ).toBeInTheDocument();
     expect(await screen.findByText(/Versão 1/)).toBeInTheDocument();
     expect(screen.getByText(/Versão 2/)).toBeInTheDocument();
-    expect(screen.getByText('Nova execução obrigatória')).toBeInTheDocument();
+    expect(screen.getByText('PAYROLL_RUN_NOT_FOUND')).toBeInTheDocument();
+    expect(screen.queryByText('Nova execução obrigatória')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Manifesto' })).toBeInTheDocument();
     expect(screen.getByText(/Predecessora: 1/)).toBeInTheDocument();
   });
@@ -140,7 +141,7 @@ describe('payroll period public history', () => {
       permissions,
     );
     expect(await screen.findByText('hash-safe')).toBeInTheDocument();
-    expect(screen.getByText(/900\.00/)).toBeInTheDocument();
+    expect(screen.queryByText(/900\.00/)).not.toBeInTheDocument();
     manifest.unmount();
     renderWithRouter('/folha/competencias/period-1/historico/versoes/1/eventos', true, permissions);
     const timeline = await screen.findByRole('list', { name: 'Timeline de eventos' });

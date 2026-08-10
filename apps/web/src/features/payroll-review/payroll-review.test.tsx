@@ -16,23 +16,20 @@ const finding = {
   severity: 'BLOCKING' as const,
   status: 'OPEN' as const,
   code: 'DIVERGENCE',
-  title: 'Divergência',
-  description: 'Valor requer conferência',
-  createdBy: 'actor',
+  reviewCycleId: 'review-1',
+  payrollRunId: 'run-1',
   createdAt: new Date(0).toISOString(),
-  events: [],
+  resolvedAt: null,
 };
 
 function cycle(status: ReviewStatus): ReviewCycle {
   return {
     id: 'review-1',
-    companyId: 'company-1',
     payrollRunId: 'run-1',
     status,
     reviewRound: 1,
     submissionNumber: 1,
     currentApprovalStage: status === 'SUBMITTED' ? 0 : 2,
-    createdBy: 'preparer',
     createdAt: new Date(0).toISOString(),
     findings: [finding],
     events: [],
@@ -42,12 +39,14 @@ function cycle(status: ReviewStatus): ReviewCycle {
         sequence: 1,
         code: 'V1_STAGE_1',
         requiredCapability: 'payroll.review.approve',
+        createdAt: new Date(0).toISOString(),
       },
       {
         id: 'stage-2',
         sequence: 2,
         code: 'V1_STAGE_2',
         requiredCapability: 'payroll.review.approve',
+        createdAt: new Date(0).toISOString(),
       },
     ],
     decisions: [],
@@ -55,15 +54,16 @@ function cycle(status: ReviewStatus): ReviewCycle {
 }
 
 function history(status: ReviewStatus): ReviewHistory {
+  const review = cycle(status);
   return {
-    ...cycle(status),
     currentState: status,
+    findings: review.findings,
+    approvalStages: review.approvalStages ?? [],
+    decisions: review.decisions ?? [],
     timeline: [
       {
         id: 'event-1',
         eventType: 'REVIEW_CYCLE_OPENED',
-        actorId: 'actor',
-        actor: { id: 'actor', displayName: 'Ana' },
         occurredAt: new Date(0).toISOString(),
         nextState: { status: 'OPEN' },
       },
@@ -73,10 +73,10 @@ function history(status: ReviewStatus): ReviewHistory {
         ? [
             {
               id: 'invalid-1',
+              decisionId: 'decision-1',
+              causedByEventId: 'event-1',
               reviewRound: 0,
               invalidatedAt: new Date(0).toISOString(),
-              invalidatedBy: 'actor',
-              invalidationReason: 'Correção',
             },
           ]
         : [],

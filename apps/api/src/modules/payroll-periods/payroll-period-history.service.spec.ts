@@ -66,7 +66,6 @@ describe('PayrollPeriodHistoryService', () => {
       version: 1,
       status: 'CLOSED',
       isActive: true,
-      actor: { displayName: 'Pessoa DP' },
       payrollRun: { sequence: 2 },
       manifest: { hash: 'a'.repeat(64) },
     });
@@ -79,9 +78,40 @@ describe('PayrollPeriodHistoryService', () => {
   });
   it('returns chronological events and 404 for absent versions', async () => {
     const events = await service.events('period', 1, principal);
-    expect(events.events[0]).toMatchObject({ type: 'PERIOD_CLOSED', traceId: 'trace' });
+    expect(events.events[0]).toMatchObject({ type: 'PERIOD_CLOSED' });
+    expect(events.events[0]).not.toHaveProperty('traceId');
+    expect(events.events[0]).not.toHaveProperty('actor');
     prisma.payrollPeriodClosureVersion.findFirst.mockResolvedValue(null);
     await expect(service.find('period', 9, principal)).rejects.toBeInstanceOf(NotFoundException);
+  });
+  it('omits actor, reason and payload metadata from warning acknowledgements', async () => {
+    prisma.payrollPeriodClosureVersion.findFirst.mockResolvedValue({
+      ...record,
+      warningAcknowledgements: [
+        {
+          warningCode: 'VARIABLE_PAY_PENDING',
+          acknowledgedAt: new Date('2026-01-02T10:00:00.000Z'),
+          acknowledgementPayload: {
+            acknowledged: true,
+            reason: 'free text must remain private',
+            actorId: 'actor',
+            metadata: { source: 'internal' },
+          },
+        },
+      ],
+    });
+
+    const result = await service.find('period', 1, principal);
+    expect(result.warningAcknowledgements).toEqual([
+      {
+        warningCode: 'VARIABLE_PAY_PENDING',
+        acknowledgedAt: '2026-01-02T10:00:00.000Z',
+        acknowledged: true,
+      },
+    ]);
+    expect(result.warningAcknowledgements[0]).not.toHaveProperty('reason');
+    expect(result.warningAcknowledgements[0]).not.toHaveProperty('actorId');
+    expect(result.warningAcknowledgements[0]).not.toHaveProperty('metadata');
   });
   it('projects only safe manifest fields and handles missing manifests', async () => {
     prisma.payrollPeriodClosureVersion.findFirst.mockResolvedValue({
@@ -107,9 +137,12 @@ describe('PayrollPeriodHistoryService', () => {
     const result = await service.manifest('period', 1, principal);
     expect(result).toMatchObject({
       schemaVersion: '1.0',
-      totals: { net: '900.00' },
-      references: { decisions: ['decision'] },
+      references: { payrollRunId: null, reviewCycleId: null },
     });
+    expect(result).not.toHaveProperty('totals');
+    expect(result.references).not.toHaveProperty('decisions');
+    expect(result.references).not.toHaveProperty('findings');
+    expect(result.references).not.toHaveProperty('employees');
     expect(result).not.toHaveProperty('actorContext');
     expect(result).not.toHaveProperty('traceId');
     expect(result).not.toHaveProperty('sessionId');

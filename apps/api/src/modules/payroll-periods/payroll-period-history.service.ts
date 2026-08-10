@@ -7,7 +7,6 @@ import { AuthorizationService } from '../auth/authorization.service';
 const HISTORY_CAPABILITY = 'payroll.period.close.history';
 
 const versionInclude = {
-  creator: { select: { id: true, displayName: true } },
   selectedPayrollRun: { select: { id: true, sequence: true, status: true } },
   linkedReviewCycle: { select: { id: true, reviewRound: true, status: true } },
   previousClosureVersion: { select: { id: true, version: true } },
@@ -28,7 +27,6 @@ const versionInclude = {
       warningCode: true,
       acknowledgementPayload: true,
       acknowledgedAt: true,
-      actor: { select: { id: true, displayName: true } },
     },
     orderBy: { acknowledgedAt: 'asc' },
   },
@@ -37,8 +35,6 @@ const versionInclude = {
       id: true,
       eventType: true,
       createdAt: true,
-      traceId: true,
-      actor: { select: { id: true, displayName: true } },
     },
     orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
   },
@@ -73,8 +69,7 @@ export class PayrollPeriodHistoryService {
       warningAcknowledgements: version.warningAcknowledgements.map((item) => ({
         warningCode: item.warningCode,
         acknowledgedAt: item.acknowledgedAt.toISOString(),
-        actor: item.actor,
-        acknowledgement: this.safeAcknowledgement(item.acknowledgementPayload),
+        acknowledged: this.safeAcknowledgement(item.acknowledgementPayload),
       })),
     };
   }
@@ -89,8 +84,6 @@ export class PayrollPeriodHistoryService {
         id: event.id,
         type: event.eventType,
         occurredAt: event.createdAt.toISOString(),
-        actor: event.actor,
-        traceId: event.traceId,
       })),
     };
   }
@@ -136,13 +129,9 @@ export class PayrollPeriodHistoryService {
         warningCode: item.warningCode,
         acknowledgedAt: item.acknowledgedAt.toISOString(),
       })),
-      totals: this.stringRecord(payload.consolidatedTotals),
       references: {
         payrollRunId: this.string(payload.payrollRunId),
         reviewCycleId: this.string(payload.reviewCycleId),
-        decisions: this.strings(payload.validDecisionReferences),
-        findings: this.strings(payload.relevantFindingReferences),
-        employees: this.strings(payload.safeEmployeeReferences),
       },
     };
   }
@@ -185,7 +174,6 @@ export class PayrollPeriodHistoryService {
       closedAt: version.closedAt?.toISOString() ?? null,
       reopenedAt: version.reopenedAt?.toISOString() ?? null,
       supersededAt: version.supersededAt?.toISOString() ?? null,
-      actor: version.creator,
       payrollRun: version.selectedPayrollRun,
       review: version.linkedReviewCycle,
       predecessor: version.previousClosureVersion,
@@ -203,14 +191,13 @@ export class PayrollPeriodHistoryService {
         id: event.id,
         type: event.eventType,
         occurredAt: event.createdAt.toISOString(),
-        actor: event.actor,
       })),
     };
   }
 
   private safeAcknowledgement(value: Prisma.JsonValue) {
     const object = this.object(value);
-    return { acknowledged: object.acknowledged === true, reason: this.string(object.reason) };
+    return object.acknowledged === true;
   }
   private object(value: Prisma.JsonValue): Prisma.JsonObject {
     return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
@@ -225,13 +212,5 @@ export class PayrollPeriodHistoryService {
     return Array.isArray(value)
       ? value.filter((item): item is string => typeof item === 'string')
       : [];
-  }
-  private stringRecord(value: Prisma.JsonValue | undefined) {
-    const object = this.object(value ?? null);
-    return Object.fromEntries(
-      Object.entries(object).filter(
-        (entry): entry is [string, string] => typeof entry[1] === 'string',
-      ),
-    );
   }
 }

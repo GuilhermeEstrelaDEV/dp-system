@@ -73,8 +73,6 @@ export class ClosePayrollPeriodResponseDto {
   @ApiProperty({ example: 'sha256-canonical-json-v1' }) hashAlgorithmVersion!: string;
   @ApiProperty({ type: [String] }) warningsAcknowledged!: string[];
   @ApiProperty({ format: 'date-time' }) closedAt!: string;
-  @ApiProperty({ format: 'uuid' }) closedBy!: string;
   @ApiProperty({ format: 'date-time' }) consistencyToken!: string;
-  @ApiProperty() traceId!: string;
   @ApiProperty() idempotentReplay!: boolean;
 }

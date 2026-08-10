@@ -54,3 +54,11 @@ There is no residual material decision required to produce the five approved MIN
 - No generic taxonomy, mask, legal basis or retention rule is inferred.
 - Any future change to a blocked subfield requires a new human decision and the applicable BDP evidence.
 - BDP-001 and BDP-011 remain pending in [Business Decisions Pending](../project-management/BUSINESS_DECISIONS_PENDING.md).
+
+## Implementation evidence
+
+The MINIMAL runtime enforces the reconciled classifications above through explicit response DTOs,
+Prisma projections where applicable, closed presenters and negative property assertions. The
+implementation does not treat omission as global BDP resolution: personal references and content
+governance fields remain unavailable, no masking or global FULL profile exists, and retention,
+export and disposal policies were not introduced.

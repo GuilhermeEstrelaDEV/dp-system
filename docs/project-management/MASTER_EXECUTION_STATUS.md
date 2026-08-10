@@ -290,19 +290,21 @@
   filtro empresarial anterior ao lookup e repositories explícitos nos módulos auth/contexto,
   grants, assignments e dashboard, com testes unitários, HTTP e PostgreSQL de duas empresas. As 129
   rotas legadas continuam adiadas e não são declaradas seguras.
-- **ETP-015.7 — `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`:** catálogo fechado de 26
+- **ETP-015.7 — `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`:** catálogo fechado de 27
   eventos, envelope tipado, decisão efetiva imutável, metadata deny-by-default, writer único,
   verificador AST e rollback atômico cobrem os produtores canônicos. Não houve migration, endpoint,
   capability, frontend ou auditoria de leitura sensível.
-- **ETP-015.6 — `HUMAN DECISIONS APPROVED — READY FOR APPROVED MINIMAL IMPLEMENTATION`:** 110/110
+- **ETP-015.6 — `IMPLEMENTED — APPROVED MINIMAL DATA PROJECTION AVAILABLE`:** 110/110
   decisões `FC-*`, capabilities limitadas aos contratos mínimos, AR-01..10 e CP-01..06 foram
   homologados pelo `PROJECT_OWNER` em 2026-08-08. As cinco famílias estão prontas segundo a
   [reconciliação](../security/ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md). BDP-001 e BDP-011
-  permanecem pendentes para exposições futuras; nenhum runtime foi implementado nesta homologação.
+  permanecem pendentes para exposições futuras. As 33 rotas canônicas usam presenters `MINIMAL`,
+  CP-01..06 e OpenAPI explícito; somente AR-03 (`ACCESS_GRANTS_VIEWED`) foi ativado. Não houve
+  migration, capability, grant ou assignment.
 - **ETP-015.8 — `NOT STARTED`; ETP-015.9 — `NOT STARTED`; ETP-015.10 — `NOT STARTED`:** rollout P0,
   ondas legadas e hardening não foram antecipados.
-- **Próximo passo:** implementar a ETP-015.6 exclusivamente contra a matriz `MINIMAL` homologada. A
-  ETP-015.8 permanece não iniciada.
+- **Próximo passo:** revisar e mesclar a implementação mínima da ETP-015.6; depois iniciar a ETP-015.8.
+  A ETP-015.8 permanece não iniciada nesta entrega.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,
@@ -332,7 +334,7 @@
   declarada segura ou migrada.
 - **ETP-015.5:** `IMPLEMENTED — ENTERPRISE QUERY ISOLATION AVAILABLE` somente no recorte canônico;
   as 129 rotas legadas permanecem adiadas. A ETP-015.7 disponibiliza a fundação de auditoria; a
-  ETP-015.6 permanece não iniciada e bloqueada por decisões materiais de classificação.
+  ETP-015.6 aplica o perfil `MINIMAL` homologado sem ampliar o recorte legado.
 - **Alterações funcionais desta etapa:** zero.
 - **MVP-001.1 — `IMPLEMENTED — LOCAL BOOTSTRAP AVAILABLE`:** comandos `demo:setup`, `demo:start`,
   `demo:stop`, `demo:status` e reset com confirmação operam um Compose exclusivamente local, com

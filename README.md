@@ -30,6 +30,11 @@ A ETP-015.5 adiciona um
 com filtro anterior ao lookup e uma [matriz negativa](docs/security/ETP-015_5_NEGATIVE_TEST_MATRIX.md)
 para os módulos migrados. A entrega não altera rotas nem torna seguros os 129 handlers legados.
 
+A ETP-015.6 aplica o perfil de resposta `MINIMAL` homologado às 33 rotas canônicas de autenticação,
+grants, dashboard, payroll review e payroll periods. Campos não aprovados são omitidos, não existe
+perfil `FULL`, zero masking foi inferido e somente a leitura AR-03 de grants foi ativada. Consulte
+[a arquitetura da projeção](docs/security/ETP-015_6_SENSITIVE_DATA_PROJECTION_AND_MASKING.md).
+
 A ETP-015.7 disponibiliza a
 [fundação canônica de eventos de autorização](docs/security/ETP-015_7_AUTHORIZATION_AUDIT_EVENTS.md),
 com [catálogo fechado](docs/security/ETP-015_7_AUDIT_EVENT_CATALOG.md), metadata deny-by-default e

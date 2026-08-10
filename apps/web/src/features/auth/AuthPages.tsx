@@ -137,9 +137,9 @@ export function CompanySelectionPage() {
             <li key={company.id}>
               <Card>
                 <span aria-hidden="true" className="company-card__symbol">
-                  {company.tradeName.slice(0, 2).toUpperCase()}
+                  {(company.tradeName ?? company.legalName).slice(0, 2).toUpperCase()}
                 </span>
-                <strong>{company.tradeName}</strong>
+                <strong>{company.tradeName ?? company.legalName}</strong>
                 <p>{company.legalName}</p>
                 {company.id === auth.activeCompanyId && <p>Empresa ativa</p>}
                 <Button

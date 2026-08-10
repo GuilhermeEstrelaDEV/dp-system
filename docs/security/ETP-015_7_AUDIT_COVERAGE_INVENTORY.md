@@ -12,7 +12,7 @@
 | `PayrollPeriodOperationalClosureService`  |         1 | sim            | principal + scope canônico da competência     | revalidado |
 | `PayrollPeriodControlledReopeningService` |         1 | sim            | principal + scope canônico da competência     | revalidado |
 
-Total: **26 códigos**, **7 arquivos produtores**, **1 writer** e **0 escritas diretas adicionais em
+Total runtime após ETP-015.6: **27 códigos**, **7 arquivos produtores**, **1 writer** e **0 escritas diretas adicionais em
 `AuditLog`**.
 
 ## Consumidores e verificadores
@@ -32,7 +32,8 @@ mesmo commit da auditoria. Não houve reescrita dos agregados nem duplicação d
 
 ## Leituras sensíveis
 
-Cobertura ativada nesta etapa: **0**. A marcação de sensitivity no catálogo de capability não decide
+Cobertura ativada na ETP-015.7: **0**. A ETP-015.6 ativou exclusivamente AR-03 para as duas listas de
+grants; AR-01/02/04..10 permanecem inativos. A marcação de sensitivity no catálogo de capability não decide
 quais campos são materialmente sensíveis nem autoriza retenção de acesso. Todas as leituras ficam
 deferidas para ETP-015.6, condicionadas a DAL-06 e às decisões ainda pendentes BDP-001/011.
 

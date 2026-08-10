@@ -5,8 +5,7 @@
 | `/login`                          | autenticar                | pública mínima                                 | JWT real           | formulário real          | ambos           | sessão criada ou 401 controlado    |
 | `/selecionar-empresa`             | listar/selecionar vínculo | identidade autenticada                         | vínculo validado   | seleção real             | Admin: 2; RH: 1 | novo JWT empresarial e cache limpo |
 | `/`                               | contexto do dashboard     | JWT + empresa ativa                            | canônico           | sempre disponível        | ambos           | contexto empresarial, `RESTRICTED` |
-| `/`                               | métricas de review        | `payroll.review.view`                          | filtro empresarial | seção condicional        | nenhum          | métricas omitidas                  |
-| `/`                               | métricas de competência   | `payroll.period.close.view`                    | filtro empresarial | seção condicional        | nenhum          | métricas omitidas                  |
+| `/`                               | métricas aprovadas        | `platform.read`                                | projeção `MINIMAL` | seção condicional        | nenhum          | métricas ou estado restrito        |
 | `/estrutura/*`                    | CRUD legado               | `platform.manage` como gate visual conservador | migração pendente  | bloqueado antes do fetch | nenhum          | `Acesso restrito`                  |
 | `/colaboradores/*`                | CRUD legado               | `platform.manage` como gate visual conservador | migração pendente  | bloqueado antes do fetch | nenhum          | `Acesso restrito`                  |
 | `/contratos/*`                    | CRUD legado               | `platform.manage` como gate visual conservador | migração pendente  | bloqueado antes do fetch | nenhum          | `Acesso restrito`                  |
@@ -22,6 +21,6 @@ política. A ETP-015.5 força `EnterpriseScope` e filtro anterior ao lookup no d
 superfícies canônicas migradas. As 129 rotas legadas permanecem nominalmente adiadas; nenhuma é
 declarada segura apenas por esses controles.
 
-A ETP-015.7 registra os eventos canônicos de autenticação e das escritas críticas já disponíveis,
-sem alterar a experiência visual ou conceder capabilities. Leituras do dashboard e da folha não
-passam a ser auditadas como sensíveis até a classificação e o masking da ETP-015.6.
+A ETP-015.7 registra os eventos canônicos de autenticação e das escritas críticas já disponíveis. A
+ETP-015.6 aplica a projeção `MINIMAL` às cinco famílias e ativa somente AR-03 nas listas de grants;
+dashboard e folha não recebem novos eventos de leitura. Nenhuma capability ou assignment foi criado.

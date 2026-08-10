@@ -79,8 +79,9 @@ O [relatório de classificação](../security/ETP-015_6_CLASSIFICATION_GATE_REPO
 `PROJECT_OWNER` homologou 110/110 FCs, as capabilities limitadas aos contratos `MINIMAL`, AR-01..10 e
 CP-01..06. A [reconciliação](../security/ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md) marcou
 as cinco famílias como prontas para implementação mínima controlada. BDP-001/011 continuam pendentes
-para campos omitidos e exposições futuras. A ETP-015.6 permanece sem runtime e está
-`HUMAN DECISIONS APPROVED — READY FOR APPROVED MINIMAL IMPLEMENTATION`; a ETP-015.8 não foi iniciada.
+para campos omitidos e exposições futuras. A ETP-015.6 está
+`IMPLEMENTED — APPROVED MINIMAL DATA PROJECTION AVAILABLE`: as 33 rotas usam `MINIMAL`, somente AR-03
+foi ativado e CP-01..06 foram aplicadas. A ETP-015.8 não foi iniciada.
 
 Esta regularização documental não aprova Gate B, C ou D, não inicia incremento produtivo e não
 flexibiliza qualquer requisito de segurança existente.

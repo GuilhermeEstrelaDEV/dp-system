@@ -75,3 +75,9 @@ associada automaticamente a papel.
 
 O [inventário completo](LEGACY_API_AUTHORIZATION_ROUTE_INVENTORY.md) registra os 163 handlers e o
 estado de prontidão para uma decisão futura. A iniciativa continua sem aprovação ou implementação.
+
+## ETP-015.6 — projeção de resposta
+
+As 33 rotas canônicas de auth/contexto, grants, dashboard, payroll review e payroll periods usam o
+perfil `MINIMAL` homologado. Esta classificação não altera o estado dos 129 handlers
+`LEGACY_DEFERRED`, não cria nova capability e não converte rota legada em canônica.

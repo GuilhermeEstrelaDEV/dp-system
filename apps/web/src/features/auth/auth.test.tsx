@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderWithRouter } from '@/test/renderWithRouter';
+import { sanitizeStoredSession } from './authSession';
 
 const meta = { correlationId: 'trace-1', timestamp: new Date(0).toISOString(), path: '/api/v1' };
 const success = (data: unknown) =>
@@ -18,7 +19,15 @@ describe('authenticated experience', () => {
   it('logs in, loads identity and allows company selection', async () => {
     vi.spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce(success({ accessToken: 'initial-token', tokenType: 'Bearer' }))
-      .mockResolvedValueOnce(success({ actorId: 'actor', activeCompanyId: null, permissions: [] }))
+      .mockResolvedValueOnce(
+        success({
+          actorId: 'actor',
+          activeCompanyId: null,
+          permissions: [],
+          email: 'user@example.com',
+          displayName: 'Usuário',
+        }),
+      )
       .mockResolvedValueOnce(
         success([{ id: 'company', legalName: 'Empresa SA', tradeName: 'Empresa' }]),
       )
@@ -28,6 +37,8 @@ describe('authenticated experience', () => {
           actorId: 'actor',
           activeCompanyId: 'company',
           permissions: ['payroll.review.view'],
+          email: 'user@example.com',
+          displayName: 'Usuário',
         }),
       )
       .mockResolvedValueOnce(
@@ -85,5 +96,45 @@ describe('authenticated experience', () => {
     expect(await screen.findByRole('heading', { name: 'Acesso restrito' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Novo colaborador' })).not.toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('drops legacy technical fields while restoring a session', () => {
+    const session = sanitizeStoredSession({
+      token: 'token',
+      user: {
+        actorId: 'actor',
+        activeCompanyId: 'company',
+        permissions: ['platform.read'],
+        email: 'user@example.com',
+        displayName: 'Usuário',
+        roleCodes: ['ADMIN'],
+        sessionId: 'session-secret',
+        traceId: 'trace-secret',
+        accessGrants: [{ id: 'grant-secret' }],
+      },
+      companies: [
+        {
+          id: 'company',
+          legalName: 'Empresa SA',
+          tradeName: null,
+          internalCode: 'secret',
+        },
+      ],
+    });
+
+    expect(session).toEqual({
+      token: 'token',
+      user: {
+        actorId: 'actor',
+        activeCompanyId: 'company',
+        permissions: ['platform.read'],
+        email: 'user@example.com',
+        displayName: 'Usuário',
+      },
+      companies: [{ id: 'company', legalName: 'Empresa SA', tradeName: null }],
+    });
+    expect(session?.user).not.toHaveProperty('roleCodes');
+    expect(session?.user).not.toHaveProperty('sessionId');
+    expect(session?.user).not.toHaveProperty('accessGrants');
   });
 });

@@ -95,3 +95,11 @@ declarados seguros por essa fundação.
 A ETP-015.7 também não altera rotas ou classificações. Os 36 handlers canônicos continuam sob as
 mesmas políticas; seus produtores de escrita crítica passam a usar o catálogo e writer atômico. Os
 129 handlers legados não recebem cobertura implícita de auditoria.
+
+## Reconciliação da implementação ETP-015.6
+
+A implementação da projeção MINIMAL aprovada não altera a classificação de rotas nem as contagens de
+handlers. Seu manifesto fechado cobre 33 endpoints canônicos de auth/context, grants, dashboard,
+payroll review e payroll periods; todos continuam usando as políticas de JWT, empresa ativa e
+capability registradas aqui. Os 129 handlers `LEGACY_DEFERRED` permanecem inalterados, e nenhum perfil
+ou lista de campos fornecido pelo cliente pode ampliar uma resposta.

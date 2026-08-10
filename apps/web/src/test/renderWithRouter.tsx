@@ -10,6 +10,7 @@ const testSession = {
     activeCompanyId: 'company-1',
     permissions: [
       'platform.manage',
+      'platform.read',
       'payroll.review.view',
       'payroll.review.create',
       'payroll.review.finding.create',
@@ -23,7 +24,6 @@ const testSession = {
     ],
     displayName: 'Usuário de Teste',
     email: 'teste@dp-system.local',
-    roleCodes: ['TEST'],
   },
   companies: [{ id: 'company-1', legalName: 'Empresa Teste SA', tradeName: 'Empresa Teste' }],
 };

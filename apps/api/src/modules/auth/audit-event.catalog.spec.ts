@@ -20,9 +20,11 @@ describe('authorization audit event catalog', () => {
     const nonAtomic = AUDIT_EVENT_CODES.filter(
       (code) =>
         AUDIT_EVENT_CATALOG[code].category !== 'AUTHENTICATION' &&
+        code !== 'ACCESS_GRANTS_VIEWED' &&
         AUDIT_EVENT_CATALOG[code].atomicity !== 'REQUIRED',
     );
     expect(nonAtomic).toEqual([]);
+    expect(AUDIT_EVENT_CATALOG.ACCESS_GRANTS_VIEWED.atomicity).toBe('OPTIONAL');
   });
 
   it('rejects an event code outside the closed catalog at runtime', () => {

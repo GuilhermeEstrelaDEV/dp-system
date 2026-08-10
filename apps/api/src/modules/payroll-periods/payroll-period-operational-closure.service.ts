@@ -412,9 +412,7 @@ export class PayrollPeriodOperationalClosureService {
             hashAlgorithmVersion: manifest.hashAlgorithmVersion,
             warningsAcknowledged: acknowledgementCodes,
             closedAt: now.toISOString(),
-            closedBy: principal.actorId,
             consistencyToken: closedPeriod.updatedAt.toISOString(),
-            traceId: principal.traceId,
             idempotentReplay: false,
           };
         },
@@ -578,9 +576,7 @@ export class PayrollPeriodOperationalClosureService {
       hashAlgorithmVersion: manifest.hashAlgorithmVersion,
       warningsAcknowledged: acknowledgements,
       closedAt: closure.closedAt.toISOString(),
-      closedBy: closure.createdBy,
       consistencyToken: period.updatedAt.toISOString(),
-      traceId: manifest.traceId,
       idempotentReplay: true,
     };
   }

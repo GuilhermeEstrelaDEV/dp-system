@@ -1,5 +1,5 @@
 import { HttpException } from '@nestjs/common';
-import type { PayrollPeriodReadinessBlocker } from './domain/payroll-period-closure-readiness';
+import type { PayrollPeriodReadinessBlockerDto } from './payroll-period-readiness.dto';
 
 export type PayrollPeriodClosureErrorCode =
   | 'IDEMPOTENCY_KEY_REQUIRED'
@@ -27,7 +27,7 @@ export class PayrollPeriodClosureHttpException extends HttpException {
     code: PayrollPeriodClosureErrorCode,
     message: string,
     status: number,
-    details?: { blockers?: readonly PayrollPeriodReadinessBlocker[]; warningCodes?: string[] },
+    details?: { blockers?: readonly PayrollPeriodReadinessBlockerDto[]; warningCodes?: string[] },
   ) {
     super({ code, message, ...details }, status);
   }
