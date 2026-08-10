@@ -1,7 +1,6 @@
 # ETP-015 — Release Gates
 
-**Status:** Gates A e B aprovados; Gate C `TECHNICALLY VERIFIED — HUMAN APPROVAL PENDING`; Gate D não
-iniciado
+**Status:** Gates A, B e C aprovados; Gate D `NOT STARTED — NOT APPROVED`
 
 ## Governança de evidências
 
@@ -42,8 +41,8 @@ Sem evidência, o resultado binário do item é `FAIL`.
 - **Gate B:** `APPROVED`;
 - **Technical verification:** `COMPLETE — 8/8 PASS`;
 - **Security approval:** `APPROVED — 2026-08-10`;
-- **Gate C:** `TECHNICALLY VERIFIED — HUMAN APPROVAL PENDING`;
-- **ETP-015.8:** `IMPLEMENTED IN PR — GATE C HUMAN APPROVAL PENDING`.
+- **Gate C:** `APPROVED — SECURITY / PRODUCT / DP — 2026-08-10`;
+- **ETP-015.8:** `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`.
 
 **Evidência consolidada:** [relatório pós-merge](../security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md)
 e [aceite técnico](../security/ETP-015_GATE_B_TECHNICAL_ACCEPTANCE.md). O resultado técnico é
@@ -96,14 +95,24 @@ para campos omitidos e exposições futuras. A ETP-015.6 está
 `IMPLEMENTED — APPROVED MINIMAL DATA PROJECTION AVAILABLE`: as 33 rotas usam `MINIMAL`, somente AR-03
 foi ativado e CP-01..06 foram aplicadas. Essa era a baseline anterior ao início da ETP-015.8.
 
-O Gate B foi aprovado posteriormente por Segurança em 2026-08-10. Essa decisão não aprova Gate C ou
-D, não inicia incremento produtivo e não flexibiliza qualquer requisito de segurança existente.
+O Gate B foi aprovado posteriormente por Segurança em 2026-08-10. Historicamente, essa decisão não
+aprovava os Gates C ou D. O Gate C foi homologado separadamente pelos três aprovadores obrigatórios
+em 2026-08-10; Gate D permanece não aprovado, nenhum incremento produtivo foi iniciado e nenhum
+requisito de segurança foi flexibilizado.
 
 ## Gate C — P0 Migration and Security Validation
 
-**Status:** `GATE C — TECHNICALLY VERIFIED — HUMAN APPROVAL PENDING`. A aprovação do Gate B não
-satisfaz automaticamente a revisão humana deste gate. As evidências técnicas estão em
-[ETP-015_GATE_C_TECHNICAL_EVIDENCE.md](../security/ETP-015_GATE_C_TECHNICAL_EVIDENCE.md).
+**Status:** `GATE C — APPROVED`. Os oito itens técnicos estão `PASS`, e Segurança, Produto e DP
+aprovaram o recorte em 2026-08-10. As evidências estão em
+[ETP-015_GATE_C_TECHNICAL_EVIDENCE.md](../security/ETP-015_GATE_C_TECHNICAL_EVIDENCE.md), e a decisão
+humana está no
+[registro formal](../security/ETP-015_GATE_C_HUMAN_APPROVAL.md).
+
+- **Technical verification:** `COMPLETE — 8/8 PASS`;
+- **Security:** `APPROVED — 2026-08-10`;
+- **Product:** `APPROVED — 2026-08-10`;
+- **DP:** `APPROVED — 2026-08-10`;
+- **Gate C:** `APPROVED`.
 
 - [x] consumidores conhecidos e potenciais de `/payroll-closures` registrados;
 - [x] adapter preserva contrato necessário e delega exclusivamente ao canônico;
@@ -113,11 +122,14 @@ satisfaz automaticamente a revisão humana deste gate. As evidências técnicas 
 - [x] escrita, evento e `AuditLog` são atômicos;
 - [x] telemetria não contém PII, token, body ou query integrais;
 - [x] rollback testado sem remover JWT, empresa ou isolamento;
-- [ ] revisão de Segurança, Produto e DP registrada.
+- [x] revisão de Segurança, Produto e DP registrada.
 
 **Saída verificável:** suíte P0 verde em PostgreSQL 16, relatório de segurança e janela aprovada.
 
 ## Gate D — Legacy Rollout and Production Readiness
+
+**Status:** `NOT STARTED — NOT APPROVED`. A aprovação do Gate C não inicia ETP-015.9/015.10, não
+remove legado e não autoriza produção, cloud ou deploy.
 
 - [ ] cada família tem owner, BDPs, capabilities, sensibilidade e auditoria definidos;
 - [ ] todas as 163 rotas estão classificadas e reconciliadas com o código/OpenAPI;

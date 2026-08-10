@@ -142,8 +142,8 @@ canônicos, deixando 125 rotas `LEGACY_DEFERRED`; as etapas restantes seguem a o
 - **ETP-015.7:** `IMPLEMENTED — AUTHORIZATION AUDIT FOUNDATION AVAILABLE`;
 - **ETP-015.6:** `IMPLEMENTED — APPROVED MINIMAL DATA PROJECTION AVAILABLE`;
 - **Gate B:** `APPROVED — SECURITY — 2026-08-10`;
-- **Gate C:** `TECHNICALLY VERIFIED — HUMAN APPROVAL PENDING`;
-- **ETP-015.8:** `IMPLEMENTED IN PR — GATE C HUMAN APPROVAL PENDING`;
+- **Gate C:** `APPROVED — SECURITY / PRODUCT / DP — 2026-08-10`;
+- **ETP-015.8:** `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`;
 - **ETP-015.9:** `NOT STARTED — NOT AUTHORIZED`;
 - **ETP-015.10:** `NOT STARTED — NOT AUTHORIZED`.
 
@@ -157,9 +157,11 @@ decisões nas 33 rotas, ativa somente AR-03, implementa CP-01..06 e mantém zero
 [evidência pós-merge](security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md) registrou `8 PASS / 0 FAIL`, e
 o [registro humano](security/ETP-015_GATE_B_SECURITY_APPROVAL.md) aprovou o Gate B. A
 [migração P0](security/ETP-015_8_PAYROLL_CLOSURE_P0_MIGRATION.md) está implementada em PR com oito
-itens técnicos do Gate C aprovados e revisão humana de Segurança, Produto e DP pendente. Isso não
-aprova o Gate C. ETP-015.9/015.10, produção, cloud e deploy não estão autorizados; BDP-001 e BDP-011
-permanecem `PENDING`, e BDP-014 permanece `APPROVED — VERSION 1`.
+itens técnicos `PASS`. A [homologação humana](security/ETP-015_GATE_C_HUMAN_APPROVAL.md) de Segurança,
+Produto e DP aprovou o Gate C em 2026-08-10. O merge e a verificação pós-merge permanecem pendentes;
+ETP-015.8 ainda não está `COMPLETED`. ETP-015.9/015.10, remoção de legado, produção, cloud e deploy não
+estão autorizados; BDP-001 e BDP-011 permanecem `PENDING`, e BDP-014 permanece
+`APPROVED — VERSION 1`.
 
 ## Próximas iniciativas propostas
 

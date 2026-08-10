@@ -2,7 +2,7 @@
 
 **Baseline:** `origin/develop@437bdc35cb5c6dc8d050a7b2eef22eb9b24c6ec0`
 
-**Status:** `IMPLEMENTED IN PR — GATE C HUMAN APPROVAL PENDING`
+**Status:** `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`
 
 ## Diff controlado
 
@@ -36,7 +36,8 @@
 - ambiente demonstrativo: `status`, `data:verify`, `verify` e `rehearse` aprovados com `DEMO STATUS: GO`;
 - apresentação: 15 slides e 15 notas validados, sem placeholder, segredo, dado pessoal ou URL externa.
 
-A evidência não converte o Gate C em aprovado: a revisão humana permanece pendente.
+A evidência técnica permanece `8/8 PASS`, e a homologação humana foi registrada separadamente sem
+alterar métricas, contratos ou comportamento funcional.
 
 ## Performance
 
@@ -48,3 +49,15 @@ somente para detectar regressão estrutural, não para estimar latência de rede
 Cada operação do adapter realizou exatamente uma chamada ao serviço canônico e zero query adicional.
 Os payloads serializados mediram 314/352 bytes para history canônico/adapter, 44/44 bytes para close e
 42/42 bytes para reopen. Não foi identificado N+1 e nenhum índice ou migration foi criado.
+
+## Gate C Human Approval
+
+- Security: `APPROVED — 2026-08-10`;
+- Product: `APPROVED — 2026-08-10`;
+- DP: `APPROVED — 2026-08-10`;
+- formal record: [ETP-015_GATE_C_HUMAN_APPROVAL.md](ETP-015_GATE_C_HUMAN_APPROVAL.md);
+- Gate C: `APPROVED`;
+- merge: `PENDING`;
+- post-merge verification: `PENDING`.
+
+ETP-015.9, ETP-015.10, legacy route removal, production, cloud and deployment remain unauthorized.

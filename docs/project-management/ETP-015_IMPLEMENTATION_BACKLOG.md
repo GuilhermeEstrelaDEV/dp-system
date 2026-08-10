@@ -1,7 +1,7 @@
 # ETP-015 — Implementation Backlog
 
-**Status:** especificação aprovada; ETP-015.1–015.3 concluídas; ETP-015.4–015.7 implementadas; Gate B
-`APPROVED — SECURITY — 2026-08-10`; Gate C `TECHNICALLY VERIFIED — HUMAN APPROVAL PENDING`
+**Status:** especificação aprovada; ETP-015.1–015.3 concluídas; ETP-015.4–015.7 implementadas; Gates B
+e C aprovados; ETP-015.8 `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`
 
 **Baseline:** ETP-015.3 foi incorporada à `develop` pelo PR #61. O
 [Operational Gate](ETP-015_3_OPERATIONAL_RELEASE_GATE.md) permanece pendente para ambiente de destino,
@@ -206,12 +206,13 @@ dependência circular.
 
 ## ETP-015.8 — Payroll Closure P0 Migration
 
-**Status:** `IMPLEMENTED IN PR — GATE C HUMAN APPROVAL PENDING`
+**Status:** `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`
 
 O [registro de Segurança](../security/ETP-015_GATE_B_SECURITY_APPROVAL.md) removeu o blocker humano de
-entrada. Gate C está `TECHNICALLY VERIFIED — HUMAN APPROVAL PENDING`; sua revisão humana continua
-integralmente aplicável. BDP-001 e BDP-011 permanecem `PENDING`, e BDP-014 permanece
-`APPROVED — VERSION 1`.
+entrada. Gate C está `APPROVED`: os oito itens técnicos estão `PASS`, e Segurança, Produto e DP
+homologaram o recorte em 2026-08-10 no
+[registro formal](../security/ETP-015_GATE_C_HUMAN_APPROVAL.md). BDP-001 e BDP-011 permanecem
+`PENDING`, e BDP-014 permanece `APPROVED — VERSION 1`.
 
 - **Objetivo:** proteger `/payroll-closures` e delegar ao fechamento canônico.
 - **Dependências:** 015.1–015.5, 015.7 e 015.6, BDP-014, DAL-09–14; Gate B/C.
@@ -224,13 +225,13 @@ integralmente aplicável. BDP-001 e BDP-011 permanecem `PENDING`, e BDP-014 perm
 - **Evidências:** testes PostgreSQL, inventário de consumidores e plano de janela.
 - **Implementação:** quatro aliases agora são adapters deprecated, classificados com capabilities,
   sem Prisma ou regra paralela; `/folha/fechamentos` usa readiness/history/close/reopen canônicos.
-- **Gate C:** 8 itens técnicos `PASS`; revisão de Segurança, Produto e DP permanece
-  `PENDING HUMAN APPROVAL`. Isto não marca a etapa como `COMPLETED` antes de aprovação, merge e
+- **Gate C:** `APPROVED`; 8/8 itens técnicos `PASS`, 0 `FAIL`, com aprovação de Segurança, Produto e
+  DP registrada em 2026-08-10. Isto não marca a etapa como `COMPLETED` antes do merge e da
   verificação pós-merge.
 
 ## ETP-015.9 — Legacy Route Rollout
 
-**Status:** `NOT STARTED`
+**Status:** `NOT STARTED — NOT AUTHORIZED`
 
 - **Objetivo:** migrar famílias restantes por prioridade P1–P4.
 - **Dependências:** 015.8 estável e BDPs de cada família.
@@ -254,7 +255,7 @@ impede outra sem dependência material.
 
 ## ETP-015.10 — Hardening and Legacy Removal Readiness
 
-**Status:** `NOT STARTED`
+**Status:** `NOT STARTED — NOT AUTHORIZED`
 
 - **Objetivo:** provar prontidão para enforcement global e futura remoção.
 - **Dependências:** 015.1–015.9 e Gate D.
