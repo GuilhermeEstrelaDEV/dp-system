@@ -305,17 +305,24 @@
   binária `PASS`, consolidada em
   [ETP-015_GATE_B_POST_MERGE_EVIDENCE.md](../security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md), e a
   [decisão humana](../security/ETP-015_GATE_B_SECURITY_APPROVAL.md) aprovou o Gate B.
-- **ETP-015.8 — `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`:** os quatro aliases P0 são
+- **ETP-015.8 — `COMPLETED — POST-MERGE VERIFIED`:** os quatro aliases P0 são
   adapters deprecated para history/close/reopen canônicos, com JWT, empresa, capability, projeção
   `MINIMAL`, telemetria segura e consumidor frontend migrado. O inventário agora contém 31 handlers
   por capability e 125 deferred. Não houve migration, capability, grant, assignment ou evento novo.
 - **Gate C — `APPROVED — SECURITY / PRODUCT / DP — 2026-08-10`:** 8/8 itens técnicos `PASS`, 0
   `FAIL`; a [homologação humana](../security/ETP-015_GATE_C_HUMAN_APPROVAL.md) foi registrada sem
   condições bloqueadoras.
-- **ETP-015.9 / ETP-015.10 — `NOT STARTED — NOT AUTHORIZED`:** ondas e hardening não iniciados.
-- **Próximo passo:** merge do PR #86 e verificação pós-merge; a ETP-015.8 ainda não está `COMPLETED`.
-  Produção, cloud, deploy, remoção de legado, Gate D e etapas seguintes não estão autorizados.
-  BDP-001/011 permanecem `PENDING`; BDP-014 está `APPROVED — VERSION 1`.
+- **Verificação pós-merge:** PR #86 incorporado por
+  `b8324037b053b947692992d698888ed6e73db5f2`; a
+  [evidência](../security/ETP-015_8_POST_MERGE_VERIFICATION.md) confirmou ausência de regressões,
+  PostgreSQL 16, cobertura, demo e invariantes com resultado `PASS`.
+- **ETP-015.9 / ETP-015.10 — `NOT STARTED — NOT AUTHORIZED`:** a
+  [prontidão da ETP-015.9](../security/ETP-015_9_ENTRY_READINESS.md) foi avaliada, mas ondas e
+  hardening não foram iniciados.
+- **Próximo passo:** decisão humana de entrada da ETP-015.9, incluindo capabilities, owners,
+  dependências materiais e alocação dos 15 handlers P0 residuais. Produção, cloud, deploy, remoção
+  de legado, Gate D e etapas seguintes não estão autorizados. BDP-001/011 permanecem `PENDING`;
+  BDP-014 está `APPROVED — VERSION 1`.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,

@@ -1,7 +1,7 @@
 # ETP-015 — Implementation Backlog
 
 **Status:** especificação aprovada; ETP-015.1–015.3 concluídas; ETP-015.4–015.7 implementadas; Gates B
-e C aprovados; ETP-015.8 `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`
+e C aprovados; ETP-015.8 `COMPLETED — POST-MERGE VERIFIED`
 
 **Baseline:** ETP-015.3 foi incorporada à `develop` pelo PR #61. O
 [Operational Gate](ETP-015_3_OPERATIONAL_RELEASE_GATE.md) permanece pendente para ambiente de destino,
@@ -206,7 +206,7 @@ dependência circular.
 
 ## ETP-015.8 — Payroll Closure P0 Migration
 
-**Status:** `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`
+**Status:** `COMPLETED — POST-MERGE VERIFIED`
 
 O [registro de Segurança](../security/ETP-015_GATE_B_SECURITY_APPROVAL.md) removeu o blocker humano de
 entrada. Gate C está `APPROVED`: os oito itens técnicos estão `PASS`, e Segurança, Produto e DP
@@ -226,12 +226,20 @@ homologaram o recorte em 2026-08-10 no
 - **Implementação:** quatro aliases agora são adapters deprecated, classificados com capabilities,
   sem Prisma ou regra paralela; `/folha/fechamentos` usa readiness/history/close/reopen canônicos.
 - **Gate C:** `APPROVED`; 8/8 itens técnicos `PASS`, 0 `FAIL`, com aprovação de Segurança, Produto e
-  DP registrada em 2026-08-10. Isto não marca a etapa como `COMPLETED` antes do merge e da
-  verificação pós-merge.
+  DP registrada em 2026-08-10.
+- **Merge e aceite:** PR #86 incorporado por
+  `b8324037b053b947692992d698888ed6e73db5f2`; a
+  [verificação pós-merge](../security/ETP-015_8_POST_MERGE_VERIFICATION.md) confirmou a etapa sem
+  regressão.
 
 ## ETP-015.9 — Legacy Route Rollout
 
 **Status:** `NOT STARTED — NOT AUTHORIZED`
+
+A [avaliação de prontidão](../security/ETP-015_9_ENTRY_READINESS.md) está concluída. Ela não autoriza
+entrada: as famílias de domínio permanecem bloqueadas por capabilities, owners e BDPs materiais, e
+15 handlers P0 residuais ainda exigem alocação humana de onda. P4 está pronta somente para
+preservação/reconciliação sem mudança de runtime.
 
 - **Objetivo:** migrar famílias restantes por prioridade P1–P4.
 - **Dependências:** 015.8 estável e BDPs de cada família.

@@ -42,7 +42,7 @@ Sem evidência, o resultado binário do item é `FAIL`.
 - **Technical verification:** `COMPLETE — 8/8 PASS`;
 - **Security approval:** `APPROVED — 2026-08-10`;
 - **Gate C:** `APPROVED — SECURITY / PRODUCT / DP — 2026-08-10`;
-- **ETP-015.8:** `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`.
+- **ETP-015.8:** `COMPLETED — POST-MERGE VERIFIED`.
 
 **Evidência consolidada:** [relatório pós-merge](../security/ETP-015_GATE_B_POST_MERGE_EVIDENCE.md)
 e [aceite técnico](../security/ETP-015_GATE_B_TECHNICAL_ACCEPTANCE.md). O resultado técnico é
@@ -123,6 +123,11 @@ humana está no
 - [x] telemetria não contém PII, token, body ou query integrais;
 - [x] rollback testado sem remover JWT, empresa ou isolamento;
 - [x] revisão de Segurança, Produto e DP registrada.
+
+O PR #86 foi incorporado à `develop` pelo commit
+`b8324037b053b947692992d698888ed6e73db5f2`. A
+[verificação pós-merge](../security/ETP-015_8_POST_MERGE_VERIFICATION.md) confirmou todos os
+invariantes sem regressão. Essa conclusão não aprova o Gate D nem inicia a ETP-015.9.
 
 **Saída verificável:** suíte P0 verde em PostgreSQL 16, relatório de segurança e janela aprovada.
 
