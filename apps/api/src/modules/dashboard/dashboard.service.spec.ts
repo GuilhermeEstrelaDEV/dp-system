@@ -63,22 +63,23 @@ describe('DashboardService', () => {
 
   it('scopes review metrics, timeline and activity to the active company', async () => {
     const result = await service.summary(
-      scope(principal('company-a', ['payroll.review.view'])),
-      principal('company-a', ['payroll.review.view']),
+      scope(principal('company-a', ['platform.read'])),
+      principal('company-a', ['platform.read']),
       new Date('2026-07-30T15:00:00Z'),
     );
     expect(result.review?.metrics.map(({ value }) => value)).toEqual([2, 1]);
     expect(result.review?.sixMonthTimeline).toHaveLength(6);
     expect(result.review?.sixMonthTimeline.at(-1)).toMatchObject({ key: '2026-07', value: 1 });
     expect(result.review?.recentActivity[0]).not.toHaveProperty('actorId');
+    expect(result.review?.recentActivity[0]).not.toHaveProperty('description');
     expect(cycleGroupBy).toHaveBeenCalledWith(expect.objectContaining({ companyId: 'company-a' }));
   });
 
-  it('scopes payroll period aggregation independently', async () => {
-    const actor = principal('company-a', ['payroll.period.close.view']);
+  it('scopes payroll period aggregation under the approved dashboard capability', async () => {
+    const actor = principal('company-a', ['platform.read']);
     const result = await service.summary(scope(actor), actor);
     expect(result.payrollPeriod?.metrics[0]?.value).toBe(3);
-    expect(result.review).toBeUndefined();
+    expect(result.review).toBeDefined();
     expect(periodGroupBy).toHaveBeenCalledWith(expect.objectContaining({ companyId: 'company-a' }));
   });
 
@@ -86,10 +87,19 @@ describe('DashboardService', () => {
     cycleGroupBy.mockResolvedValue([]);
     findingCount.mockResolvedValue(0);
     eventFindMany.mockResolvedValue([]);
-    const actor = principal('company-a', ['payroll.review.view']);
+    const actor = principal('company-a', ['platform.read']);
     const result = await service.summary(scope(actor), actor);
     expect(result.review?.metrics.map(({ value }) => value)).toEqual([0, 0]);
     expect(result.review?.recentActivity).toEqual([]);
+  });
+
+  it('does not treat platform management as dashboard read access', async () => {
+    const actor = principal('company-a', ['platform.manage']);
+    await expect(service.summary(scope(actor), actor)).resolves.toMatchObject({
+      access: 'RESTRICTED',
+    });
+    expect(cycleGroupBy).not.toHaveBeenCalled();
+    expect(periodGroupBy).not.toHaveBeenCalled();
   });
 
   it('does not expose another or inactive company', async () => {

@@ -212,5 +212,13 @@ de payroll eliminam composição dinâmica. Nenhuma leitura sensível foi ativad
 ## 14. Limites
 
 Este desenho não atribui capabilities, não define cargos, não cria migration e não migra famílias de
-negócio. A auditoria de autorização está implementada na ETP-015.7; masking permanece na ETP-015.6;
+negócio. A auditoria de autorização está implementada na ETP-015.7; a ETP-015.6 aplica a projeção
+`MINIMAL` e preserva zero regras de masking homologadas;
 a migração das famílias legadas continua nas ondas ETP-015.8–015.10.
+
+## 15. Projeção mínima homologada
+
+A ETP-015.6 materializa uma camada de presenters explícitos e um catálogo verificável para
+FC-001..110. O único perfil runtime é `MINIMAL`; campos bloqueados são omitidos e nenhuma regra de
+masking é inferida. As chaves de cache incluem empresa, ator, recurso e perfil. O writer existente
+recebe somente AR-03, elevando o catálogo runtime a 27 eventos sem criar trilha paralela.

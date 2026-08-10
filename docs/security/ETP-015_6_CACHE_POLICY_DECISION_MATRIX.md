@@ -51,3 +51,9 @@
 - Close/reopen invalidates readiness, history, version, event and manifest entries for the affected period.
 
 No runtime cache is altered by this document.
+
+## Implementation evidence
+
+CP-01..CP-06 are now applied by session sanitization, scoped React Query keys and scope-wide
+invalidation after mutations. No response cache is introduced for access grants, and consistency
+tokens remain in memory only.

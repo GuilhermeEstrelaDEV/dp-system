@@ -42,3 +42,9 @@ The event must be persisted before a successful sensitive list response is relea
 BDP-011 remains pending for final retention, disposal, export and privacy policy. It does not block AR-03 emission in the approved MINIMAL implementation because the existing ETP-015.7 architecture already preserves `AuditLog` append-only and no retention, deletion or export behavior is introduced by this decision. Any future automated retention/disposal/export, or expansion of event content, remains `STILL BLOCKED BY BDP-011`.
 
 No event code or runtime catalog entry is created in this branch.
+
+## Implementation evidence
+
+The subsequent runtime increment adds only AR-03 as `ACCESS_GRANTS_VIEWED`. It is emitted for both
+successful list operations, including empty results, and a writer failure prevents a successful
+response. AR-01/02/04..10 remain inactive.

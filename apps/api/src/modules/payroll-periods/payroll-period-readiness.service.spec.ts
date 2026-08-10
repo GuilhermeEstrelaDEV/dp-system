@@ -115,7 +115,6 @@ describe('PayrollPeriodReadinessService', () => {
     const result = await service.evaluate(periodId, runId, principal);
     expect(result).toMatchObject({
       payrollPeriodId: periodId,
-      companyId,
       currentStatus: 'OPEN',
       isReady: true,
       selectedPayrollRun: { id: runId, sequence: 1, status: 'COMPLETED' },
@@ -124,7 +123,6 @@ describe('PayrollPeriodReadinessService', () => {
       warnings: [],
       acknowledgementsRequired: [],
       consistencyToken: '2026-07-20T11:00:00.000Z',
-      traceId: principal.traceId,
       unavailableWarningChecks: ['EXTERNAL_INTEGRATIONS_PENDING'],
     });
     expect(result.evaluatedAt).toEqual(expect.any(String));
@@ -162,12 +160,16 @@ describe('PayrollPeriodReadinessService', () => {
     const result = await service.evaluate(periodId, undefined, principal);
     expect(result.isReady).toBe(true);
     expect(result.warnings).toEqual([
-      expect.objectContaining({
+      {
         code: 'VARIABLE_PAY_PENDING',
+        category: 'VARIABLE_PAY',
         acknowledgementRequired: true,
-        metadata: { pendingItems: 3 },
-      }),
+        source: 'VARIABLE_COMPENSATION',
+        relatedEntityType: 'PayrollPeriod',
+      },
     ]);
+    expect(result.warnings[0]).not.toHaveProperty('message');
+    expect(result.warnings[0]).not.toHaveProperty('metadata');
     expect(result.acknowledgementsRequired).toEqual(['VARIABLE_PAY_PENDING']);
   });
 

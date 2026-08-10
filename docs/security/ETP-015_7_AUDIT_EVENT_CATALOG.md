@@ -11,6 +11,7 @@ que não acompanham uma escrita crítica de domínio.
 | `AUTH_LOGIN_SUCCEEDED`                      | autenticação   | opcional    | OPTIONAL    | —                                | —                              |
 | `AUTH_COMPANY_SELECTED`                     | autenticação   | obrigatória | OPTIONAL    | —                                | —                              |
 | `AUTH_LOGOUT_SUCCEEDED`                     | autenticação   | opcional    | OPTIONAL    | —                                | —                              |
+| `ACCESS_GRANTS_VIEWED`                      | autorização    | obrigatória | OPTIONAL    | uma capability de grants         | tipo do grant e perfil         |
 | `ROLE_PERMISSION_ASSIGNED`                  | assignment     | opcional    | REQUIRED    | serviço interno                  | `source`                       |
 | `ROLE_PERMISSION_REVOKED`                   | assignment     | opcional    | REQUIRED    | serviço interno                  | —                              |
 | `USER_COMPANY_ROLE_ASSIGNED`                | assignment     | obrigatória | REQUIRED    | serviço interno                  | `source`                       |
@@ -43,6 +44,10 @@ produtor. Recurso é representado por `entityType` e `entityId`; ator, empresa, 
 user agent e instante utilizam as colunas existentes.
 
 ## Evolução
+
+AR-03 (`ACCESS_GRANTS_VIEWED`) foi acrescentado pela ETP-015.6 após homologação humana. Ele aceita
+exatamente `delegation.manage` ou `emergency_access.manage`, registra somente `grantType` e
+`projectionProfile` e não altera a atomicidade das escritas críticas.
 
 Novo código exige atualização conjunta do catálogo, manifesto de produtores, allowlist, testes e
 documentação. Códigos existentes não são renomeados. Mudança incompatível exige nova versão do

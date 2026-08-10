@@ -1,21 +1,38 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { CurrentPrincipal, RequireCapabilities } from '../auth/auth.decorators';
 import {
   CreatePayrollReviewFindingDto,
   PayrollReviewDecisionDto,
+  PayrollReviewCycleMinimalResponseDto,
+  PayrollReviewDetailsMinimalResponseDto,
+  PayrollReviewFindingMinimalResponseDto,
+  PayrollReviewHistoryMinimalResponseDto,
   ReopenPayrollReviewDto,
   TransitionPayrollReviewFindingDto,
 } from './payroll-reviews.dto';
 import { PayrollReviewsService } from './payroll-reviews.service';
 
 @ApiTags('payroll-reviews')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse()
+@ApiForbiddenResponse()
+@ApiNotFoundResponse()
 @Controller()
 export class PayrollReviewsController {
   constructor(private readonly service: PayrollReviewsService) {}
 
   @Post('payroll-runs/:payrollRunId/reviews')
+  @ApiCreatedResponse({ type: PayrollReviewCycleMinimalResponseDto })
   @RequireCapabilities('payroll.review.create')
   openCycle(
     @Param('payrollRunId') payrollRunId: string,
@@ -25,6 +42,7 @@ export class PayrollReviewsController {
   }
 
   @Get('payroll-runs/:payrollRunId/reviews')
+  @ApiOkResponse({ type: PayrollReviewDetailsMinimalResponseDto, isArray: true })
   @RequireCapabilities('payroll.review.view')
   listByRun(
     @Param('payrollRunId') payrollRunId: string,
@@ -34,6 +52,7 @@ export class PayrollReviewsController {
   }
 
   @Get('payroll-reviews/:reviewCycleId')
+  @ApiOkResponse({ type: PayrollReviewDetailsMinimalResponseDto })
   @RequireCapabilities('payroll.review.view')
   findCycle(
     @Param('reviewCycleId') reviewCycleId: string,
@@ -43,6 +62,7 @@ export class PayrollReviewsController {
   }
 
   @Post('payroll-reviews/:reviewCycleId/findings')
+  @ApiCreatedResponse({ type: PayrollReviewFindingMinimalResponseDto })
   @RequireCapabilities('payroll.review.finding.create')
   createFinding(
     @Param('reviewCycleId') reviewCycleId: string,
@@ -53,6 +73,7 @@ export class PayrollReviewsController {
   }
 
   @Get('payroll-reviews/:reviewCycleId/findings')
+  @ApiOkResponse({ type: PayrollReviewFindingMinimalResponseDto, isArray: true })
   @RequireCapabilities('payroll.review.view')
   listFindings(
     @Param('reviewCycleId') reviewCycleId: string,
@@ -62,6 +83,7 @@ export class PayrollReviewsController {
   }
 
   @Post('payroll-review-findings/:findingId/resolve')
+  @ApiCreatedResponse({ type: PayrollReviewFindingMinimalResponseDto })
   @RequireCapabilities('payroll.review.finding.resolve')
   resolveFinding(
     @Param('findingId') findingId: string,
@@ -72,6 +94,7 @@ export class PayrollReviewsController {
   }
 
   @Post('payroll-review-findings/:findingId/reopen')
+  @ApiCreatedResponse({ type: PayrollReviewFindingMinimalResponseDto })
   @RequireCapabilities('payroll.review.finding.reopen')
   reopenFinding(
     @Param('findingId') findingId: string,
@@ -82,6 +105,7 @@ export class PayrollReviewsController {
   }
 
   @Post('payroll-reviews/:reviewCycleId/start')
+  @ApiCreatedResponse({ type: PayrollReviewCycleMinimalResponseDto })
   @RequireCapabilities('payroll.review.submit')
   startReview(
     @Param('reviewCycleId') reviewCycleId: string,
@@ -91,6 +115,7 @@ export class PayrollReviewsController {
   }
 
   @Post('payroll-reviews/:reviewCycleId/submit')
+  @ApiCreatedResponse({ type: PayrollReviewCycleMinimalResponseDto })
   @RequireCapabilities('payroll.review.submit')
   submitReview(
     @Param('reviewCycleId') reviewCycleId: string,
@@ -100,6 +125,7 @@ export class PayrollReviewsController {
   }
 
   @Post('payroll-reviews/:reviewCycleId/approve')
+  @ApiCreatedResponse({ type: PayrollReviewCycleMinimalResponseDto })
   @RequireCapabilities('payroll.review.approve')
   approveReview(
     @Param('reviewCycleId') reviewCycleId: string,
@@ -110,6 +136,7 @@ export class PayrollReviewsController {
   }
 
   @Post('payroll-reviews/:reviewCycleId/reject')
+  @ApiCreatedResponse({ type: PayrollReviewCycleMinimalResponseDto })
   @RequireCapabilities('payroll.review.reject')
   rejectReview(
     @Param('reviewCycleId') reviewCycleId: string,
@@ -120,6 +147,7 @@ export class PayrollReviewsController {
   }
 
   @Get('payroll-reviews/:reviewCycleId/history')
+  @ApiOkResponse({ type: PayrollReviewHistoryMinimalResponseDto })
   @RequireCapabilities('payroll.review.view')
   history(
     @Param('reviewCycleId') reviewCycleId: string,
@@ -129,6 +157,7 @@ export class PayrollReviewsController {
   }
 
   @Post('payroll-reviews/:reviewCycleId/close')
+  @ApiCreatedResponse({ type: PayrollReviewCycleMinimalResponseDto })
   @RequireCapabilities('payroll.review.close')
   closeReview(
     @Param('reviewCycleId') reviewCycleId: string,
@@ -138,6 +167,7 @@ export class PayrollReviewsController {
   }
 
   @Post('payroll-reviews/:reviewCycleId/reopen')
+  @ApiCreatedResponse({ type: PayrollReviewCycleMinimalResponseDto })
   @RequireCapabilities('payroll.review.reopen')
   reopenReview(
     @Param('reviewCycleId') reviewCycleId: string,

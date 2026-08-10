@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import type { PrismaService } from '../../prisma/prisma.service';
-import { AccessGrantsRepository } from './access-grants.repository';
+import { AccessGrantsRepository, substitutionMinimalSelect } from './access-grants.repository';
 import { createActiveCompanyContext } from './active-company-context';
 import { EnterpriseScopeFactory } from './enterprise-scope';
 import type { AuthenticatedPrincipal } from './identity-context';
@@ -61,6 +61,7 @@ describe('AccessGrantsRepository', () => {
     expect(substitutionList).toHaveBeenCalledWith({
       where: { companyId: 'company-a' },
       orderBy: { createdAt: 'desc' },
+      select: substitutionMinimalSelect,
     });
   });
 
@@ -69,6 +70,7 @@ describe('AccessGrantsRepository', () => {
     await expect(repository.findActiveSubstitution(scope, 'grant-b', tx)).resolves.toBeNull();
     expect(substitutionFind).toHaveBeenCalledWith({
       where: { id: 'grant-b', companyId: 'company-a', status: 'ACTIVE' },
+      select: { id: true, status: true },
     });
   });
 

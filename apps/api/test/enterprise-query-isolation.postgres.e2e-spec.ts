@@ -207,12 +207,15 @@ databaseDescribe('ETP-015.5 enterprise query isolation on PostgreSQL', () => {
       reason: 'company-derived fixture',
     });
 
-    expect(created.companyId).toBe(ids.companyA);
-    await expect(repository.listSubstitutions(scope(ids.companyA))).resolves.toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ id: created.id, companyId: ids.companyA }),
-      ]),
+    expect(created).not.toHaveProperty('companyId');
+    await expect(
+      prisma.temporarySubstitution.findUniqueOrThrow({ where: { id: created.id } }),
+    ).resolves.toMatchObject({ companyId: ids.companyA });
+    const companyAList = await repository.listSubstitutions(scope(ids.companyA));
+    expect(companyAList).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: created.id })]),
     );
+    expect(companyAList.find(({ id }) => id === created.id)).not.toHaveProperty('companyId');
     await expect(repository.listSubstitutions(scope(ids.companyB))).resolves.not.toEqual(
       expect.arrayContaining([expect.objectContaining({ id: created.id })]),
     );

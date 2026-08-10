@@ -1,25 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { PayrollReviewEventType } from '@prisma/client';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import type { EnterpriseScope } from '../auth/enterprise-scope';
 import { DashboardRepository } from './dashboard.repository';
 import type { DashboardDataPoint, DashboardSummary } from './dashboard.types';
-
-const eventLabels: Record<PayrollReviewEventType, string> = {
-  REVIEW_CYCLE_OPENED: 'Ciclo de conferência aberto',
-  FINDING_OPENED: 'Achado de conferência criado',
-  FINDING_RESOLVED: 'Achado de conferência resolvido',
-  FINDING_REOPENED: 'Achado de conferência reaberto',
-  REVIEW_STARTED: 'Conferência iniciada',
-  REVIEW_SUBMITTED: 'Conferência submetida',
-  REVIEW_APPROVED: 'Conferência aprovada',
-  REVIEW_REJECTED: 'Conferência rejeitada',
-  FINDING_BLOCKED: 'Achado marcado como bloqueante',
-  FINDING_UNBLOCKED: 'Bloqueio de achado removido',
-  REVIEW_CLOSED: 'Conferência encerrada',
-  REVIEW_REOPENED: 'Conferência reaberta',
-  APPROVALS_INVALIDATED: 'Decisões anteriores invalidadas',
-};
 
 @Injectable()
 export class DashboardService {
@@ -30,8 +13,7 @@ export class DashboardService {
     principal: AuthenticatedPrincipal,
     now = new Date(),
   ): Promise<DashboardSummary> {
-    const canViewReviews = principal.permissions.includes('payroll.review.view');
-    const canViewPeriods = principal.permissions.includes('payroll.period.close.view');
+    const canViewDashboard = principal.permissions.includes('platform.read');
     const company = await this.repository.findActiveCompany(scope);
     if (!company) throw new NotFoundException('Empresa não encontrada');
 
@@ -42,10 +24,12 @@ export class DashboardService {
         generatedAt: now.toISOString(),
         timezone: 'UTC',
       },
-      access: canViewReviews || canViewPeriods ? 'AVAILABLE' : 'RESTRICTED',
+      access: canViewDashboard ? 'AVAILABLE' : 'RESTRICTED',
     };
-    if (canViewReviews) result.review = await this.reviewSummary(scope, now);
-    if (canViewPeriods) result.payrollPeriod = await this.periodSummary(scope);
+    if (canViewDashboard) {
+      result.review = await this.reviewSummary(scope, now);
+      result.payrollPeriod = await this.periodSummary(scope);
+    }
     return result;
   }
 
@@ -88,7 +72,6 @@ export class DashboardService {
       recentActivity: events.slice(0, 5).map((event) => ({
         type: event.eventType,
         occurredAt: event.occurredAt.toISOString(),
-        description: eventLabels[event.eventType],
       })),
     };
   }

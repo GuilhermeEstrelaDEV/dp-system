@@ -7,6 +7,27 @@ type TransactionClient = Prisma.TransactionClient;
 type SubstitutionCreateData = Omit<Prisma.TemporarySubstitutionUncheckedCreateInput, 'companyId'>;
 type EmergencyCreateData = Omit<Prisma.EmergencyAccessUncheckedCreateInput, 'companyId'>;
 
+export const substitutionMinimalSelect = {
+  id: true,
+  holderUserId: true,
+  substituteUserId: true,
+  capabilities: true,
+  startsAt: true,
+  expiresAt: true,
+  status: true,
+  revokedAt: true,
+} satisfies Prisma.TemporarySubstitutionSelect;
+
+export const emergencyAccessMinimalSelect = {
+  id: true,
+  beneficiaryUserId: true,
+  capabilities: true,
+  startsAt: true,
+  expiresAt: true,
+  status: true,
+  revokedAt: true,
+} satisfies Prisma.EmergencyAccessSelect;
+
 @Injectable()
 export class AccessGrantsRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -14,6 +35,7 @@ export class AccessGrantsRepository {
   listSubstitutions(scope: EnterpriseScope) {
     return this.prisma.temporarySubstitution.findMany({
       where: { companyId: scope.companyId },
+      select: substitutionMinimalSelect,
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -21,6 +43,7 @@ export class AccessGrantsRepository {
   listEmergencyAccesses(scope: EnterpriseScope) {
     return this.prisma.emergencyAccess.findMany({
       where: { companyId: scope.companyId },
+      select: emergencyAccessMinimalSelect,
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -32,6 +55,7 @@ export class AccessGrantsRepository {
   ) {
     return client.temporarySubstitution.create({
       data: { ...data, companyId: scope.companyId },
+      select: substitutionMinimalSelect,
     });
   }
 
@@ -42,18 +66,21 @@ export class AccessGrantsRepository {
   ) {
     return client.emergencyAccess.create({
       data: { ...data, companyId: scope.companyId },
+      select: emergencyAccessMinimalSelect,
     });
   }
 
   findActiveSubstitution(scope: EnterpriseScope, id: string, client: TransactionClient) {
     return client.temporarySubstitution.findFirst({
       where: { id, companyId: scope.companyId, status: 'ACTIVE' },
+      select: { id: true, status: true },
     });
   }
 
   findActiveEmergencyAccess(scope: EnterpriseScope, id: string, client: TransactionClient) {
     return client.emergencyAccess.findFirst({
       where: { id, companyId: scope.companyId, status: 'ACTIVE' },
+      select: { id: true, status: true },
     });
   }
 
@@ -68,7 +95,10 @@ export class AccessGrantsRepository {
       data,
     });
     if (affected.count !== 1) return null;
-    return client.temporarySubstitution.findFirst({ where: { id, companyId: scope.companyId } });
+    return client.temporarySubstitution.findFirst({
+      where: { id, companyId: scope.companyId },
+      select: substitutionMinimalSelect,
+    });
   }
 
   async revokeEmergencyAccess(
@@ -82,18 +112,23 @@ export class AccessGrantsRepository {
       data,
     });
     if (affected.count !== 1) return null;
-    return client.emergencyAccess.findFirst({ where: { id, companyId: scope.companyId } });
+    return client.emergencyAccess.findFirst({
+      where: { id, companyId: scope.companyId },
+      select: emergencyAccessMinimalSelect,
+    });
   }
 
   findExpiredSubstitutions(scope: EnterpriseScope, now: Date, client: TransactionClient) {
     return client.temporarySubstitution.findMany({
       where: { companyId: scope.companyId, status: 'ACTIVE', expiresAt: { lte: now } },
+      select: { id: true, status: true },
     });
   }
 
   findExpiredEmergencyAccesses(scope: EnterpriseScope, now: Date, client: TransactionClient) {
     return client.emergencyAccess.findMany({
       where: { companyId: scope.companyId, status: 'ACTIVE', expiresAt: { lte: now } },
+      select: { id: true, status: true },
     });
   }
 

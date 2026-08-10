@@ -147,14 +147,25 @@ describe('PayrollReviewsService', () => {
     });
     tx.payrollReviewCycle.create.mockResolvedValue(cycle);
     tx.payrollReviewEvent.create.mockResolvedValue({});
-    await expect(service.openCycle(cycle.payrollRunId, principal)).resolves.toEqual(cycle);
-    expect(tx.payrollReviewCycle.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        companyId: cycle.companyId,
-        createdBy: principal.actorId,
-        traceId: principal.traceId,
-      }),
+    await expect(service.openCycle(cycle.payrollRunId, principal)).resolves.toEqual({
+      id: cycle.id,
+      payrollRunId: cycle.payrollRunId,
+      status: cycle.status,
+      createdAt: cycle.createdAt.toISOString(),
+      submissionNumber: cycle.submissionNumber,
+      currentApprovalStage: cycle.currentApprovalStage,
+      reviewRound: cycle.reviewRound,
     });
+    expect(tx.payrollReviewCycle.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          companyId: cycle.companyId,
+          createdBy: principal.actorId,
+          traceId: principal.traceId,
+        }),
+        select: expect.objectContaining({ companyId: true, id: true }),
+      }),
+    );
     expect(tx.payrollReviewEvent.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         eventType: 'REVIEW_CYCLE_OPENED',

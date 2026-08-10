@@ -101,3 +101,11 @@ This homologation does not implement runtime, approve masking, resolve BDP-001/0
 - capability, audit and cache matrices: reconciled;
 - BDP-001 and BDP-011: still globally pending;
 - runtime, migration, Prisma, seed, capability catalog and audit-event catalog changes: `0`.
+
+## Runtime implementation follow-up
+
+The approved MINIMAL implementation applies all 110 decisions without changing this historical
+homologation. The five family contracts are represented by a closed runtime catalog and 33-endpoint
+manifest. Every approved OMIT/BLOCKED component remains absent, including the FC-061 personal
+references. AR-03 is the only newly activated audit event; AR-01/02/04..10 remain inactive. BDP-001
+and BDP-011 remain pending for future exposure, and ETP-015.8 remains not started.

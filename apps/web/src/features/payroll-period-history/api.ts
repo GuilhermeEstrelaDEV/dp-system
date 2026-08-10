@@ -1,12 +1,9 @@
 import { apiRequest } from '@/lib/api';
 
-export type ClosureActor = { id: string; displayName: string };
 export type ClosureEvent = {
   id: string;
   type: string;
   occurredAt: string;
-  actor: ClosureActor;
-  traceId?: string;
 };
 export type ClosureVersion = {
   id: string;
@@ -17,7 +14,6 @@ export type ClosureVersion = {
   closedAt: string | null;
   reopenedAt: string | null;
   supersededAt: string | null;
-  actor: ClosureActor;
   payrollRun: { id: string; sequence: number; status: string } | null;
   review: { id: string; reviewRound: number; status: string } | null;
   predecessor: { id: string; version: number } | null;
@@ -44,21 +40,17 @@ export type SafeManifest = {
   summary: Record<string, string | number | null>;
   warnings: string[];
   acknowledgements: Array<{ warningCode: string; acknowledgedAt: string }>;
-  totals: Record<string, string>;
   references: {
     payrollRunId: string | null;
     reviewCycleId: string | null;
-    decisions: string[];
-    findings: string[];
-    employees: string[];
   };
 };
 export type Readiness = {
   isReady: boolean;
   consistencyToken: string;
   selectedPayrollRun: { id: string } | null;
-  blockers: Array<{ code: string; message: string }>;
-  warnings: Array<{ code: string; message: string }>;
+  blockers: Array<{ code: string }>;
+  warnings: Array<{ code: string }>;
   acknowledgementsRequired: string[];
 };
 

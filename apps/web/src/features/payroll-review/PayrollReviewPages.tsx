@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ApiClientError } from '@/lib/api';
+import { minimalProjectionKey, minimalProjectionScopeKey } from '@/lib/projectionCache';
 import {
   payrollReviewApi,
   type CreateFinding,
@@ -58,9 +59,15 @@ function ErrorMessage({ error }: { readonly error: Error }) {
 }
 
 export function PayrollReviewRunsPage() {
+  const auth = useAuth();
   const [periodId, setPeriodId] = useState('');
   const runs = useQuery({
-    queryKey: ['review-runs', periodId],
+    queryKey: minimalProjectionKey(
+      auth.activeCompanyId,
+      auth.user?.actorId,
+      'review-runs',
+      periodId,
+    ),
     enabled: Boolean(periodId),
     queryFn: () => payrollReviewApi.listRuns(periodId),
   });
@@ -100,18 +107,30 @@ export function PayrollRunReviewPage() {
   const { runId = '' } = useParams();
   const auth = useAuth();
   const client = useQueryClient();
+  const runKey = minimalProjectionKey(
+    auth.activeCompanyId,
+    auth.user?.actorId,
+    'payroll-run',
+    runId,
+  );
+  const cyclesKey = minimalProjectionKey(
+    auth.activeCompanyId,
+    auth.user?.actorId,
+    'review-cycles',
+    runId,
+  );
   const run = useQuery({
-    queryKey: ['payroll-run', runId],
+    queryKey: runKey,
     queryFn: () => payrollReviewApi.findRun(runId),
   });
   const cycles = useQuery({
-    queryKey: ['review-cycles', runId],
+    queryKey: cyclesKey,
     queryFn: () => payrollReviewApi.listCycles(runId),
     enabled: auth.hasCapability('payroll.review.view'),
   });
   const create = useMutation({
     mutationFn: () => payrollReviewApi.createCycle(runId),
-    onSuccess: () => void client.invalidateQueries({ queryKey: ['review-cycles', runId] }),
+    onSuccess: () => void client.invalidateQueries({ queryKey: cyclesKey }),
   });
   const hasActive = cycles.data?.some((cycle) => cycle.status !== 'CLOSED') ?? false;
   return (
@@ -189,17 +208,30 @@ export function PayrollReviewDetailPage() {
     id: string;
   }>();
   const [reason, setReason] = useState('');
+  const cycleKey = minimalProjectionKey(
+    auth.activeCompanyId,
+    auth.user?.actorId,
+    'review-cycle',
+    reviewId,
+  );
+  const historyKey = minimalProjectionKey(
+    auth.activeCompanyId,
+    auth.user?.actorId,
+    'review-history',
+    reviewId,
+  );
   const cycle = useQuery({
-    queryKey: ['review-cycle', reviewId],
+    queryKey: cycleKey,
     queryFn: () => payrollReviewApi.findCycle(reviewId),
   });
   const history = useQuery({
-    queryKey: ['review-history', reviewId],
+    queryKey: historyKey,
     queryFn: () => payrollReviewApi.history(reviewId),
   });
   const refresh = () => {
-    void client.invalidateQueries({ queryKey: ['review-cycle', reviewId] });
-    void client.invalidateQueries({ queryKey: ['review-history', reviewId] });
+    void client.invalidateQueries({
+      queryKey: minimalProjectionScopeKey(auth.activeCompanyId, auth.user?.actorId),
+    });
   };
   const createFinding = useMutation({
     mutationFn: (body: CreateFinding) => payrollReviewApi.createFinding(reviewId, body),
@@ -292,9 +324,7 @@ export function PayrollReviewDetailPage() {
           {data.currentApprovalStage} de 2
         </p>
         <p>
-          <strong>Criada por</strong>
-          <br />
-          {data.createdBy}
+          <strong>Criada em</strong>
           <br />
           {new Date(data.createdAt).toLocaleString('pt-BR')}
         </p>
@@ -360,12 +390,12 @@ export function PayrollReviewDetailPage() {
               className={`rounded border p-4 ${finding.severity === 'BLOCKING' && finding.status === 'OPEN' ? 'border-amber-500' : ''}`}
               key={finding.id}
             >
-              <strong>{finding.title}</strong>
+              <strong>Achado {finding.code}</strong>
               <p>
                 {finding.code} · {finding.severity === 'BLOCKING' ? 'BLOQUEANTE' : 'Informativo'} ·{' '}
                 {finding.status === 'OPEN' ? 'Aberto' : 'Resolvido'}
               </p>
-              <p>{finding.description}</p>
+              <p>Criado em {new Date(finding.createdAt).toLocaleString('pt-BR')}</p>
               {finding.status === 'OPEN' && auth.hasCapability('payroll.review.finding.resolve') ? (
                 <button
                   onClick={() => {
@@ -598,11 +628,7 @@ function Timeline({
           {history.timeline.map((event) => (
             <li className="mb-4" key={event.id}>
               <strong>{eventLabel[event.eventType] ?? event.eventType}</strong>
-              <p>
-                {new Date(event.occurredAt).toLocaleString('pt-BR')} ·{' '}
-                {event.actor?.displayName ?? event.actorId}
-              </p>
-              {event.reason ? <p>Motivo: {event.reason}</p> : null}
+              <p>{new Date(event.occurredAt).toLocaleString('pt-BR')}</p>
             </li>
           ))}
         </ol>

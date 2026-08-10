@@ -1,5 +1,6 @@
 import type { PrismaService } from '../../prisma/prisma.service';
 import { AuditWriterService } from './audit-writer.service';
+import { resolveEffectiveAuthorizationContext } from './effective-authorization-context';
 
 describe('AuditWriterService', () => {
   const create = jest.fn();
@@ -205,6 +206,39 @@ describe('AuditWriterService', () => {
         { auditLog: { create: jest.fn() } } as never,
       ),
     ).rejects.toThrow('Audit authorization context does not match the event');
+  });
+
+  it('accepts AR03 only with one approved grants capability', async () => {
+    const txCreate = jest.fn().mockResolvedValue({ id: 'audit' });
+    await writer.append(
+      {
+        principal,
+        authorization: resolveEffectiveAuthorizationContext(principal, ['delegation.manage']),
+        action: 'ACCESS_GRANTS_VIEWED',
+        entityType: 'AuthorizationAccessGrant',
+        entityId: 'company',
+        reasonCode: 'SENSITIVE_READ_COMPLETED',
+        metadata: { grantType: 'SUBSTITUTION', projectionProfile: 'MINIMAL' },
+      },
+      { auditLog: { create: txCreate } } as never,
+    );
+    expect(txCreate).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects AR03 with an unapproved or missing capability decision', async () => {
+    await expect(
+      writer.append(
+        {
+          principal,
+          action: 'ACCESS_GRANTS_VIEWED',
+          entityType: 'AuthorizationAccessGrant',
+          entityId: 'company',
+          reasonCode: 'SENSITIVE_READ_COMPLETED',
+          metadata: { grantType: 'SUBSTITUTION', projectionProfile: 'MINIMAL' },
+        },
+        { auditLog: { create: jest.fn() } } as never,
+      ),
+    ).rejects.toThrow('Audit authorization capability is not approved for the event');
   });
 
   it('delegates domain and audit work to one Prisma transaction and propagates rollback', async () => {

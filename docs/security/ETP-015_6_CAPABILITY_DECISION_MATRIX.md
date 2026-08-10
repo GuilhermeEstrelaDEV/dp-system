@@ -47,3 +47,8 @@ Capabilities authorize only the named operation and the approved MINIMAL respons
 | PAYROLL PERIODS      | view/readiness/history cover matching MINIMAL reads; execute/reopen cover action responses        | totals, person arrays, text, metadata and actors remain forbidden | APPROVED |
 
 No capability is created, broadened beyond these bounded semantics, assigned or automatically granted by this document.
+
+## Implementation evidence
+
+The five approved capability bindings are enforced by the existing guards and explicit presenters.
+No `FULL` capability, role-name authorization, catalog entry, grant or assignment was added.

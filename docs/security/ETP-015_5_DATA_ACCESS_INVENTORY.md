@@ -96,3 +96,12 @@ Auth/contexto, grants, assignments, payroll review e payroll period mantêm filt
 do lookup. O evento recebe a empresa do `EnterpriseScope` nos produtores de autorização ou do scope
 canônico já validado no agregado de folha. Cross-tenant continua `404` uniforme e nenhum evento de
 negação persiste o identificador estrangeiro.
+
+## Reconciliação da implementação ETP-015.6
+
+As cinco famílias aprovadas agora projetam seus read models MINIMAL o mais cedo possível. Os
+repositories de grants e payroll review usam `select` explícito do Prisma para os dados públicos;
+presenters aplicam a allowlist final e nunca retornam registros Prisma crus. O predicado empresarial
+permanece no primeiro lookup. Referências pessoais de achados, textos livres, atores, traces,
+metadata e totais de competência aprovados como OMIT não são selecionados para leitura nem
+serializados. Isso não reclassifica nem migra acessos `LEGACY_DEFERRED`.

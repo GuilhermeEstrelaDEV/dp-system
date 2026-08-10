@@ -4,6 +4,7 @@ import type { Prisma } from '@prisma/client';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import type { CreateSubstitutionDto, GrantEmergencyAccessDto } from './access-grants.dto';
 import { AccessGrantsRepository } from './access-grants.repository';
+import { presentEmergencyAccess, presentSubstitution } from './access-grants.presenter';
 import { AuditWriterService } from './audit-writer.service';
 import { AuthorizationService } from './authorization.service';
 import type { EffectiveAuthorizationContext } from './effective-authorization-context';
@@ -24,7 +25,18 @@ export class AccessGrantsService {
   async listSubstitutions(scope: EnterpriseScope, principal: AuthenticatedPrincipal) {
     const authorization = this.requireScope(scope, principal, DELEGATION_CAPABILITY);
     await this.expireSubstitutions(scope, principal, authorization);
-    return this.repository.listSubstitutions(scope);
+    const records = await this.repository.listSubstitutions(scope);
+    await this.audit.append({
+      principal,
+      scope,
+      authorization,
+      action: 'ACCESS_GRANTS_VIEWED',
+      entityType: 'AuthorizationAccessGrant',
+      entityId: scope.companyId,
+      reasonCode: 'SENSITIVE_READ_COMPLETED',
+      metadata: { grantType: 'SUBSTITUTION', projectionProfile: 'MINIMAL' },
+    });
+    return records.map(presentSubstitution);
   }
 
   async createSubstitution(
@@ -90,7 +102,7 @@ export class AccessGrantsService {
         },
         tx,
       );
-      return created;
+      return presentSubstitution(created);
     });
   }
 
@@ -131,14 +143,25 @@ export class AccessGrantsService {
         },
         tx,
       );
-      return next;
+      return presentSubstitution(next);
     });
   }
 
   async listEmergencyAccesses(scope: EnterpriseScope, principal: AuthenticatedPrincipal) {
     const authorization = this.requireScope(scope, principal, EMERGENCY_CAPABILITY);
     await this.expireEmergencyAccesses(scope, principal, authorization);
-    return this.repository.listEmergencyAccesses(scope);
+    const records = await this.repository.listEmergencyAccesses(scope);
+    await this.audit.append({
+      principal,
+      scope,
+      authorization,
+      action: 'ACCESS_GRANTS_VIEWED',
+      entityType: 'AuthorizationAccessGrant',
+      entityId: scope.companyId,
+      reasonCode: 'SENSITIVE_READ_COMPLETED',
+      metadata: { grantType: 'EMERGENCY', projectionProfile: 'MINIMAL' },
+    });
+    return records.map(presentEmergencyAccess);
   }
 
   async grantEmergencyAccess(
@@ -203,7 +226,7 @@ export class AccessGrantsService {
         },
         tx,
       );
-      return created;
+      return presentEmergencyAccess(created);
     });
   }
 
@@ -244,7 +267,7 @@ export class AccessGrantsService {
         },
         tx,
       );
-      return next;
+      return presentEmergencyAccess(next);
     });
   }
 

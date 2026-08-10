@@ -45,7 +45,8 @@ describe('executive dashboard', () => {
     expect(screen.getAllByText('2').length).toBeGreaterThan(0);
     expect(screen.getByRole('list', { name: 'Ciclos por status' })).toBeInTheDocument();
     expect(screen.getByRole('list', { name: /Eventos de conferência/ })).toBeInTheDocument();
-    expect(screen.getByText('Conferência iniciada')).toBeInTheDocument();
+    expect(screen.getByText('REVIEW_STARTED')).toBeInTheDocument();
+    expect(screen.queryByText('Conferência iniciada')).not.toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'Consultar conferências de folha' }),
     ).toBeInTheDocument();

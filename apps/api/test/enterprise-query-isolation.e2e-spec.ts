@@ -29,7 +29,17 @@ describe('ETP-015.5 enterprise query isolation API', () => {
         : Promise.resolve(null),
     ),
     revokeSubstitution: jest.fn((scope: { companyId: string }, id: string) =>
-      Promise.resolve({ id, companyId: scope.companyId, status: 'REVOKED' }),
+      Promise.resolve({
+        id,
+        companyId: scope.companyId,
+        holderUserId: '66666666-6666-4666-8666-666666666666',
+        substituteUserId: '77777777-7777-4777-8777-777777777777',
+        capabilities: ['payroll.review.view'],
+        startsAt: new Date('2026-08-01T00:00:00.000Z'),
+        expiresAt: new Date('2026-08-31T00:00:00.000Z'),
+        status: 'REVOKED',
+        revokedAt: new Date('2026-08-08T00:00:00.000Z'),
+      }),
     ),
   };
 
@@ -124,9 +134,9 @@ describe('ETP-015.5 enterprise query isolation API', () => {
     const response = await revoke(grantA).expect(201);
     expect(response.body.data).toMatchObject({
       id: grantA,
-      companyId: companyA,
       status: 'REVOKED',
     });
+    expect(response.body.data).not.toHaveProperty('companyId');
     expect(repository.findActiveSubstitution).toHaveBeenCalledWith(
       expect.objectContaining({ companyId: companyA }),
       grantA,

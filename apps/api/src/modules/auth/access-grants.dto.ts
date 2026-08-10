@@ -1,4 +1,5 @@
 import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -38,4 +39,25 @@ export class GrantEmergencyAccessDto extends CapabilitiesDto {
 
 export class RevokeAccessDto {
   @IsString() @IsNotEmpty() @MaxLength(1000) reason!: string;
+}
+
+export class SubstitutionMinimalResponseDto {
+  @ApiProperty({ format: 'uuid' }) id!: string;
+  @ApiProperty({ format: 'uuid' }) holderUserId!: string;
+  @ApiProperty({ format: 'uuid' }) substituteUserId!: string;
+  @ApiProperty({ type: [String] }) capabilities!: string[];
+  @ApiProperty({ format: 'date-time' }) startsAt!: string;
+  @ApiProperty({ format: 'date-time' }) expiresAt!: string;
+  @ApiProperty() status!: string;
+  @ApiPropertyOptional({ format: 'date-time', nullable: true }) revokedAt!: string | null;
+}
+
+export class EmergencyAccessMinimalResponseDto {
+  @ApiProperty({ format: 'uuid' }) id!: string;
+  @ApiProperty({ format: 'uuid' }) beneficiaryUserId!: string;
+  @ApiProperty({ type: [String] }) capabilities!: string[];
+  @ApiProperty({ format: 'date-time' }) startsAt!: string;
+  @ApiProperty({ format: 'date-time' }) expiresAt!: string;
+  @ApiProperty() status!: string;
+  @ApiPropertyOptional({ format: 'date-time', nullable: true }) revokedAt!: string | null;
 }

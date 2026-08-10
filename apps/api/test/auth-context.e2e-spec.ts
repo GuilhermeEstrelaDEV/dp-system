@@ -152,11 +152,11 @@ describe('authenticated company context integration', () => {
       actorId: 'user-1',
       activeCompanyId: company.id,
       permissions: ['payroll.view'],
-      traceId: 'trace-auth-2',
-      userAgent: 'dp-system-test-agent',
     });
-    expect(context.body.data.ipAddress).toEqual(expect.any(String));
-    expect(context.body.data.sessionId).toEqual(expect.any(String));
+    expect(context.body.data).not.toHaveProperty('traceId');
+    expect(context.body.data).not.toHaveProperty('userAgent');
+    expect(context.body.data).not.toHaveProperty('sessionId');
+    expect(context.body.data).not.toHaveProperty('accessGrants');
     expect(prisma.auditLog.create).toHaveBeenCalled();
   });
 

@@ -136,7 +136,6 @@ export class PayrollPeriodReadinessService {
 
     return {
       payrollPeriodId: period.id,
-      companyId: period.companyId,
       referenceDate: period.referenceDate.toISOString().slice(0, 10),
       currentStatus: period.status,
       isReady: evaluation.blockers.length === 0,
@@ -159,13 +158,24 @@ export class PayrollPeriodReadinessService {
             submissionNumber: evaluation.linkedReviewCycle.submissionNumber,
           }
         : null,
-      blockers: [...evaluation.blockers],
-      warnings: [...evaluation.warnings],
+      blockers: evaluation.blockers.map((blocker) => ({
+        code: blocker.code,
+        category: blocker.category,
+        severity: blocker.severity,
+        source: blocker.source,
+        ...(blocker.relatedEntityType ? { relatedEntityType: blocker.relatedEntityType } : {}),
+      })),
+      warnings: evaluation.warnings.map((warning) => ({
+        code: warning.code,
+        category: warning.category,
+        acknowledgementRequired: warning.acknowledgementRequired,
+        source: warning.source,
+        ...(warning.relatedEntityType ? { relatedEntityType: warning.relatedEntityType } : {}),
+      })),
       acknowledgementsRequired: evaluation.warnings
         .filter((warning) => warning.acknowledgementRequired)
         .map((warning) => warning.code),
       consistencyToken: period.updatedAt.toISOString(),
-      traceId: principal.traceId,
       unavailableWarningChecks: ['EXTERNAL_INTEGRATIONS_PENDING'],
     };
   }

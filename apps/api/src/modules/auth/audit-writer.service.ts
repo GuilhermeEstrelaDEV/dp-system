@@ -19,6 +19,7 @@ export type AuditReasonCode =
   | 'GRANT_CREATED'
   | 'GRANT_REVOKED'
   | 'GRANT_EXPIRED'
+  | 'SENSITIVE_READ_COMPLETED'
   | 'BUSINESS_OPERATION_COMPLETED';
 
 export interface AuditEventEnvelope {
@@ -59,7 +60,11 @@ export class AuditWriterService {
       );
     }
     this.assertScopeConsistency(event, companyId);
-    const authorization = this.resolveAuthorization(event, descriptor.requiredCapabilities);
+    const authorization = this.resolveAuthorization(
+      event,
+      descriptor.requiredCapabilities,
+      descriptor.allowedAuthorizationCapabilities,
+    );
     const reasonCode = event.reasonCode ?? 'BUSINESS_OPERATION_COMPLETED';
     if (event.reason && event.reason.length > 1_000) {
       throw new BadRequestException('Audit reason exceeds maximum length');
@@ -120,14 +125,38 @@ export class AuditWriterService {
   private resolveAuthorization(
     event: AuditEventEnvelope,
     requiredCapabilities: readonly string[],
+    allowedAuthorizationCapabilities: readonly string[],
   ): EffectiveAuthorizationContext | undefined {
-    if (requiredCapabilities.length === 0) return undefined;
+    const dynamicCapabilities = event.authorization?.requiredCapabilities ?? [];
+    if (
+      requiredCapabilities.length === 0 &&
+      allowedAuthorizationCapabilities.length > 0 &&
+      dynamicCapabilities.length === 0
+    ) {
+      throw new InternalServerErrorException(
+        'Audit authorization capability is not approved for the event',
+      );
+    }
+    const effectiveRequired =
+      requiredCapabilities.length > 0 ? requiredCapabilities : dynamicCapabilities;
+    if (effectiveRequired.length === 0) return undefined;
+    if (
+      requiredCapabilities.length === 0 &&
+      (effectiveRequired.length !== 1 ||
+        effectiveRequired.some(
+          (capability) => !allowedAuthorizationCapabilities.includes(capability),
+        ))
+    ) {
+      throw new InternalServerErrorException(
+        'Audit authorization capability is not approved for the event',
+      );
+    }
     const principal = {
       ...event.principal,
       permissions: event.principal.permissions ?? [],
       accessGrants: event.principal.accessGrants ?? [],
     };
-    const expected = resolveEffectiveAuthorizationContext(principal, requiredCapabilities);
+    const expected = resolveEffectiveAuthorizationContext(principal, effectiveRequired);
     const decision = event.authorization ?? expected;
     if (
       decision.companyId !== expected.companyId ||

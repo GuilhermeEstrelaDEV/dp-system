@@ -1,5 +1,6 @@
 export type AuditEventCategory =
   | 'AUTHENTICATION'
+  | 'AUTHORIZATION'
   | 'AUTHORIZATION_ASSIGNMENT'
   | 'ACCESS_GRANT'
   | 'PAYROLL_REVIEW'
@@ -15,6 +16,7 @@ export interface AuditEventDescriptor {
   readonly companyContext: 'REQUIRED' | 'OPTIONAL';
   readonly requiredCapabilities: readonly string[];
   readonly allowedMetadata: readonly string[];
+  readonly allowedAuthorizationCapabilities: readonly string[];
 }
 
 const descriptor = (
@@ -24,6 +26,7 @@ const descriptor = (
   companyContext: AuditEventDescriptor['companyContext'],
   requiredCapabilities: readonly string[] = [],
   allowedMetadata: readonly string[] = [],
+  allowedAuthorizationCapabilities: readonly string[] = [],
 ) =>
   Object.freeze({
     code,
@@ -33,6 +36,7 @@ const descriptor = (
     companyContext,
     requiredCapabilities: Object.freeze([...requiredCapabilities]),
     allowedMetadata: Object.freeze([...allowedMetadata]),
+    allowedAuthorizationCapabilities: Object.freeze([...allowedAuthorizationCapabilities]),
   });
 
 export const AUDIT_EVENT_CATALOG = Object.freeze({
@@ -53,6 +57,15 @@ export const AUDIT_EVENT_CATALOG = Object.freeze({
     'AUTHENTICATION',
     'OPTIONAL',
     'OPTIONAL',
+  ),
+  ACCESS_GRANTS_VIEWED: descriptor(
+    'ACCESS_GRANTS_VIEWED',
+    'AUTHORIZATION',
+    'OPTIONAL',
+    'REQUIRED',
+    [],
+    ['grantType', 'projectionProfile'],
+    ['delegation.manage', 'emergency_access.manage'],
   ),
   ROLE_PERMISSION_ASSIGNED: descriptor(
     'ROLE_PERMISSION_ASSIGNED',

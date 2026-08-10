@@ -7,21 +7,15 @@ export type FindingSeverity = 'INFORMATIONAL' | 'BLOCKING';
 export type ReviewEvent = {
   id: string;
   eventType: string;
-  actorId: string;
-  actor?: { id: string; displayName: string };
-  reason?: string | null;
   occurredAt: string;
   previousState?: unknown;
   nextState?: unknown;
-  metadata?: unknown;
   findingId?: string | null;
 };
 export type ReviewDecision = {
   id: string;
   decision: 'APPROVED' | 'REJECTED';
-  actorId: string;
-  actor?: { id: string; displayName: string };
-  reason?: string | null;
+  approvalStageId: string;
   occurredAt: string;
   reviewRound: number;
   submissionNumber: number;
@@ -31,42 +25,43 @@ export type ReviewFinding = {
   severity: FindingSeverity;
   status: FindingStatus;
   code: string;
-  title: string;
-  description: string;
-  createdBy: string;
+  reviewCycleId: string;
+  payrollRunId: string;
   createdAt: string;
-  events?: ReviewEvent[];
+  resolvedAt: string | null;
 };
 export type ApprovalStage = {
   id: string;
   sequence: number;
   code: string;
   requiredCapability: string;
+  createdAt: string;
 };
 export type ReviewCycle = {
   id: string;
-  companyId: string;
   payrollRunId: string;
   status: ReviewStatus;
   reviewRound: number;
   submissionNumber: number;
   currentApprovalStage: number;
-  createdBy: string;
   createdAt: string;
   findings: ReviewFinding[];
   events: ReviewEvent[];
   approvalStages?: ApprovalStage[];
   decisions?: ReviewDecision[];
 };
-export type ReviewHistory = ReviewCycle & {
+export type ReviewHistory = {
   currentState: ReviewStatus;
   timeline: ReviewEvent[];
+  findings: ReviewFinding[];
+  approvalStages: ApprovalStage[];
+  decisions: ReviewDecision[];
   invalidations?: Array<{
     id: string;
+    decisionId: string;
+    causedByEventId: string;
     reviewRound: number;
     invalidatedAt: string;
-    invalidatedBy: string;
-    invalidationReason: string;
   }>;
 };
 export type CreateFinding = {

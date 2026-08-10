@@ -5,7 +5,6 @@ import {
   PAYROLL_PERIOD_READINESS_WARNING_CODES,
   type PayrollPeriodReadinessBlocker,
   type PayrollPeriodReadinessWarning,
-  type ReadinessMetadata,
 } from './domain/payroll-period-closure-readiness';
 
 export class PayrollPeriodClosureReadinessQueryDto {
@@ -15,15 +14,12 @@ export class PayrollPeriodClosureReadinessQueryDto {
   payrollRunId?: string;
 }
 
-export class PayrollPeriodReadinessBlockerDto implements PayrollPeriodReadinessBlocker {
+export class PayrollPeriodReadinessBlockerDto {
   @ApiProperty({ enum: PAYROLL_PERIOD_READINESS_BLOCKER_CODES })
   code!: PayrollPeriodReadinessBlocker['code'];
 
   @ApiProperty({ enum: ['PERIOD', 'RUN', 'REVIEW', 'CALCULATION', 'CONCURRENCY'] })
   category!: PayrollPeriodReadinessBlocker['category'];
-
-  @ApiProperty()
-  message!: string;
 
   @ApiProperty({ enum: ['BLOCKING'] })
   severity!: 'BLOCKING';
@@ -33,23 +29,14 @@ export class PayrollPeriodReadinessBlockerDto implements PayrollPeriodReadinessB
 
   @ApiPropertyOptional()
   relatedEntityType?: PayrollPeriodReadinessBlocker['relatedEntityType'];
-
-  @ApiPropertyOptional({ format: 'uuid' })
-  relatedEntityId?: string;
-
-  @ApiPropertyOptional({ type: 'object', additionalProperties: true })
-  metadata?: ReadinessMetadata;
 }
 
-export class PayrollPeriodReadinessWarningDto implements PayrollPeriodReadinessWarning {
+export class PayrollPeriodReadinessWarningDto {
   @ApiProperty({ enum: PAYROLL_PERIOD_READINESS_WARNING_CODES })
   code!: PayrollPeriodReadinessWarning['code'];
 
   @ApiProperty({ enum: ['VARIABLE_PAY', 'INTEGRATION', 'OPERATIONAL', 'AUXILIARY_DATA'] })
   category!: PayrollPeriodReadinessWarning['category'];
-
-  @ApiProperty()
-  message!: string;
 
   @ApiProperty()
   acknowledgementRequired!: boolean;
@@ -59,12 +46,6 @@ export class PayrollPeriodReadinessWarningDto implements PayrollPeriodReadinessW
 
   @ApiPropertyOptional()
   relatedEntityType?: PayrollPeriodReadinessWarning['relatedEntityType'];
-
-  @ApiPropertyOptional({ format: 'uuid' })
-  relatedEntityId?: string;
-
-  @ApiPropertyOptional({ type: 'object', additionalProperties: true })
-  metadata?: ReadinessMetadata;
 }
 
 export class SelectedPayrollRunReadinessDto {
@@ -85,7 +66,6 @@ export class LinkedPayrollReviewCycleReadinessDto {
 
 export class PayrollPeriodClosureReadinessResponseDto {
   @ApiProperty({ format: 'uuid' }) payrollPeriodId!: string;
-  @ApiProperty({ format: 'uuid' }) companyId!: string;
   @ApiProperty({ format: 'date' }) referenceDate!: string;
   @ApiProperty() currentStatus!: string;
   @ApiProperty() isReady!: boolean;
@@ -102,7 +82,6 @@ export class PayrollPeriodClosureReadinessResponseDto {
   acknowledgementsRequired!: PayrollPeriodReadinessWarning['code'][];
   @ApiProperty({ description: 'Timestamp observado de PayrollPeriod.updatedAt.' })
   consistencyToken!: string;
-  @ApiProperty() traceId!: string;
   @ApiProperty({ enum: ['EXTERNAL_INTEGRATIONS_PENDING'], isArray: true })
   unavailableWarningChecks!: PayrollPeriodReadinessWarning['code'][];
 }

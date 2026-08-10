@@ -9,12 +9,9 @@ export class ReopenPayrollPeriodResponseDto {
   @ApiProperty({ enum: ['OPEN'] }) status!: 'OPEN';
   @ApiProperty({ format: 'uuid' }) previousManifestId!: string;
   @ApiProperty() previousManifestHash!: string;
-  @ApiProperty() reason!: string;
   @ApiProperty({ format: 'date-time' }) reopenedAt!: string;
-  @ApiProperty({ format: 'uuid' }) reopenedBy!: string;
   @ApiProperty({ format: 'date-time' }) consistencyToken!: string;
   @ApiProperty({ enum: [true] }) requiresNewPayrollRun!: true;
   @ApiProperty({ enum: [true] }) requiresNewPayrollReview!: true;
-  @ApiProperty() traceId!: string;
   @ApiProperty() idempotentReplay!: boolean;
 }

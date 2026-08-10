@@ -9,18 +9,15 @@ import {
 } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiClientError, apiRequest, configureApiSession } from '@/lib/api';
+import {
+  sanitizeStoredSession,
+  type AuthenticatedUser,
+  type AvailableCompany,
+  type StoredSession,
+} from './authSession';
 
-export type AuthenticatedUser = {
-  actorId: string;
-  permissions: string[];
-  activeCompanyId: string | null;
-  displayName: string;
-  email: string;
-  roleCodes: string[];
-};
-export type AvailableCompany = { id: string; legalName: string; tradeName: string };
+export type { AuthenticatedUser, AvailableCompany } from './authSession';
 type TokenResponse = { accessToken: string; tokenType: 'Bearer' };
-type StoredSession = { token: string; user: AuthenticatedUser; companies: AvailableCompany[] };
 type AuthContextValue = {
   token: string | null;
   user: AuthenticatedUser | null;
@@ -39,10 +36,11 @@ type AuthContextValue = {
 const storageKey = 'dp-system.session.v1';
 const shouldRevalidateStoredSession = import.meta.env.MODE !== 'test';
 const AuthContext = createContext<AuthContextValue | null>(null);
+
 function readSession(): StoredSession | null {
   try {
     const value = sessionStorage.getItem(storageKey);
-    return value ? (JSON.parse(value) as StoredSession) : null;
+    return value ? sanitizeStoredSession(JSON.parse(value) as unknown) : null;
   } catch {
     return null;
   }
@@ -82,7 +80,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
     ) {
       throw new Error('Resposta de sessão inválida.');
     }
-    return { token, user, companies } satisfies StoredSession;
+    const next = sanitizeStoredSession({ token, user, companies });
+    if (!next) throw new Error('Resposta de sessÃ£o invÃ¡lida.');
+    return next;
   }, []);
 
   useEffect(() => {

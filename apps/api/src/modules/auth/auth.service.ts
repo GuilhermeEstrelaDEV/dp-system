@@ -7,8 +7,6 @@ import { IdentitySessionService } from './identity-session.service';
 import { PasswordHasherService } from './password-hasher.service';
 import { ActiveCompanyResolverService } from './active-company-resolver.service';
 
-const NO_ACTIVE_COMPANY_ID = '00000000-0000-0000-0000-000000000000';
-
 export interface AccessTokenPayload {
   sub: string;
   activeCompanyId?: string;
@@ -72,29 +70,20 @@ export class AuthService {
   }
 
   async currentUser(principal: AuthenticatedPrincipal) {
-    const now = new Date();
     const user = await this.prisma.user.findUnique({
       where: { id: principal.actorId },
       select: {
         email: true,
         displayName: true,
-        companyRoles: {
-          where: {
-            companyId: principal.activeCompanyId ?? NO_ACTIVE_COMPANY_ID,
-            status: 'ACTIVE',
-            validFrom: { lte: now },
-            OR: [{ validTo: null }, { validTo: { gt: now } }],
-          },
-          select: { role: { select: { code: true } } },
-        },
       },
     });
     if (!user) throw new UnauthorizedException('Identidade não encontrada');
     return {
-      ...principal,
+      actorId: principal.actorId,
+      activeCompanyId: principal.activeCompanyId,
+      permissions: [...principal.permissions],
       email: user.email,
       displayName: user.displayName,
-      roleCodes: [...new Set(user.companyRoles.map(({ role }) => role.code))],
     };
   }
 

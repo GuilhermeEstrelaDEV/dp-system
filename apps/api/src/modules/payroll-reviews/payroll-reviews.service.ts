@@ -27,6 +27,12 @@ import {
   ReopenPayrollReviewDto,
   TransitionPayrollReviewFindingDto,
 } from './payroll-reviews.dto';
+import {
+  presentPayrollReviewCycle,
+  presentPayrollReviewDetails,
+  presentPayrollReviewFinding,
+  presentPayrollReviewHistory,
+} from './payroll-review-minimal.presenter';
 
 const CAPABILITIES = {
   view: 'payroll.review.view',
@@ -54,6 +60,61 @@ const FINDING_AUDIT_EVENTS = {
   FINDING_RESOLVED: 'PAYROLL_REVIEW_FINDING_RESOLVED',
   FINDING_REOPENED: 'PAYROLL_REVIEW_FINDING_REOPENED',
 } as const satisfies Record<string, AuditEventCode>;
+
+const cycleMinimalSelect = {
+  id: true,
+  payrollRunId: true,
+  status: true,
+  createdAt: true,
+  submissionNumber: true,
+  currentApprovalStage: true,
+  reviewRound: true,
+} satisfies Prisma.PayrollReviewCycleSelect;
+
+const findingMinimalSelect = {
+  id: true,
+  reviewCycleId: true,
+  payrollRunId: true,
+  severity: true,
+  status: true,
+  code: true,
+  createdAt: true,
+  resolvedAt: true,
+} satisfies Prisma.PayrollReviewFindingSelect;
+
+const eventMinimalSelect = {
+  id: true,
+  findingId: true,
+  eventType: true,
+  previousState: true,
+  nextState: true,
+  occurredAt: true,
+} satisfies Prisma.PayrollReviewEventSelect;
+
+const approvalStageMinimalSelect = {
+  id: true,
+  sequence: true,
+  code: true,
+  requiredCapability: true,
+  createdAt: true,
+} satisfies Prisma.PayrollReviewApprovalStageSelect;
+
+const decisionMinimalSelect = {
+  id: true,
+  approvalStageId: true,
+  submissionNumber: true,
+  reviewRound: true,
+  decision: true,
+  occurredAt: true,
+} satisfies Prisma.PayrollReviewDecisionSelect;
+
+const invalidationMinimalSelect = {
+  id: true,
+  decisionId: true,
+  causedByEventId: true,
+  reviewRound: true,
+  invalidatedAt: true,
+} satisfies Prisma.PayrollReviewDecisionInvalidationSelect;
 
 @Injectable()
 export class PayrollReviewsService {
@@ -87,6 +148,7 @@ export class PayrollReviewsService {
             traceId: principal.traceId,
             createdAt: now,
           },
+          select: { ...cycleMinimalSelect, companyId: true },
         });
         await tx.payrollReviewApprovalStage.createMany({
           data: [1, 2].map((sequence) => ({
@@ -119,7 +181,7 @@ export class PayrollReviewsService {
           },
           tx,
         );
-        return cycle;
+        return presentPayrollReviewCycle(cycle);
       });
     } catch (error: unknown) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
@@ -132,26 +194,46 @@ export class PayrollReviewsService {
   async listByRun(payrollRunId: string, principal: AuthenticatedPrincipal) {
     this.authorize(principal, CAPABILITIES.view);
     const run = await this.findRunInCompany(payrollRunId, principal);
-    return this.prisma.payrollReviewCycle.findMany({
+    const cycles = await this.prisma.payrollReviewCycle.findMany({
       where: { payrollRunId: run.id, companyId: principal.activeCompanyId! },
-      include: { findings: true, events: { orderBy: { occurredAt: 'asc' } } },
+      select: {
+        ...cycleMinimalSelect,
+        findings: { select: findingMinimalSelect },
+        events: { select: eventMinimalSelect, orderBy: { occurredAt: 'asc' } },
+      },
       orderBy: { createdAt: 'desc' },
     });
+    return cycles.map((cycle) => ({
+      ...presentPayrollReviewCycle(cycle),
+      findings: cycle.findings.map(presentPayrollReviewFinding),
+      events: cycle.events.map((event) => ({
+        id: event.id,
+        ...(event.findingId ? { findingId: event.findingId } : {}),
+        eventType: event.eventType,
+        previousState: event.previousState,
+        nextState: event.nextState,
+        occurredAt: event.occurredAt.toISOString(),
+      })),
+    }));
   }
 
   async findCycle(reviewCycleId: string, principal: AuthenticatedPrincipal) {
     this.authorize(principal, CAPABILITIES.view);
     const cycle = await this.prisma.payrollReviewCycle.findFirst({
       where: { id: reviewCycleId, companyId: principal.activeCompanyId! },
-      include: {
-        findings: { orderBy: { createdAt: 'asc' } },
-        events: { orderBy: [{ occurredAt: 'asc' }, { id: 'asc' }] },
-        approvalStages: { orderBy: { sequence: 'asc' } },
-        decisions: { orderBy: { occurredAt: 'asc' } },
+      select: {
+        ...cycleMinimalSelect,
+        findings: { select: findingMinimalSelect, orderBy: { createdAt: 'asc' } },
+        events: {
+          select: eventMinimalSelect,
+          orderBy: [{ occurredAt: 'asc' }, { id: 'asc' }],
+        },
+        approvalStages: { select: approvalStageMinimalSelect, orderBy: { sequence: 'asc' } },
+        decisions: { select: decisionMinimalSelect, orderBy: { occurredAt: 'asc' } },
       },
     });
     if (!cycle) throw new NotFoundException('Ciclo de conferência não encontrado');
-    return cycle;
+    return presentPayrollReviewDetails(cycle);
   }
 
   async createFinding(
@@ -202,6 +284,7 @@ export class PayrollReviewsService {
           traceId: principal.traceId,
           createdAt: now,
         },
+        select: findingMinimalSelect,
       });
       await tx.payrollReviewEvent.create({
         data: {
@@ -243,17 +326,18 @@ export class PayrollReviewsService {
         },
         tx,
       );
-      return finding;
+      return presentPayrollReviewFinding(finding);
     });
   }
 
   async listFindings(reviewCycleId: string, principal: AuthenticatedPrincipal) {
     await this.findCycle(reviewCycleId, principal);
-    return this.prisma.payrollReviewFinding.findMany({
+    const findings = await this.prisma.payrollReviewFinding.findMany({
       where: { reviewCycleId, companyId: principal.activeCompanyId! },
-      include: { events: { orderBy: [{ occurredAt: 'asc' }, { id: 'asc' }] } },
+      select: findingMinimalSelect,
       orderBy: { createdAt: 'asc' },
     });
+    return findings.map(presentPayrollReviewFinding);
   }
 
   resolveFinding(
@@ -345,7 +429,7 @@ export class PayrollReviewsService {
           occurredAt: now,
           metadata: { stage: stage.sequence, submission: cycle.submissionNumber },
         });
-        return updated;
+        return presentPayrollReviewCycle(updated);
       }),
     );
   }
@@ -394,7 +478,7 @@ export class PayrollReviewsService {
           occurredAt: now,
           metadata: { stage: stage.sequence, submission: cycle.submissionNumber },
         });
-        return updated;
+        return presentPayrollReviewCycle(updated);
       }),
     );
   }
@@ -403,22 +487,26 @@ export class PayrollReviewsService {
     this.authorize(principal, CAPABILITIES.view);
     const cycle = await this.prisma.payrollReviewCycle.findFirst({
       where: { id: reviewCycleId, companyId: principal.activeCompanyId! },
-      include: {
+      select: {
+        ...cycleMinimalSelect,
         events: {
-          include: { actor: { select: { id: true, displayName: true } } },
+          select: eventMinimalSelect,
           orderBy: [{ occurredAt: 'asc' }, { id: 'asc' }],
         },
-        findings: { orderBy: { createdAt: 'asc' } },
-        approvalStages: { orderBy: { sequence: 'asc' } },
+        findings: { select: findingMinimalSelect, orderBy: { createdAt: 'asc' } },
+        approvalStages: { select: approvalStageMinimalSelect, orderBy: { sequence: 'asc' } },
         decisions: {
-          include: { actor: { select: { id: true, displayName: true } } },
+          select: decisionMinimalSelect,
           orderBy: { occurredAt: 'asc' },
         },
-        invalidations: { orderBy: { invalidatedAt: 'asc' } },
+        invalidations: {
+          select: invalidationMinimalSelect,
+          orderBy: { invalidatedAt: 'asc' },
+        },
       },
     });
     if (!cycle) throw new NotFoundException('Ciclo de conferência não encontrado');
-    return { ...cycle, currentState: cycle.status, timeline: cycle.events };
+    return presentPayrollReviewHistory(cycle);
   }
 
   async closeReview(reviewCycleId: string, principal: AuthenticatedPrincipal) {
@@ -458,7 +546,7 @@ export class PayrollReviewsService {
           occurredAt: now,
           metadata: { round: cycle.reviewRound },
         });
-        return updated;
+        return presentPayrollReviewCycle(updated);
       }),
     );
   }
@@ -531,7 +619,7 @@ export class PayrollReviewsService {
           occurredAt: now,
           metadata: { round: cycle.reviewRound + 1 },
         });
-        return updated;
+        return presentPayrollReviewCycle(updated);
       }),
     );
   }
@@ -575,7 +663,7 @@ export class PayrollReviewsService {
           occurredAt: now,
           metadata: { submission: submissionNumber },
         });
-        return updated;
+        return presentPayrollReviewCycle(updated);
       }),
     );
   }
@@ -752,7 +840,7 @@ export class PayrollReviewsService {
           },
           tx,
         );
-        return updated;
+        return presentPayrollReviewFinding(updated);
       });
     } catch (error: unknown) {
       if (error instanceof PayrollReviewFindingInvariantError) {
