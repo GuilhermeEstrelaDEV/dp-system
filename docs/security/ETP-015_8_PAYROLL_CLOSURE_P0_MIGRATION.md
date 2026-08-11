@@ -1,6 +1,6 @@
 # ETP-015.8 — Payroll Closure P0 Migration
 
-**Status:** `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`
+**Status:** `COMPLETED — POST-MERGE VERIFIED`
 
 ## Objetivo e limites
 
@@ -58,6 +58,8 @@ O plano de rollback está em [ETP-015_8_P0_ROLLOUT_AND_ROLLBACK.md](ETP-015_8_P0
 
 Gate B está `APPROVED — SECURITY — 2026-08-10`. Gate C está `APPROVED`: os oito itens técnicos estão
 `PASS`, e Segurança, Produto e DP homologaram o recorte em 2026-08-10 no
-[registro formal](ETP-015_GATE_C_HUMAN_APPROVAL.md). O merge do PR #86 e a verificação pós-merge
-permanecem pendentes; ETP-015.9 e ETP-015.10 permanecem `NOT STARTED — NOT AUTHORIZED`. Produção,
-cloud, deploy, remoção de rotas legadas e Gate D não estão autorizados.
+[registro formal](ETP-015_GATE_C_HUMAN_APPROVAL.md). O PR #86 foi incorporado pelo commit
+`b8324037b053b947692992d698888ed6e73db5f2`, e a
+[verificação pós-merge](ETP-015_8_POST_MERGE_VERIFICATION.md) passou sem regressão. ETP-015.9 e
+ETP-015.10 permanecem `NOT STARTED — NOT AUTHORIZED`. Produção, cloud, deploy, remoção de rotas
+legadas e Gate D não estão autorizados.

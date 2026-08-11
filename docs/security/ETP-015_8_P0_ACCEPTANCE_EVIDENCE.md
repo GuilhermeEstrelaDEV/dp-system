@@ -2,7 +2,7 @@
 
 **Baseline:** `origin/develop@437bdc35cb5c6dc8d050a7b2eef22eb9b24c6ec0`
 
-**Status:** `IMPLEMENTED IN PR — GATE C APPROVED — READY TO MERGE`
+**Status:** `COMPLETED — POST-MERGE VERIFIED`
 
 ## Diff controlado
 
@@ -57,7 +57,8 @@ Os payloads serializados mediram 314/352 bytes para history canônico/adapter, 4
 - DP: `APPROVED — 2026-08-10`;
 - formal record: [ETP-015_GATE_C_HUMAN_APPROVAL.md](ETP-015_GATE_C_HUMAN_APPROVAL.md);
 - Gate C: `APPROVED`;
-- merge: `PENDING`;
-- post-merge verification: `PENDING`.
+- merge: `COMPLETED — PR #86 — b8324037b053b947692992d698888ed6e73db5f2`;
+- post-merge verification: `PASS`, documented in
+  [ETP-015_8_POST_MERGE_VERIFICATION.md](ETP-015_8_POST_MERGE_VERIFICATION.md).
 
 ETP-015.9, ETP-015.10, legacy route removal, production, cloud and deployment remain unauthorized.
