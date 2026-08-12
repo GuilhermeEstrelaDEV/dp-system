@@ -4,12 +4,12 @@
 
 ## Governança de evidências
 
-| Gate | Responsável (`R`)                | Aprovadores (`A`)                          | Evidência mínima                                             | Rollback                                        |
-| ---- | -------------------------------- | ------------------------------------------ | ------------------------------------------------------------ | ----------------------------------------------- |
-| A    | Arquitetura/Engenharia           | Segurança                                  | PR documental, schema diff proposto, matriz DAL e ata        | revert documental; nenhuma migration aplicada   |
-| B    | Engenharia                       | Segurança                                  | commits em `develop`, suites e relatório de seed/contexto    | plano por incremento preservando JWT/isolamento |
-| C    | Engenharia + owner de folha      | Segurança, Produto e DP                    | testes PostgreSQL, contrato, telemetria e aceite P0          | adapter seguro testado; sem regra paralela      |
-| D    | owners das famílias + Engenharia | Segurança e Produto; DP/DPO conforme dados | inventário 163/163, métricas, comunicação e Final Acceptance | alias protegido e rollback por família          |
+| Gate | Responsável (`R`)                | Aprovadores (`A`)                          | Evidência mínima                                                                                             | Rollback                                        |
+| ---- | -------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
+| A    | Arquitetura/Engenharia           | Segurança                                  | PR documental, schema diff proposto, matriz DAL e ata                                                        | revert documental; nenhuma migration aplicada   |
+| B    | Engenharia                       | Segurança                                  | commits em `develop`, suites e relatório de seed/contexto                                                    | plano por incremento preservando JWT/isolamento |
+| C    | Engenharia + owner de folha      | Segurança, Produto e DP                    | testes PostgreSQL, contrato, telemetria e aceite P0                                                          | adapter seguro testado; sem regra paralela      |
+| D    | owners das famílias + Engenharia | Segurança e Produto; DP/DPO conforme dados | 165 handlers runtime reconciliados com a baseline histórica de 163, métricas, comunicação e Final Acceptance | alias protegido e rollback por família          |
 
 Cada checkbox precisa de link para commit, PR, teste, relatório ou ata e identificação do responsável.
 Sem evidência, o resultado binário do item é `FAIL`.
@@ -136,8 +136,15 @@ invariantes sem regressão. Essa conclusão não aprova o Gate D nem inicia a ET
 **Status:** `NOT STARTED — NOT APPROVED`. A aprovação do Gate C não inicia ETP-015.9/015.10, não
 remove legado e não autoriza produção, cloud ou deploy.
 
+O [pacote de decisão de entrada da ETP-015.9](../security/ETP-015_9_ENTRY_DECISION_PACKAGE.md)
+registra ED-01–ED-06 em 2026-08-12. As decisões preservam/deferem Residual P0, impedem expansão de
+capability/dados/auditoria, mantêm owners pendentes, registram Company somente como primeira
+candidata e aprovam P4 apenas para preservação/reconciliação. Nenhum checkbox abaixo foi concluído,
+nenhum rollout funcional foi autorizado e o Gate D não foi iniciado.
+
 - [ ] cada família tem owner, BDPs, capabilities, sensibilidade e auditoria definidos;
-- [ ] todas as 163 rotas estão classificadas e reconciliadas com o código/OpenAPI;
+- [ ] os 165 handlers runtime estão classificados e reconciliados com código/OpenAPI e com os 163
+      registros da baseline histórica, incluindo as duas superfícies posteriores explícitas;
 - [ ] cada rota empresarial possui JWT, capability e testes `401`/`403`/`404`;
 - [ ] nenhuma query empresarial confia em `companyId` do cliente;
 - [ ] masking e leitura sensível seguem matriz aprovada;
@@ -160,7 +167,8 @@ autoridade do `companyId` cliente, lookup cruzado ou regra paralela de fechament
 - Gate A: 14/14 DALs `COVERED`; 0 `PARTIAL`, `MISSING` ou `CONFLICT`.
 - Gate B: 100% das rotas do recorte declaradas públicas ou com JWT/capability; seed com 0 assignment.
 - Gate C: 100% das rotas P0 com testes `401`/`403`/`404`, duas empresas e rollback; 0 regra paralela.
-- Gate D: 163/163 handlers reconciliados; 0 rota empresarial implícita; 0 capability sem documentação.
+- Gate D: 165 handlers runtime reconciliados com a baseline histórica de 163 e suas duas adições
+  explícitas; 0 rota empresarial implícita; 0 capability sem documentação.
 
 Os itens qualitativos “aprovado”, “revisado” e “estável” só passam quando acompanhados da evidência e
 do aprovador definidos na tabela de governança.

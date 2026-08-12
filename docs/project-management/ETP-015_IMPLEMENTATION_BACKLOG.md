@@ -234,19 +234,24 @@ homologaram o recorte em 2026-08-10 no
 
 ## ETP-015.9 — Legacy Route Rollout
 
-**Status:** `NOT STARTED — NOT AUTHORIZED`
+**Status:** `ENTRY DECISIONS RECORDED — FUNCTIONAL IMPLEMENTATION NOT AUTHORIZED`
 
-A [avaliação de prontidão](../security/ETP-015_9_ENTRY_READINESS.md) está concluída. Ela não autoriza
-entrada: as famílias de domínio permanecem bloqueadas por capabilities, owners e BDPs materiais, e
-15 handlers P0 residuais ainda exigem alocação humana de onda. P4 está pronta somente para
+A [avaliação de prontidão](../security/ETP-015_9_ENTRY_READINESS.md) está concluída. As famílias de
+domínio permanecem bloqueadas por capabilities, owners e BDPs materiais. Os 15 handlers P0
+residuais foram homologados como `PRESERVE / DEFER`. P4 foi aprovada somente para
 preservação/reconciliação sem mudança de runtime.
+
+O [pacote de decisão](../security/ETP-015_9_ENTRY_DECISION_PACKAGE.md) registra ED-01–ED-06 em
+2026-08-12. Nenhuma capability, projeção ou auditoria foi ampliada; owners permanecem pendentes;
+Company é `FIRST FUNCTIONAL CANDIDATE — NOT AUTHORIZED`; nenhuma família funcional está autorizada.
 
 - **Objetivo:** migrar famílias restantes por prioridade P1–P4.
 - **Dependências:** 015.8 estável e BDPs de cada família.
 - **Módulos afetados:** controllers/services/repositories e clientes por família.
 - **Banco esperado:** somente índices/constraints aprovados por incremento.
 - **Testes:** matriz negativa, isolamento, auditoria, masking e regressão do consumidor.
-- **Riscos:** 163 handlers, decisões materiais e APIs externas invisíveis.
+- **Riscos:** 165 handlers runtime contra 163 registros históricos, decisões materiais e APIs
+  externas invisíveis.
 - **Aceite:** gate individual, inventário atualizado e zero bypass na família.
 - **Rollback:** por família, preservando autenticação e isolamento.
 - **Evidências:** telemetria, owner, janela, OpenAPI e checks.
@@ -271,7 +276,8 @@ impede outra sem dependência material.
 - **Banco esperado:** nenhum, salvo índice comprovado.
 - **Testes:** inventário completo, segurança, carga, falha/rollback e consumidores.
 - **Riscos:** falso zero de uso e remoção precoce.
-- **Aceite:** 163 rotas classificadas, zero rota empresarial implícita e relatório de prontidão.
+- **Aceite:** 165 handlers runtime reconciliados com a baseline histórica de 163 e suas duas adições
+  explícitas, zero rota empresarial implícita e relatório de prontidão.
 - **Rollback:** manter aliases protegidos; remoção somente em iniciativa/PR posterior.
 - **Evidências:** comunicação, telemetria, aceite dos owners e checklist final.
 

@@ -4,6 +4,10 @@
 
 **Implementation state:** `NOT STARTED — NOT AUTHORIZED`
 
+**Post-assessment decision:** ED-01–ED-06 were recorded on 2026-08-12 in the
+[entry decision package](ETP-015_9_ENTRY_DECISION_PACKAGE.md). Functional implementation remains
+unauthorized.
+
 **Assessment baseline:** `origin/develop@b8324037b053b947692992d698888ed6e73db5f2`
 
 ## Purpose and boundary
@@ -15,19 +19,20 @@ authorization, change a route, or start ETP-015.9.
 ## Current inventory
 
 The runtime verifier classifies 165 handlers: 4 public, 5 authenticated, 31 capability protected,
-and 125 legacy deferred. The historical inventory contains 163 entries; the two additional runtime
-handlers are verifier/proof surfaces and must remain explicitly reconciled rather than silently
-absorbed into a rollout family.
+and 125 legacy deferred. The historical inventory contains 163 entries; the two later runtime
+handlers are `AuthController#logout` and `DashboardController#summary`. ETP-015.4 explicitly
+classifies both as authenticated transversal/projection surfaces. They must remain reconciled as
+such rather than being silently absorbed into a legacy rollout family.
 
 The 125 deferred handlers decompose as follows:
 
-| Proposed wave | Families                                                        | Handlers | Readiness                                           |
-| ------------- | --------------------------------------------------------------- | -------: | --------------------------------------------------- |
-| P1            | company, employee, contract, payroll parameters, payroll rubric |       33 | `BLOCKED`                                           |
-| P2            | organization, admission, leave, variable compensation           |       56 | `BLOCKED`                                           |
-| P3            | time, benefit, vacation                                         |       21 | `BLOCKED`                                           |
-| Residual P0   | payroll period legacy, payroll input, payroll run               |       15 | `BLOCKED — WAVE ALLOCATION HUMAN DECISION REQUIRED` |
-| Total         | all deferred handlers                                           |      125 | —                                                   |
+| Proposed wave | Families                                                        | Handlers | Readiness                     |
+| ------------- | --------------------------------------------------------------- | -------: | ----------------------------- |
+| P1            | company, employee, contract, payroll parameters, payroll rubric |       33 | `BLOCKED`                     |
+| P2            | organization, admission, leave, variable compensation           |       56 | `BLOCKED`                     |
+| P3            | time, benefit, vacation                                         |       21 | `BLOCKED`                     |
+| Residual P0   | payroll period legacy, payroll input, payroll run               |       15 | `APPROVED — PRESERVE / DEFER` |
+| Total         | all deferred handlers                                           |      125 | —                             |
 
 The proposed P4 scope—legitimate public surfaces and reconciliation of already protected
 surfaces—is `READY — PRESERVATION/RECONCILIATION ONLY`. This readiness does not authorize a runtime

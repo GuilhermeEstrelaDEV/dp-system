@@ -316,13 +316,18 @@
   `b8324037b053b947692992d698888ed6e73db5f2`; a
   [evidência](../security/ETP-015_8_POST_MERGE_VERIFICATION.md) confirmou ausência de regressões,
   PostgreSQL 16, cobertura, demo e invariantes com resultado `PASS`.
-- **ETP-015.9 / ETP-015.10 — `NOT STARTED — NOT AUTHORIZED`:** a
-  [prontidão da ETP-015.9](../security/ETP-015_9_ENTRY_READINESS.md) foi avaliada, mas ondas e
-  hardening não foram iniciados.
-- **Próximo passo:** decisão humana de entrada da ETP-015.9, incluindo capabilities, owners,
-  dependências materiais e alocação dos 15 handlers P0 residuais. Produção, cloud, deploy, remoção
-  de legado, Gate D e etapas seguintes não estão autorizados. BDP-001/011 permanecem `PENDING`;
-  BDP-014 está `APPROVED — VERSION 1`.
+- **ETP-015.9 — `ENTRY DECISIONS RECORDED — FUNCTIONAL IMPLEMENTATION NOT AUTHORIZED`:** a
+  [prontidão](../security/ETP-015_9_ENTRY_READINESS.md) foi convertida em
+  [ED-01–ED-06](../security/ETP-015_9_ENTRY_DECISION_PACKAGE.md), homologadas em 2026-08-12 sem
+  autorizar implementação. Residual P0 fica `PRESERVE / DEFER`; 19 capabilities e 27 eventos são
+  preservados; owners continuam pendentes; Company é somente a primeira candidata funcional, sem
+  autorização; P4 é exclusivamente preservação/reconciliação. ETP-015.10 permanece `NOT STARTED —
+NOT AUTHORIZED`.
+- **Próximo passo:** resolver ou delimitar BDP-012 e satisfazer capability, projeção, auditoria,
+  owner, consumidores, Definition of Ready, rollback e evidence gate antes de submeter Company a uma
+  autorização separada. Produção, cloud, deploy, remoção de legado, Gate D e etapas seguintes não
+  estão autorizados. BDP-001–008 e BDP-010–013 permanecem `PENDING`; BDP-009 e BDP-014 permanecem
+  aprovadas.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,
