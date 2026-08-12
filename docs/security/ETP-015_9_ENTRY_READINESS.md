@@ -4,6 +4,10 @@
 
 **Implementation state:** `NOT STARTED — NOT AUTHORIZED`
 
+**Post-assessment decision:** ED-01–ED-06 were recorded on 2026-08-12 in the
+[entry decision package](ETP-015_9_ENTRY_DECISION_PACKAGE.md). Functional implementation remains
+unauthorized.
+
 **Assessment baseline:** `origin/develop@b8324037b053b947692992d698888ed6e73db5f2`
 
 ## Purpose and boundary
@@ -22,13 +26,13 @@ such rather than being silently absorbed into a legacy rollout family.
 
 The 125 deferred handlers decompose as follows:
 
-| Proposed wave | Families                                                        | Handlers | Readiness                                           |
-| ------------- | --------------------------------------------------------------- | -------: | --------------------------------------------------- |
-| P1            | company, employee, contract, payroll parameters, payroll rubric |       33 | `BLOCKED`                                           |
-| P2            | organization, admission, leave, variable compensation           |       56 | `BLOCKED`                                           |
-| P3            | time, benefit, vacation                                         |       21 | `BLOCKED`                                           |
-| Residual P0   | payroll period legacy, payroll input, payroll run               |       15 | `BLOCKED — WAVE ALLOCATION HUMAN DECISION REQUIRED` |
-| Total         | all deferred handlers                                           |      125 | —                                                   |
+| Proposed wave | Families                                                        | Handlers | Readiness                     |
+| ------------- | --------------------------------------------------------------- | -------: | ----------------------------- |
+| P1            | company, employee, contract, payroll parameters, payroll rubric |       33 | `BLOCKED`                     |
+| P2            | organization, admission, leave, variable compensation           |       56 | `BLOCKED`                     |
+| P3            | time, benefit, vacation                                         |       21 | `BLOCKED`                     |
+| Residual P0   | payroll period legacy, payroll input, payroll run               |       15 | `APPROVED — PRESERVE / DEFER` |
+| Total         | all deferred handlers                                           |      125 | —                             |
 
 The proposed P4 scope—legitimate public surfaces and reconciliation of already protected
 surfaces—is `READY — PRESERVATION/RECONCILIATION ONLY`. This readiness does not authorize a runtime

@@ -144,7 +144,7 @@ canônicos, deixando 125 rotas `LEGACY_DEFERRED`; as etapas restantes seguem a o
 - **Gate B:** `APPROVED — SECURITY — 2026-08-10`;
 - **Gate C:** `APPROVED — SECURITY / PRODUCT / DP — 2026-08-10`;
 - **ETP-015.8:** `COMPLETED — POST-MERGE VERIFIED`;
-- **ETP-015.9:** `ENTRY DECISION PACKAGE READY FOR HUMAN REVIEW`; `NOT STARTED — NOT AUTHORIZED`;
+- **ETP-015.9:** `ENTRY DECISIONS RECORDED — FUNCTIONAL IMPLEMENTATION NOT AUTHORIZED`;
 - **ETP-015.10:** `NOT STARTED — NOT AUTHORIZED`.
 
 O [registro de homologação](security/ETP-015_6_HUMAN_APPROVAL_RECORD.md) confirma 110/110 decisões
@@ -161,10 +161,12 @@ oito itens técnicos `PASS`. A [homologação humana](security/ETP-015_GATE_C_HU
 Segurança, Produto e DP aprovou o Gate C em 2026-08-10, e a
 [verificação pós-merge](security/ETP-015_8_POST_MERGE_VERIFICATION.md) confirmou a etapa como
 `COMPLETED — POST-MERGE VERIFIED`. A
-[prontidão da ETP-015.9](security/ETP-015_9_ENTRY_READINESS.md) foi avaliada, mas exige decisão humana
-de entrada. O [pacote de decisão](security/ETP-015_9_ENTRY_DECISION_PACKAGE.md) organiza ED-01–ED-06
-sem preencher ou aprovar decisões; ETP-015.9/015.10, Gate D, remoção de legado, produção, cloud e
-deploy não estão autorizados.
+[prontidão da ETP-015.9](security/ETP-015_9_ENTRY_READINESS.md) foi avaliada. O
+[pacote de decisão](security/ETP-015_9_ENTRY_DECISION_PACKAGE.md) registra ED-01–ED-06 em 2026-08-12:
+Residual P0 fica `PRESERVE / DEFER`, nenhuma capability/projeção/evento é ampliado, owners continuam
+pendentes, Company é apenas a primeira candidata e P4 fica restrita à preservação/reconciliação.
+Nenhum rollout funcional, ETP-015.10, Gate D, remoção de legado, produção, cloud ou deploy está
+autorizado.
 BDP-001 e BDP-011 permanecem `PENDING`, e BDP-014 permanece
 `APPROVED — VERSION 1`.
 

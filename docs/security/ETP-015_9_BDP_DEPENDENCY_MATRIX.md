@@ -1,6 +1,6 @@
 # ETP-015.9 — BDP Dependency Matrix
 
-**Status:** `AWAITING HUMAN DECISIONS`
+**Status:** `DEPENDENCIES PRESERVED — NO PENDING BDP RESOLVED`
 
 ## Authoritative BDP state
 

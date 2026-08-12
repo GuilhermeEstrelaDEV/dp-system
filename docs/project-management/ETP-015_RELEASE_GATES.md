@@ -136,9 +136,11 @@ invariantes sem regressão. Essa conclusão não aprova o Gate D nem inicia a ET
 **Status:** `NOT STARTED — NOT APPROVED`. A aprovação do Gate C não inicia ETP-015.9/015.10, não
 remove legado e não autoriza produção, cloud ou deploy.
 
-O [pacote de decisão de entrada da ETP-015.9](../security/ETP-015_9_ENTRY_DECISION_PACKAGE.md) está
-pronto para revisão humana. Sua produção é governança preparatória: nenhum checkbox abaixo foi
-concluído por esse documento, e o Gate D não foi iniciado.
+O [pacote de decisão de entrada da ETP-015.9](../security/ETP-015_9_ENTRY_DECISION_PACKAGE.md)
+registra ED-01–ED-06 em 2026-08-12. As decisões preservam/deferem Residual P0, impedem expansão de
+capability/dados/auditoria, mantêm owners pendentes, registram Company somente como primeira
+candidata e aprovam P4 apenas para preservação/reconciliação. Nenhum checkbox abaixo foi concluído,
+nenhum rollout funcional foi autorizado e o Gate D não foi iniciado.
 
 - [ ] cada família tem owner, BDPs, capabilities, sensibilidade e auditoria definidos;
 - [ ] os 165 handlers runtime estão classificados e reconciliados com código/OpenAPI e com os 163

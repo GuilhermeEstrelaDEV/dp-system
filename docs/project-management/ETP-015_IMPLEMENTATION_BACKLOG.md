@@ -234,16 +234,16 @@ homologaram o recorte em 2026-08-10 no
 
 ## ETP-015.9 — Legacy Route Rollout
 
-**Status:** `ENTRY DECISION PACKAGE READY FOR HUMAN REVIEW`; `NOT STARTED — NOT AUTHORIZED`
+**Status:** `ENTRY DECISIONS RECORDED — FUNCTIONAL IMPLEMENTATION NOT AUTHORIZED`
 
-A [avaliação de prontidão](../security/ETP-015_9_ENTRY_READINESS.md) está concluída. Ela não autoriza
-entrada: as famílias de domínio permanecem bloqueadas por capabilities, owners e BDPs materiais, e
-15 handlers P0 residuais ainda exigem alocação humana de onda. P4 está pronta somente para
+A [avaliação de prontidão](../security/ETP-015_9_ENTRY_READINESS.md) está concluída. As famílias de
+domínio permanecem bloqueadas por capabilities, owners e BDPs materiais. Os 15 handlers P0
+residuais foram homologados como `PRESERVE / DEFER`. P4 foi aprovada somente para
 preservação/reconciliação sem mudança de runtime.
 
-O [pacote de decisão](../security/ETP-015_9_ENTRY_DECISION_PACKAGE.md) estrutura ED-01–ED-06,
-matrizes de capability, dados/auditoria, owners/aprovadores, BDPs e opções da primeira onda. Todos os
-campos decisórios permanecem pendentes e nenhuma família funcional está autorizada.
+O [pacote de decisão](../security/ETP-015_9_ENTRY_DECISION_PACKAGE.md) registra ED-01–ED-06 em
+2026-08-12. Nenhuma capability, projeção ou auditoria foi ampliada; owners permanecem pendentes;
+Company é `FIRST FUNCTIONAL CANDIDATE — NOT AUTHORIZED`; nenhuma família funcional está autorizada.
 
 - **Objetivo:** migrar famílias restantes por prioridade P1–P4.
 - **Dependências:** 015.8 estável e BDPs de cada família.

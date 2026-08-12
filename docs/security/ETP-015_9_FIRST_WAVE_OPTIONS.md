@@ -1,6 +1,6 @@
 # ETP-015.9 — First Wave Options
 
-**Status:** `NON-BINDING TECHNICAL RANKING — HUMAN DECISION REQUIRED`
+**Status:** `ENTRY DECISION RECORDED — NO FUNCTIONAL ROLLOUT AUTHORIZED`
 
 ## Result
 
@@ -13,7 +13,7 @@ not authorize entry or convert a blocker into readiness.
 
 ## Option 1 — Company family (6 handlers)
 
-**Status:** `BLOCKED`
+**Status:** `FIRST FUNCTIONAL CANDIDATE — NOT AUTHORIZED`
 
 **Why ranked first:** smallest P1 family, known `/empresas` consumer, and no PII-heavy employee
 record. Complexity remains material because global versus enterprise administration is undecided.
@@ -85,7 +85,7 @@ OpenAPI reconciled.
 
 ## Option 3 — P4 preservation/reconciliation only
 
-**Status:** `PROPOSED — HUMAN CONFIRMATION REQUIRED`; not a functional rollout.
+**Status:** `APPROVED — PRESERVATION / RECONCILIATION ONLY`; not a functional rollout.
 
 **Why ranked:** it can produce governance evidence without runtime change or material BDP
 dependency, but it does not advance a legacy business family.
@@ -113,7 +113,7 @@ projection, audit, company, or route-removal change; no Gate D checkbox claimed 
 
 ## Option 4 — Residual P0 governed sub-scope (15 handlers)
 
-**Status:** `BLOCKED — WAVE ALLOCATION HUMAN DECISION REQUIRED`
+**Status:** `PRESERVE / DEFER — NO FUNCTIONAL ROLLOUT AUTHORIZED`
 
 **Why ranked fourth:** high-risk surfaces overlap payroll-period, input, and run behavior. The
 canonical closure foundation is strong, but ED-01 and multiple material BDPs are unresolved.
@@ -147,5 +147,8 @@ inventory and clients reconciled.
 ## Human selection constraint
 
 No option may be selected for functional implementation until its Definition of Ready is evidenced
-and a separate human entry authorization is recorded. ETP-015.9 remains `NOT STARTED — NOT
-AUTHORIZED`.
+and a separate human entry authorization is recorded. Company is only the first functional
+candidate. Its entry requires an approved BDP-012 resolution or delimitation, global-versus-active-
+company scope, capability and projection decisions, audit events, accountable owner, consumer
+inventory, evidenced Definition of Ready, rollback, and evidence gate. ETP-015.9 remains
+`FUNCTIONAL IMPLEMENTATION NOT AUTHORIZED`.

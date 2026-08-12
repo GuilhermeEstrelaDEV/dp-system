@@ -1,6 +1,6 @@
 # ETP-015.9 — Capability Decision Matrix
 
-**Status:** `AWAITING HUMAN DECISIONS`
+**Status:** `APPROVED — NO CAPABILITY EXPANSION`
 
 **Catalog baseline:** 19 existing capabilities; 0 additions approved by this document.
 
@@ -36,3 +36,14 @@ For every family, humans must decide:
 6. explicit assignments, with zero automatic grant or seed expansion.
 
 No candidate in this matrix is `APPROVED`, `AUTHORIZED`, `FINAL`, or `CANONICAL`.
+
+## Recorded human decision — 2026-08-12
+
+No new domain capability is approved. The 19 existing capabilities remain unchanged and all names
+in the candidate-model column remain `NON-BINDING CANDIDATE NAME`. The semantics of
+`payroll.period.close.*`, `platform.read`, and `platform.manage` must not be expanded to families
+outside their approved contracts. P1, P2, P3, and Residual P0 capabilities require resolution of
+their material dependencies and a specific segregation-of-functions review.
+
+This approval preserves the catalog; it does not change the `PENDING` family rows or authorize
+implementation.

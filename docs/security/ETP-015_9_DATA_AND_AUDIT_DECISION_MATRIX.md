@@ -1,6 +1,6 @@
 # ETP-015.9 — Data and Audit Decision Matrix
 
-**Status:** `AWAITING HUMAN DECISIONS`
+**Status:** `APPROVED — PRESERVE CURRENT DATA/AUDIT POLICY`
 
 This matrix classifies documented contract categories, never real records. States are limited to
 `APPROVED EXISTING POLICY`, `PENDING MATERIAL DECISION`, `BLOCKED`, and `NOT APPLICABLE`.
@@ -44,3 +44,12 @@ are never an audit projection.
 
 No masking algorithm, retention duration, export, DLP rule, legal policy, or final LGPD
 classification is established here. The audit catalog remains 27 events with 0 approved additions.
+
+## Recorded human decision — 2026-08-12
+
+No data-exposure expansion is authorized. Existing projections and omissions remain binding, and
+fields dependent on pending BDPs remain omitted or blocked. No new masking, retention, export, DLP,
+legal-classification mechanism, or audit event is approved. The catalog remains at 27 events.
+
+Every future functional family must present an explicit data and audit classification before
+rollout. Existing `PENDING MATERIAL DECISION` and `BLOCKED` rows remain unresolved.
