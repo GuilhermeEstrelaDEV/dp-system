@@ -245,6 +245,12 @@ O [pacote de decisão](../security/ETP-015_9_ENTRY_DECISION_PACKAGE.md) registra
 2026-08-12. Nenhuma capability, projeção ou auditoria foi ampliada; owners permanecem pendentes;
 Company é `FIRST FUNCTIONAL CANDIDATE — NOT AUTHORIZED`; nenhuma família funcional está autorizada.
 
+O [pacote de prontidão de Company](../security/ETP-015_9_COMPANY_ENTRY_READINESS.md) responde aos
+nove pré-requisitos da ED-05 e deixa o [formulário humano](../security/ETP-015_9_COMPANY_ENTRY_DECISION_PACKAGE.md)
+sem decisões preenchidas. Estado: `ENTRY PACKAGE READY FOR HUMAN DECISIONS`; CO-01/06/08 estão
+`BLOCKED`, CO-02/03/04/05/09 exigem decisão humana, e CO-07 está `READY` somente para evidência de
+inventário. Os seis handlers continuam `LEGACY_DEFERRED`.
+
 - **Objetivo:** migrar famílias restantes por prioridade P1–P4.
 - **Dependências:** 015.8 estável e BDPs de cada família.
 - **Módulos afetados:** controllers/services/repositories e clientes por família.

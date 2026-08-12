@@ -142,6 +142,11 @@ capability/dados/auditoria, mantêm owners pendentes, registram Company somente 
 candidata e aprovam P4 apenas para preservação/reconciliação. Nenhum checkbox abaixo foi concluído,
 nenhum rollout funcional foi autorizado e o Gate D não foi iniciado.
 
+O [pacote de entrada de Company](../security/ETP-015_9_COMPANY_ENTRY_READINESS.md) prepara CO-01 a
+CO-09 e mantém Company `FIRST FUNCTIONAL CANDIDATE — NOT AUTHORIZED`. Sua existência não satisfaz
+nenhum checkbox: BDP-012/delimitação, escopo por operação, capability, projeção, auditoria, owner,
+evidence gate e rollback ainda exigem aprovação humana.
+
 - [ ] cada família tem owner, BDPs, capabilities, sensibilidade e auditoria definidos;
 - [ ] os 165 handlers runtime estão classificados e reconciliados com código/OpenAPI e com os 163
       registros da baseline histórica, incluindo as duas superfícies posteriores explícitas;

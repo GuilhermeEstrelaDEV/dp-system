@@ -147,6 +147,12 @@ canônicos, deixando 125 rotas `LEGACY_DEFERRED`; as etapas restantes seguem a o
 - **ETP-015.9:** `ENTRY DECISIONS RECORDED — FUNCTIONAL IMPLEMENTATION NOT AUTHORIZED`;
 - **ETP-015.10:** `NOT STARTED — NOT AUTHORIZED`.
 
+Para a ETP-015.9, Company permanece `FIRST FUNCTIONAL CANDIDATE — NOT AUTHORIZED`. Seu
+[pacote de entrada](security/ETP-015_9_COMPANY_ENTRY_READINESS.md) está
+`ENTRY PACKAGE READY FOR HUMAN DECISIONS`, com BDP-012, escopo, capability, projeção, auditoria, owners, evidence
+gate e rollback ainda dependentes das decisões registradas em CO-01–CO-09. Nenhuma rota foi
+migrada e nenhum item do Gate D foi iniciado.
+
 O [registro de homologação](security/ETP-015_6_HUMAN_APPROVAL_RECORD.md) confirma 110/110 decisões
 `FC-*` aprovadas pelo `PROJECT_OWNER` em 2026-08-08. A
 [reconciliação de readiness](security/ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md) concluiu
