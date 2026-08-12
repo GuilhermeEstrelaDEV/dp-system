@@ -15,9 +15,10 @@ authorization, change a route, or start ETP-015.9.
 ## Current inventory
 
 The runtime verifier classifies 165 handlers: 4 public, 5 authenticated, 31 capability protected,
-and 125 legacy deferred. The historical inventory contains 163 entries; the two additional runtime
-handlers are verifier/proof surfaces and must remain explicitly reconciled rather than silently
-absorbed into a rollout family.
+and 125 legacy deferred. The historical inventory contains 163 entries; the two later runtime
+handlers are `AuthController#logout` and `DashboardController#summary`. ETP-015.4 explicitly
+classifies both as authenticated transversal/projection surfaces. They must remain reconciled as
+such rather than being silently absorbed into a legacy rollout family.
 
 The 125 deferred handlers decompose as follows:
 
