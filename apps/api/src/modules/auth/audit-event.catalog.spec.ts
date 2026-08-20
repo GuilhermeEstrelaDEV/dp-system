@@ -32,4 +32,19 @@ describe('authorization audit event catalog', () => {
       'Unknown audit event code: FORGED_EVENT',
     );
   });
+
+  it('keeps PAYROLL_PERIOD_CLOSED on the approved metadata contract', () => {
+    expect(AUDIT_EVENT_CODES).toHaveLength(27);
+    expect(AUDIT_EVENT_CATALOG.PAYROLL_PERIOD_CLOSED.allowedMetadata).toEqual([
+      'closureId',
+      'manifestId',
+      'manifestHash',
+      'selectedPayrollRunId',
+      'linkedReviewCycleId',
+      'warnings',
+    ]);
+    expect(AUDIT_EVENT_CATALOG.PAYROLL_PERIOD_CLOSED.allowedMetadata).not.toContain(
+      'hashAlgorithmVersion',
+    );
+  });
 });

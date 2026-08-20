@@ -190,8 +190,27 @@ describe('PayrollPeriodOperationalClosureService', () => {
       'PERIOD_CLOSED',
     ] satisfies PayrollPeriodClosureEventType[]);
     expect(audit.append).toHaveBeenCalledWith(
-      expect.objectContaining({ action: 'PAYROLL_PERIOD_CLOSED', entityId: ids.period }),
+      expect.objectContaining({
+        action: 'PAYROLL_PERIOD_CLOSED',
+        entityId: ids.period,
+        metadata: {
+          closureId: ids.closure,
+          manifestId: ids.manifest,
+          manifestHash: expect.stringMatching(/^[0-9a-f]{64}$/),
+          selectedPayrollRunId: ids.run,
+          linkedReviewCycleId: ids.review,
+          warnings: [],
+        },
+      }),
       expect.anything(),
+    );
+    expect(audit.append.mock.calls[0]?.[0].metadata).not.toEqual(
+      expect.objectContaining({
+        payrollRunId: expect.anything(),
+        reviewCycleId: expect.anything(),
+        warningAcknowledgements: expect.anything(),
+        hashAlgorithmVersion: expect.anything(),
+      }),
     );
     expect(repository.completeIdempotency).toHaveBeenCalledWith(
       expect.anything(),

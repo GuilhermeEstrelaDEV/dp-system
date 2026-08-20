@@ -5,5 +5,5 @@
     "outDir": "../.prisma-tsbuild",
     "noEmit": true
   },
-  "include": ["seed.ts", "demo-seed.ts", "demo-verify.ts"]
+  "include": ["seed.ts", "demo-seed.ts", "demo-verify.ts", "demo-access.ts"]
 }

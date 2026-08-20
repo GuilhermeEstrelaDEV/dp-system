@@ -25,7 +25,9 @@ export function NavigationLinks({ collapsed = false, onNavigate }: NavigationLin
                 >
                   <NavigationIcon name={item.icon} />
                   <span className={collapsed ? 'sr-only' : undefined}>{item.label}</span>
-                  {!collapsed && <span className="navigation__soon">Em breve</span>}
+                  {!collapsed && (
+                    <span className="navigation__soon">{item.availabilityLabel ?? 'Em breve'}</span>
+                  )}
                 </div>
               ) : (
                 <NavLink

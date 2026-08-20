@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import type { AuthenticatedPrincipal } from '../src/common/http/request-context';
-import type { AuditWriterService } from '../src/modules/auth/audit-writer.service';
+import { AuditWriterService } from '../src/modules/auth/audit-writer.service';
 import { AuthorizationService } from '../src/modules/auth/authorization.service';
 import { PayrollClosuresService } from '../src/modules/payroll-closures/payroll-closures.service';
 import { PayrollPeriodClosureRepository } from '../src/modules/payroll-periods/payroll-period-closure.repository';
@@ -36,52 +36,12 @@ describeDatabase('payroll period operational closure on PostgreSQL', () => {
     accessGrants: [],
   };
 
-  const audit = {
-    transaction: <T>(
-      work: (tx: Prisma.TransactionClient) => Promise<T>,
-      options?: {
-        maxWait?: number;
-        timeout?: number;
-        isolationLevel?: Prisma.TransactionIsolationLevel;
-      },
-    ) => prisma.$transaction(work, options),
-    append: async (
-      event: {
-        principal: AuthenticatedPrincipal;
-        action: string;
-        entityType: string;
-        entityId: string;
-        previousState?: Prisma.InputJsonValue;
-        nextState?: Prisma.InputJsonValue;
-        reason?: string;
-        metadata?: Prisma.InputJsonObject;
-      },
-      tx: Prisma.TransactionClient,
-    ) => {
-      await tx.auditLog.create({
-        data: {
-          actorUserId: event.principal.actorId,
-          companyId: event.principal.activeCompanyId,
-          sessionId: event.principal.sessionId,
-          traceId: event.principal.traceId,
-          ipAddress: event.principal.ipAddress,
-          userAgent: event.principal.userAgent,
-          action: event.action,
-          entityType: event.entityType,
-          entityId: event.entityId,
-          previousState: event.previousState,
-          nextState: event.nextState,
-          reason: event.reason,
-          metadata: event.metadata,
-        },
-      });
-    },
-  };
+  const audit = new AuditWriterService(prisma as never);
   const readiness = new PayrollPeriodReadinessService(prisma as never, authorization);
   const service = new PayrollPeriodOperationalClosureService(
     repository,
     readiness,
-    audit as unknown as AuditWriterService,
+    audit,
     authorization,
   );
   const legacyAdapter = new PayrollClosuresService(
@@ -272,7 +232,7 @@ describeDatabase('payroll period operational closure on PostgreSQL', () => {
         where: { payrollPeriodClosureId: result.closureId },
         orderBy: { createdAt: 'asc' },
       }),
-      prisma.auditLog.count({
+      prisma.auditLog.findMany({
         where: {
           entityType: 'PayrollPeriod',
           entityId: item.periodId,
@@ -290,7 +250,22 @@ describeDatabase('payroll period operational closure on PostgreSQL', () => {
       'PERIOD_CLOSURE_STARTED',
       'PERIOD_CLOSED',
     ]);
-    expect(audits).toBe(1);
+    expect(audits).toHaveLength(1);
+    expect(audits[0]?.metadata).toMatchObject({
+      closureId: result.closureId,
+      manifestId: result.manifestId,
+      selectedPayrollRunId: item.runId,
+      linkedReviewCycleId: expect.any(String),
+      warnings: [],
+    });
+    expect(audits[0]?.metadata).not.toEqual(
+      expect.objectContaining({
+        hashAlgorithmVersion: expect.anything(),
+        payrollRunId: expect.anything(),
+        reviewCycleId: expect.anything(),
+        warningAcknowledgements: expect.anything(),
+      }),
+    );
     expect(idempotencies).toEqual([
       expect.objectContaining({ status: 'COMPLETED', responseReference: result.closureId }),
     ]);
@@ -392,5 +367,45 @@ describeDatabase('payroll period operational closure on PostgreSQL', () => {
     await expect(
       prisma.payrollPeriodClosureVersion.count({ where: { payrollPeriodId: item.periodId } }),
     ).resolves.toBe(1);
+  });
+
+  it('rolls back period state and every closure artifact when audit fails', async () => {
+    const item = await fixture(7);
+    const failingAudit = {
+      transaction: audit.transaction.bind(audit),
+      append: jest.fn().mockRejectedValue(new Error('audit contract failure')),
+    };
+    const failingService = new PayrollPeriodOperationalClosureService(
+      repository,
+      readiness,
+      failingAudit as unknown as AuditWriterService,
+      authorization,
+    );
+    await expect(
+      failingService.close(
+        item.periodId,
+        command(item.runId, item.token),
+        '88888888-8888-4888-8888-888888888888',
+        principal,
+      ),
+    ).rejects.toThrow('audit contract failure');
+    const [period, versions, manifests, events, idempotencies] = await Promise.all([
+      prisma.payrollPeriod.findUniqueOrThrow({ where: { id: item.periodId } }),
+      prisma.payrollPeriodClosureVersion.count({ where: { payrollPeriodId: item.periodId } }),
+      prisma.payrollPeriodClosureManifest.count({
+        where: { payrollPeriodClosure: { payrollPeriodId: item.periodId } },
+      }),
+      prisma.payrollPeriodClosureEvent.count({
+        where: { payrollPeriodClosure: { payrollPeriodId: item.periodId } },
+      }),
+      prisma.payrollPeriodClosureIdempotency.count({ where: { payrollPeriodId: item.periodId } }),
+    ]);
+    expect(period.status).toBe('OPEN');
+    expect({ versions, manifests, events, idempotencies }).toEqual({
+      versions: 0,
+      manifests: 0,
+      events: 0,
+      idempotencies: 0,
+    });
   });
 });

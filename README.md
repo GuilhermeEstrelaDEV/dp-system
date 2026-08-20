@@ -55,9 +55,13 @@ pnpm demo:setup
 pnpm demo:start
 pnpm demo:status
 pnpm demo:data:verify
+pnpm demo:access:grant
+pnpm demo:access:status
 pnpm demo:verify
 pnpm demo:ready
 pnpm demo:rehearse
+pnpm demo:smoke:essential
+pnpm demo:access:revoke
 pnpm demo:stop
 pnpm demo:reset -- --confirm-reset
 ```
@@ -73,6 +77,12 @@ senhas ou criar autorização.
 
 Antes de apresentar, siga o [guia do operador](docs/demo/MVP-001_DEMO_OPERATOR_GUIDE.md) e exija
 `DEMO STATUS: GO` em `pnpm demo:verify`.
+
+Para a entrega essencial, consulte o [runbook de entrega](docs/delivery/MVP_ESSENTIAL_DELIVERY.md),
+o [checklist](docs/delivery/MVP_DELIVERY_CHECKLIST.md), a
+[decisão de acesso temporário](docs/delivery/MVP_DEMO_ACCESS_DECISION.md) e a
+[especificação do fixture canônico](docs/delivery/MVP_CANONICAL_CLOSURE_DEMO_FIXTURE.md). O seed
+continua criando zero grants; o fluxo real somente fica disponível após concessão manual explícita.
 
 A estabilização final, limitações e evidências técnicas estão no
 [relatório da MVP-001.8](docs/quality/MVP-001_STABILIZATION_REPORT.md). O
