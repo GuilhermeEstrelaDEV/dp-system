@@ -655,6 +655,161 @@ async function seedPayroll(
   }
 }
 
+async function seedP2Domains(
+  companyId: string,
+  companyKey: 'horizon' | 'atlas',
+  contracts: Array<{ id: string }>,
+) {
+  const offset = companyKey === 'horizon' ? 0 : 100;
+  const template = await prisma.checklistTemplate.upsert({
+    where: { companyId_name: { companyId, name: 'Checklist admissional demonstrativo' } },
+    update: { status: 'ACTIVE' },
+    create: {
+      id: demoId('3', 700 + offset),
+      companyId,
+      name: 'Checklist admissional demonstrativo',
+      description: 'Template fictício para validação local da wave P2',
+    },
+  });
+  const templateItem = await prisma.checklistTemplateItem.upsert({
+    where: {
+      checklistTemplateId_sortOrder: { checklistTemplateId: template.id, sortOrder: 1 },
+    },
+    update: { title: 'Validar cadastro fictício', isRequired: true },
+    create: {
+      id: demoId('3', 710 + offset),
+      checklistTemplateId: template.id,
+      title: 'Validar cadastro fictício',
+      description: 'Item sem regra legal e sem documento real',
+      sortOrder: 1,
+      isRequired: true,
+    },
+  });
+  const admission = await prisma.admissionProcess.findFirstOrThrow({
+    where: { companyId },
+    orderBy: { plannedAdmissionDate: 'asc' },
+  });
+  await prisma.admissionProcess.update({
+    where: { id: admission.id },
+    data: { checklistTemplateId: template.id },
+  });
+  const instance = await prisma.checklistInstance.upsert({
+    where: { admissionProcessId: admission.id },
+    update: { checklistTemplateId: template.id, templateName: template.name },
+    create: {
+      id: demoId('3', 720 + offset),
+      admissionProcessId: admission.id,
+      checklistTemplateId: template.id,
+      templateName: template.name,
+    },
+  });
+  await prisma.admissionChecklistItem.upsert({
+    where: { checklistInstanceId_sortOrder: { checklistInstanceId: instance.id, sortOrder: 1 } },
+    update: { status: 'COMPLETED', completedAt: referenceDate },
+    create: {
+      id: demoId('3', 730 + offset),
+      checklistInstanceId: instance.id,
+      title: templateItem.title,
+      description: templateItem.description,
+      sortOrder: 1,
+      isRequired: true,
+      status: 'COMPLETED',
+      completedAt: referenceDate,
+    },
+  });
+  const existingDocument = await prisma.admissionDocumentRequirement.findFirst({
+    where: { admissionProcessId: admission.id, documentType: 'Documento lógico demonstrativo' },
+  });
+  if (!existingDocument) {
+    await prisma.admissionDocumentRequirement.create({
+      data: {
+        id: demoId('3', 740 + offset),
+        admissionProcessId: admission.id,
+        documentType: 'Documento lógico demonstrativo',
+        isRequired: true,
+        receiptStatus: 'RECEIVED',
+        reviewStatus: 'REVIEWED',
+        receivedAt: referenceDate,
+        reviewedAt: referenceDate,
+        observation: 'Controle fictício sem arquivo armazenado',
+      },
+    });
+  }
+
+  const leaveType = await prisma.leaveType.upsert({
+    where: { companyId_code: { companyId, code: 'DEMO-LEAVE' } },
+    update: { status: 'ACTIVE' },
+    create: {
+      id: demoId('3', 750 + offset),
+      companyId,
+      code: 'DEMO-LEAVE',
+      name: 'Afastamento administrativo demonstrativo',
+      requiresExpectedReturn: true,
+    },
+  });
+  await prisma.leaveCase.upsert({
+    where: { id: demoId('3', 760 + offset) },
+    update: {},
+    create: {
+      id: demoId('3', 760 + offset),
+      employmentContractId: contracts[0]!.id,
+      leaveTypeId: leaveType.id,
+      startDate: new Date('2026-06-10T00:00:00.000Z'),
+      expectedReturnDate: new Date('2026-06-15T00:00:00.000Z'),
+      reason: 'Cenário fictício da wave P2',
+    },
+  });
+
+  await prisma.variableCompensationEvent.upsert({
+    where: { id: demoId('3', 770 + offset) },
+    update: {},
+    create: {
+      id: demoId('3', 770 + offset),
+      employmentContractId: contracts[0]!.id,
+      referencePeriod: referenceDate,
+      type: 'DEMONSTRATIVE_BONUS',
+      amount: '125.50',
+      policyReference: 'Referência fictícia sem cálculo automático',
+    },
+  });
+  await prisma.salaryAdvance.upsert({
+    where: { id: demoId('3', 780 + offset) },
+    update: {},
+    create: {
+      id: demoId('3', 780 + offset),
+      employmentContractId: contracts[0]!.id,
+      referencePeriod: referenceDate,
+      amount: '100.00',
+    },
+  });
+  await prisma.offCyclePayment.upsert({
+    where: { id: demoId('3', 790 + offset) },
+    update: {},
+    create: {
+      id: demoId('3', 790 + offset),
+      employmentContractId: contracts[0]!.id,
+      referencePeriod: referenceDate,
+      amount: '80.00',
+      reason: 'Pagamento externo fictício',
+    },
+  });
+  const run = await prisma.payrollRun.findFirstOrThrow({
+    where: { payrollPeriod: { companyId } },
+    orderBy: { startedAt: 'desc' },
+  });
+  await prisma.payrollReconciliation.upsert({
+    where: { id: demoId('3', 800 + offset) },
+    update: {},
+    create: {
+      id: demoId('3', 800 + offset),
+      payrollRunId: run.id,
+      type: 'DEMONSTRATIVE_COMPARISON',
+      differenceAmount: '-10.00',
+      notes: 'Conciliação fictícia sem decisão financeira',
+    },
+  });
+}
+
 async function main() {
   assertLocalDemo();
   const horizon = await prisma.company.findUniqueOrThrow({
@@ -697,6 +852,8 @@ async function main() {
   await seedAdmissions(atlas.id, atlasContracts, 100);
   await seedPayroll(horizon.id, 'horizon', users.get('ADMINISTRATOR')!, horizonContracts);
   await seedPayroll(atlas.id, 'atlas', users.get('ADMINISTRATOR')!, atlasContracts);
+  await seedP2Domains(horizon.id, 'horizon', horizonContracts);
+  await seedP2Domains(atlas.id, 'atlas', atlasContracts);
 
   console.log(
     `Demo dataset concluído em ${referenceDate.toISOString().slice(0, 10)}: 2 empresas, 26 colaboradores, 10 competências e zero grants automáticos.`,

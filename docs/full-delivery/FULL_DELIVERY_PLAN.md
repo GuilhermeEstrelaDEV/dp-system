@@ -15,12 +15,12 @@ minimum projection, audit where required, frontend consumption and tests are ava
 
 ## Delivery waves
 
-| Wave        | Families                                                         | Handlers | State                  |
-| ----------- | ---------------------------------------------------------------- | -------: | ---------------------- |
-| P1          | Company, Employee, Contract, Payroll Parameters, Payroll Rubrics |       33 | Implemented in this PR |
-| P2          | Organization, Admission, Leave, Variable Compensation            |       56 | Not started            |
-| P3          | Time, Benefit, Vacation                                          |       21 | Not started            |
-| P0-RESIDUAL | legacy Payroll Period, Payroll Input and Payroll Run             |       15 | Not started            |
+| Wave        | Families                                                         | Handlers | State          |
+| ----------- | ---------------------------------------------------------------- | -------: | -------------- |
+| P1          | Company, Employee, Contract, Payroll Parameters, Payroll Rubrics |       33 | Implemented    |
+| P2          | Organization, Admission, Leave, Variable Compensation            |       56 | Ready to merge |
+| P3          | Time, Benefit, Vacation                                          |       21 | Not started    |
+| P0-RESIDUAL | legacy Payroll Period, Payroll Input and Payroll Run             |       15 | Not started    |
 
 P1 uses independent `Company` entities. It does not create an economic-group model, sibling-company
 authority or a legal resolution for BDP-012.
@@ -47,8 +47,20 @@ with `MANUAL` provenance and a maximum eight-hour window.
 
 Detailed evidence and known limitations are in [P1_ACCEPTANCE.md](P1_ACCEPTANCE.md).
 
+## P2 outcome
+
+P2 migrates exactly 56 handlers to eight family-level read/manage capabilities and adds nineteen
+produced audit event types. The implementation reuses the existing schema and therefore creates no
+migration. Organization is limited to the current company-local structure; Admission and Leave keep
+unnecessary sensitive fields omitted; Variable Compensation only operates the records already
+modeled and adds no calculation or legal rule.
+
+The canonical seed remains assignment-free. The manual demo access mechanism is extended only for
+the fictitious administrator and remains expirable, revocable and audited. P2 frontend tables reuse
+the shared PR #94 standard. Detailed evidence is in [P2_ACCEPTANCE.md](P2_ACCEPTANCE.md).
+
 ## Exit and continuation
 
-P1 acceptance does not declare the system complete. P2, P3 and P0-RESIDUAL require separate
+P2 acceptance does not declare the system complete. P3 and P0-RESIDUAL require separate
 branches, inventories, capabilities, projections, audit decisions, tests and human review. No later
 wave is initiated by this delivery.
