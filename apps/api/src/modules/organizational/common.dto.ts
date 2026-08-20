@@ -42,6 +42,7 @@ export class CompanyListQueryDto extends ListQueryDto {
 }
 
 export class CompanyScopedListQueryDto extends ListQueryDto {
+  @IsOptional()
   @IsUUID()
-  companyId!: string;
+  companyId?: string;
 }

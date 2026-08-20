@@ -1,9 +1,10 @@
 import { ConflictException } from '@nestjs/common';
+import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { VacationsLeavesService } from './vacations-leaves.service';
 
 describe('VacationsLeavesService', () => {
   const prisma = {
-    employmentContract: { findUnique: jest.fn() },
+    employmentContract: { findUnique: jest.fn(), findFirst: jest.fn() },
     vacationPeriod: { findMany: jest.fn(), findUnique: jest.fn(), create: jest.fn() },
     vacationRequest: {
       findMany: jest.fn(),
@@ -14,18 +15,31 @@ describe('VacationsLeavesService', () => {
     },
     vacationRequestHistory: { create: jest.fn() },
     collectiveVacation: { create: jest.fn() },
-    leaveType: { findMany: jest.fn(), findUnique: jest.fn(), create: jest.fn() },
-    leaveCase: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      findFirst: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-    },
+    leaveType: { findMany: jest.fn(), findFirst: jest.fn(), create: jest.fn() },
+    leaveCase: { findMany: jest.fn(), findFirst: jest.fn(), create: jest.fn(), update: jest.fn() },
     leaveCaseHistory: { create: jest.fn() },
     $transaction: jest.fn(),
   };
-  const service = new VacationsLeavesService(prisma as never);
+  const audit = {
+    transaction: jest.fn((work: (tx: typeof prisma) => Promise<unknown>) => work(prisma)),
+    append: jest.fn(),
+  };
+  const authorization = { requireCapability: jest.fn() };
+  const principal = {
+    actorId: 'actor',
+    activeCompanyId: 'company',
+    sessionId: 'session',
+    traceId: 'trace',
+    ipAddress: '127.0.0.1',
+    userAgent: null,
+    permissions: ['leave.read', 'leave.manage'],
+    accessGrants: [],
+  } satisfies AuthenticatedPrincipal;
+  const service = new VacationsLeavesService(
+    prisma as never,
+    audit as never,
+    authorization as never,
+  );
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -59,19 +73,24 @@ describe('VacationsLeavesService', () => {
     ).rejects.toBeInstanceOf(ConflictException);
   });
 
-  it('records the return of an open leave', async () => {
-    prisma.leaveCase.findUnique.mockResolvedValue({
+  it('records and audits the return of a company-scoped open leave', async () => {
+    prisma.leaveCase.findFirst.mockResolvedValue({
       id: 'leave',
       status: 'OPEN',
       startDate: new Date('2026-08-01'),
     });
     prisma.leaveCase.update.mockResolvedValue({ id: 'leave', status: 'RETURNED' });
-    await service.returnFromLeave('leave', {
-      actualReturnDate: '2026-08-10',
-      reason: 'Retorno demonstrativo',
-    });
+    await service.returnFromLeave(
+      'leave',
+      { actualReturnDate: '2026-08-10', reason: 'Retorno demonstrativo' },
+      principal,
+    );
     expect(prisma.leaveCaseHistory.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ leaveCaseId: 'leave', action: 'RETURNED' }),
     });
+    expect(audit.append).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'LEAVE_CASE_RETURNED' }),
+      prisma,
+    );
   });
 });

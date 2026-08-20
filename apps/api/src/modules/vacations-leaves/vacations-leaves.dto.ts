@@ -84,8 +84,9 @@ export class CreateCollectiveVacationDto {
 }
 
 export class CreateLeaveTypeDto {
+  @IsOptional()
   @IsUUID()
-  companyId!: string;
+  companyId?: string;
 
   @IsString()
   @IsNotEmpty()

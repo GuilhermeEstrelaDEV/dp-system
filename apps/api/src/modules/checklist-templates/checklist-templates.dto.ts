@@ -19,7 +19,7 @@ export class TemplateItemDto {
   @IsOptional() @IsInt() relativeDueDays?: number;
 }
 export class CreateChecklistTemplateDto {
-  @IsUUID() companyId!: string;
+  @IsOptional() @IsUUID() companyId?: string;
   @IsString() @IsNotEmpty() @MaxLength(160) name!: string;
   @IsOptional() @IsString() @MaxLength(1000) description?: string;
   @IsArray() @ValidateNested({ each: true }) @Type(() => TemplateItemDto) items!: TemplateItemDto[];

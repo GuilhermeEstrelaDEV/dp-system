@@ -54,6 +54,39 @@ export const AUTHORIZATION_AUDIT_PRODUCER_MANIFEST = Object.freeze({
     'PAYROLL_RUBRIC_CREATED',
     'PAYROLL_RUBRIC_UPDATED',
   ],
+  'src/modules/organizational/organization-resource.service.ts': [
+    'ORGANIZATION_RESOURCE_CREATED',
+    'ORGANIZATION_RESOURCE_UPDATED',
+    'ORGANIZATION_RESOURCE_STATUS_CHANGED',
+  ],
+  'src/modules/admission-processes/admission-processes.service.ts': [
+    'ADMISSION_PROCESS_CREATED',
+    'ADMISSION_PROCESS_UPDATED',
+    'ADMISSION_PROCESS_STATUS_CHANGED',
+  ],
+  'src/modules/admission-checklists/admission-checklists.service.ts': [
+    'ADMISSION_CHECKLIST_CREATED',
+    'ADMISSION_CHECKLIST_ITEM_UPDATED',
+  ],
+  'src/modules/admission-documents/admission-documents.service.ts': [
+    'ADMISSION_DOCUMENT_CREATED',
+    'ADMISSION_DOCUMENT_UPDATED',
+  ],
+  'src/modules/checklist-templates/checklist-templates.service.ts': [
+    'ADMISSION_CHECKLIST_TEMPLATE_CREATED',
+    'ADMISSION_CHECKLIST_TEMPLATE_STATUS_CHANGED',
+  ],
+  'src/modules/vacations-leaves/vacations-leaves.service.ts': [
+    'LEAVE_TYPE_CREATED',
+    'LEAVE_CASE_CREATED',
+    'LEAVE_CASE_RETURNED',
+  ],
+  'src/modules/variable-compensation/variable-compensation.service.ts': [
+    'VARIABLE_COMPENSATION_EVENT_CREATED',
+    'SALARY_ADVANCE_CREATED',
+    'OFF_CYCLE_PAYMENT_CREATED',
+    'PAYROLL_RECONCILIATION_CREATED',
+  ],
   'src/modules/payroll-reviews/payroll-reviews.service.ts': [
     'PAYROLL_REVIEW_CYCLE_OPENED',
     'PAYROLL_REVIEW_FINDING_OPENED',

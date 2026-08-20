@@ -258,6 +258,70 @@ const permissions = [
     'HIGH',
     'RESTRICTED',
   ],
+  [
+    'organization.read',
+    'View company-local organizational resources',
+    'organization',
+    'read',
+    'COMPANY',
+    'MEDIUM',
+    'SENSITIVE',
+  ],
+  [
+    'organization.manage',
+    'Manage company-local organizational resources',
+    'organization',
+    'manage',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'admission.read',
+    'View minimum admission workflow data',
+    'admission',
+    'read',
+    'COMPANY',
+    'MEDIUM',
+    'RESTRICTED',
+  ],
+  [
+    'admission.manage',
+    'Manage admission workflows and logical requirements',
+    'admission',
+    'manage',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  ['leave.read', 'View minimum leave records', 'leave', 'read', 'COMPANY', 'HIGH', 'RESTRICTED'],
+  [
+    'leave.manage',
+    'Manage leave records without medical-data expansion',
+    'leave',
+    'manage',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'variable_compensation.read',
+    'View operational variable compensation records',
+    'variable_compensation',
+    'read',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'variable_compensation.manage',
+    'Manage modeled variable compensation records',
+    'variable_compensation',
+    'manage',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
 ] as const;
 
 async function main() {
@@ -299,7 +363,7 @@ async function main() {
   );
   if (existingPermissions.length > 0) {
     if (existingPermissions.length > permissions.length) {
-      throw new Error('Permission seed blocked: inventory differs from the 29 approved codes');
+      throw new Error('Permission seed blocked: inventory differs from the 37 approved codes');
     }
     for (const existing of existingPermissions) {
       const approved = approvedPermissions.get(existing.code);

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 export class CreateCostCenterDto {
-  @IsUUID() companyId!: string;
+  @IsOptional() @IsUUID() companyId?: string;
   @IsString() @IsNotEmpty() @MaxLength(50) code!: string;
   @IsString() @IsNotEmpty() @MaxLength(160) name!: string;
 }
