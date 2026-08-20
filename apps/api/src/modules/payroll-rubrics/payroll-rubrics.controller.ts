@@ -1,5 +1,13 @@
 import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import type { AuthenticatedPrincipal } from '../../common/http/request-context';
+import { CurrentPrincipal, RequireCapabilities } from '../auth/auth.decorators';
 import {
   CreatePayrollRubricDto,
   PayrollRubricQueryDto,
@@ -7,19 +15,39 @@ import {
 } from './payroll-rubrics.dto';
 import { PayrollRubricsService } from './payroll-rubrics.service';
 @ApiTags('payroll-rubrics')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse()
+@ApiForbiddenResponse()
 @Controller('payroll-rubrics')
 export class PayrollRubricsController {
   constructor(private readonly service: PayrollRubricsService) {}
-  @Get() list(@Query() q: PayrollRubricQueryDto) {
-    return this.service.list(q);
+  @RequireCapabilities('payroll.rubric.read')
+  @Get()
+  list(@Query() q: PayrollRubricQueryDto, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.list(q, principal);
   }
-  @Get(':id') find(@Param('id') id: string) {
-    return this.service.find(id);
+  @RequireCapabilities('payroll.rubric.read')
+  @ApiNotFoundResponse()
+  @Get(':id')
+  find(@Param('id') id: string, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.find(id, principal);
   }
-  @Post() create(@Body() dto: CreatePayrollRubricDto) {
-    return this.service.create(dto);
+  @RequireCapabilities('payroll.rubric.manage')
+  @Post()
+  create(
+    @Body() dto: CreatePayrollRubricDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.create(dto, principal);
   }
-  @Patch(':id') update(@Param('id') id: string, @Body() dto: UpdatePayrollRubricDto) {
-    return this.service.update(id, dto);
+  @RequireCapabilities('payroll.rubric.manage')
+  @ApiNotFoundResponse()
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdatePayrollRubricDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.update(id, dto, principal);
   }
 }

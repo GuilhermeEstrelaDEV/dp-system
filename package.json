@@ -19,6 +19,7 @@
     "demo:access:status": "node scripts/demo-access.mjs status",
     "demo:access:revoke": "node scripts/demo-access.mjs revoke",
     "demo:smoke:essential": "node scripts/mvp-essential-smoke.mjs",
+    "demo:smoke:p1": "node scripts/full-delivery-p1-smoke.mjs",
     "demo:verify": "node scripts/demo.mjs verify",
     "demo:ready": "node scripts/demo.mjs ready",
     "demo:rehearse": "node scripts/demo.mjs rehearse",

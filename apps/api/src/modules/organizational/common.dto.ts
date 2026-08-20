@@ -38,7 +38,7 @@ export class ListQueryDto {
 export class CompanyListQueryDto extends ListQueryDto {
   @IsOptional()
   @IsIn(['legalName', 'tradeName', 'createdAt'])
-  declare sortBy: string;
+  override sortBy = 'legalName';
 }
 
 export class CompanyScopedListQueryDto extends ListQueryDto {

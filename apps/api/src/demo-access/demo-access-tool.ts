@@ -16,10 +16,20 @@ export const DEMO_ACCESS_CAPABILITIES = Object.freeze([
   'payroll.period.close.history',
   'payroll.period.close.execute',
   'payroll.period.close.reopen',
+  'company.read',
+  'company.manage',
+  'employee.read',
+  'employee.manage',
+  'contract.read',
+  'contract.manage',
+  'payroll.parameter.read',
+  'payroll.parameter.manage',
+  'payroll.rubric.read',
+  'payroll.rubric.manage',
 ] as const);
 
 const DEMO_ADMIN_EMAIL = 'admin.demo@dp-system.local';
-const EXPECTED_CAPABILITY_CATALOG_SIZE = 19;
+const EXPECTED_CAPABILITY_CATALOG_SIZE = 29;
 
 export interface DemoAccessEnvironment {
   readonly DEMO_ENV?: string;
@@ -265,7 +275,7 @@ export class DemoAccessTool {
     const byCode = new Map(permissions.map((permission) => [permission.code, permission]));
     const ordered = DEMO_ACCESS_CAPABILITIES.map((code) => byCode.get(code));
     if (ordered.some((permission) => !permission)) {
-      throw new Error('Acesso demo recusado: catálogo não contém as seis capabilities aprovadas');
+      throw new Error('Acesso demo recusado: catálogo não contém as capabilities aprovadas');
     }
     return {
       role,
@@ -289,7 +299,7 @@ export class DemoAccessTool {
   private async assertCatalog(): Promise<void> {
     const count = await this.dependencies.repository.countCapabilityCatalog();
     if (count !== EXPECTED_CAPABILITY_CATALOG_SIZE) {
-      throw new Error(`Acesso demo recusado: catálogo esperado=19, encontrado=${count}`);
+      throw new Error(`Acesso demo recusado: catálogo esperado=29, encontrado=${count}`);
     }
   }
 

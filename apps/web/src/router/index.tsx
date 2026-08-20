@@ -63,21 +63,10 @@ export const appRoutes: RouteObject[] = [
           {
             element: <CapabilityRoute capability="platform.manage" />,
             children: [
-              { path: 'estrutura', element: <CompaniesPage /> },
-              { path: 'estrutura/empresas', element: <CompaniesPage /> },
               { path: 'estrutura/filiais', element: <BranchesPage /> },
               { path: 'estrutura/departamentos', element: <DepartmentsPage /> },
               { path: 'estrutura/cargos', element: <PositionsPage /> },
               { path: 'estrutura/centros-de-custo', element: <CostCentersPage /> },
-              { path: 'colaboradores', element: <EmployeesPage /> },
-              { path: 'colaboradores/:employeeId', element: <EmployeeDetailsPage /> },
-              {
-                path: 'colaboradores/:employeeId/contratos',
-                element: <EmploymentContractsPage />,
-              },
-              { path: 'employees/:employeeId/contracts', element: <EmploymentContractsPage /> },
-              { path: 'contratos', element: <EmploymentContractsPage /> },
-              { path: 'contratos/:contractId', element: <EmploymentContractDetailsPage /> },
               { path: 'admissoes', element: <AdmissionsPage /> },
               { path: 'admissoes/nova', element: <AdmissionFormPage /> },
               { path: 'admissoes/:admissionId', element: <AdmissionDetailsPage /> },
@@ -90,12 +79,44 @@ export const appRoutes: RouteObject[] = [
               { path: 'beneficios', element: <BenefitsPage /> },
               { path: 'folha', element: <PayrollPage /> },
               { path: 'folha/competencias', element: <PayrollPage /> },
-              { path: 'folha/rubricas', element: <PayrollPage /> },
-              { path: 'folha/parametros', element: <PayrollPage /> },
               { path: 'folha/lancamentos', element: <PayrollPage /> },
               { path: 'folha/execucoes', element: <PayrollPage /> },
               { path: 'folha/remuneracao-variavel', element: <PayrollPage /> },
             ],
+          },
+          {
+            element: <CapabilityRoute capability="company.read" />,
+            children: [
+              { path: 'estrutura', element: <CompaniesPage /> },
+              { path: 'estrutura/empresas', element: <CompaniesPage /> },
+            ],
+          },
+          {
+            element: <CapabilityRoute capability="employee.read" />,
+            children: [
+              { path: 'colaboradores', element: <EmployeesPage /> },
+              { path: 'colaboradores/:employeeId', element: <EmployeeDetailsPage /> },
+            ],
+          },
+          {
+            element: <CapabilityRoute capability="contract.read" />,
+            children: [
+              {
+                path: 'colaboradores/:employeeId/contratos',
+                element: <EmploymentContractsPage />,
+              },
+              { path: 'employees/:employeeId/contracts', element: <EmploymentContractsPage /> },
+              { path: 'contratos', element: <EmploymentContractsPage /> },
+              { path: 'contratos/:contractId', element: <EmploymentContractDetailsPage /> },
+            ],
+          },
+          {
+            element: <CapabilityRoute capability="payroll.rubric.read" />,
+            children: [{ path: 'folha/rubricas', element: <PayrollPage /> }],
+          },
+          {
+            element: <CapabilityRoute capability="payroll.parameter.read" />,
+            children: [{ path: 'folha/parametros', element: <PayrollPage /> }],
           },
           {
             element: <CapabilityRoute capability="payroll.review.view" />,

@@ -345,6 +345,27 @@ NOT AUTHORIZED`.
 - **Proposta:** ETP-016 relatórios/inteligência; ETP-017 hardening/observabilidade/performance.
 - **Gate:** especificação, análise das BDPs e aprovação antes de código.
 
+### Full Functional Delivery — Wave P1
+
+- **Status:** `FULL DELIVERY P1 — READY TO MERGE`.
+- **Baseline:** `develop@75aa22c391bdf849a73a4076e6bb628ae4ad0913`; Essential MVP remains a
+  mandatory 17/17 regression gate.
+- **Scope:** Company 6, Employee 12, Employment Contract 7, Payroll Parameter 4 and Payroll Rubric
+  4; total 33/33 handlers.
+- **Authorization:** ten company-scoped capabilities; no role-name decision, no super-capability and
+  no automatic assignment. Runtime classification target is 64 capability-protected and 92
+  `LEGACY_DEFERRED` out of 165 handlers.
+- **Isolation:** Employee, Contract, Parameters and Rubrics derive authority from the principal's
+  active company and return `404` across companies. Company administration is globally scoped only
+  through `company.read/manage`.
+- **Projection/audit:** explicit selects and fourteen new transaction-required audit events; runtime
+  audit catalog target 41.
+- **Database:** zero P1 migrations; existing 16 migrations are unchanged.
+- **Evidence:** [plan](../full-delivery/FULL_DELIVERY_PLAN.md) and
+  [acceptance inventory](../full-delivery/P1_ACCEPTANCE.md).
+- **Deferred:** P2, P3 and P0-RESIDUAL are not started. BDP-012 remains open and no economic group or
+  sibling-company authority was inferred.
+
 ### MVP-001 — Protótipo executivo local
 
 - **Status:** `IMPLEMENTED — LOCAL PROTOTYPE READY FOR MANAGEMENT VALIDATION`.

@@ -10,6 +10,7 @@ import { Link, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
+import { useOptionalAuth } from '@/features/auth/AuthContext';
 
 type Details = EmployeeContract & {
   contacts: EmployeeContactContract[];
@@ -22,10 +23,12 @@ const contactSchema = z.object({
 });
 type ContactValues = z.infer<typeof contactSchema>;
 export function EmployeeDetailsPage() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('employee.manage') ?? true;
   const { employeeId = '' } = useParams();
   const client = useQueryClient();
   const employee = useQuery({
-    queryKey: ['employee', employeeId],
+    queryKey: ['employee', auth?.activeCompanyId, employeeId],
     queryFn: () => apiRequest<Details>(`/employees/${employeeId}`),
   });
   const form = useForm<ContactValues>({
@@ -73,29 +76,31 @@ export function EmployeeDetailsPage() {
         ) : (
           <p>Nenhum contato cadastrado.</p>
         )}
-        <form
-          onSubmit={form.handleSubmit((values) => addContact.mutate(values))}
-          className="mt-3 grid gap-3 rounded border p-4"
-        >
-          <label>
-            Tipo
-            <select className="mt-1 block w-full rounded border p-2" {...form.register('type')}>
-              <option value="EMAIL">E-mail</option>
-              <option value="PHONE">Telefone</option>
-            </select>
-          </label>
-          <label>
-            Contato
-            <input className="mt-1 block w-full rounded border p-2" {...form.register('value')} />
-            {form.formState.errors.value && (
-              <span role="alert">{form.formState.errors.value.message}</span>
-            )}
-          </label>
-          <label>
-            <input type="checkbox" {...form.register('isPrimary')} /> Contato principal
-          </label>
-          <button type="submit">Adicionar contato</button>
-        </form>
+        {canManage && (
+          <form
+            onSubmit={form.handleSubmit((values) => addContact.mutate(values))}
+            className="mt-3 grid gap-3 rounded border p-4"
+          >
+            <label>
+              Tipo
+              <select className="mt-1 block w-full rounded border p-2" {...form.register('type')}>
+                <option value="EMAIL">E-mail</option>
+                <option value="PHONE">Telefone</option>
+              </select>
+            </label>
+            <label>
+              Contato
+              <input className="mt-1 block w-full rounded border p-2" {...form.register('value')} />
+              {form.formState.errors.value && (
+                <span role="alert">{form.formState.errors.value.message}</span>
+              )}
+            </label>
+            <label>
+              <input type="checkbox" {...form.register('isPrimary')} /> Contato principal
+            </label>
+            <button type="submit">Adicionar contato</button>
+          </form>
+        )}
         {addContact.isError && <p role="alert">{addContact.error.message}</p>}
       </section>
       <section aria-labelledby="employee-contracts-title" className="mt-6">

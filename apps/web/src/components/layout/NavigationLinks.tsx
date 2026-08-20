@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { NavigationIcon } from './NavigationIcon';
 import { navigationGroups, navigationItems } from './navigation';
+import { useAuth } from '@/features/auth/AuthContext';
 
 interface NavigationLinksProps {
   readonly collapsed?: boolean;
@@ -8,10 +9,14 @@ interface NavigationLinksProps {
 }
 
 export function NavigationLinks({ collapsed = false, onNavigate }: NavigationLinksProps) {
+  const auth = useAuth();
   return (
     <nav aria-label="Navegação principal" className="navigation">
       {navigationGroups.map((group) => {
-        const items = navigationItems.filter((item) => item.group === group);
+        const items = navigationItems.filter(
+          (item) =>
+            item.group === group && (!item.capability || auth.hasCapability(item.capability)),
+        );
         return (
           <section aria-label={group} className="navigation__group" key={group}>
             {!collapsed && <p className="navigation__heading">{group}</p>}

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
@@ -14,20 +14,34 @@ import {
 import { payrollRubricsApi, type CreatePayrollRubric, type PayrollRubric } from './payroll-rubrics';
 import { VariableCompensationPanel } from '@/features/variable-compensation';
 import { PayrollPeriodHistoryPanel } from '@/features/payroll-period-history/PayrollPeriodHistoryPages';
+import { useOptionalAuth } from '@/features/auth/AuthContext';
 
 const payrollPages = [
-  ['competencias', 'Competências', '/folha/competencias', '/payroll-periods'],
-  ['rubricas', 'Rubricas', '/folha/rubricas', '/payroll-rubrics'],
-  ['parametros', 'Parâmetros', '/folha/parametros', '/payroll-parameters'],
-  ['lancamentos', 'Lançamentos', '/folha/lancamentos', '/payroll-inputs'],
-  ['execucoes', 'Execuções', '/folha/execucoes', '/payroll-runs'],
-  ['conferencia', 'Conferência', '/folha/conferencia', '/payroll-reviews'],
-  ['fechamentos', 'Fechamentos', '/folha/fechamentos', '/payroll-periods'],
+  ['competencias', 'Competências', '/folha/competencias', '/payroll-periods', 'platform.manage'],
+  ['rubricas', 'Rubricas', '/folha/rubricas', '/payroll-rubrics', 'payroll.rubric.read'],
+  [
+    'parametros',
+    'Parâmetros',
+    '/folha/parametros',
+    '/payroll-parameters',
+    'payroll.parameter.read',
+  ],
+  ['lancamentos', 'Lançamentos', '/folha/lancamentos', '/payroll-inputs', 'platform.manage'],
+  ['execucoes', 'Execuções', '/folha/execucoes', '/payroll-runs', 'platform.manage'],
+  ['conferencia', 'Conferência', '/folha/conferencia', '/payroll-reviews', 'payroll.review.view'],
+  [
+    'fechamentos',
+    'Fechamentos',
+    '/folha/fechamentos',
+    '/payroll-periods',
+    'payroll.period.close.history',
+  ],
   [
     'remuneracao-variavel',
     'Remuneração variável',
     '/folha/remuneracao-variavel',
     '/variable-compensation/events',
+    'platform.manage',
   ],
 ] as const;
 
@@ -46,6 +60,7 @@ function currentPage(pathname: string) {
 }
 
 export function PayrollPage() {
+  const auth = useOptionalAuth();
   const location = useLocation();
   const [, label, path, endpoint] = currentPage(location.pathname);
   const records = useQuery({
@@ -71,16 +86,18 @@ export function PayrollPage() {
         Processamento demonstrativo. Esta execução não representa folha de pagamento homologada.
       </p>
       <nav className="mt-4 flex flex-wrap gap-2" aria-label="Navegação da folha">
-        {payrollPages.map(([, itemLabel, itemPath]) => (
-          <Link
-            key={itemPath}
-            to={itemPath}
-            aria-current={path === itemPath ? 'page' : undefined}
-            className="rounded border px-3 py-2 text-sm"
-          >
-            {itemLabel}
-          </Link>
-        ))}
+        {payrollPages
+          .filter(([, , , , capability]) => auth?.hasCapability(capability) ?? true)
+          .map(([, itemLabel, itemPath]) => (
+            <Link
+              key={itemPath}
+              to={itemPath}
+              aria-current={path === itemPath ? 'page' : undefined}
+              className="rounded border px-3 py-2 text-sm"
+            >
+              {itemLabel}
+            </Link>
+          ))}
       </nav>
       {path === '/folha/competencias' ? (
         <PayrollPeriodsPanel />
@@ -135,8 +152,10 @@ function parseIncidenceConfiguration(value: string) {
 }
 
 function PayrollRubricsPanel() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('payroll.rubric.manage') ?? true;
   const client = useQueryClient();
-  const [companyId, setCompanyId] = useState('');
+  const [companyId, setCompanyId] = useState(auth?.activeCompanyId ?? '');
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'ALL' | PayrollRubric['status']>('ALL');
   const [sortBy, setSortBy] = useState<'code' | 'name' | 'createdAt'>('code');
@@ -145,7 +164,7 @@ function PayrollRubricsPanel() {
   const [formError, setFormError] = useState<string>();
   const [editing, setEditing] = useState<{ id: string; name: string }>();
   const [form, setForm] = useState<RubricForm>({
-    companyId: '',
+    companyId: auth?.activeCompanyId ?? '',
     payrollRubricCategoryId: '',
     code: '',
     name: '',
@@ -154,6 +173,12 @@ function PayrollRubricsPanel() {
     validTo: '',
     incidenceConfigurationText: '',
   });
+  useEffect(() => {
+    const activeCompanyId = auth?.activeCompanyId ?? '';
+    setCompanyId(activeCompanyId);
+    setForm((current) => ({ ...current, companyId: activeCompanyId }));
+    setPage(1);
+  }, [auth?.activeCompanyId]);
   const rubrics = useQuery({
     queryKey: ['payroll-rubrics', companyId, search, status, sortBy, sortDirection, page],
     enabled: Boolean(companyId),
@@ -175,7 +200,7 @@ function PayrollRubricsPanel() {
     mutationFn: payrollRubricsApi.create,
     onSuccess: () => {
       setForm({
-        companyId: '',
+        companyId: auth?.activeCompanyId ?? '',
         payrollRubricCategoryId: '',
         code: '',
         name: '',
@@ -229,89 +254,99 @@ function PayrollRubricsPanel() {
         Cadastre somente configurações demonstrativas. Incidências são metadados configuráveis e não
         representam regras legais.
       </p>
-      <form onSubmit={submit} className="grid gap-2">
-        <label>
-          Empresa
-          <input
-            value={form.companyId}
-            onChange={(event) => setForm({ ...form, companyId: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Categoria da rubrica
-          <input
-            value={form.payrollRubricCategoryId}
-            onChange={(event) => setForm({ ...form, payrollRubricCategoryId: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Código
-          <input
-            value={form.code}
-            onChange={(event) => setForm({ ...form, code: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Nome
-          <input
-            value={form.name}
-            onChange={(event) => setForm({ ...form, name: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Versão
-          <input
-            value={form.version}
-            onChange={(event) => setForm({ ...form, version: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Vigente a partir de
-          <input
-            type="date"
-            value={form.validFrom}
-            onChange={(event) => setForm({ ...form, validFrom: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Vigente até (opcional)
-          <input
-            type="date"
-            value={form.validTo}
-            onChange={(event) => setForm({ ...form, validTo: event.target.value })}
-          />
-        </label>
-        <label>
-          Incidências configuráveis (JSON opcional)
-          <textarea
-            value={form.incidenceConfigurationText}
-            onChange={(event) =>
-              setForm({ ...form, incidenceConfigurationText: event.target.value })
-            }
-            aria-describedby="rubric-incidence-help"
-          />
-        </label>
-        <small id="rubric-incidence-help">
-          Não informe alíquotas, faixas ou fórmulas legais nesta fundação.
-        </small>
-        <button disabled={create.isPending}>Criar rubrica</button>
-        {formError ? <p role="alert">{formError}</p> : null}
-        {create.isError ? <p role="alert">{create.error.message}</p> : null}
-      </form>
+      {canManage && (
+        <form onSubmit={submit} className="grid gap-2">
+          <label>
+            Empresa
+            <input
+              value={form.companyId}
+              onChange={(event) => setForm({ ...form, companyId: event.target.value })}
+              required
+              readOnly={Boolean(auth)}
+            />
+          </label>
+          <label>
+            Categoria da rubrica
+            <input
+              value={form.payrollRubricCategoryId}
+              onChange={(event) =>
+                setForm({ ...form, payrollRubricCategoryId: event.target.value })
+              }
+              required
+            />
+          </label>
+          <label>
+            Código
+            <input
+              value={form.code}
+              onChange={(event) => setForm({ ...form, code: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Nome
+            <input
+              value={form.name}
+              onChange={(event) => setForm({ ...form, name: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Versão
+            <input
+              value={form.version}
+              onChange={(event) => setForm({ ...form, version: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Vigente a partir de
+            <input
+              type="date"
+              value={form.validFrom}
+              onChange={(event) => setForm({ ...form, validFrom: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Vigente até (opcional)
+            <input
+              type="date"
+              value={form.validTo}
+              onChange={(event) => setForm({ ...form, validTo: event.target.value })}
+            />
+          </label>
+          <label>
+            Incidências configuráveis (JSON opcional)
+            <textarea
+              value={form.incidenceConfigurationText}
+              onChange={(event) =>
+                setForm({ ...form, incidenceConfigurationText: event.target.value })
+              }
+              aria-describedby="rubric-incidence-help"
+            />
+          </label>
+          <small id="rubric-incidence-help">
+            Não informe alíquotas, faixas ou fórmulas legais nesta fundação.
+          </small>
+          <button disabled={create.isPending}>Criar rubrica</button>
+          {formError ? <p role="alert">{formError}</p> : null}
+          {create.isError ? <p role="alert">{create.error.message}</p> : null}
+        </form>
+      )}
       <label className="mt-4 block">
         Filtrar por empresa
         <input
           value={companyId}
-          onChange={(event) => {
-            setCompanyId(event.target.value);
-            setPage(1);
-          }}
+          onChange={
+            auth
+              ? undefined
+              : (event) => {
+                  setCompanyId(event.target.value);
+                  setPage(1);
+                }
+          }
+          readOnly={Boolean(auth)}
         />
       </label>
       <label className="mt-2 block">
@@ -405,13 +440,15 @@ function PayrollRubricsPanel() {
                   ? 'Incidências configuráveis registradas.'
                   : 'Sem incidências configuráveis.'}
               </p>
-              <button
-                onClick={() => updateStatus.mutate({ id: item.id, status: nextStatus })}
-                disabled={updateStatus.isPending}
-              >
-                {nextStatus === 'ACTIVE' ? 'Ativar rubrica' : 'Inativar rubrica'}
-              </button>
-              {editing?.id !== item.id ? (
+              {canManage && (
+                <button
+                  onClick={() => updateStatus.mutate({ id: item.id, status: nextStatus })}
+                  disabled={updateStatus.isPending}
+                >
+                  {nextStatus === 'ACTIVE' ? 'Ativar rubrica' : 'Inativar rubrica'}
+                </button>
+              )}
+              {canManage && editing?.id !== item.id ? (
                 <button onClick={() => setEditing({ id: item.id, name: item.name })}>
                   Editar nome
                 </button>
@@ -454,14 +491,16 @@ function parseDefinition(value: string) {
 }
 
 function PayrollParametersPanel() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('payroll.parameter.manage') ?? true;
   const client = useQueryClient();
-  const [companyId, setCompanyId] = useState('');
+  const [companyId, setCompanyId] = useState(auth?.activeCompanyId ?? '');
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'ALL' | PayrollParameter['status']>('ALL');
   const [page, setPage] = useState(1);
   const [formError, setFormError] = useState<string>();
   const [form, setForm] = useState<ParameterForm>({
-    companyId: '',
+    companyId: auth?.activeCompanyId ?? '',
     code: '',
     name: '',
     category: '',
@@ -471,6 +510,12 @@ function PayrollParametersPanel() {
     sourceReference: '',
     definitionText: '',
   });
+  useEffect(() => {
+    const activeCompanyId = auth?.activeCompanyId ?? '';
+    setCompanyId(activeCompanyId);
+    setForm((current) => ({ ...current, companyId: activeCompanyId }));
+    setPage(1);
+  }, [auth?.activeCompanyId]);
   const parameters = useQuery({
     queryKey: ['payroll-parameters', companyId, search, status, page],
     queryFn: () => {
@@ -491,7 +536,7 @@ function PayrollParametersPanel() {
     mutationFn: payrollParametersApi.create,
     onSuccess: () => {
       setForm({
-        companyId: '',
+        companyId: auth?.activeCompanyId ?? '',
         code: '',
         name: '',
         category: '',
@@ -537,94 +582,102 @@ function PayrollParametersPanel() {
         Versione somente metadados demonstrativos. Esta tela não contém valores, faixas ou
         parâmetros legais homologados.
       </p>
-      <form onSubmit={submit} className="grid gap-2">
-        <label>
-          Empresa (opcional)
-          <input
-            value={form.companyId}
-            onChange={(event) => setForm({ ...form, companyId: event.target.value })}
-          />
-        </label>
-        <label>
-          Código
-          <input
-            value={form.code}
-            onChange={(event) => setForm({ ...form, code: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Nome
-          <input
-            value={form.name}
-            onChange={(event) => setForm({ ...form, name: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Categoria
-          <input
-            value={form.category}
-            onChange={(event) => setForm({ ...form, category: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Versão
-          <input
-            value={form.version}
-            onChange={(event) => setForm({ ...form, version: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Vigente a partir de
-          <input
-            type="date"
-            value={form.validFrom}
-            onChange={(event) => setForm({ ...form, validFrom: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Vigente até (opcional)
-          <input
-            type="date"
-            value={form.validTo}
-            onChange={(event) => setForm({ ...form, validTo: event.target.value })}
-          />
-        </label>
-        <label>
-          Referência de fonte (opcional)
-          <input
-            value={form.sourceReference}
-            onChange={(event) => setForm({ ...form, sourceReference: event.target.value })}
-          />
-        </label>
-        <label>
-          Definição configurável (JSON opcional)
-          <textarea
-            value={form.definitionText}
-            onChange={(event) => setForm({ ...form, definitionText: event.target.value })}
-            aria-describedby="parameter-definition-help"
-          />
-        </label>
-        <small id="parameter-definition-help">
-          Valores monetários futuros devem ser strings decimais; não use números oficiais nesta
-          fundação.
-        </small>
-        <button disabled={create.isPending}>Criar parâmetro</button>
-        {formError ? <p role="alert">{formError}</p> : null}
-        {create.isError ? <p role="alert">{create.error.message}</p> : null}
-      </form>
+      {canManage && (
+        <form onSubmit={submit} className="grid gap-2">
+          <label>
+            Empresa (opcional)
+            <input
+              value={form.companyId}
+              onChange={(event) => setForm({ ...form, companyId: event.target.value })}
+              readOnly={Boolean(auth)}
+            />
+          </label>
+          <label>
+            Código
+            <input
+              value={form.code}
+              onChange={(event) => setForm({ ...form, code: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Nome
+            <input
+              value={form.name}
+              onChange={(event) => setForm({ ...form, name: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Categoria
+            <input
+              value={form.category}
+              onChange={(event) => setForm({ ...form, category: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Versão
+            <input
+              value={form.version}
+              onChange={(event) => setForm({ ...form, version: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Vigente a partir de
+            <input
+              type="date"
+              value={form.validFrom}
+              onChange={(event) => setForm({ ...form, validFrom: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Vigente até (opcional)
+            <input
+              type="date"
+              value={form.validTo}
+              onChange={(event) => setForm({ ...form, validTo: event.target.value })}
+            />
+          </label>
+          <label>
+            Referência de fonte (opcional)
+            <input
+              value={form.sourceReference}
+              onChange={(event) => setForm({ ...form, sourceReference: event.target.value })}
+            />
+          </label>
+          <label>
+            Definição configurável (JSON opcional)
+            <textarea
+              value={form.definitionText}
+              onChange={(event) => setForm({ ...form, definitionText: event.target.value })}
+              aria-describedby="parameter-definition-help"
+            />
+          </label>
+          <small id="parameter-definition-help">
+            Valores monetários futuros devem ser strings decimais; não use números oficiais nesta
+            fundação.
+          </small>
+          <button disabled={create.isPending}>Criar parâmetro</button>
+          {formError ? <p role="alert">{formError}</p> : null}
+          {create.isError ? <p role="alert">{create.error.message}</p> : null}
+        </form>
+      )}
       <label className="mt-4 block">
         Filtrar por empresa
         <input
           value={companyId}
-          onChange={(event) => {
-            setCompanyId(event.target.value);
-            setPage(1);
-          }}
+          onChange={
+            auth
+              ? undefined
+              : (event) => {
+                  setCompanyId(event.target.value);
+                  setPage(1);
+                }
+          }
+          readOnly={Boolean(auth)}
         />
       </label>
       <label className="mt-2 block">
@@ -672,12 +725,14 @@ function PayrollParametersPanel() {
                   ? 'Definição configurável registrada.'
                   : 'Sem definição configurável.'}
               </p>
-              <button
-                onClick={() => updateStatus.mutate({ id: item.id, status: nextStatus })}
-                disabled={updateStatus.isPending}
-              >
-                {nextStatus === 'ACTIVE' ? 'Ativar parâmetro' : 'Inativar parâmetro'}
-              </button>
+              {canManage && (
+                <button
+                  onClick={() => updateStatus.mutate({ id: item.id, status: nextStatus })}
+                  disabled={updateStatus.isPending}
+                >
+                  {nextStatus === 'ACTIVE' ? 'Ativar parâmetro' : 'Inativar parâmetro'}
+                </button>
+              )}
             </li>
           );
         })}

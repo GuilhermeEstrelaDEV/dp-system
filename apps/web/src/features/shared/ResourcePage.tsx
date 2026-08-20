@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
+import { useOptionalAuth } from '@/features/auth/AuthContext';
 
 type Field = readonly [string, string];
 interface RecordItem {
@@ -16,6 +17,7 @@ interface PageProps {
   endpoint: string;
   fields: readonly Field[];
   companyScoped?: boolean;
+  manageCapability?: string;
 }
 
 export function ResourcePage<TItem extends RecordItem>({
@@ -23,7 +25,10 @@ export function ResourcePage<TItem extends RecordItem>({
   endpoint,
   fields,
   companyScoped = false,
+  manageCapability,
 }: PageProps) {
+  const auth = useOptionalAuth();
+  const canManage = !manageCapability || (auth?.hasCapability(manageCapability) ?? true);
   const [companyId, setCompanyId] = useState('');
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
@@ -49,7 +54,7 @@ export function ResourcePage<TItem extends RecordItem>({
   });
   const ready = !companyScoped || Boolean(companyId);
   const list = useQuery({
-    queryKey: [endpoint, companyId, search, status, page],
+    queryKey: [endpoint, auth?.activeCompanyId, companyId, search, status, page],
     enabled: ready,
     queryFn: () =>
       apiRequest<{ items: TItem[]; pagination: { totalPages: number } }>(
@@ -118,16 +123,18 @@ export function ResourcePage<TItem extends RecordItem>({
           <option value="ACTIVE">Ativos</option>
           <option value="INACTIVE">Inativos</option>
         </select>
-        <button
-          type="button"
-          onClick={() => {
-            setEditing(null);
-            form.reset();
-            setShowForm(true);
-          }}
-        >
-          Novo
-        </button>
+        {canManage && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditing(null);
+              form.reset();
+              setShowForm(true);
+            }}
+          >
+            Novo
+          </button>
+        )}
       </div>
       {showForm && (
         <form
@@ -176,12 +183,16 @@ export function ResourcePage<TItem extends RecordItem>({
                     <button type="button" onClick={() => setSelected(item)}>
                       Detalhes
                     </button>
-                    <button type="button" onClick={() => beginEdit(item)}>
-                      Editar
-                    </button>
-                    <button type="button" onClick={() => setPendingStatus(item)}>
-                      {item.status === 'ACTIVE' ? 'Inativar' : 'Ativar'}
-                    </button>
+                    {canManage && (
+                      <button type="button" onClick={() => beginEdit(item)}>
+                        Editar
+                      </button>
+                    )}
+                    {canManage && (
+                      <button type="button" onClick={() => setPendingStatus(item)}>
+                        {item.status === 'ACTIVE' ? 'Inativar' : 'Ativar'}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

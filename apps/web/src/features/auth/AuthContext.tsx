@@ -198,3 +198,9 @@ export function useAuth() {
   if (!context) throw new Error('useAuth deve ser usado dentro de AuthProvider');
   return context;
 }
+
+// Runtime routes always use AuthProvider; isolated feature tests may render a page without it.
+// eslint-disable-next-line react-refresh/only-export-components
+export function useOptionalAuth() {
+  return useContext(AuthContext);
+}

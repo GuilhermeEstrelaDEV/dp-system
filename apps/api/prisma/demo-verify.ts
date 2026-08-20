@@ -65,6 +65,8 @@ async function main() {
     cycles,
     findings,
     events,
+    parameters,
+    rubrics,
     targetRun,
     targetPeriod,
     migrations,
@@ -103,6 +105,8 @@ async function main() {
     prisma.payrollReviewCycle.count({ where: { companyId: { in: [...companyIds] } } }),
     prisma.payrollReviewFinding.count({ where: { companyId: { in: [...companyIds] } } }),
     prisma.payrollReviewEvent.count({ where: { companyId: { in: [...companyIds] } } }),
+    prisma.payrollParameter.count({ where: { companyId: { in: [...companyIds] } } }),
+    prisma.payrollRubric.count({ where: { companyId: { in: [...companyIds] } } }),
     prisma.payrollRun.findFirstOrThrow({
       where: {
         id: DEMO_CLOSURE_FIXTURE.payrollRunId,
@@ -165,7 +169,7 @@ async function main() {
   exact('empresas', companies.length, 2);
   exact('usuários', users.length, 2);
   exact('vínculos', companyRoles, 3);
-  exact('catálogo homologado', permissions, 19);
+  exact('catálogo homologado', permissions, 29);
   exact('filiais', branches, 2);
   exact('departamentos', departments, 8);
   exact('cargos', positions, 13);
@@ -179,6 +183,8 @@ async function main() {
   exact('conferências', cycles, 8);
   exact('achados', findings, 8);
   exact('eventos', events, 28);
+  exact('parâmetros', parameters, 4);
+  exact('rubricas', rubrics, 4);
   exact('migrations', Number(migrations[0]?.count ?? 0), 16);
 
   const now = new Date();
@@ -191,8 +197,8 @@ async function main() {
       validTo > now &&
       revokedAt === null,
   );
-  if (![0, 6].includes(activeDemoGrants.length)) {
-    throw new Error(`grants demo ativos: esperado 0 ou 6, encontrado ${activeDemoGrants.length}`);
+  if (![0, 16].includes(activeDemoGrants.length)) {
+    throw new Error(`grants demo ativos: esperado 0 ou 16, encontrado ${activeDemoGrants.length}`);
   }
   const approvedCodes = new Set<string>(DEMO_ACCESS_CAPABILITIES);
   if (
@@ -255,10 +261,10 @@ async function main() {
     })),
   });
   if (
-    activeDemoGrants.length === 6 &&
-    new Set(activeDemoGrants.map(({ permission }) => permission.code)).size !== 6
+    activeDemoGrants.length === 16 &&
+    new Set(activeDemoGrants.map(({ permission }) => permission.code)).size !== 16
   ) {
-    throw new Error('grants demo ativos não correspondem às seis capabilities aprovadas');
+    throw new Error('grants demo ativos não correspondem às capabilities aprovadas');
   }
 
   if (users.some(({ passwordHash }) => !passwordHash?.startsWith('scrypt$'))) {
