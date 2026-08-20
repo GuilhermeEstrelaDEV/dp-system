@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
+import { useState } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
+import { useOptionalAuth } from '@/features/auth/AuthContext';
 
 type AdmissionDetails = {
   id: string;
@@ -19,10 +21,13 @@ type AdmissionDetails = {
 };
 
 export function AdmissionDetailsPage() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('admission.manage') ?? true;
   const { admissionId = '' } = useParams();
   const client = useQueryClient();
+  const [cancelReason, setCancelReason] = useState('');
   const process = useQuery({
-    queryKey: ['admission-process', admissionId],
+    queryKey: ['admission-process', auth?.activeCompanyId, admissionId],
     queryFn: () => apiRequest<AdmissionDetails>(`/admission-processes/${admissionId}`),
   });
   const complete = useMutation({
@@ -30,6 +35,25 @@ export function AdmissionDetailsPage() {
       apiRequest(`/admission-processes/${admissionId}/complete`, { method: 'POST' }),
     onSuccess: () =>
       void client.invalidateQueries({ queryKey: ['admission-process', admissionId] }),
+  });
+  const generateChecklist = useMutation({
+    mutationFn: () =>
+      apiRequest(`/admission-processes/${admissionId}/checklist/from-template`, {
+        method: 'POST',
+      }),
+    onSuccess: () =>
+      void client.invalidateQueries({ queryKey: ['admission-process', auth?.activeCompanyId] }),
+  });
+  const cancel = useMutation({
+    mutationFn: () =>
+      apiRequest(`/admission-processes/${admissionId}/cancel`, {
+        method: 'POST',
+        body: JSON.stringify({ reason: cancelReason }),
+      }),
+    onSuccess: () => {
+      setCancelReason('');
+      void client.invalidateQueries({ queryKey: ['admission-process', auth?.activeCompanyId] });
+    },
   });
 
   if (process.isLoading) return <p role="status">Carregando admissão…</p>;
@@ -72,18 +96,42 @@ export function AdmissionDetailsPage() {
         <Link to={`/admissoes/${admissionId}/documentos`}>
           Ver documentos lógicos ({item.documents.length})
         </Link>
-        <Link to={`/admissoes/${admissionId}/editar`}>Editar processo</Link>
-        {item.status !== 'COMPLETED' && item.status !== 'CANCELLED' && (
+        {canManage && <Link to={`/admissoes/${admissionId}/editar`}>Editar processo</Link>}
+        {canManage && checklist.length === 0 && (
+          <button type="button" onClick={() => generateChecklist.mutate()}>
+            Gerar checklist do template
+          </button>
+        )}
+        {canManage && item.status !== 'COMPLETED' && item.status !== 'CANCELLED' && (
           <button type="button" onClick={() => complete.mutate()} disabled={complete.isPending}>
             Concluir processo
           </button>
         )}
       </nav>
-      {complete.isError && (
-        <p role="alert" className="mt-3">
-          {complete.error.message}
-        </p>
+      {canManage && item.status !== 'COMPLETED' && item.status !== 'CANCELLED' && (
+        <form
+          className="mt-4 flex flex-wrap gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            cancel.mutate();
+          }}
+        >
+          <label>
+            Justificativa para cancelamento
+            <input
+              value={cancelReason}
+              onChange={(event) => setCancelReason(event.target.value)}
+              required
+            />
+          </label>
+          <button disabled={cancel.isPending || !cancelReason.trim()}>Cancelar processo</button>
+        </form>
       )}
+      {complete.isError || generateChecklist.isError || cancel.isError ? (
+        <p role="alert" className="mt-3">
+          {complete.error?.message ?? generateChecklist.error?.message ?? cancel.error?.message}
+        </p>
+      ) : null}
     </section>
   );
 }

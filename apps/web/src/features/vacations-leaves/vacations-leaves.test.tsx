@@ -3,12 +3,22 @@ import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { VacationsLeavesPage } from './index';
 
-const { apiRequest } = vi.hoisted(() => ({ apiRequest: vi.fn() }));
+const { apiRequest, useOptionalAuth } = vi.hoisted(() => ({
+  apiRequest: vi.fn(),
+  useOptionalAuth: vi.fn(),
+}));
 vi.mock('@/lib/api', () => ({ apiRequest }));
+vi.mock('@/features/auth/AuthContext', () => ({ useOptionalAuth }));
 
 describe('VacationsLeavesPage', () => {
-  beforeEach(() => apiRequest.mockResolvedValue([]));
-  it('identifies the demonstrative vacation and leave controls', async () => {
+  beforeEach(() => {
+    apiRequest.mockResolvedValue([]);
+    useOptionalAuth.mockReturnValue({
+      activeCompanyId: 'company-horizon',
+      hasCapability: () => true,
+    });
+  });
+  it('renders only the approved demonstrative leave controls', async () => {
     render(
       <QueryClientProvider
         client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
@@ -16,10 +26,41 @@ describe('VacationsLeavesPage', () => {
         <VacationsLeavesPage />
       </QueryClientProvider>,
     );
+    expect(await screen.findByRole('heading', { name: 'Afastamentos' })).toBeInTheDocument();
     expect(
-      await screen.findByRole('heading', { name: 'Férias e afastamentos' }),
+      await screen.findByText('Nenhum afastamento demonstrativo encontrado.'),
     ).toBeInTheDocument();
-    expect(await screen.findByText('Nenhum período demonstrativo encontrado.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Registrar afastamento' })).toBeInTheDocument();
+    expect(screen.queryByText(/período aquisitivo/i)).not.toBeInTheDocument();
+  });
+
+  it('keeps the responsive leave table read-only without leave.manage', async () => {
+    useOptionalAuth.mockReturnValue({
+      activeCompanyId: 'company-horizon',
+      hasCapability: () => false,
+    });
+    apiRequest.mockResolvedValueOnce([]).mockResolvedValueOnce([
+      {
+        id: 'leave-read-only',
+        startDate: '2026-08-20T00:00:00.000Z',
+        expectedReturnDate: '2026-08-25T00:00:00.000Z',
+        status: 'OPEN',
+        leaveType: { name: 'Afastamento demonstrativo' },
+        employmentContract: { registrationNumber: 'DEMO-001' },
+      },
+    ]);
+    render(
+      <QueryClientProvider
+        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+      >
+        <VacationsLeavesPage />
+      </QueryClientProvider>,
+    );
+
+    const table = await screen.findByRole('table', { name: 'Tabela de afastamentos' });
+    expect(table).toHaveClass('ui-data-table');
+    expect(screen.getByTestId('responsive-table-wrapper')).toHaveClass('ui-table-scroll');
+    expect(screen.queryByText('Novo tipo de afastamento')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Registrar retorno' })).not.toBeInTheDocument();
   });
 });

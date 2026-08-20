@@ -31,7 +31,6 @@ export function ResourcePage<TItem extends RecordItem>({
 }: PageProps) {
   const auth = useOptionalAuth();
   const canManage = !manageCapability || (auth?.hasCapability(manageCapability) ?? true);
-  const [companyId, setCompanyId] = useState('');
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
@@ -54,6 +53,7 @@ export function ResourcePage<TItem extends RecordItem>({
     resolver: zodResolver(schema),
     defaultValues: Object.fromEntries(fields.map(([key]) => [key, ''])),
   });
+  const companyId = companyScoped ? (auth?.activeCompanyId ?? '') : '';
   const ready = !companyScoped || Boolean(companyId);
   const list = useQuery({
     queryKey: [endpoint, auth?.activeCompanyId, companyId, search, status, page],
@@ -103,15 +103,6 @@ export function ResourcePage<TItem extends RecordItem>({
           }}
           placeholder="Pesquisar"
         />
-        {companyScoped && (
-          <input
-            aria-label="ID da empresa"
-            className="rounded border p-2"
-            value={companyId}
-            onChange={(event) => setCompanyId(event.target.value)}
-            placeholder="ID da empresa"
-          />
-        )}
         <select
           aria-label="Filtrar por status"
           className="rounded border p-2"

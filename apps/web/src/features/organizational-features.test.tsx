@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BranchesPage } from './branches';
 import { CompaniesPage } from './companies';
@@ -19,7 +20,7 @@ function renderFeature(element: React.ReactNode) {
     <QueryClientProvider
       client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
     >
-      {element}
+      <MemoryRouter>{element}</MemoryRouter>
     </QueryClientProvider>,
   );
 }

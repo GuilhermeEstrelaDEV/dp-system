@@ -45,7 +45,7 @@ describe('application shell', () => {
     expect(screen.getByText('Desligamentos').closest('[aria-disabled="true"]')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Desligamentos' })).not.toBeInTheDocument();
     expect(screen.getAllByText('Em breve')).toHaveLength(3);
-    expect(screen.getAllByText('Fora do MVP')).toHaveLength(4);
+    expect(screen.getAllByText('Fora do MVP')).toHaveLength(2);
     expect(screen.queryByRole('link', { name: /Colaboradores/ })).not.toBeInTheDocument();
   });
 
@@ -60,6 +60,13 @@ describe('application shell', () => {
     expect(screen.getByRole('link', { name: /Estrutura/ })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Colaboradores/ })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Contratos/ })).toBeInTheDocument();
+  });
+
+  it('exposes P2 navigation only through its read capabilities', () => {
+    renderWithRouter('/', true, ['admission.read', 'leave.read', 'variable_compensation.read']);
+    expect(screen.getByRole('link', { name: /Admissões/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Movimentações/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Remuneração variável/ })).toBeInTheDocument();
   });
 
   it('shows company context and the user menu', () => {

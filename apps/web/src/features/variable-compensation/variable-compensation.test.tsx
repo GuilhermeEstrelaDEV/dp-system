@@ -4,8 +4,12 @@ import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PayrollPage } from '@/features/payroll';
 
-const { apiRequest } = vi.hoisted(() => ({ apiRequest: vi.fn() }));
+const { apiRequest, useOptionalAuth } = vi.hoisted(() => ({
+  apiRequest: vi.fn(),
+  useOptionalAuth: vi.fn(),
+}));
 vi.mock('@/lib/api', () => ({ apiRequest }));
+vi.mock('@/features/auth/AuthContext', () => ({ useOptionalAuth }));
 
 function renderPage() {
   return render(
@@ -20,7 +24,13 @@ function renderPage() {
 }
 
 describe('Variable compensation page', () => {
-  beforeEach(() => apiRequest.mockReset());
+  beforeEach(() => {
+    apiRequest.mockReset();
+    useOptionalAuth.mockReturnValue({
+      activeCompanyId: 'company-horizon',
+      hasCapability: () => true,
+    });
+  });
 
   it('lists administrative variable compensation records by contract', async () => {
     apiRequest.mockResolvedValueOnce([
@@ -28,12 +38,17 @@ describe('Variable compensation page', () => {
     ]);
     renderPage();
     fireEvent.change(screen.getByLabelText('Contrato'), { target: { value: 'contract-1' } });
-    expect((await screen.findAllByRole('listitem')).at(-1)).toHaveTextContent(
-      'COMMISSION · 125.50 · PENDING',
-    );
+    const table = await screen.findByRole('table', {
+      name: 'Registros de remuneração variável',
+    });
+    expect(table).toHaveTextContent('COMMISSION');
+    expect(table).toHaveTextContent('125.50');
+    expect(table).toHaveTextContent('PENDING');
     expect(apiRequest).toHaveBeenCalledWith(
       '/variable-compensation/events?employmentContractId=contract-1',
     );
+    expect(table).toHaveClass('ui-data-table');
+    expect(screen.getByTestId('responsive-table-wrapper')).toHaveClass('ui-table-scroll');
   });
 
   it('registers a salary advance as a decimal input without calculating payroll', async () => {
@@ -58,5 +73,22 @@ describe('Variable compensation page', () => {
         }),
       }),
     );
+  });
+
+  it('keeps records readable and hides registration without manage capability', async () => {
+    useOptionalAuth.mockReturnValue({
+      activeCompanyId: 'company-horizon',
+      hasCapability: () => false,
+    });
+    apiRequest.mockResolvedValue([
+      { id: 'event-read-only', type: 'BONUS', amount: '90.00', approvalStatus: 'PENDING' },
+    ]);
+    renderPage();
+    fireEvent.change(screen.getByLabelText('Contrato'), { target: { value: 'contract-1' } });
+
+    expect(
+      await screen.findByRole('table', { name: 'Registros de remuneração variável' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Registrar' })).not.toBeInTheDocument();
   });
 });

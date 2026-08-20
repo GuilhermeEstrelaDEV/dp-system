@@ -63,26 +63,47 @@ export const appRoutes: RouteObject[] = [
           {
             element: <CapabilityRoute capability="platform.manage" />,
             children: [
-              { path: 'estrutura/filiais', element: <BranchesPage /> },
-              { path: 'estrutura/departamentos', element: <DepartmentsPage /> },
-              { path: 'estrutura/cargos', element: <PositionsPage /> },
-              { path: 'estrutura/centros-de-custo', element: <CostCentersPage /> },
-              { path: 'admissoes', element: <AdmissionsPage /> },
-              { path: 'admissoes/nova', element: <AdmissionFormPage /> },
-              { path: 'admissoes/:admissionId', element: <AdmissionDetailsPage /> },
-              { path: 'admissoes/:admissionId/editar', element: <AdmissionFormPage /> },
-              { path: 'admissoes/:admissionId/checklist', element: <AdmissionChecklistPage /> },
-              { path: 'admissoes/:admissionId/documentos', element: <AdmissionDocumentsPage /> },
-              { path: 'configuracoes/checklists', element: <ChecklistTemplatesPage /> },
-              { path: 'movimentacoes', element: <VacationsLeavesPage /> },
               { path: 'jornada', element: <TimeManagementPage /> },
               { path: 'beneficios', element: <BenefitsPage /> },
               { path: 'folha', element: <PayrollPage /> },
               { path: 'folha/competencias', element: <PayrollPage /> },
               { path: 'folha/lancamentos', element: <PayrollPage /> },
               { path: 'folha/execucoes', element: <PayrollPage /> },
-              { path: 'folha/remuneracao-variavel', element: <PayrollPage /> },
             ],
+          },
+          {
+            element: <CapabilityRoute capability="organization.read" />,
+            children: [
+              { path: 'estrutura/filiais', element: <BranchesPage /> },
+              { path: 'estrutura/departamentos', element: <DepartmentsPage /> },
+              { path: 'estrutura/cargos', element: <PositionsPage /> },
+              { path: 'estrutura/centros-de-custo', element: <CostCentersPage /> },
+            ],
+          },
+          {
+            element: <CapabilityRoute capability="admission.read" />,
+            children: [
+              { path: 'admissoes', element: <AdmissionsPage /> },
+              { path: 'admissoes/:admissionId', element: <AdmissionDetailsPage /> },
+              { path: 'admissoes/:admissionId/checklist', element: <AdmissionChecklistPage /> },
+              { path: 'admissoes/:admissionId/documentos', element: <AdmissionDocumentsPage /> },
+              { path: 'configuracoes/checklists', element: <ChecklistTemplatesPage /> },
+            ],
+          },
+          {
+            element: <CapabilityRoute capability="admission.manage" />,
+            children: [
+              { path: 'admissoes/nova', element: <AdmissionFormPage /> },
+              { path: 'admissoes/:admissionId/editar', element: <AdmissionFormPage /> },
+            ],
+          },
+          {
+            element: <CapabilityRoute capability="leave.read" />,
+            children: [{ path: 'movimentacoes', element: <VacationsLeavesPage /> }],
+          },
+          {
+            element: <CapabilityRoute capability="variable_compensation.read" />,
+            children: [{ path: 'folha/remuneracao-variavel', element: <PayrollPage /> }],
           },
           {
             element: <CapabilityRoute capability="company.read" />,

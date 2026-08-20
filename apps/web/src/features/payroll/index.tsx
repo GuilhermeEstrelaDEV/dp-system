@@ -41,7 +41,7 @@ const payrollPages = [
     'Remuneração variável',
     '/folha/remuneracao-variavel',
     '/variable-compensation/events',
-    'platform.manage',
+    'variable_compensation.read',
   ],
 ] as const;
 
