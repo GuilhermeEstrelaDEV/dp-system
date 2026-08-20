@@ -147,6 +147,12 @@ canônicos, deixando 125 rotas `LEGACY_DEFERRED`; as etapas restantes seguem a o
 - **ETP-015.9:** `ENTRY DECISIONS RECORDED — FUNCTIONAL IMPLEMENTATION NOT AUTHORIZED`;
 - **ETP-015.10:** `NOT STARTED — NOT AUTHORIZED`.
 
+Para a ETP-015.9, a decisão humana de 2026-08-20 selecionou `E — DEFER` para Company. O
+[pacote de entrada](security/ETP-015_9_COMPANY_ENTRY_READINESS.md) está
+`ENTRY DECISIONS RECORDED — FUNCTIONAL IMPLEMENTATION DEFERRED`; BDP-012 permanece `PENDING`, os
+owners continuam pendentes e os seis handlers permanecem `LEGACY_DEFERRED`. Não houve capability,
+projeção, evento, migration ou alteração de runtime, e nenhum item do Gate D foi iniciado.
+
 O [registro de homologação](security/ETP-015_6_HUMAN_APPROVAL_RECORD.md) confirma 110/110 decisões
 `FC-*` aprovadas pelo `PROJECT_OWNER` em 2026-08-08. A
 [reconciliação de readiness](security/ETP-015_6_IMPLEMENTATION_READINESS_RECONCILIATION.md) concluiu
