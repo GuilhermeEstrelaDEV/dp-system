@@ -328,12 +328,12 @@ NOT AUTHORIZED`.
   autorização separada. Produção, cloud, deploy, remoção de legado, Gate D e etapas seguintes não
   estão autorizados. BDP-001–008 e BDP-010–013 permanecem `PENDING`; BDP-009 e BDP-014 permanecem
   aprovadas.
-- **Company — `ENTRY PACKAGE READY FOR HUMAN DECISIONS`; `FIRST FUNCTIONAL CANDIDATE — NOT
-AUTHORIZED`:** o [assessment CO-01–CO-09](../security/ETP-015_9_COMPANY_ENTRY_READINESS.md)
-  inventaria os seis handlers, o registro pendente da BDP-012, consumidores, opções de escopo,
-  capability/projeção/auditoria, owners, Definition of Ready, testes e rollback. CO-07 está `READY`
-  apenas como evidência de inventário; nenhum estado autoriza implementação, capability, evento,
-  projeção, Gate D ou rollout.
+- **Company — `ENTRY DECISIONS RECORDED — FUNCTIONAL IMPLEMENTATION DEFERRED`; `NOT AUTHORIZED`:**
+  a decisão humana de 2026-08-20 selecionou `E — DEFER` no
+  [registro CD-01–CD-09](../security/ETP-015_9_COMPANY_ENTRY_DECISION_PACKAGE.md). BDP-012 permanece
+  `PENDING`; os seis handlers permanecem `LEGACY_DEFERRED`; capabilities 19 e eventos 27 permanecem
+  sem adições; owners continuam `PENDING HUMAN ASSIGNMENT`; e a Definition of Ready permanece 6
+  `PASS` / 10 `PENDING/BLOCKED`. A decisão não autoriza runtime, projeção, Gate D ou rollout.
 - **Gate:** Gates A–D em `docs/project-management/ETP-015_RELEASE_GATES.md`; somente o incremento
   aprovado pode avançar.
 - **Limites da ETP-015.1:** capabilities, autorização, isolamento, migração de endpoints, domínio,

@@ -1,6 +1,6 @@
 # ETP-015.9 — Company BDP-012 Decision Package
 
-**Status:** `BDP-012 PENDING — HUMAN DECISION REQUIRED`
+**Status:** `BDP-012 PENDING — COMPANY OPTION E DEFER SELECTED`
 
 ## Authoritative record
 
@@ -14,6 +14,16 @@ hierarchy is rooted directly in Company today.
 
 The current schema has independent Company rows and a globally unique `taxId`, with no group/root
 entity or grouping reference. This is evidence of current behavior, not an approved BDP alternative.
+
+## Company entry decision — 2026-08-20
+
+The `ETP-015.9 ENTRY DECISION AUTHORITY` selected **Alternative E — defer** for the current Company
+entry decision. Consequently, all six Company handlers remain `LEGACY_DEFERRED` and no Company
+subset, root/group model, economic-group rule, fiscal-uniqueness change, migration, backfill,
+sibling-company authority, or group-based authorization is approved.
+
+This selection preserves the current state for a future human initiative. **BDP-012 remains
+`PENDING`**; choosing defer is not a resolution of BDP-012.
 
 ## Non-binding alternatives
 
@@ -40,4 +50,5 @@ authority. That does not resolve BDP-012 and cannot silently authorize the remai
 - Company/Organization migration and backfill ownership;
 - minimum delimited scope, if any, including explicit omissions and rollback.
 
-No alternative is approved by this document.
+Alternative E is selected only as the binding decision to defer Company functional entry. No
+substantive BDP-012 alternative is approved, and BDP-012 remains `PENDING`.

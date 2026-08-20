@@ -1,32 +1,33 @@
 # ETP-015.9 — Company Entry Readiness
 
-**Status:** `COMPANY ENTRY READINESS ASSESSED — HUMAN DECISIONS REQUIRED`
+**Status:** `ENTRY DECISIONS RECORDED — FUNCTIONAL IMPLEMENTATION DEFERRED`
 
-**Result:** `COMPANY ENTRY PACKAGE READY FOR HUMAN DECISIONS`
+**Result:** `COMPANY ENTRY — NOT AUTHORIZED`
 
-**Functional state:** `FIRST FUNCTIONAL CANDIDATE — NOT AUTHORIZED`
+**Functional state:** `FUNCTIONAL IMPLEMENTATION DEFERRED — NOT AUTHORIZED`
 
 **Baseline:** `origin/develop@8e8ab402d9582b6e32af82039701804a7422c5b7`
 
 ## Binding boundaries
 
-ED-01 through ED-06 remain binding. This assessment does not resolve BDP-012, approve a capability,
-projection, audit event, owner, rollout, Gate D, production, cloud, deployment, or legacy removal.
-The six handlers remain `LEGACY_DEFERRED` and runtime remains unchanged.
+ED-01 through ED-06 remain binding. The human entry decision dated 2026-08-20 selected
+`E — DEFER`. It does not resolve BDP-012, approve a capability, projection, audit event, owner,
+rollout, Gate D, production, cloud, deployment, or legacy removal. The six handlers remain
+`LEGACY_DEFERRED` and runtime remains unchanged.
 
 ## Readiness register
 
-| ID    | Prerequisite                          | State                     | Evidence and remaining decision                                                                                 |
-| ----- | ------------------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| CO-01 | BDP-012 resolution or delimitation    | `BLOCKED`                 | BDP-012 is `PENDING`; the [decision package](ETP-015_9_COMPANY_BDP012_DECISION_PACKAGE.md) contains candidates. |
-| CO-02 | global versus active-company scope    | `HUMAN DECISION REQUIRED` | all six operations are globally reachable today; operation-level candidates are documented below.               |
-| CO-03 | capability model                      | `HUMAN DECISION REQUIRED` | ED-02 prohibits expansion; reuse/new-code/block options require separate approval.                              |
-| CO-04 | data projection and sensitivity       | `HUMAN DECISION REQUIRED` | seven returned fields are inventoried; no reduced projection is approved.                                       |
-| CO-05 | audit model                           | `HUMAN DECISION REQUIRED` | none of the 27 events is semantically adequate for Company CRUD/status writes.                                  |
-| CO-06 | accountable owner and approvers       | `BLOCKED`                 | accountable and engineering owners are `PENDING HUMAN ASSIGNMENT`.                                              |
-| CO-07 | consumer inventory                    | `READY`                   | versioned consumers are inventoried and unversioned/external risk is explicitly `UNKNOWN`.                      |
-| CO-08 | Definition of Ready and evidence gate | `BLOCKED`                 | 6 of 16 evidence items pass; all approval-dependent items remain open.                                          |
-| CO-09 | rollback boundary                     | `HUMAN DECISION REQUIRED` | safe constraints and stop conditions are proposed, but rollback is not approved.                                |
+| ID    | Prerequisite                          | State                                        | Evidence and remaining decision                                                                                |
+| ----- | ------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| CO-01 | BDP-012 resolution or delimitation    | `BLOCKED — BDP-012 PENDING / DEFER SELECTED` | BDP-012 remains `PENDING`; option `E — DEFER` blocks Company entry without resolving the BDP.                  |
+| CO-02 | global versus active-company scope    | `APPROVED — DEFER ALL OPERATIONS`            | no global, active-company, or self-context semantics are granted to any of the six operations.                 |
+| CO-03 | capability model                      | `APPROVED — NO CAPABILITY AUTHORIZATION`     | 19 capabilities remain unchanged; no semantic expansion, grant, or assignment is authorized.                   |
+| CO-04 | data projection and sensitivity       | `APPROVED — NO PROJECTION AUTHORIZATION`     | the seven observed fields receive no rollout/exposure approval; no projection or masking change is authorized. |
+| CO-05 | audit model                           | `APPROVED — AUDIT DESIGN DEFERRED`           | the catalog remains at 27 events; no Company event or inadequate semantic reuse is authorized.                 |
+| CO-06 | accountable owner and approvers       | `BLOCKED — OWNERS PENDING`                   | accountable and engineering owners remain `PENDING HUMAN ASSIGNMENT`.                                          |
+| CO-07 | consumer inventory                    | `READY — INVENTORY EVIDENCE ONLY`            | versioned consumers are inventoried and unversioned/external risk remains explicitly `UNKNOWN`.                |
+| CO-08 | Definition of Ready and evidence gate | `BLOCKED — FUNCTIONAL ENTRY NOT AUTHORIZED`  | the evidence count remains 6 of 16; the defer decision does not convert any additional item to `PASS`.         |
+| CO-09 | rollback boundary                     | `APPROVED — FUTURE ROLLBACK BOUNDARY ONLY`   | safe constraints are binding for a future decision, but no runtime rollout exists or is authorized now.        |
 
 No `READY` item authorizes implementation. CO-07 means only that the present repository evidence was
 inventoried.
@@ -76,7 +77,11 @@ limits Organization because Branch/Department/Position/CostCenter links depend d
 and no economic-group/root entity exists. A minimum scope can be proposed only by explicitly omitting
 group semantics; it remains `CANDIDATE — HUMAN APPROVAL REQUIRED`.
 
-**CO-01:** `BLOCKED`.
+The selected current option is `E — DEFER`. No root/group model, fiscal rule, sibling-company
+authority, migration, backfill, or Company subset is approved. This is a decision to defer entry,
+not a resolution of BDP-012.
+
+**CO-01:** `BLOCKED — BDP-012 PENDING / DEFER SELECTED`.
 
 ## CO-02 — Scope per operation
 
@@ -90,7 +95,8 @@ group semantics; it remains `CANDIDATE — HUMAN APPROVAL REQUIRED`.
 | inactivate | possible active-company     | currently changes any company          | define self-lockout/global authority  | `GLOBAL ADMINISTRATION CANDIDATE`, `ACTIVE-COMPANY CANDIDATE`, `BLOCKED` | required       |
 
 Every candidate needs JWT and an explicit context. No option may inherit `platform.manage` or trust
-the target ID as authority. **CO-02:** `HUMAN DECISION REQUIRED`.
+the target ID as authority. The human entry decision deferred all six operations without selecting
+global, active-company, or self-context semantics. **CO-02:** `APPROVED — DEFER ALL OPERATIONS`.
 
 ## CO-03 — Capability model
 
@@ -101,8 +107,8 @@ the target ID as authority. **CO-02:** `HUMAN DECISION REQUIRED`.
 | C      | keep operation unauthorized                                       | fail-closed; no privilege expansion  | functionality remains unavailable after enforcement                       | any unresolved operation   | `BLOCKED UNTIL ADDITIONAL DECISION`      |
 
 Any illustrative `<company>.*` label is a `NON-BINDING CANDIDATE NAME`. No existing capability may
-be broadened. **CO-03:** `HUMAN DECISION REQUIRED`; the capability package is ready only for human
-review.
+be broadened. The defer decision preserves the 19 existing capabilities with zero additions and
+zero semantic expansion. **CO-03:** `APPROVED — NO CAPABILITY AUTHORIZATION`.
 
 ## CO-04 — Data projection
 
@@ -120,7 +126,8 @@ The service currently returns raw Prisma Company rows for all six operations.
 
 There are no group references or arbitrary metadata in the current Company model. Relationships are
 not embedded in the response. This is technical inventory, not final privacy/legal classification.
-ED-03 prohibits expansion; reduction is only a proposal. **CO-04:** `HUMAN DECISION REQUIRED`.
+ED-03 prohibits expansion; reduction is only a proposal. No field receives rollout/exposure
+authorization from the defer decision. **CO-04:** `APPROVED — NO PROJECTION AUTHORIZATION`.
 
 ## CO-05 — Audit model
 
@@ -135,7 +142,8 @@ events. None describes Company create/update/activate/inactivate without semanti
 | activate / inactivate | none                    | `NEW EVENT PROPOSAL REQUIRED — NOT APPROVED` | target ID, prior/next status, reason             | company payload and dependency records   | state + audit atomic  |
 
 No generic event is an adequate reuse candidate. Failure to persist an approved critical audit must
-roll back the write. Catalog remains 27. **CO-05:** `HUMAN DECISION REQUIRED`.
+roll back the write. Catalog remains 27 and the Company audit design is deferred with the family.
+**CO-05:** `APPROVED — AUDIT DESIGN DEFERRED`.
 
 ## CO-06 — Owner and approvers
 
@@ -146,13 +154,14 @@ roll back the write. Catalog remains 27. **CO-05:** `HUMAN DECISION REQUIRED`.
   data. Jurídico/DPO is required if tax identifiers, privacy, group sharing, or another unresolved
   legal/sensitive-data decision is material. Their participation cannot be waived by this assessment.
 
-**CO-06:** `BLOCKED`.
+**CO-06:** `BLOCKED — OWNERS PENDING`.
 
 ## CO-07 — Consumers
 
 The [consumer matrix](ETP-015_9_COMPANY_CONSUMER_MATRIX.md) records the versioned web client, tests,
 documentation, direct-database demo tools, internal model references, and unknown external/OpenAPI
-consumers. It does not claim zero external consumers. **CO-07:** `READY` for decision evidence only.
+consumers. It does not claim zero external consumers. **CO-07:**
+`READY — INVENTORY EVIDENCE ONLY`.
 
 ## CO-08 — Definition of Ready / evidence gate
 
@@ -173,18 +182,22 @@ consumers. It does not claim zero external consumers. **CO-07:** `READY` for dec
 - [ ] rollback approved.
 - [ ] evidence gate approved.
 
-**PASS:** 6. **PENDING/BLOCKED:** 10. Technical definition is not human approval. **CO-08:**
-`BLOCKED`.
+**PASS:** 6. **PENDING/BLOCKED:** 10. Technical definition is not human approval, and the defer
+decision does not mark any additional item as complete. **CO-08:**
+`BLOCKED — FUNCTIONAL ENTRY NOT AUTHORIZED`.
 
 ## CO-09 — Rollback
 
 The [rollout and rollback proposal](ETP-015_9_COMPANY_ROLLOUT_AND_ROLLBACK.md) preserves JWT,
-deny-by-default, isolation, projection, and critical audit controls. It defines stop conditions but
-has not been approved. **CO-09:** `HUMAN DECISION REQUIRED`.
+deny-by-default, isolation, projection, and critical audit controls. Its safe boundary is approved
+for future use only; no rollout is authorized. **CO-09:**
+`APPROVED — FUTURE ROLLBACK BOUNDARY ONLY`.
 
 ## Final state
 
-- Company: `ENTRY PACKAGE READY FOR HUMAN DECISIONS`; `FIRST FUNCTIONAL CANDIDATE — NOT AUTHORIZED`.
+- Company: `ENTRY DECISIONS RECORDED — FUNCTIONAL IMPLEMENTATION DEFERRED`; `NOT AUTHORIZED`.
+- BDP-012: `PENDING`; current option `E — DEFER`.
+- six Company handlers: `LEGACY_DEFERRED`.
 - ETP-015.9: `ENTRY DECISIONS RECORDED — FUNCTIONAL IMPLEMENTATION NOT AUTHORIZED`.
 - Gate D: `NOT STARTED — NOT APPROVED`.
 - ETP-015.10: `NOT STARTED — NOT AUTHORIZED`.

@@ -142,10 +142,12 @@ capability/dados/auditoria, mantêm owners pendentes, registram Company somente 
 candidata e aprovam P4 apenas para preservação/reconciliação. Nenhum checkbox abaixo foi concluído,
 nenhum rollout funcional foi autorizado e o Gate D não foi iniciado.
 
-O [pacote de entrada de Company](../security/ETP-015_9_COMPANY_ENTRY_READINESS.md) prepara CO-01 a
-CO-09 e mantém Company `FIRST FUNCTIONAL CANDIDATE — NOT AUTHORIZED`. Sua existência não satisfaz
-nenhum checkbox: BDP-012/delimitação, escopo por operação, capability, projeção, auditoria, owner,
-evidence gate e rollback ainda exigem aprovação humana.
+O [pacote de entrada de Company](../security/ETP-015_9_COMPANY_ENTRY_READINESS.md) registra a decisão
+humana de 2026-08-20: alternativa `E — DEFER`. Company permanece
+`FUNCTIONAL IMPLEMENTATION DEFERRED — NOT AUTHORIZED`, BDP-012 permanece `PENDING`, os seis handlers
+permanecem `LEGACY_DEFERRED`, owners continuam pendentes e a Definition of Ready continua 6 `PASS` /
+10 `PENDING/BLOCKED`. O limite de rollback foi aprovado apenas para uso futuro. A decisão não
+satisfaz checkbox do Gate D nem autoriza capability, projeção, auditoria ou runtime.
 
 - [ ] cada família tem owner, BDPs, capabilities, sensibilidade e auditoria definidos;
 - [ ] os 165 handlers runtime estão classificados e reconciliados com código/OpenAPI e com os 163

@@ -1,6 +1,9 @@
 # ETP-015.9 — Company Rollout and Rollback Proposal
 
-**Status:** `PROPOSAL — HUMAN APPROVAL REQUIRED`
+**Status:** `APPROVED — FUTURE ROLLBACK BOUNDARY ONLY`
+
+The human entry decision dated 2026-08-20 approved these constraints solely as a boundary for a
+possible future rollout. Company runtime remains deferred and `NOT AUTHORIZED`.
 
 ## Future rollout boundary
 
@@ -50,4 +53,5 @@ explicit compensating/compatibility procedure; it must not delete audit evidence
 - database lock/error/latency exceeds the approved gate;
 - BDP-012 or owner/approver evidence becomes contradictory or absent.
 
-Rollback and stop authority remain `PENDING HUMAN DECISION`.
+The boundary and stop conditions are approved for future use. Assignment of the operational
+rollback/stop authority remains `PENDING HUMAN ASSIGNMENT`; no rollout exists or is authorized now.
