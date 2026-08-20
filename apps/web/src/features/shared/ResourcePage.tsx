@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { PageHeader } from '@/components/common/PageHeader';
+import { Button } from '@/components/common/Primitives';
+import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
 import { apiRequest } from '@/lib/api';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 
@@ -161,44 +163,53 @@ export function ResourcePage<TItem extends RecordItem>({
       ) : list.data?.items.length === 0 ? (
         <p>Nenhum registro encontrado.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table>
-            <thead>
-              <tr>
-                {fields.map(([, label]) => (
-                  <th key={label}>{label}</th>
-                ))}
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.data?.items.map((item) => (
-                <tr key={item.id}>
-                  {fields.map(([key]) => (
-                    <td key={key}>{String(item[key as keyof TItem] ?? '—')}</td>
-                  ))}
-                  <td>{item.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}</td>
-                  <td>
-                    <button type="button" onClick={() => setSelected(item)}>
-                      Detalhes
-                    </button>
-                    {canManage && (
-                      <button type="button" onClick={() => beginEdit(item)}>
-                        Editar
-                      </button>
-                    )}
-                    {canManage && (
-                      <button type="button" onClick={() => setPendingStatus(item)}>
-                        {item.status === 'ACTIVE' ? 'Inativar' : 'Ativar'}
-                      </button>
-                    )}
-                  </td>
-                </tr>
+        <DataTable label={`Tabela de ${title.toLowerCase()}`}>
+          <thead>
+            <tr>
+              {fields.map(([, label]) => (
+                <th key={label} scope="col">
+                  {label}
+                </th>
               ))}
-            </tbody>
-          </table>
-        </div>
+              <th scope="col">Status</th>
+              <th scope="col">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.data?.items.map((item) => (
+              <tr key={item.id}>
+                {fields.map(([key]) => (
+                  <td
+                    className={key === 'taxId' || key === 'code' ? 'ui-table-cell--compact' : ''}
+                    key={key}
+                  >
+                    {String(item[key as keyof TItem] ?? '—')}
+                  </td>
+                ))}
+                <td className="ui-table-cell--compact">
+                  <DataTableStatus active={item.status === 'ACTIVE'} />
+                </td>
+                <td>
+                  <DataTableActions>
+                    <Button variant="ghost" type="button" onClick={() => setSelected(item)}>
+                      Detalhes
+                    </Button>
+                    {canManage && (
+                      <Button variant="ghost" type="button" onClick={() => beginEdit(item)}>
+                        Editar
+                      </Button>
+                    )}
+                    {canManage && (
+                      <Button variant="ghost" type="button" onClick={() => setPendingStatus(item)}>
+                        {item.status === 'ACTIVE' ? 'Inativar' : 'Ativar'}
+                      </Button>
+                    )}
+                  </DataTableActions>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </DataTable>
       )}
       {list.data && (
         <nav aria-label="Paginação" className="mt-4">

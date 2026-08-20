@@ -42,6 +42,13 @@ describe('EmployeesPage', () => {
     });
     renderPage();
     expect(await screen.findByRole('link', { name: 'Pessoa Fictícia' })).toBeInTheDocument();
+    expect(screen.getByTestId('responsive-table-wrapper')).toHaveClass('ui-table-scroll');
+    expect(screen.getByRole('table', { name: 'Tabela de colaboradores' })).toHaveClass(
+      'ui-data-table',
+    );
+    expect(screen.getByRole('button', { name: 'Inativar' }).parentElement).toHaveClass(
+      'ui-table-actions',
+    );
     fireEvent.click(screen.getByRole('button', { name: 'Inativar' }));
     await waitFor(() =>
       expect(apiRequest).toHaveBeenCalledWith('/employees/employee-demo/inactivate', {

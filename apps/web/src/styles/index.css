@@ -197,6 +197,63 @@ button:disabled,
   padding: 1.25rem;
   box-shadow: var(--shadow-sm);
 }
+.ui-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+.ui-data-table {
+  width: 100%;
+  min-width: 46rem;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+.ui-data-table th {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  background: #edf3f7;
+  color: var(--color-brand-950);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: left;
+  white-space: nowrap;
+}
+.ui-data-table td {
+  min-width: 10rem;
+  max-width: 28rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  white-space: normal;
+}
+.ui-data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.ui-data-table tbody tr:hover {
+  background: rgb(21 150 196 / 4%);
+}
+.ui-data-table .ui-table-cell--compact {
+  width: 1%;
+  min-width: max-content;
+  white-space: nowrap;
+}
+.ui-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: max-content;
+}
+.ui-table-actions .ui-button {
+  min-height: 2rem;
+  padding: 0.35rem 0.65rem;
+}
 .ui-badge {
   display: inline-flex;
   align-items: center;

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
+import { DataTable, DataTableStatus } from '@/components/common/DataTable';
 import { apiRequest } from '@/lib/api';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { ContractForm, type ContractValues } from './ContractForm';
@@ -75,30 +76,30 @@ export function EmploymentContractsPage() {
       ) : list.data?.items.length === 0 ? (
         <p>Nenhum contrato demonstrativo encontrado.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table>
-            <thead>
-              <tr>
-                <th>Matrícula</th>
-                <th>Colaborador</th>
-                <th>Empresa</th>
-                <th>Status</th>
+        <DataTable label="Tabela de contratos de trabalho">
+          <thead>
+            <tr>
+              <th scope="col">Matrícula</th>
+              <th scope="col">Colaborador</th>
+              <th scope="col">Empresa</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.data?.items.map((contract) => (
+              <tr key={contract.id}>
+                <td className="ui-table-cell--compact">
+                  <Link to={`/contratos/${contract.id}`}>{contract.registrationNumber}</Link>
+                </td>
+                <td>{contract.employee?.legalName ?? contract.employeeId}</td>
+                <td>{contract.company?.tradeName ?? contract.companyId}</td>
+                <td className="ui-table-cell--compact">
+                  <DataTableStatus active={contract.status === 'ACTIVE'} />
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {list.data?.items.map((contract) => (
-                <tr key={contract.id}>
-                  <td>
-                    <Link to={`/contratos/${contract.id}`}>{contract.registrationNumber}</Link>
-                  </td>
-                  <td>{contract.employee?.legalName ?? contract.employeeId}</td>
-                  <td>{contract.company?.tradeName ?? contract.companyId}</td>
-                  <td>{contract.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </DataTable>
       )}
     </section>
   );

@@ -7,8 +7,12 @@ import { CostCentersPage } from './cost-centers';
 import { DepartmentsPage } from './departments';
 import { PositionsPage } from './positions';
 
-const { apiRequest } = vi.hoisted(() => ({ apiRequest: vi.fn() }));
+const { apiRequest, useOptionalAuth } = vi.hoisted(() => ({
+  apiRequest: vi.fn(),
+  useOptionalAuth: vi.fn(),
+}));
 vi.mock('@/lib/api', () => ({ apiRequest }));
+vi.mock('@/features/auth/AuthContext', () => ({ useOptionalAuth }));
 
 function renderFeature(element: React.ReactNode) {
   return render(
@@ -21,7 +25,10 @@ function renderFeature(element: React.ReactNode) {
 }
 
 describe('organizational structure features', () => {
-  beforeEach(() => apiRequest.mockReset());
+  beforeEach(() => {
+    apiRequest.mockReset();
+    useOptionalAuth.mockReturnValue({ hasCapability: () => true });
+  });
   it.each([
     [CompaniesPage, 'Empresas'],
     [BranchesPage, 'Filiais'],
@@ -57,9 +64,35 @@ describe('organizational structure features', () => {
       target: { value: 'ACTIVE' },
     });
     expect(await screen.findByRole('button', { name: 'Inativar' })).toBeInTheDocument();
+    expect(screen.getByTestId('responsive-table-wrapper')).toHaveClass('ui-table-scroll');
+    expect(screen.getByRole('table', { name: 'Tabela de empresas' })).toHaveClass('ui-data-table');
+    expect(screen.getByRole('button', { name: 'Detalhes' }).parentElement).toHaveClass(
+      'ui-table-actions',
+    );
     fireEvent.click(screen.getByRole('button', { name: 'Inativar' }));
     expect(
       screen.getByRole('dialog', { name: 'Confirmar alteração de status' }),
     ).toBeInTheDocument();
+  });
+
+  it('keeps details visible and hides management actions without capability', async () => {
+    useOptionalAuth.mockReturnValue({ hasCapability: () => false });
+    apiRequest.mockResolvedValue({
+      items: [
+        {
+          id: 'company-read-only',
+          legalName: 'Empresa Fictícia de Nome Extenso para Leitura',
+          tradeName: 'Somente leitura',
+          taxId: '00.000.000/0001-00',
+          status: 'ACTIVE',
+        },
+      ],
+      pagination: { totalPages: 1 },
+    });
+    renderFeature(<CompaniesPage />);
+    expect(await screen.findByRole('button', { name: 'Detalhes' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Editar' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Inativar' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Novo' })).not.toBeInTheDocument();
   });
 });
