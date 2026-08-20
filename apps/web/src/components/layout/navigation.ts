@@ -21,6 +21,7 @@ export interface NavigationItem {
   readonly icon: NavigationIcon;
   readonly group: NavigationGroup;
   readonly comingSoon?: boolean;
+  readonly availabilityLabel?: string;
 }
 
 export const navigationItems: readonly NavigationItem[] = [
@@ -37,6 +38,8 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Empresas, filiais, departamentos, cargos e centros de custo.',
     icon: 'structure',
     group: 'Cadastros',
+    comingSoon: true,
+    availabilityLabel: 'Fora do MVP',
   },
   {
     label: 'Colaboradores',
@@ -44,6 +47,8 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Cadastros de colaboradores e contatos.',
     icon: 'people',
     group: 'Pessoas',
+    comingSoon: true,
+    availabilityLabel: 'Fora do MVP',
   },
   {
     label: 'Contratos',
@@ -51,6 +56,8 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Vínculos de trabalho e histórico.',
     icon: 'people',
     group: 'Pessoas',
+    comingSoon: true,
+    availabilityLabel: 'Fora do MVP',
   },
   {
     label: 'Admissões',
@@ -58,6 +65,8 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Processos admissionais, checklists e documentos.',
     icon: 'admissions',
     group: 'Pessoas',
+    comingSoon: true,
+    availabilityLabel: 'Fora do MVP',
   },
   {
     label: 'Movimentações',
@@ -65,6 +74,8 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Férias e afastamentos.',
     icon: 'movements',
     group: 'Pessoas',
+    comingSoon: true,
+    availabilityLabel: 'Fora do MVP',
   },
   {
     label: 'Jornada',
@@ -72,6 +83,8 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Jornadas e registros de ponto.',
     icon: 'time',
     group: 'Pessoas',
+    comingSoon: true,
+    availabilityLabel: 'Fora do MVP',
   },
   {
     label: 'Benefícios',
@@ -79,11 +92,13 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Benefícios vinculados aos colaboradores.',
     icon: 'benefits',
     group: 'Pessoas',
+    comingSoon: true,
+    availabilityLabel: 'Fora do MVP',
   },
   {
     label: 'Folha',
-    path: '/folha',
-    description: 'Competências, lançamentos, conferência e fechamento.',
+    path: '/folha/conferencia',
+    description: 'Conferência e fechamento no recorte aprovado do MVP.',
     icon: 'payroll',
     group: 'Administração',
   },

@@ -406,7 +406,7 @@ export async function runReadiness({ report = false, smokeOnly = false } = {}) {
           'Segurança',
           'Deny-by-default',
           'PASS',
-          'dashboards restritos, empresa externa 403 e zero grants validados',
+          'dashboards restritos, empresa externa 403 e política de grants demo explícitos validada',
         ),
       );
     } catch (error) {

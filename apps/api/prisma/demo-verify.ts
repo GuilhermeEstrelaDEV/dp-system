@@ -1,4 +1,14 @@
 import { PrismaClient } from '@prisma/client';
+import {
+  DEMO_ACCESS_CAPABILITIES,
+  DEMO_ACCESS_DURATION_MS,
+  DEMO_ACCESS_ROLE,
+  DEMO_ACCESS_SOURCE_ID,
+} from '../src/demo-access/demo-access-tool';
+import {
+  DEMO_CLOSURE_FIXTURE,
+  validateDemoClosureFixture,
+} from '../src/demo-access/demo-closure-fixture';
 
 const prisma = new PrismaClient();
 const companyIds = [
@@ -28,6 +38,12 @@ function exact(label: string, actual: number, expected: number) {
   if (actual !== expected) throw new Error(`${label}: esperado ${expected}, encontrado ${actual}`);
 }
 
+function metadataRound(metadata: unknown): number | null {
+  if (typeof metadata !== 'object' || metadata === null || Array.isArray(metadata)) return null;
+  const round = Reflect.get(metadata, 'round');
+  return typeof round === 'number' ? round : null;
+}
+
 async function main() {
   assertDemoEnvironment();
   const [
@@ -49,6 +65,8 @@ async function main() {
     cycles,
     findings,
     events,
+    targetRun,
+    targetPeriod,
     migrations,
   ] = await Promise.all([
     prisma.company.findMany({ where: { id: { in: [...companyIds] } }, orderBy: { id: 'asc' } }),
@@ -59,7 +77,12 @@ async function main() {
     prisma.userCompanyRole.count({
       where: { companyId: { in: [...companyIds] }, status: 'ACTIVE' },
     }),
-    prisma.rolePermission.count(),
+    prisma.rolePermission.findMany({
+      include: {
+        role: { select: { code: true } },
+        permission: { select: { code: true } },
+      },
+    }),
     prisma.permission.count(),
     prisma.branch.count({ where: { companyId: { in: [...companyIds] } } }),
     prisma.department.count({ where: { companyId: { in: [...companyIds] } } }),
@@ -80,6 +103,60 @@ async function main() {
     prisma.payrollReviewCycle.count({ where: { companyId: { in: [...companyIds] } } }),
     prisma.payrollReviewFinding.count({ where: { companyId: { in: [...companyIds] } } }),
     prisma.payrollReviewEvent.count({ where: { companyId: { in: [...companyIds] } } }),
+    prisma.payrollRun.findFirstOrThrow({
+      where: {
+        id: DEMO_CLOSURE_FIXTURE.payrollRunId,
+        payrollPeriod: { companyId: DEMO_CLOSURE_FIXTURE.companyId },
+      },
+      select: {
+        status: true,
+        employees: {
+          select: {
+            status: true,
+            employmentContract: { select: { companyId: true } },
+          },
+        },
+        reviewCycles: {
+          where: { id: DEMO_CLOSURE_FIXTURE.reviewCycleId },
+          select: {
+            status: true,
+            approvalStages: { select: { id: true } },
+            decisions: {
+              select: {
+                decision: true,
+                submissionNumber: true,
+                reviewRound: true,
+                invalidation: { select: { id: true } },
+              },
+            },
+            findings: { select: { severity: true, status: true } },
+            events: {
+              select: { eventType: true, occurredAt: true, metadata: true },
+              orderBy: { occurredAt: 'asc' },
+            },
+          },
+        },
+      },
+    }),
+    prisma.payrollPeriod.findFirstOrThrow({
+      where: {
+        id: DEMO_CLOSURE_FIXTURE.payrollPeriodId,
+        companyId: DEMO_CLOSURE_FIXTURE.companyId,
+      },
+      select: {
+        status: true,
+        closureVersions: {
+          orderBy: { version: 'asc' },
+          select: {
+            version: true,
+            status: true,
+            supersededAt: true,
+            manifests: { select: { id: true } },
+            events: { select: { eventType: true } },
+          },
+        },
+      },
+    }),
     prisma.$queryRaw<
       Array<{ count: bigint }>
     >`SELECT COUNT(*)::bigint AS count FROM "_prisma_migrations" WHERE "finished_at" IS NOT NULL AND "rolled_back_at" IS NULL`,
@@ -88,7 +165,6 @@ async function main() {
   exact('empresas', companies.length, 2);
   exact('usuários', users.length, 2);
   exact('vínculos', companyRoles, 3);
-  exact('grants de papel', rolePermissions, 0);
   exact('catálogo homologado', permissions, 19);
   exact('filiais', branches, 2);
   exact('departamentos', departments, 8);
@@ -102,8 +178,88 @@ async function main() {
   exact('execuções', runs, 10);
   exact('conferências', cycles, 8);
   exact('achados', findings, 8);
-  exact('eventos', events, 25);
+  exact('eventos', events, 28);
   exact('migrations', Number(migrations[0]?.count ?? 0), 16);
+
+  const now = new Date();
+  const activeDemoGrants = rolePermissions.filter(
+    ({ status, sourceId, validFrom, validTo, revokedAt }) =>
+      status === 'ACTIVE' &&
+      sourceId === DEMO_ACCESS_SOURCE_ID &&
+      validFrom <= now &&
+      validTo !== null &&
+      validTo > now &&
+      revokedAt === null,
+  );
+  if (![0, 6].includes(activeDemoGrants.length)) {
+    throw new Error(`grants demo ativos: esperado 0 ou 6, encontrado ${activeDemoGrants.length}`);
+  }
+  const approvedCodes = new Set<string>(DEMO_ACCESS_CAPABILITIES);
+  if (
+    rolePermissions.some(
+      ({ sourceId, sourceType, role, permission, validFrom, validTo }) =>
+        sourceId !== DEMO_ACCESS_SOURCE_ID ||
+        sourceType !== 'MANUAL' ||
+        role.code !== DEMO_ACCESS_ROLE ||
+        !approvedCodes.has(permission.code) ||
+        validTo === null ||
+        validTo.getTime() - validFrom.getTime() > DEMO_ACCESS_DURATION_MS,
+    )
+  ) {
+    throw new Error('RolePermission fora da política local-demo explícita detectado');
+  }
+
+  const review = targetRun.reviewCycles[0];
+  if (!review) throw new Error('Conferência do fixture canônico ausente');
+  if (
+    targetRun.employees.some(
+      ({ status, employmentContract }) =>
+        status !== 'COMPLETED' || employmentContract.companyId !== DEMO_CLOSURE_FIXTURE.companyId,
+    )
+  ) {
+    throw new Error('Participante do fixture canônico fora da empresa ou não concluído');
+  }
+  const closedEvent = [...review.events]
+    .reverse()
+    .find(({ eventType }) => eventType === 'REVIEW_CLOSED');
+  const fixtureLifecycle = validateDemoClosureFixture({
+    periodStatus: targetPeriod.status,
+    payrollRunStatus: targetRun.status,
+    employeeCount: targetRun.employees.length,
+    reviewStatus: review.status,
+    approvalStageCount: review.approvalStages.length,
+    approvedDecisionCount: review.decisions.filter(
+      ({ decision, submissionNumber, reviewRound }) =>
+        decision === 'APPROVED' &&
+        submissionNumber === DEMO_CLOSURE_FIXTURE.submissionNumber &&
+        reviewRound === DEMO_CLOSURE_FIXTURE.reviewRound,
+    ).length,
+    invalidatedDecisionCount: review.decisions.filter(({ invalidation }) => invalidation !== null)
+      .length,
+    openBlockingFindingCount: review.findings.filter(
+      ({ severity, status }) => severity === 'BLOCKING' && status === 'OPEN',
+    ).length,
+    closedEventRound: closedEvent ? metadataRound(closedEvent.metadata) : null,
+    hasLaterReviewReopenedEvent: review.events.some(
+      ({ eventType, occurredAt }) =>
+        eventType === 'REVIEW_REOPENED' &&
+        closedEvent !== undefined &&
+        occurredAt > closedEvent.occurredAt,
+    ),
+    closureVersions: targetPeriod.closureVersions.map((version) => ({
+      version: version.version,
+      status: version.status,
+      superseded: version.supersededAt !== null,
+      manifestCount: version.manifests.length,
+      eventTypes: version.events.map(({ eventType }) => eventType),
+    })),
+  });
+  if (
+    activeDemoGrants.length === 6 &&
+    new Set(activeDemoGrants.map(({ permission }) => permission.code)).size !== 6
+  ) {
+    throw new Error('grants demo ativos não correspondem às seis capabilities aprovadas');
+  }
 
   if (users.some(({ passwordHash }) => !passwordHash?.startsWith('scrypt$'))) {
     throw new Error('Hash demonstrativo ausente ou incompatível');
@@ -146,13 +302,15 @@ async function main() {
     JSON.stringify(
       {
         status: 'OK',
+        fixtureLifecycle,
         referenceDate: '2026-07-01',
         dashboard,
         counts: {
           companies: 2,
           users: 2,
           companyRoles,
-          rolePermissions,
+          rolePermissions: rolePermissions.length,
+          activeDemoGrants: activeDemoGrants.length,
           permissions,
           branches,
           departments,
@@ -167,6 +325,9 @@ async function main() {
           cycles,
           findings,
           events,
+          fixtureRunEmployees: targetRun.employees.length,
+          fixtureApprovalDecisions: review.decisions.length,
+          fixtureClosureVersions: targetPeriod.closureVersions.length,
           migrations: Number(migrations[0]?.count ?? 0),
         },
       },

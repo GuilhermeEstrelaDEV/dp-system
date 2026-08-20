@@ -5,6 +5,7 @@ import {
   PayrollReviewFindingStatus,
   PrismaClient,
 } from '@prisma/client';
+import { DEMO_CLOSURE_FIXTURE } from '../src/demo-access/demo-closure-fixture';
 import { PasswordHasherService } from '../src/modules/auth/password-hasher.service';
 
 const prisma = new PrismaClient();
@@ -301,7 +302,7 @@ async function seedPayroll(
   const offset = isHorizon ? 0 : 100;
   const periodCount = isHorizon ? 6 : 4;
   const cycleStatuses: PayrollReviewCycleStatus[] = isHorizon
-    ? ['OPEN', 'IN_REVIEW', 'SUBMITTED', 'APPROVED', 'REJECTED']
+    ? ['OPEN', 'IN_REVIEW', 'SUBMITTED', 'CLOSED', 'REJECTED']
     : ['OPEN', 'IN_REVIEW', 'APPROVED'];
   const calendar = await prisma.payrollCalendar.upsert({
     where: { companyId_name: { companyId, name: 'Calendário Demonstrativo' } },
@@ -356,7 +357,12 @@ async function seedPayroll(
     const occurredAt = new Date(Date.UTC(2026, 6 - index, 3, 14));
     const cycle = await prisma.payrollReviewCycle.upsert({
       where: { id: demoId('c', sequence) },
-      update: { status: cycleStatus },
+      update: {
+        status: cycleStatus,
+        submissionNumber: ['SUBMITTED', 'CLOSED', 'REJECTED'].includes(cycleStatus) ? 1 : 0,
+        currentApprovalStage: cycleStatus === 'CLOSED' ? 2 : 0,
+        reviewRound: 1,
+      },
       create: {
         id: demoId('c', sequence),
         companyId,
@@ -365,8 +371,8 @@ async function seedPayroll(
         createdBy: creatorId,
         traceId: `demo-cycle-${companyKey}-${index + 1}`,
         createdAt: occurredAt,
-        submissionNumber: ['SUBMITTED', 'APPROVED', 'REJECTED'].includes(cycleStatus) ? 1 : 0,
-        currentApprovalStage: cycleStatus === 'APPROVED' ? 2 : 0,
+        submissionNumber: ['SUBMITTED', 'CLOSED', 'REJECTED'].includes(cycleStatus) ? 1 : 0,
+        currentApprovalStage: cycleStatus === 'CLOSED' ? 2 : 0,
       },
     });
     cycles.push(cycle);
@@ -383,12 +389,83 @@ async function seedPayroll(
         },
       });
     }
+    if (cycle.id === DEMO_CLOSURE_FIXTURE.reviewCycleId) {
+      await prisma.payrollReviewDecision.createMany({
+        data: [1, 2].map((stage) => ({
+          id: demoId('7', sequence * 10 + stage),
+          companyId,
+          reviewCycleId: cycle.id,
+          approvalStageId: demoId('f', sequence * 10 + stage),
+          submissionNumber: DEMO_CLOSURE_FIXTURE.submissionNumber,
+          reviewRound: DEMO_CLOSURE_FIXTURE.reviewRound,
+          decision: 'APPROVED' as const,
+          actorId: creatorId,
+          reason: `Aprovação fictícia da etapa ${stage} para demonstração local`,
+          traceId: `demo-decision-${companyKey}-${index + 1}-${stage}`,
+          occurredAt: new Date(occurredAt.getTime() + stage * 3_600_000),
+        })),
+        skipDuplicates: true,
+      });
+    }
     const transition: Partial<Record<PayrollReviewCycleStatus, PayrollReviewEventType>> = {
       IN_REVIEW: 'REVIEW_STARTED',
       SUBMITTED: 'REVIEW_SUBMITTED',
       APPROVED: 'REVIEW_APPROVED',
       REJECTED: 'REVIEW_REJECTED',
     };
+    const closedEvents =
+      cycle.id === DEMO_CLOSURE_FIXTURE.reviewCycleId
+        ? [
+            {
+              id: demoId('e', sequence * 10 + 2),
+              companyId,
+              reviewCycleId: cycle.id,
+              actorId: creatorId,
+              traceId: `demo-event-${companyKey}-${index + 1}-start`,
+              eventType: PayrollReviewEventType.REVIEW_STARTED,
+              previousState: { status: 'OPEN' },
+              nextState: { status: 'IN_REVIEW' },
+              occurredAt: new Date(occurredAt.getTime() + 3_600_000),
+              metadata: { source: 'MVP-essential-canonical-fixture' },
+            },
+            {
+              id: demoId('e', sequence * 10 + 3),
+              companyId,
+              reviewCycleId: cycle.id,
+              actorId: creatorId,
+              traceId: `demo-event-${companyKey}-${index + 1}-submit`,
+              eventType: PayrollReviewEventType.REVIEW_SUBMITTED,
+              previousState: { status: 'IN_REVIEW' },
+              nextState: { status: 'SUBMITTED', submissionNumber: 1 },
+              occurredAt: new Date(occurredAt.getTime() + 2 * 3_600_000),
+              metadata: { source: 'MVP-essential-canonical-fixture' },
+            },
+            {
+              id: demoId('e', sequence * 10 + 4),
+              companyId,
+              reviewCycleId: cycle.id,
+              actorId: creatorId,
+              traceId: `demo-event-${companyKey}-${index + 1}-approve`,
+              eventType: PayrollReviewEventType.REVIEW_APPROVED,
+              previousState: { status: 'SUBMITTED' },
+              nextState: { status: 'APPROVED', approvalStage: 2 },
+              occurredAt: new Date(occurredAt.getTime() + 3 * 3_600_000),
+              metadata: { source: 'MVP-essential-canonical-fixture' },
+            },
+            {
+              id: demoId('e', sequence * 10 + 5),
+              companyId,
+              reviewCycleId: cycle.id,
+              actorId: creatorId,
+              traceId: `demo-event-${companyKey}-${index + 1}-close`,
+              eventType: PayrollReviewEventType.REVIEW_CLOSED,
+              previousState: { status: 'APPROVED' },
+              nextState: { status: 'CLOSED' },
+              occurredAt: new Date(occurredAt.getTime() + 4 * 3_600_000),
+              metadata: { source: 'MVP-essential-canonical-fixture', round: 1 },
+            },
+          ]
+        : [];
     await prisma.payrollReviewEvent.createMany({
       data: [
         {
@@ -402,6 +479,7 @@ async function seedPayroll(
           occurredAt,
           metadata: { source: 'MVP-001.5-demo-seed' },
         },
+        ...closedEvents,
         ...(transition[cycleStatus]
           ? [
               {
@@ -419,6 +497,29 @@ async function seedPayroll(
             ]
           : []),
       ],
+      skipDuplicates: true,
+    });
+  }
+  if (isHorizon) {
+    const targetRun = runs[3];
+    if (!targetRun || targetRun.id !== DEMO_CLOSURE_FIXTURE.payrollRunId) {
+      throw new Error('Fixture canônico de fechamento não encontrou a execução determinística');
+    }
+    await prisma.payrollRunEmployee.createMany({
+      data: contracts.slice(0, DEMO_CLOSURE_FIXTURE.employeeCount).map((contract, index) => ({
+        id: demoId('6', 900 + index + 1),
+        payrollRunId: targetRun.id,
+        employmentContractId: contract.id,
+        status: 'COMPLETED',
+        grossAmount: index === 0 ? '7200.00' : '4850.00',
+        netAmount: index === 0 ? '5832.00' : '3977.00',
+        calculationMemory: {
+          source: 'MVP-essential-canonical-fixture',
+          fictional: true,
+          grossAmount: index === 0 ? '7200.00' : '4850.00',
+          netAmount: index === 0 ? '5832.00' : '3977.00',
+        },
+      })),
       skipDuplicates: true,
     });
   }

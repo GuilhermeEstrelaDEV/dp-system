@@ -30,17 +30,14 @@ describe('application shell', () => {
     expect(screen.getAllByText(/Ambiente (demonstrativo|local)/).length).toBeGreaterThan(0);
   });
 
-  it('navigates to a real module and marks the active route', async () => {
+  it('navigates only to the approved payroll surface and marks the active route', async () => {
     renderWithRouter();
-    fireEvent.click(screen.getByRole('link', { name: /Colaboradores/ }));
-    expect(await screen.findByRole('heading', { name: 'Colaboradores' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Colaboradores/ })).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
-    expect(screen.getByLabelText('Navegação estrutural')).toHaveTextContent(
-      /Início\s*\/\s*Colaboradores/,
-    );
+    fireEvent.click(screen.getByRole('link', { name: /Folha/ }));
+    expect(
+      await screen.findByRole('heading', { name: 'Execuções e conferências' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Folha/ })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByLabelText('Navegação estrutural')).toHaveTextContent(/Início\s*\/\s*Folha/);
   });
 
   it('identifies future modules without creating actionable links', () => {
@@ -48,6 +45,8 @@ describe('application shell', () => {
     expect(screen.getByText('Desligamentos').closest('[aria-disabled="true"]')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Desligamentos' })).not.toBeInTheDocument();
     expect(screen.getAllByText('Em breve')).toHaveLength(3);
+    expect(screen.getAllByText('Fora do MVP')).toHaveLength(7);
+    expect(screen.queryByRole('link', { name: /Colaboradores/ })).not.toBeInTheDocument();
   });
 
   it('shows company context and the user menu', () => {
@@ -84,10 +83,7 @@ describe('application shell', () => {
       'aria-expanded',
       'false',
     );
-    expect(screen.getByRole('link', { name: /Colaboradores/ })).toHaveAttribute(
-      'title',
-      'Colaboradores',
-    );
+    expect(screen.getByRole('link', { name: /Folha/ })).toHaveAttribute('title', 'Folha');
   });
 
   it('fecha o menu móvel e devolve o foco ao gatilho', async () => {
@@ -113,9 +109,11 @@ describe('application shell', () => {
     fireEvent.click(trigger);
     fireEvent.click(
       within(screen.getByRole('dialog', { name: 'Menu de navegação' })).getByRole('link', {
-        name: /Colaboradores/,
+        name: /Folha/,
       }),
     );
-    expect(await screen.findByRole('heading', { name: 'Colaboradores' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Execuções e conferências' }),
+    ).toBeInTheDocument();
   });
 });
