@@ -47,5 +47,13 @@ describe('EmploymentContractsPage', () => {
     });
     renderPage();
     expect(await screen.findByRole('link', { name: 'DEMO-01' })).toBeInTheDocument();
+    expect(screen.getByTestId('responsive-table-wrapper')).toHaveClass('ui-table-scroll');
+    expect(screen.getByRole('table', { name: 'Tabela de contratos de trabalho' })).toHaveClass(
+      'ui-data-table',
+    );
+    expect(screen.getByRole('columnheader', { name: 'Matrícula' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Colaborador' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Empresa' })).toBeInTheDocument();
+    expect(screen.getByText('Ativo')).toHaveClass('ui-badge--success');
   });
 });

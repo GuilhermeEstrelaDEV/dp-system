@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
+import { Button } from '@/components/common/Primitives';
+import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
 import { apiRequest } from '@/lib/api';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { EmployeeForm, type EmployeeValues } from './EmployeeForm';
@@ -82,36 +84,38 @@ export function EmployeesPage() {
       ) : list.data?.items.length === 0 ? (
         <p>Nenhum colaborador demonstrativo encontrado.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.data?.items.map((employee) => (
-                <tr key={employee.id}>
-                  <td>
-                    <Link to={`/colaboradores/${employee.id}`}>
-                      {employee.preferredName || employee.legalName}
-                    </Link>
-                  </td>
-                  <td>{employee.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}</td>
-                  <td>
+        <DataTable label="Tabela de colaboradores">
+          <thead>
+            <tr>
+              <th scope="col">Nome</th>
+              <th scope="col">Status</th>
+              <th scope="col">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.data?.items.map((employee) => (
+              <tr key={employee.id}>
+                <td>
+                  <Link to={`/colaboradores/${employee.id}`}>
+                    {employee.preferredName || employee.legalName}
+                  </Link>
+                </td>
+                <td className="ui-table-cell--compact">
+                  <DataTableStatus active={employee.status === 'ACTIVE'} />
+                </td>
+                <td>
+                  <DataTableActions>
                     {canManage && (
-                      <button type="button" onClick={() => toggle.mutate(employee)}>
+                      <Button variant="ghost" type="button" onClick={() => toggle.mutate(employee)}>
                         {employee.status === 'ACTIVE' ? 'Inativar' : 'Ativar'}
-                      </button>
+                      </Button>
                     )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </DataTableActions>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </DataTable>
       )}
     </section>
   );
