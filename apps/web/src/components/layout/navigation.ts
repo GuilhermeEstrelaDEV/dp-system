@@ -22,6 +22,7 @@ export interface NavigationItem {
   readonly group: NavigationGroup;
   readonly comingSoon?: boolean;
   readonly availabilityLabel?: string;
+  readonly capability?: string;
 }
 
 export const navigationItems: readonly NavigationItem[] = [
@@ -38,8 +39,7 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Empresas, filiais, departamentos, cargos e centros de custo.',
     icon: 'structure',
     group: 'Cadastros',
-    comingSoon: true,
-    availabilityLabel: 'Fora do MVP',
+    capability: 'company.read',
   },
   {
     label: 'Colaboradores',
@@ -47,8 +47,7 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Cadastros de colaboradores e contatos.',
     icon: 'people',
     group: 'Pessoas',
-    comingSoon: true,
-    availabilityLabel: 'Fora do MVP',
+    capability: 'employee.read',
   },
   {
     label: 'Contratos',
@@ -56,8 +55,7 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Vínculos de trabalho e histórico.',
     icon: 'people',
     group: 'Pessoas',
-    comingSoon: true,
-    availabilityLabel: 'Fora do MVP',
+    capability: 'contract.read',
   },
   {
     label: 'Admissões',
@@ -101,6 +99,22 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Conferência e fechamento no recorte aprovado do MVP.',
     icon: 'payroll',
     group: 'Administração',
+  },
+  {
+    label: 'Rubricas',
+    path: '/folha/rubricas',
+    description: 'Cadastro operacional de rubricas da empresa ativa.',
+    icon: 'payroll',
+    group: 'Administração',
+    capability: 'payroll.rubric.read',
+  },
+  {
+    label: 'Parâmetros',
+    path: '/folha/parametros',
+    description: 'Parâmetros versionados da empresa ativa.',
+    icon: 'payroll',
+    group: 'Administração',
+    capability: 'payroll.parameter.read',
   },
   {
     label: 'Desligamentos',

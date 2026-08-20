@@ -2,16 +2,18 @@
 
 ## Estado
 
-**ETP-015.3 — IN PROGRESS.** Esta fundação interna implementa o catálogo homologado e assignments
-históricos. Ela não adiciona rota, guard, decorator, UI, grant automático nem enforcement em nova
-superfície.
+**Estado atual:** a fundação histórica da ETP-015.3 permanece preservada e a Full Delivery P1
+expande controladamente o catálogo para 29 capabilities. O seed canônico continua sem grant
+automático.
 
 ## Catálogo canônico
 
-`Permission` preserva `id` e `code` e passa a registrar nome, descrição, recurso, ação, escopo,
-risco, sensibilidade, ciclo de vida, substituição e metadata. Os 19 códigos de PC-01..PC-19 são a
-allowlist da migration e do seed. `platform.read` e `platform.manage` possuem escopo `PLATFORM`; os
-demais possuem escopo `COMPANY`.
+`Permission` preserva `id` e `code` e registra nome, descrição, recurso, ação, escopo, risco,
+sensibilidade, ciclo de vida, substituição e metadata. Os 19 códigos de PC-01..PC-19 continuam sendo
+a allowlist imutável da migration `0016`. O seed adiciona dez códigos P1 aprovados, sem alterar os
+19 existentes: `company.read/manage`, `employee.read/manage`, `contract.read/manage`,
+`payroll.parameter.read/manage` e `payroll.rubric.read/manage`. `platform.read` e `platform.manage`
+possuem escopo `PLATFORM`; os outros 27 possuem escopo `COMPANY`.
 
 PC-20 e PC-21 são fail-closed: upgrade com código extra, ausente, duplicado ou não classificado é
 bloqueado antes do backfill. Banco limpo pode permanecer sem catálogo até o seed homologado. Código
@@ -44,8 +46,16 @@ A migration `0016_capability_catalog_assignments`:
 5. não insere `RolePermission`, `UserCompanyRole`, grant ou associação;
 6. substitui a unicidade parcial pela garantia temporal na mesma migration.
 
-O seed cria ou atualiza somente os sete papéis e as 19 capabilities homologadas. Contagens de
-assignments devem permanecer zero em banco limpo.
+O seed cria ou atualiza somente os sete papéis e as 29 capabilities aprovadas. Contagens de
+assignments permanecem zero em banco limpo. O acréscimo P1 é catalog-only e não requer migration,
+pois `Permission` já suporta a classificação aprovada.
+
+## Acesso demonstrativo P1
+
+`demo:access:grant` concede temporariamente as seis capabilities do MVP essencial e as dez da P1
+somente ao papel fictício `ADMINISTRATOR`. Esse mecanismo não usa o seed canônico: a origem é
+`MANUAL`, a validade máxima é oito horas, operações são idempotentes, revogáveis e auditadas. A
+conta `HR` não recebe esses assignments e permanece controle negativo.
 
 ## Leitura compatível
 

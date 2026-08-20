@@ -178,6 +178,24 @@ BDP-001 e BDP-011 permanecem `PENDING`, e BDP-014 permanece
 
 ## Próximas iniciativas propostas
 
+## Full Functional Delivery
+
+**Status:** `FULL DELIVERY P1 — READY TO MERGE`; the Essential MVP baseline remains preserved.
+
+The human delivery decision replaces the earlier permanent-defer target with incremental completion
+of every user-facing function. The [delivery plan](full-delivery/FULL_DELIVERY_PLAN.md) separates P1,
+P2, P3 and P0-RESIDUAL so that no legacy surface is released by bypass.
+
+- **P1:** Company 6/6, Employee 12/12, Contract 7/7, Payroll Parameters 4/4 and Payroll Rubrics 4/4;
+- **authorization:** ten explicit resource capabilities, active-company semantics and deny-by-default;
+- **audit:** fourteen transaction-required P1 events with restricted metadata;
+- **data:** explicit minimum projections and fictitious demo fixtures for both companies;
+- **database:** zero new migrations and zero automatic assignments;
+- **later waves:** P2 (56), P3 (21) and P0-RESIDUAL (15) remain `NOT STARTED`.
+
+The [P1 acceptance inventory](full-delivery/P1_ACCEPTANCE.md) is the authoritative record for the 33
+handlers. BDP-012 remains unresolved; P1 uses independent Company entities only.
+
 ## MVP-001 — Protótipo executivo local
 
 **Status:** `IMPLEMENTED — LOCAL PROTOTYPE READY FOR MANAGEMENT VALIDATION`.

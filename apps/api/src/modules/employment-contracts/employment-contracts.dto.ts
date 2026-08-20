@@ -19,7 +19,8 @@ export class EmploymentContractListQueryDto extends ListQueryDto {
   @IsOptional() @IsUUID() branchId?: string;
   @IsOptional() @IsUUID() departmentId?: string;
   @IsOptional() @IsUUID() positionId?: string;
-  @IsOptional() @IsIn(['startDate', 'createdAt', 'registrationNumber']) declare sortBy: string;
+  @IsOptional() @IsIn(['startDate', 'createdAt', 'registrationNumber']) override sortBy =
+    'startDate';
 }
 
 export class CreateEmploymentContractDto {

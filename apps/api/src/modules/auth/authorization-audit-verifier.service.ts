@@ -30,6 +30,30 @@ export const AUTHORIZATION_AUDIT_PRODUCER_MANIFEST = Object.freeze({
     'EMERGENCY_ACCESS_REVOKED',
     'EMERGENCY_ACCESS_EXPIRED',
   ],
+  'src/modules/companies/companies.service.ts': [
+    'COMPANY_CREATED',
+    'COMPANY_UPDATED',
+    'COMPANY_ACTIVATED',
+    'COMPANY_INACTIVATED',
+  ],
+  'src/modules/employees/employees.service.ts': [
+    'EMPLOYEE_CREATED',
+    'EMPLOYEE_UPDATED',
+    'EMPLOYEE_STATUS_CHANGED',
+  ],
+  'src/modules/employment-contracts/employment-contracts.service.ts': [
+    'CONTRACT_CREATED',
+    'CONTRACT_UPDATED',
+    'CONTRACT_STATUS_CHANGED',
+  ],
+  'src/modules/payroll-parameters/payroll-parameters.service.ts': [
+    'PAYROLL_PARAMETER_CREATED',
+    'PAYROLL_PARAMETER_UPDATED',
+  ],
+  'src/modules/payroll-rubrics/payroll-rubrics.service.ts': [
+    'PAYROLL_RUBRIC_CREATED',
+    'PAYROLL_RUBRIC_UPDATED',
+  ],
   'src/modules/payroll-reviews/payroll-reviews.service.ts': [
     'PAYROLL_REVIEW_CYCLE_OPENED',
     'PAYROLL_REVIEW_FINDING_OPENED',

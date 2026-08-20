@@ -10,16 +10,16 @@
 | Dashboard executivo   | `GET /dashboard/summary`                                             | Autenticada e empresarial | JWT; empresa ativa e seções filtradas por capability                     |
 | Access grants         | seis rotas sob `/access-grants`                                      | Autenticada e empresarial | JWT, capability e validação no serviço                                   |
 | Swagger               | `/api/docs`, `/api/docs-json`                                        | Pública/configurável      | Somente quando habilitado                                                |
-| Companies             | todas sob `/companies`                                               | Ainda legada              | Sem migração neste incremento                                            |
+| Companies             | seis rotas sob `/companies`                                          | Autenticada e empresarial | `company.read/manage`; administração global controlada                   |
 | Organização           | todas sob `/branches`, `/departments`, `/positions`, `/cost-centers` | Ainda legada              | Recebem companyId do cliente                                             |
-| Employees/contracts   | todas sob `/employees`, `/employment-contracts`                      | Ainda legada              | Exige desenho de visibilidade sensível                                   |
+| Employees/contracts   | 19 rotas sob `/employees`, `/employment-contracts`                   | Autenticada e empresarial | capabilities próprias, empresa ativa, projeção mínima e `404`            |
 | Admission             | `/admission-processes`, checklists e documentos                      | Ainda legada              | Exige capabilities homologadas                                           |
 | Time management       | jornadas, feriados, marcações e saldos                               | Ainda legada              | Exige inventário por operação                                            |
 | Benefits              | todas sob `/benefits`                                                | Ainda legada              | Exige visibilidade por capability                                        |
 | Vacations/leaves      | férias, afastamentos e tipos                                         | Ainda legada              | Exige migração por caso de uso                                           |
 | Payroll readiness     | `GET /payroll-periods/:payrollPeriodId/closure-readiness`            | Autenticada e empresarial | JWT, capability, serviço e `404`                                         |
 | Payroll period close  | `POST /payroll-periods/:payrollPeriodId/close`                       | Autenticada e empresarial | JWT, `payroll.period.close.execute`, empresa ativa, idempotência e `404` |
-| Payroll configuration | demais rotas de competências, rubricas e parâmetros                  | Ainda legada              | Não migrada para evitar quebra                                           |
+| Payroll configuration | oito rotas de rubricas e parâmetros                                  | Autenticada e empresarial | `payroll.parameter.*` e `payroll.rubric.*`; projeções mínimas            |
 | Payroll operation P0  | quatro aliases sob `/payroll-closures`                               | Autenticada e empresarial | adapters deprecated, capabilities de history/execute/reopen e `404`      |
 | Payroll operation P1+ | lançamentos, execuções e demais operações                            | Ainda legada              | fora da ETP-015.8                                                        |
 | Payroll review        | quatorze rotas incluindo fechamento, reabertura e histórico          | Autenticada e empresarial | JWT, capability, policy e `404`                                          |
@@ -74,8 +74,9 @@ associada automaticamente a papel.
 
 ## Continuidade
 
-O [inventário completo](LEGACY_API_AUTHORIZATION_ROUTE_INVENTORY.md) registra os 163 handlers e o
-estado de prontidão para uma decisão futura. A iniciativa continua sem aprovação ou implementação.
+O [inventário histórico](LEGACY_API_AUTHORIZATION_ROUTE_INVENTORY.md) preserva o diagnóstico de
+entrada. O estado runtime atual deve ser obtido pelo verificador de classificação e pelo inventário
+P1, sem reclassificar retroativamente a evidência histórica.
 
 ## ETP-015.6 — projeção de resposta
 
@@ -90,3 +91,11 @@ Quatro handlers deixaram `LEGACY_DEFERRED` e agora são `CAPABILITY_PROTECTED`: 
 `payroll.period.close.reopen`. O total atual é 4 public, 5 authenticated, 31 capability e 125
 deferred, totalizando 165. A URI é compatível/deprecated; a autoridade é sempre empresa/principal e
 serviço canônico. Não houve assignment automático.
+
+## Full Delivery P1
+
+Mais 33 handlers deixaram `LEGACY_DEFERRED`: Company (6), Employee (12), Employment Contract (7),
+Payroll Parameter (4) e Payroll Rubric (4). O total runtime passa a 4 public, 5 authenticated, 64
+capability-protected e 92 deferred, permanecendo 165 handlers e zero não classificados. As dez
+capabilities P1 são específicas por recurso e leitura/escrita; não existe fallback para
+`platform.manage`. Consulte o [aceite autoritativo](../full-delivery/P1_ACCEPTANCE.md).

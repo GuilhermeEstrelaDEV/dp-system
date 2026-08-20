@@ -5,6 +5,7 @@ export function CompaniesPage() {
     <ResourcePage<CompanyContract>
       title="Empresas"
       endpoint="/companies"
+      manageCapability="company.manage"
       fields={[
         ['legalName', 'Razão social'],
         ['tradeName', 'Nome fantasia'],

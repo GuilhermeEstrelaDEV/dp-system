@@ -1,5 +1,6 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
+import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 
 describe('CompaniesService', () => {
   const company = {
@@ -23,13 +24,35 @@ describe('CompaniesService', () => {
     costCenter: { count: jest.fn() },
     $transaction: jest.fn(),
   };
-  const service = new CompaniesService(prisma as never);
+  const principal = {
+    actorId: 'actor',
+    activeCompanyId: 'company-a',
+    sessionId: 'session',
+    traceId: 'trace',
+    ipAddress: '127.0.0.1',
+    userAgent: null,
+    permissions: ['company.manage'],
+    accessGrants: [],
+  } as AuthenticatedPrincipal;
+  const audit = {
+    append: jest.fn(),
+    transaction: jest.fn((work: (tx: typeof prisma) => unknown) => work(prisma)),
+  };
+  const authorization = { requireCapability: jest.fn() };
+  const service = new CompaniesService(prisma as never, audit as never, authorization as never);
   beforeEach(() => jest.clearAllMocks());
   it('creates a valid company', async () => {
     prisma.company.create.mockResolvedValue(company);
     await expect(
-      service.create({ legalName: 'Empresa Fictícia', tradeName: 'Demo', taxId: '00' }),
+      service.create({ legalName: 'Empresa Fictícia', tradeName: 'Demo', taxId: '00' }, principal),
     ).resolves.toEqual(company);
+  });
+  it('fails the business transaction when the required audit event cannot be appended', async () => {
+    prisma.company.create.mockResolvedValue(company);
+    audit.append.mockRejectedValueOnce(new Error('audit unavailable'));
+    await expect(
+      service.create({ legalName: 'Empresa FictÃ­cia', tradeName: 'Demo', taxId: '00' }, principal),
+    ).rejects.toThrow('audit unavailable');
   });
   it('returns 404 for an absent company', async () => {
     prisma.company.findUnique.mockResolvedValue(null);
@@ -38,7 +61,7 @@ describe('CompaniesService', () => {
   it('blocks inactivation with active dependencies', async () => {
     prisma.company.findUnique.mockResolvedValue(company);
     prisma.$transaction.mockResolvedValue([1, 0, 0, 0]);
-    await expect(service.setStatus(company.id, 'INACTIVE')).rejects.toBeInstanceOf(
+    await expect(service.setStatus(company.id, 'INACTIVE', principal)).rejects.toBeInstanceOf(
       ConflictException,
     );
   });

@@ -11,7 +11,7 @@ import {
 import { ListQueryDto } from '../organizational/common.dto';
 
 export class EmployeeListQueryDto extends ListQueryDto {
-  @IsOptional() @IsIn(['legalName', 'createdAt']) declare sortBy: string;
+  @IsOptional() @IsIn(['legalName', 'createdAt']) override sortBy = 'legalName';
   @IsOptional() @IsUUID() companyId?: string;
   @IsOptional() @IsUUID() branchId?: string;
   @IsOptional() @IsUUID() departmentId?: string;

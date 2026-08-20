@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
+import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { ContractForm, type ContractValues } from './ContractForm';
 
 type ContractDetails = EmploymentContractContract & {
@@ -15,12 +16,14 @@ function payload(values: ContractValues) {
   return Object.fromEntries(Object.entries(values).filter(([, value]) => value !== ''));
 }
 export function EmploymentContractsPage() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('contract.manage') ?? true;
   const { employeeId } = useParams();
   const [formOpen, setFormOpen] = useState(Boolean(employeeId));
   const [search, setSearch] = useState('');
   const client = useQueryClient();
   const list = useQuery({
-    queryKey: ['employment-contracts', employeeId, search],
+    queryKey: ['employment-contracts', auth?.activeCompanyId, employeeId, search],
     queryFn: () =>
       apiRequest<{ items: ContractDetails[] }>(
         `/employment-contracts?search=${encodeURIComponent(search)}${employeeId ? `&employeeId=${employeeId}` : ''}`,
@@ -51,12 +54,18 @@ export function EmploymentContractsPage() {
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Pesquisar por matrícula ou nome"
         />
-        <button type="button" onClick={() => setFormOpen((value) => !value)}>
-          Novo contrato
-        </button>
+        {canManage && (
+          <button type="button" onClick={() => setFormOpen((value) => !value)}>
+            Novo contrato
+          </button>
+        )}
       </div>
       {formOpen && (
-        <ContractForm employeeId={employeeId} onSubmit={(values) => create.mutate(values)} />
+        <ContractForm
+          employeeId={employeeId}
+          companyId={auth?.activeCompanyId ?? undefined}
+          onSubmit={(values) => create.mutate(values)}
+        />
       )}
       {create.isError && <p role="alert">{create.error.message}</p>}
       {list.isLoading ? (
@@ -95,10 +104,12 @@ export function EmploymentContractsPage() {
   );
 }
 export function EmploymentContractDetailsPage() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('contract.manage') ?? true;
   const { contractId = '' } = useParams();
   const client = useQueryClient();
   const contract = useQuery({
-    queryKey: ['employment-contract', contractId],
+    queryKey: ['employment-contract', auth?.activeCompanyId, contractId],
     queryFn: () => apiRequest<ContractDetails>(`/employment-contracts/${contractId}`),
   });
   const toggle = useMutation({
@@ -121,9 +132,11 @@ export function EmploymentContractDetailsPage() {
       />
       <p>Colaborador: {item.employee?.legalName ?? item.employeeId}</p>
       <p>Status: {item.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}</p>
-      <button type="button" onClick={() => toggle.mutate(item.status)}>
-        {item.status === 'ACTIVE' ? 'Inativar contrato' : 'Ativar contrato'}
-      </button>
+      {canManage && (
+        <button type="button" onClick={() => toggle.mutate(item.status)}>
+          {item.status === 'ACTIVE' ? 'Inativar contrato' : 'Ativar contrato'}
+        </button>
+      )}
       <section className="mt-6" aria-labelledby="contract-history-title">
         <h2 id="contract-history-title">Histórico contratual</h2>
         {item.history.length ? (

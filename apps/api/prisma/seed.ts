@@ -184,6 +184,80 @@ const permissions = [
     'MEDIUM',
     'RESTRICTED',
   ],
+  ['company.read', 'View company records', 'company', 'read', 'COMPANY', 'MEDIUM', 'SENSITIVE'],
+  [
+    'company.manage',
+    'Manage company records',
+    'company',
+    'manage',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  ['employee.read', 'View employee records', 'employee', 'read', 'COMPANY', 'MEDIUM', 'SENSITIVE'],
+  [
+    'employee.manage',
+    'Manage employee records',
+    'employee',
+    'manage',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'contract.read',
+    'View employment contracts',
+    'contract',
+    'read',
+    'COMPANY',
+    'MEDIUM',
+    'SENSITIVE',
+  ],
+  [
+    'contract.manage',
+    'Manage employment contracts',
+    'contract',
+    'manage',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.parameter.read',
+    'View payroll parameters',
+    'payroll.parameter',
+    'read',
+    'COMPANY',
+    'MEDIUM',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.parameter.manage',
+    'Manage payroll parameters',
+    'payroll.parameter',
+    'manage',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.rubric.read',
+    'View payroll rubrics',
+    'payroll.rubric',
+    'read',
+    'COMPANY',
+    'MEDIUM',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.rubric.manage',
+    'Manage payroll rubrics',
+    'payroll.rubric',
+    'manage',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
 ] as const;
 
 async function main() {
@@ -224,8 +298,8 @@ async function main() {
     ]),
   );
   if (existingPermissions.length > 0) {
-    if (existingPermissions.length !== permissions.length) {
-      throw new Error('Permission seed blocked: inventory differs from the 19 approved codes');
+    if (existingPermissions.length > permissions.length) {
+      throw new Error('Permission seed blocked: inventory differs from the 29 approved codes');
     }
     for (const existing of existingPermissions) {
       const approved = approvedPermissions.get(existing.code);

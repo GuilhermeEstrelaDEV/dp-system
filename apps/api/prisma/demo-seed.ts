@@ -266,6 +266,69 @@ async function seedPeople(
   return contracts;
 }
 
+async function seedPayrollConfiguration(companyId: string, companyKey: 'horizon' | 'atlas') {
+  const offset = companyKey === 'horizon' ? 0 : 100;
+  const category = await prisma.payrollRubricCategory.upsert({
+    where: { companyId_code: { companyId, code: 'DEMO-EARNING' } },
+    update: { name: 'Proventos demonstrativos', nature: 'EARNING', status: 'ACTIVE' },
+    create: {
+      id: demoId('f', offset + 1),
+      companyId,
+      code: 'DEMO-EARNING',
+      name: 'Proventos demonstrativos',
+      nature: 'EARNING',
+    },
+  });
+  for (let index = 0; index < 2; index += 1) {
+    const code = `DEMO-RUBRIC-${index + 1}`;
+    const rubric = await prisma.payrollRubric.upsert({
+      where: { companyId_code: { companyId, code } },
+      update: { name: `Rubrica demonstrativa ${index + 1}`, status: 'ACTIVE' },
+      create: {
+        id: demoId('f', offset + 10 + index),
+        companyId,
+        payrollRubricCategoryId: category.id,
+        code,
+        name: `Rubrica demonstrativa ${index + 1}`,
+      },
+    });
+    await prisma.payrollRubricVersion.upsert({
+      where: { payrollRubricId_version: { payrollRubricId: rubric.id, version: 'demo-v1' } },
+      update: { status: 'ACTIVE' },
+      create: {
+        id: demoId('f', offset + 20 + index),
+        payrollRubricId: rubric.id,
+        version: 'demo-v1',
+        validFrom,
+        incidenceConfiguration: { mode: 'DEMONSTRATIVE_ONLY' },
+        configuration: { calculation: 'NOT_HOMOLOGATED' },
+      },
+    });
+    await prisma.payrollParameter.upsert({
+      where: {
+        companyId_code_validFrom: {
+          companyId,
+          code: `DEMO-PARAM-${index + 1}`,
+          validFrom,
+        },
+      },
+      update: { name: `Parâmetro demonstrativo ${index + 1}`, status: 'ACTIVE' },
+      create: {
+        id: demoId('f', offset + 30 + index),
+        companyId,
+        code: `DEMO-PARAM-${index + 1}`,
+        name: `Parâmetro demonstrativo ${index + 1}`,
+        category: 'DEMONSTRATIVE',
+        version: 'demo-v1',
+        validFrom,
+        definition: { mode: 'DEMONSTRATIVE_ONLY' },
+        sourceReference: 'MVP local fictício',
+        status: 'ACTIVE',
+      },
+    });
+  }
+}
+
 async function seedAdmissions(
   companyId: string,
   contracts: Array<{ id: string; employeeId: string }>,
@@ -628,6 +691,8 @@ async function main() {
   const atlasOrganization = await seedOrganizations(atlas.id, 'atlas');
   const horizonContracts = await seedPeople(horizon.id, 'horizon', horizonOrganization);
   const atlasContracts = await seedPeople(atlas.id, 'atlas', atlasOrganization);
+  await seedPayrollConfiguration(horizon.id, 'horizon');
+  await seedPayrollConfiguration(atlas.id, 'atlas');
   await seedAdmissions(horizon.id, horizonContracts, 0);
   await seedAdmissions(atlas.id, atlasContracts, 100);
   await seedPayroll(horizon.id, 'horizon', users.get('ADMINISTRATOR')!, horizonContracts);

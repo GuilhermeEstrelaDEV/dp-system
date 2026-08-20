@@ -4,16 +4,19 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
+import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { EmployeeForm, type EmployeeValues } from './EmployeeForm';
 
 export function EmployeesPage() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('employee.manage') ?? true;
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
   const client = useQueryClient();
   const navigate = useNavigate();
   const list = useQuery({
-    queryKey: ['employees', search, status],
+    queryKey: ['employees', auth?.activeCompanyId, search, status],
     queryFn: () =>
       apiRequest<{ items: EmployeeContract[] }>(
         `/employees?search=${encodeURIComponent(search)}&status=${status}`,
@@ -24,7 +27,7 @@ export function EmployeesPage() {
       apiRequest<EmployeeContract>('/employees', { method: 'POST', body: JSON.stringify(values) }),
     onSuccess: (employee) => {
       void client.invalidateQueries({ queryKey: ['employees'] });
-      navigate(`/colaboradores/${employee.id}`);
+      navigate(`/colaboradores/${employee.id}/contratos`);
     },
   });
   const toggle = useMutation({
@@ -59,9 +62,11 @@ export function EmployeesPage() {
           <option value="ACTIVE">Ativos</option>
           <option value="INACTIVE">Inativos</option>
         </select>
-        <button type="button" onClick={() => setCreateOpen((value) => !value)}>
-          Novo colaborador
-        </button>
+        {canManage && (
+          <button type="button" onClick={() => setCreateOpen((value) => !value)}>
+            Novo colaborador
+          </button>
+        )}
       </div>
       {createOpen && (
         <EmployeeForm
@@ -96,9 +101,11 @@ export function EmployeesPage() {
                   </td>
                   <td>{employee.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}</td>
                   <td>
-                    <button type="button" onClick={() => toggle.mutate(employee)}>
-                      {employee.status === 'ACTIVE' ? 'Inativar' : 'Ativar'}
-                    </button>
+                    {canManage && (
+                      <button type="button" onClick={() => toggle.mutate(employee)}>
+                        {employee.status === 'ACTIVE' ? 'Inativar' : 'Ativar'}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

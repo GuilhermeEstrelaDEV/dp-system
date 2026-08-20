@@ -3,6 +3,7 @@ export type AuditEventCategory =
   | 'AUTHORIZATION'
   | 'AUTHORIZATION_ASSIGNMENT'
   | 'ACCESS_GRANT'
+  | 'CORE_DOMAIN'
   | 'PAYROLL_REVIEW'
   | 'PAYROLL_PERIOD';
 
@@ -130,6 +131,76 @@ export const AUDIT_EVENT_CATALOG = Object.freeze({
     'REQUIRED',
     'REQUIRED',
     ['emergency_access.manage'],
+  ),
+  COMPANY_CREATED: descriptor('COMPANY_CREATED', 'CORE_DOMAIN', 'REQUIRED', 'REQUIRED', [
+    'company.manage',
+  ]),
+  COMPANY_UPDATED: descriptor('COMPANY_UPDATED', 'CORE_DOMAIN', 'REQUIRED', 'REQUIRED', [
+    'company.manage',
+  ]),
+  COMPANY_ACTIVATED: descriptor('COMPANY_ACTIVATED', 'CORE_DOMAIN', 'REQUIRED', 'REQUIRED', [
+    'company.manage',
+  ]),
+  COMPANY_INACTIVATED: descriptor('COMPANY_INACTIVATED', 'CORE_DOMAIN', 'REQUIRED', 'REQUIRED', [
+    'company.manage',
+  ]),
+  EMPLOYEE_CREATED: descriptor('EMPLOYEE_CREATED', 'CORE_DOMAIN', 'REQUIRED', 'REQUIRED', [
+    'employee.manage',
+  ]),
+  EMPLOYEE_UPDATED: descriptor('EMPLOYEE_UPDATED', 'CORE_DOMAIN', 'REQUIRED', 'REQUIRED', [
+    'employee.manage',
+  ]),
+  EMPLOYEE_STATUS_CHANGED: descriptor(
+    'EMPLOYEE_STATUS_CHANGED',
+    'CORE_DOMAIN',
+    'REQUIRED',
+    'REQUIRED',
+    ['employee.manage'],
+  ),
+  CONTRACT_CREATED: descriptor('CONTRACT_CREATED', 'CORE_DOMAIN', 'REQUIRED', 'REQUIRED', [
+    'contract.manage',
+  ]),
+  CONTRACT_UPDATED: descriptor('CONTRACT_UPDATED', 'CORE_DOMAIN', 'REQUIRED', 'REQUIRED', [
+    'contract.manage',
+  ]),
+  CONTRACT_STATUS_CHANGED: descriptor(
+    'CONTRACT_STATUS_CHANGED',
+    'CORE_DOMAIN',
+    'REQUIRED',
+    'REQUIRED',
+    ['contract.manage'],
+  ),
+  PAYROLL_PARAMETER_CREATED: descriptor(
+    'PAYROLL_PARAMETER_CREATED',
+    'CORE_DOMAIN',
+    'REQUIRED',
+    'REQUIRED',
+    ['payroll.parameter.manage'],
+    ['code'],
+  ),
+  PAYROLL_PARAMETER_UPDATED: descriptor(
+    'PAYROLL_PARAMETER_UPDATED',
+    'CORE_DOMAIN',
+    'REQUIRED',
+    'REQUIRED',
+    ['payroll.parameter.manage'],
+    ['code'],
+  ),
+  PAYROLL_RUBRIC_CREATED: descriptor(
+    'PAYROLL_RUBRIC_CREATED',
+    'CORE_DOMAIN',
+    'REQUIRED',
+    'REQUIRED',
+    ['payroll.rubric.manage'],
+    ['code'],
+  ),
+  PAYROLL_RUBRIC_UPDATED: descriptor(
+    'PAYROLL_RUBRIC_UPDATED',
+    'CORE_DOMAIN',
+    'REQUIRED',
+    'REQUIRED',
+    ['payroll.rubric.manage'],
+    ['code'],
   ),
   PAYROLL_REVIEW_CYCLE_OPENED: descriptor(
     'PAYROLL_REVIEW_CYCLE_OPENED',

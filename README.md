@@ -4,7 +4,13 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Estado atual: **MVP-001 implementada localmente e pronta para validação gerencial**.
+Estado atual: **MVP essencial preservado e Full Delivery P1 implementada para validação**.
+
+A nova meta de entrega funcional é executada em ondas. A
+[onda P1](docs/full-delivery/P1_ACCEPTANCE.md) conclui Company, Employee, Contract, Payroll
+Parameters e Payroll Rubrics, totalizando 33 handlers protegidos. O
+[plano completo](docs/full-delivery/FULL_DELIVERY_PLAN.md) mantém P2, P3 e P0-RESIDUAL fora deste
+incremento.
 
 ## Topologia planejada
 
@@ -61,6 +67,7 @@ pnpm demo:verify
 pnpm demo:ready
 pnpm demo:rehearse
 pnpm demo:smoke:essential
+pnpm demo:smoke:p1
 pnpm demo:access:revoke
 pnpm demo:stop
 pnpm demo:reset -- --confirm-reset

@@ -20,16 +20,18 @@ const contractSchema = z.object({
 export type ContractValues = z.infer<typeof contractSchema>;
 export function ContractForm({
   employeeId,
+  companyId,
   onSubmit,
 }: {
   employeeId?: string;
+  companyId?: string;
   onSubmit: (values: ContractValues) => void;
 }) {
   const form = useForm<ContractValues>({
     resolver: zodResolver(contractSchema) as Resolver<ContractValues>,
     defaultValues: {
       employeeId: employeeId ?? '',
-      companyId: '',
+      companyId: companyId ?? '',
       branchId: '',
       departmentId: '',
       positionId: '',
@@ -70,6 +72,7 @@ export function ContractForm({
             type={type}
             className="mt-1 block w-full rounded border p-2"
             {...form.register(key)}
+            readOnly={key === 'companyId'}
           />
           {form.formState.errors[key] && (
             <span role="alert">{form.formState.errors[key]?.message}</span>

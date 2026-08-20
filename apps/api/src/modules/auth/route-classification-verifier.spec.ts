@@ -17,10 +17,10 @@ describe('RouteClassificationVerifierService', () => {
       ).toHaveLength(5);
       expect(
         inventory.filter(({ classification }) => classification === 'CAPABILITY_PROTECTED'),
-      ).toHaveLength(31);
+      ).toHaveLength(64);
       expect(
         inventory.filter(({ classification }) => classification === 'LEGACY_DEFERRED'),
-      ).toHaveLength(125);
+      ).toHaveLength(92);
       expect(
         inventory.filter(({ classification }) => classification === 'BLOCKED_UNCLASSIFIED'),
       ).toHaveLength(0);

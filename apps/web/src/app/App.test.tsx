@@ -45,8 +45,21 @@ describe('application shell', () => {
     expect(screen.getByText('Desligamentos').closest('[aria-disabled="true"]')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Desligamentos' })).not.toBeInTheDocument();
     expect(screen.getAllByText('Em breve')).toHaveLength(3);
-    expect(screen.getAllByText('Fora do MVP')).toHaveLength(7);
+    expect(screen.getAllByText('Fora do MVP')).toHaveLength(4);
     expect(screen.queryByRole('link', { name: /Colaboradores/ })).not.toBeInTheDocument();
+  });
+
+  it('exposes P1 navigation only when its explicit capabilities are present', () => {
+    renderWithRouter('/', true, [
+      'company.read',
+      'employee.read',
+      'contract.read',
+      'payroll.parameter.read',
+      'payroll.rubric.read',
+    ]);
+    expect(screen.getByRole('link', { name: /Estrutura/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Colaboradores/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Contratos/ })).toBeInTheDocument();
   });
 
   it('shows company context and the user menu', () => {
