@@ -376,6 +376,7 @@ async function seedPayroll(
       name: 'Calendário Demonstrativo',
     },
   });
+  const periods = [];
   const runs = [];
   for (let index = 0; index < periodCount; index += 1) {
     const reference = new Date(Date.UTC(2026, 6 - index, 1));
@@ -397,6 +398,7 @@ async function seedPayroll(
         closedAt: status === 'CLOSED' ? new Date(Date.UTC(2026, 6 - index, 5, 12)) : null,
       },
     });
+    periods.push(period);
     runs.push(
       await prisma.payrollRun.upsert({
         where: { payrollPeriodId_sequence: { payrollPeriodId: period.id, sequence: 1 } },
@@ -414,6 +416,29 @@ async function seedPayroll(
       }),
     );
   }
+  const demoRubric = await prisma.payrollRubric.findFirstOrThrow({
+    where: { companyId, code: 'DEMO-RUBRIC-1' },
+  });
+  await prisma.payrollInput.upsert({
+    where: {
+      payrollPeriodId_sourceKey: {
+        payrollPeriodId: periods[0]!.id,
+        sourceKey: `DEMO-${companyKey.toUpperCase()}-INPUT`,
+      },
+    },
+    update: { status: 'PENDING', amount: '125.50', quantity: '1.0000' },
+    create: {
+      id: demoId('e', offset + 1),
+      payrollPeriodId: periods[0]!.id,
+      employmentContractId: contracts[0]!.id,
+      payrollRubricId: demoRubric.id,
+      amount: '125.50',
+      quantity: '1.0000',
+      source: 'DEMO',
+      sourceKey: `DEMO-${companyKey.toUpperCase()}-INPUT`,
+      status: 'PENDING',
+    },
+  });
   const cycles = [];
   for (const [index, cycleStatus] of cycleStatuses.entries()) {
     const sequence = offset + index + 1;

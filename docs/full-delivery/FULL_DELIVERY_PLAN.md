@@ -19,8 +19,8 @@ minimum projection, audit where required, frontend consumption and tests are ava
 | ----------- | ---------------------------------------------------------------- | -------: | -------------- |
 | P1          | Company, Employee, Contract, Payroll Parameters, Payroll Rubrics |       33 | Implemented    |
 | P2          | Organization, Admission, Leave, Variable Compensation            |       56 | Implemented    |
-| P3          | Time, Benefit, Vacation                                          |       21 | Ready to merge |
-| P0-RESIDUAL | legacy Payroll Period, Payroll Input and Payroll Run             |       15 | Not started    |
+| P3          | Time, Benefit, Vacation                                          |       21 | Implemented    |
+| P0-RESIDUAL | legacy Payroll Period, Payroll Input and Payroll Run             |       15 | Ready to merge |
 
 P1 uses independent `Company` entities. It does not create an economic-group model, sibling-company
 authority or a legal resolution for BDP-012.
@@ -72,8 +72,20 @@ command grants the 30 approved demo capabilities only to the fictitious administ
 `MANUAL` provenance and an eight-hour maximum. The functional frontend reuses the shared PR #94
 table standard. Detailed evidence is in [P3_ACCEPTANCE.md](P3_ACCEPTANCE.md).
 
+## P0-RESIDUAL outcome
+
+P0-RESIDUAL migrates the final fifteen handlers: Payroll Period 6, Payroll Input 4 and Payroll Run 5. The six period handlers remain protected compatibility or distinct lifecycle operations and do
+not duplicate canonical readiness, close, reopen or history. Input and run reuse the existing
+domain and calculation service without adding formulas or legal policy.
+
+The final runtime classification is 165 total, 4 public, 5 authenticated-only, 156
+capability-protected, zero `LEGACY_DEFERRED` and zero unclassified. Five capabilities and seven
+transaction-required audit events were indispensable. No migration is required and the canonical
+seed still creates zero assignments. Detailed evidence is in
+[P0_RESIDUAL_ACCEPTANCE.md](P0_RESIDUAL_ACCEPTANCE.md).
+
 ## Exit and continuation
 
-P3 acceptance does not declare the system complete. P0-RESIDUAL retains fifteen legacy payroll
-handlers and requires a separate branch, inventory, capability, projection, audit decision, tests
-and human review. No later wave is initiated by this delivery.
+Full Functional Delivery means the existing functions are available and secured in the local
+demonstration environment. It does not mean production-ready, cloud-ready, legal compliance
+complete, Gate D approved or ETP-015.10 complete. Those boundaries remain explicit.

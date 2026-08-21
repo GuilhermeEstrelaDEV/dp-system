@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type FormEvent, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
 import { payrollPeriodsApi, type CreatePayrollPeriod } from './payroll-periods';
@@ -17,7 +18,13 @@ import { PayrollPeriodHistoryPanel } from '@/features/payroll-period-history/Pay
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 
 const payrollPages = [
-  ['competencias', 'Competências', '/folha/competencias', '/payroll-periods', 'platform.manage'],
+  [
+    'competencias',
+    'Competências',
+    '/folha/competencias',
+    '/payroll-periods',
+    'payroll.period.close.view',
+  ],
   ['rubricas', 'Rubricas', '/folha/rubricas', '/payroll-rubrics', 'payroll.rubric.read'],
   [
     'parametros',
@@ -26,8 +33,8 @@ const payrollPages = [
     '/payroll-parameters',
     'payroll.parameter.read',
   ],
-  ['lancamentos', 'Lançamentos', '/folha/lancamentos', '/payroll-inputs', 'platform.manage'],
-  ['execucoes', 'Execuções', '/folha/execucoes', '/payroll-runs', 'platform.manage'],
+  ['lancamentos', 'Lançamentos', '/folha/lancamentos', '/payroll-inputs', 'payroll.input.read'],
+  ['execucoes', 'Execuções', '/folha/execucoes', '/payroll-runs', 'payroll.run.read'],
   ['conferencia', 'Conferência', '/folha/conferencia', '/payroll-reviews', 'payroll.review.view'],
   [
     'fechamentos',
@@ -784,6 +791,8 @@ function PayrollClosuresPanel() {
 }
 
 function PayrollRunsPanel() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('payroll.run.manage') ?? true;
   const client = useQueryClient();
   const [payrollPeriodId, setPayrollPeriodId] = useState('');
   const [page, setPage] = useState(1);
@@ -827,53 +836,59 @@ function PayrollRunsPanel() {
         Cada execução é estrutural e demonstrativa: não calcula impostos, incidências ou qualquer
         regra trabalhista homologada.
       </p>
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          create.mutate({
-            payrollPeriodId: form.payrollPeriodId,
-            engineVersion: form.engineVersion,
-            ...(form.parameterSnapshotVersion?.trim()
-              ? { parameterSnapshotVersion: form.parameterSnapshotVersion.trim() }
-              : {}),
-            ...(form.technicalNotes?.trim() ? { technicalNotes: form.technicalNotes.trim() } : {}),
-          });
-        }}
-        className="grid gap-2"
-      >
-        <label>
-          Competência
-          <input
-            value={form.payrollPeriodId}
-            onChange={(event) => setForm({ ...form, payrollPeriodId: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Versão do motor
-          <input
-            value={form.engineVersion}
-            onChange={(event) => setForm({ ...form, engineVersion: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Versão do snapshot de parâmetros (opcional)
-          <input
-            value={form.parameterSnapshotVersion}
-            onChange={(event) => setForm({ ...form, parameterSnapshotVersion: event.target.value })}
-          />
-        </label>
-        <label>
-          Observações técnicas (opcional)
-          <textarea
-            value={form.technicalNotes}
-            onChange={(event) => setForm({ ...form, technicalNotes: event.target.value })}
-          />
-        </label>
-        <button disabled={create.isPending}>Iniciar execução técnica</button>
-        {create.isError ? <p role="alert">{create.error.message}</p> : null}
-      </form>
+      {canManage ? (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            create.mutate({
+              payrollPeriodId: form.payrollPeriodId,
+              engineVersion: form.engineVersion,
+              ...(form.parameterSnapshotVersion?.trim()
+                ? { parameterSnapshotVersion: form.parameterSnapshotVersion.trim() }
+                : {}),
+              ...(form.technicalNotes?.trim()
+                ? { technicalNotes: form.technicalNotes.trim() }
+                : {}),
+            });
+          }}
+          className="grid gap-2"
+        >
+          <label>
+            Competência
+            <input
+              value={form.payrollPeriodId}
+              onChange={(event) => setForm({ ...form, payrollPeriodId: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Versão do motor
+            <input
+              value={form.engineVersion}
+              onChange={(event) => setForm({ ...form, engineVersion: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Versão do snapshot de parâmetros (opcional)
+            <input
+              value={form.parameterSnapshotVersion}
+              onChange={(event) =>
+                setForm({ ...form, parameterSnapshotVersion: event.target.value })
+              }
+            />
+          </label>
+          <label>
+            Observações técnicas (opcional)
+            <textarea
+              value={form.technicalNotes}
+              onChange={(event) => setForm({ ...form, technicalNotes: event.target.value })}
+            />
+          </label>
+          <button disabled={create.isPending}>Iniciar execução técnica</button>
+          {create.isError ? <p role="alert">{create.error.message}</p> : null}
+        </form>
+      ) : null}
       <label className="mt-4 block">
         Filtrar por competência
         <input
@@ -889,35 +904,57 @@ function PayrollRunsPanel() {
       {payrollPeriodId && runs.data?.items.length === 0 ? (
         <p>Nenhuma execução demonstrativa encontrada.</p>
       ) : null}
-      <ul aria-label="Lista de execuções">
-        {runs.data?.items.map((item) => (
-          <li key={item.id}>
-            <strong>Execução {item.sequence}</strong> ({item.status})
-            <p>
-              Motor {item.engineVersion} · parâmetros {item.parameterVersion ?? 'não informado'}
-            </p>
-            {item.employees?.length ? (
-              <ul aria-label={`Resultados da execução ${item.sequence}`}>
-                {item.employees.map((employee) => (
-                  <li key={employee.id}>
-                    Contrato {employee.employmentContractId}: bruto {employee.grossAmount} · líquido{' '}
-                    {employee.netAmount} ({employee.status})
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>Nenhum contrato calculado nesta execução.</p>
-            )}
-            <ul aria-label={`Mensagens da execução ${item.sequence}`}>
-              {item.messages.map((message) => (
-                <li key={message.id}>
-                  {message.severity}: {message.code} — {message.message}
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
+      {runs.data?.items.length ? (
+        <DataTable label="Tabela de execuções de folha">
+          <thead>
+            <tr>
+              <th>Execução</th>
+              <th>Status</th>
+              <th>Motor</th>
+              <th>Resultados</th>
+              <th>Mensagens</th>
+            </tr>
+          </thead>
+          <tbody>
+            {runs.data.items.map((item) => (
+              <tr key={item.id}>
+                <td>#{item.sequence}</td>
+                <td>
+                  <DataTableStatus
+                    active={item.status === 'COMPLETED'}
+                    activeLabel="Concluída"
+                    inactiveLabel={item.status}
+                  />
+                </td>
+                <td>
+                  {item.engineVersion}
+                  <br />
+                  <small>Parâmetros: {item.parameterVersion ?? 'não informado'}</small>
+                </td>
+                <td>
+                  {item.employees?.length
+                    ? item.employees.map((employee) => (
+                        <span className="block" key={employee.id}>
+                          Contrato {employee.employmentContractId}: bruto {employee.grossAmount} ·
+                          líquido {employee.netAmount}
+                        </span>
+                      ))
+                    : 'Nenhum contrato calculado.'}
+                </td>
+                <td>
+                  {item.messages.length
+                    ? item.messages.map((message) => (
+                        <span className="block" key={message.id}>
+                          {message.severity}: {message.code} — {message.message}
+                        </span>
+                      ))
+                    : 'Sem mensagens.'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </DataTable>
+      ) : null}
       {runs.data?.pagination.totalPages && runs.data.pagination.totalPages > 1 ? (
         <nav aria-label="Paginação de execuções">
           <button onClick={() => setPage(page - 1)} disabled={page === 1}>
@@ -941,6 +978,8 @@ function PayrollRunsPanel() {
 const decimalPattern = /^-?\d+(\.\d{1,4})?$/;
 
 function PayrollInputsPanel() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('payroll.input.manage') ?? true;
   const client = useQueryClient();
   const [payrollPeriodId, setPayrollPeriodId] = useState('');
   const [page, setPage] = useState(1);
@@ -1022,81 +1061,83 @@ function PayrollInputsPanel() {
         Valores são textos decimais demonstrativos. Não há cálculo legal, valores reais ou folha
         homologada nesta tela.
       </p>
-      <form onSubmit={submit} className="grid gap-2">
-        <label>
-          Competência
-          <input
-            value={form.payrollPeriodId}
-            onChange={(event) => setForm({ ...form, payrollPeriodId: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Colaborador
-          <input
-            value={form.employeeId}
-            onChange={(event) => setForm({ ...form, employeeId: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Contrato
-          <input
-            value={form.employmentContractId}
-            onChange={(event) => setForm({ ...form, employmentContractId: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Rubrica
-          <input
-            value={form.payrollRubricId}
-            onChange={(event) => setForm({ ...form, payrollRubricId: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Valor decimal demonstrativo
-          <input
-            inputMode="decimal"
-            value={form.amount}
-            onChange={(event) => setForm({ ...form, amount: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Quantidade decimal (opcional)
-          <input
-            inputMode="decimal"
-            value={form.quantity}
-            onChange={(event) => setForm({ ...form, quantity: event.target.value })}
-          />
-        </label>
-        <label>
-          Chave de origem (opcional e idempotente)
-          <input
-            value={form.sourceKey}
-            onChange={(event) => setForm({ ...form, sourceKey: event.target.value })}
-          />
-        </label>
-        <label>
-          Tipo de origem
-          <input
-            value={form.sourceType}
-            onChange={(event) => setForm({ ...form, sourceType: event.target.value })}
-          />
-        </label>
-        <label>
-          Observações técnicas (opcional)
-          <textarea
-            value={form.technicalNotes}
-            onChange={(event) => setForm({ ...form, technicalNotes: event.target.value })}
-          />
-        </label>
-        <button disabled={create.isPending}>Criar lançamento</button>
-        {formError ? <p role="alert">{formError}</p> : null}
-        {create.isError ? <p role="alert">{create.error.message}</p> : null}
-      </form>
+      {canManage ? (
+        <form onSubmit={submit} className="grid gap-2">
+          <label>
+            Competência
+            <input
+              value={form.payrollPeriodId}
+              onChange={(event) => setForm({ ...form, payrollPeriodId: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Colaborador
+            <input
+              value={form.employeeId}
+              onChange={(event) => setForm({ ...form, employeeId: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Contrato
+            <input
+              value={form.employmentContractId}
+              onChange={(event) => setForm({ ...form, employmentContractId: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Rubrica
+            <input
+              value={form.payrollRubricId}
+              onChange={(event) => setForm({ ...form, payrollRubricId: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Valor decimal demonstrativo
+            <input
+              inputMode="decimal"
+              value={form.amount}
+              onChange={(event) => setForm({ ...form, amount: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Quantidade decimal (opcional)
+            <input
+              inputMode="decimal"
+              value={form.quantity}
+              onChange={(event) => setForm({ ...form, quantity: event.target.value })}
+            />
+          </label>
+          <label>
+            Chave de origem (opcional e idempotente)
+            <input
+              value={form.sourceKey}
+              onChange={(event) => setForm({ ...form, sourceKey: event.target.value })}
+            />
+          </label>
+          <label>
+            Tipo de origem
+            <input
+              value={form.sourceType}
+              onChange={(event) => setForm({ ...form, sourceType: event.target.value })}
+            />
+          </label>
+          <label>
+            Observações técnicas (opcional)
+            <textarea
+              value={form.technicalNotes}
+              onChange={(event) => setForm({ ...form, technicalNotes: event.target.value })}
+            />
+          </label>
+          <button disabled={create.isPending}>Criar lançamento</button>
+          {formError ? <p role="alert">{formError}</p> : null}
+          {create.isError ? <p role="alert">{create.error.message}</p> : null}
+        </form>
+      ) : null}
       <label className="mt-4 block">
         Filtrar por competência
         <input
@@ -1112,23 +1153,55 @@ function PayrollInputsPanel() {
       {payrollPeriodId && inputs.data?.items.length === 0 ? (
         <p>Nenhum lançamento demonstrativo encontrado.</p>
       ) : null}
-      <ul aria-label="Lista de lançamentos">
-        {inputs.data?.items.map((item) => (
-          <li key={item.id}>
-            <strong>{item.payrollRubric.code}</strong> — {item.payrollRubric.name} · {item.amount} (
-            {item.status})
-            <p>
-              Competência {item.payrollPeriod.referenceDate} ({item.payrollPeriod.status}) · chave{' '}
-              {item.sourceKey ?? 'manual'}
-            </p>
-            {item.status !== 'INACTIVE' ? (
-              <button onClick={() => inactivate.mutate(item.id)} disabled={inactivate.isPending}>
-                Inativar lançamento
-              </button>
-            ) : null}
-          </li>
-        ))}
-      </ul>
+      {inputs.data?.items.length ? (
+        <DataTable label="Tabela de lançamentos de folha">
+          <thead>
+            <tr>
+              <th>Rubrica</th>
+              <th>Competência</th>
+              <th>Valor</th>
+              <th>Origem</th>
+              <th>Status</th>
+              {canManage ? <th>Ações</th> : null}
+            </tr>
+          </thead>
+          <tbody>
+            {inputs.data.items.map((item) => (
+              <tr key={item.id}>
+                <td>
+                  <strong>{item.payrollRubric.code}</strong>
+                  <br />
+                  {item.payrollRubric.name}
+                </td>
+                <td>{item.payrollPeriod.referenceDate}</td>
+                <td>{item.amount}</td>
+                <td>{item.sourceKey ?? item.source}</td>
+                <td>
+                  <DataTableStatus
+                    active={item.status !== 'INACTIVE'}
+                    activeLabel="Pendente"
+                    inactiveLabel="Inativo"
+                  />
+                </td>
+                {canManage ? (
+                  <td>
+                    <DataTableActions>
+                      {item.status !== 'INACTIVE' ? (
+                        <button
+                          onClick={() => inactivate.mutate(item.id)}
+                          disabled={inactivate.isPending}
+                        >
+                          Inativar
+                        </button>
+                      ) : null}
+                    </DataTableActions>
+                  </td>
+                ) : null}
+              </tr>
+            ))}
+          </tbody>
+        </DataTable>
+      ) : null}
       {inactivate.isError ? <p role="alert">{inactivate.error.message}</p> : null}
       {inputs.data?.pagination.totalPages && inputs.data.pagination.totalPages > 1 ? (
         <nav aria-label="Paginação de lançamentos">
@@ -1151,16 +1224,22 @@ function PayrollInputsPanel() {
 }
 
 function PayrollPeriodsPanel() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('payroll.period.manage') ?? true;
+  const canViewHistory = auth?.hasCapability('payroll.period.close.history') ?? true;
   const client = useQueryClient();
-  const [companyId, setCompanyId] = useState('');
+  const [companyId, setCompanyId] = useState(auth?.activeCompanyId ?? '');
   const [form, setForm] = useState<CreatePayrollPeriod>({
-    companyId: '',
+    companyId: auth?.activeCompanyId ?? '',
     payrollCalendarId: '',
     referenceDate: '',
     type: 'REGULAR',
   });
-  const [reopenId, setReopenId] = useState<string>();
-  const [reason, setReason] = useState('');
+  useEffect(() => {
+    const activeCompanyId = auth?.activeCompanyId ?? '';
+    setCompanyId(activeCompanyId);
+    setForm((current) => ({ ...current, companyId: activeCompanyId }));
+  }, [auth?.activeCompanyId]);
   const periods = useQuery({
     queryKey: ['payroll-periods', companyId],
     enabled: Boolean(companyId),
@@ -1171,115 +1250,122 @@ function PayrollPeriodsPanel() {
   const create = useMutation({
     mutationFn: payrollPeriodsApi.create,
     onSuccess: () => {
-      setForm({ companyId: '', payrollCalendarId: '', referenceDate: '', type: 'REGULAR' });
+      setForm({
+        companyId: auth?.activeCompanyId ?? '',
+        payrollCalendarId: '',
+        referenceDate: '',
+        type: 'REGULAR',
+      });
       refresh();
     },
   });
   const validate = useMutation({ mutationFn: payrollPeriodsApi.validate });
-  const close = useMutation({ mutationFn: payrollPeriodsApi.close, onSuccess: refresh });
-  const reopen = useMutation({
-    mutationFn: ({ id, value }: { id: string; value: string }) =>
-      payrollPeriodsApi.reopen(id, value),
-    onSuccess: () => {
-      setReopenId(undefined);
-      setReason('');
-      refresh();
-    },
-  });
   return (
     <section className="mt-6" aria-labelledby="payroll-section-title">
       <h2 id="payroll-section-title">Competências</h2>
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          create.mutate(form);
-        }}
-        className="grid gap-2"
-      >
-        <label>
-          Empresa
-          <input
-            value={form.companyId}
-            onChange={(e) => setForm({ ...form, companyId: e.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Calendário
-          <input
-            value={form.payrollCalendarId}
-            onChange={(e) => setForm({ ...form, payrollCalendarId: e.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Referência
-          <input
-            type="date"
-            value={form.referenceDate}
-            onChange={(e) => setForm({ ...form, referenceDate: e.target.value })}
-            required
-          />
-        </label>
-        <button disabled={create.isPending}>Criar competência</button>
-        {create.isError ? <p role="alert">{create.error.message}</p> : null}
-      </form>
+      {canManage ? (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            create.mutate(form);
+          }}
+          className="grid gap-2"
+        >
+          <label>
+            Empresa
+            <input
+              value={form.companyId}
+              onChange={
+                auth ? undefined : (event) => setForm({ ...form, companyId: event.target.value })
+              }
+              readOnly={Boolean(auth)}
+              required
+            />
+          </label>
+          <label>
+            Calendário
+            <input
+              value={form.payrollCalendarId}
+              onChange={(event) => setForm({ ...form, payrollCalendarId: event.target.value })}
+              required
+            />
+          </label>
+          <label>
+            Referência
+            <input
+              type="date"
+              value={form.referenceDate}
+              onChange={(event) => setForm({ ...form, referenceDate: event.target.value })}
+              required
+            />
+          </label>
+          <button disabled={create.isPending}>Criar competência</button>
+          {create.isError ? <p role="alert">{create.error.message}</p> : null}
+        </form>
+      ) : null}
       <label className="mt-4 block">
         Filtrar por empresa
-        <input value={companyId} onChange={(e) => setCompanyId(e.target.value)} />
+        <input
+          value={companyId}
+          onChange={auth ? undefined : (event) => setCompanyId(event.target.value)}
+          readOnly={Boolean(auth)}
+        />
       </label>
       {periods.isLoading ? <p role="status">Carregando competências…</p> : null}
       {periods.isError ? <p role="alert">{periods.error.message}</p> : null}
       {companyId && periods.data?.items.length === 0 ? (
         <p>Nenhuma competência demonstrativa encontrada.</p>
       ) : null}
-      <ul aria-label="Lista de competências">
-        {periods.data?.items.map((item) => (
-          <li key={item.id}>
-            <strong>{item.referenceDate}</strong> ({item.status}){' '}
-            <Link to={`/folha/competencias/${item.id}/historico`}>Histórico de Fechamentos</Link>{' '}
-            {item.status === 'CLOSED' ? (
-              <span>— imutável</span>
-            ) : (
-              <>
-                <button onClick={() => validate.mutate(item.id)} disabled={validate.isPending}>
-                  Validar
-                </button>
-                <button onClick={() => close.mutate(item.id)} disabled={close.isPending}>
-                  Fechar
-                </button>
-              </>
-            )}
-            {item.status === 'CLOSED' ? (
-              <button onClick={() => setReopenId(item.id)}>Reabrir</button>
-            ) : null}
-          </li>
-        ))}
-      </ul>
+      {periods.data?.items.length ? (
+        <DataTable label="Tabela de competências da folha">
+          <thead>
+            <tr>
+              <th>Referência</th>
+              <th>Tipo</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {periods.data.items.map((item) => (
+              <tr key={item.id}>
+                <td>{item.referenceDate}</td>
+                <td>{item.type}</td>
+                <td>
+                  <DataTableStatus
+                    active={item.status === 'OPEN'}
+                    activeLabel="Aberta"
+                    inactiveLabel={item.status === 'CLOSED' ? 'Fechada' : item.status}
+                  />
+                </td>
+                <td>
+                  <DataTableActions>
+                    {item.status !== 'CLOSED' ? (
+                      <button
+                        onClick={() => validate.mutate(item.id)}
+                        disabled={validate.isPending}
+                      >
+                        Validar
+                      </button>
+                    ) : null}
+                    {canViewHistory ? (
+                      <Link to={`/folha/competencias/${item.id}/historico`}>
+                        Fechamento e histórico
+                      </Link>
+                    ) : null}
+                  </DataTableActions>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </DataTable>
+      ) : null}
       {validate.data ? (
         <p role="status">
           {validate.data.valid
             ? 'Competência válida.'
             : `${validate.data.blockingErrors} erro(s) bloqueante(s).`}
         </p>
-      ) : null}
-      {reopenId ? (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (reason.trim()) reopen.mutate({ id: reopenId, value: reason.trim() });
-          }}
-        >
-          <label>
-            Justificativa para reabertura
-            <input value={reason} onChange={(e) => setReason(e.target.value)} required />
-          </label>
-          <button disabled={!reason.trim() || reopen.isPending}>Confirmar reabertura</button>
-          <button type="button" onClick={() => setReopenId(undefined)}>
-            Cancelar
-          </button>
-          {reopen.isError ? <p role="alert">{reopen.error.message}</p> : null}
-        </form>
       ) : null}
     </section>
   );

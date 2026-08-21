@@ -53,6 +53,9 @@ import {
 } from './payroll-periods.dto';
 import { PayrollPeriodsService } from './payroll-periods.service';
 @ApiTags('payroll-periods')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse()
+@ApiForbiddenResponse()
 @Controller('payroll-periods')
 export class PayrollPeriodsController {
   constructor(
@@ -62,11 +65,16 @@ export class PayrollPeriodsController {
     private readonly controlledReopeningService: PayrollPeriodControlledReopeningService,
     private readonly historyService: PayrollPeriodHistoryService,
   ) {}
-  @Get() list(@Query() q: PayrollPeriodQueryDto) {
-    return this.service.list(q);
+  @RequireCapabilities('payroll.period.close.view')
+  @Get()
+  list(@Query() q: PayrollPeriodQueryDto, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.list(q, principal);
   }
-  @Get(':id') find(@Param('id') id: string) {
-    return this.service.find(id);
+  @RequireCapabilities('payroll.period.close.view')
+  @ApiNotFoundResponse({ description: 'Period missing or outside the active company.' })
+  @Get(':id')
+  find(@Param('id') id: string, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.find(id, principal);
   }
   @Get(':payrollPeriodId/closure-readiness')
   @ApiBearerAuth()
@@ -146,17 +154,35 @@ export class PayrollPeriodsController {
   ) {
     return this.historyService.find(payrollPeriodId, closureVersion, principal);
   }
-  @Post() create(@Body() dto: CreatePayrollPeriodDto) {
-    return this.service.create(dto);
+  @RequireCapabilities('payroll.period.manage')
+  @Post()
+  create(
+    @Body() dto: CreatePayrollPeriodDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.create(dto, principal);
   }
-  @Patch(':id') update(@Param('id') id: string, @Body() dto: UpdatePayrollPeriodDto) {
-    return this.service.update(id, dto);
+  @RequireCapabilities('payroll.period.manage')
+  @ApiNotFoundResponse({ description: 'Period missing or outside the active company.' })
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdatePayrollPeriodDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.update(id, dto, principal);
   }
-  @Post(':id/open') open(@Param('id') id: string) {
-    return this.service.open(id);
+  @RequireCapabilities('payroll.period.manage')
+  @ApiNotFoundResponse({ description: 'Period missing or outside the active company.' })
+  @Post(':id/open')
+  open(@Param('id') id: string, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.open(id, principal);
   }
-  @Post(':id/validate') validate(@Param('id') id: string) {
-    return this.service.validate(id);
+  @RequireCapabilities('payroll.period.close.view')
+  @ApiNotFoundResponse({ description: 'Period missing or outside the active company.' })
+  @Post(':id/validate')
+  validate(@Param('id') id: string, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.validate(id, principal);
   }
   @Post(':payrollPeriodId/close')
   @ApiBearerAuth()

@@ -16,9 +16,10 @@ Ele é criado por `pnpm demo:setup` e reconstruído por `pnpm demo:reset -- --co
 | contratos                |        18 |     8 |    26 |
 | admissões concluídas     |         4 |     2 |     6 |
 | competências e execuções |         6 |     4 |    10 |
+| lançamentos de folha     |         1 |     1 |     2 |
 | conferências             |         5 |     3 |     8 |
 | achados                  |         6 |     2 |     8 |
-| eventos append-only      |        15 |    10 |    25 |
+| eventos append-only      |        20 |     8 |    28 |
 
 Empresas:
 
@@ -55,6 +56,6 @@ demo e recria os mesmos IDs e relações.
 
 ## Limitações
 
-Jornada, benefícios, férias, afastamentos, rubricas, lançamentos, cálculos, decisões de aprovação e
-AuditLog sintético não recebem massa. Essas áreas exigiriam regras adicionais ou não contribuem para
-o dashboard e o fluxo já existente. MVP-001.6 e ETP-015.4 permanecem não iniciadas.
+Os dois lançamentos de folha são estritamente fictícios e existem para comprovar listagem,
+detalhamento e isolamento. O dataset não inventa fórmula, incidência ou resultado legal. AuditLog
+sintético não recebe massa; seus registros são produzidos apenas pelas operações reais dos smokes.

@@ -22,6 +22,7 @@
     "demo:smoke:p1": "node scripts/full-delivery-p1-smoke.mjs",
     "demo:smoke:p2": "node scripts/full-delivery-p2-smoke.mjs",
     "demo:smoke:p3": "node scripts/full-delivery-p3-smoke.mjs",
+    "demo:smoke:p0-residual": "node scripts/full-delivery-p0-residual-smoke.mjs",
     "demo:verify": "node scripts/demo.mjs verify",
     "demo:ready": "node scripts/demo.mjs ready",
     "demo:rehearse": "node scripts/demo.mjs rehearse",

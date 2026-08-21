@@ -57,7 +57,9 @@ describe('Payroll runs page', () => {
       target: { value: 'period-1' },
     });
 
-    expect((await screen.findAllByRole('listitem'))[0]).toHaveTextContent('Execução 1');
+    expect(
+      await screen.findByRole('table', { name: 'Tabela de execuções de folha' }),
+    ).toHaveTextContent('#1');
     expect(screen.getByText(/DEMONSTRATIVE_RUN/)).toBeInTheDocument();
     expect(screen.getByText(/bruto 1500.00 · líquido 1400.00/)).toBeInTheDocument();
     expect(apiRequest).toHaveBeenCalledWith(

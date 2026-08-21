@@ -1,6 +1,6 @@
 # ETP-015.7 — Catálogo canônico de eventos
 
-**Versão do catálogo:** 1
+**Versão do catálogo:** 1 — 81 códigos ativos
 
 Todos os códigos são estáticos, únicos e limitados a 50 caracteres. `REQUIRED` significa que o
 writer exige o mesmo `TransactionClient` da mutação. `OPTIONAL` é reservado aos eventos de sessão
@@ -35,6 +35,70 @@ que não acompanham uma escrita crítica de domínio.
 | `PAYROLL_PERIOD_CLOSURE_FOUNDATION_CREATED` | competência    | obrigatória | REQUIRED    | `payroll.period.close.execute`   | `source`                       |
 | `PAYROLL_PERIOD_CLOSED`                     | competência    | obrigatória | REQUIRED    | `payroll.period.close.execute`   | manifesto, vínculos e warnings |
 | `PAYROLL_PERIOD_REOPENED`                   | competência    | obrigatória | REQUIRED    | `payroll.period.close.reopen`    | `details` estruturado          |
+
+## Extensões homologadas pela Full Delivery
+
+Todos os eventos abaixo também são empresariais, possuem atomicidade `REQUIRED` e usam metadata
+vazia, salvo indicação explícita. P1, P2 e P3 acrescentaram 47 eventos; P0-RESIDUAL acrescentou os
+sete últimos, levando o catálogo de 74 para 81 códigos sem duplicar os eventos canônicos de
+fechamento ou reabertura.
+
+| Código                                        | Capability efetiva             | Wave/metadata               |
+| --------------------------------------------- | ------------------------------ | --------------------------- |
+| `COMPANY_CREATED`                             | `company.manage`               | P1                          |
+| `COMPANY_UPDATED`                             | `company.manage`               | P1                          |
+| `COMPANY_ACTIVATED`                           | `company.manage`               | P1                          |
+| `COMPANY_INACTIVATED`                         | `company.manage`               | P1                          |
+| `EMPLOYEE_CREATED`                            | `employee.manage`              | P1                          |
+| `EMPLOYEE_UPDATED`                            | `employee.manage`              | P1                          |
+| `EMPLOYEE_STATUS_CHANGED`                     | `employee.manage`              | P1                          |
+| `CONTRACT_CREATED`                            | `contract.manage`              | P1                          |
+| `CONTRACT_UPDATED`                            | `contract.manage`              | P1                          |
+| `CONTRACT_STATUS_CHANGED`                     | `contract.manage`              | P1                          |
+| `PAYROLL_PARAMETER_CREATED`                   | `payroll.parameter.manage`     | P1; `code`                  |
+| `PAYROLL_PARAMETER_UPDATED`                   | `payroll.parameter.manage`     | P1; `code`                  |
+| `PAYROLL_RUBRIC_CREATED`                      | `payroll.rubric.manage`        | P1; `code`                  |
+| `PAYROLL_RUBRIC_UPDATED`                      | `payroll.rubric.manage`        | P1; `code`                  |
+| `ORGANIZATION_RESOURCE_CREATED`               | `organization.manage`          | P2                          |
+| `ORGANIZATION_RESOURCE_UPDATED`               | `organization.manage`          | P2                          |
+| `ORGANIZATION_RESOURCE_STATUS_CHANGED`        | `organization.manage`          | P2                          |
+| `ADMISSION_PROCESS_CREATED`                   | `admission.manage`             | P2                          |
+| `ADMISSION_PROCESS_UPDATED`                   | `admission.manage`             | P2                          |
+| `ADMISSION_PROCESS_STATUS_CHANGED`            | `admission.manage`             | P2                          |
+| `ADMISSION_CHECKLIST_CREATED`                 | `admission.manage`             | P2                          |
+| `ADMISSION_CHECKLIST_ITEM_UPDATED`            | `admission.manage`             | P2                          |
+| `ADMISSION_DOCUMENT_CREATED`                  | `admission.manage`             | P2                          |
+| `ADMISSION_DOCUMENT_UPDATED`                  | `admission.manage`             | P2                          |
+| `ADMISSION_CHECKLIST_TEMPLATE_CREATED`        | `admission.manage`             | P2                          |
+| `ADMISSION_CHECKLIST_TEMPLATE_STATUS_CHANGED` | `admission.manage`             | P2                          |
+| `LEAVE_TYPE_CREATED`                          | `leave.manage`                 | P2                          |
+| `LEAVE_CASE_CREATED`                          | `leave.manage`                 | P2                          |
+| `LEAVE_CASE_RETURNED`                         | `leave.manage`                 | P2                          |
+| `VARIABLE_COMPENSATION_EVENT_CREATED`         | `variable_compensation.manage` | P2                          |
+| `SALARY_ADVANCE_CREATED`                      | `variable_compensation.manage` | P2                          |
+| `OFF_CYCLE_PAYMENT_CREATED`                   | `variable_compensation.manage` | P2                          |
+| `PAYROLL_RECONCILIATION_CREATED`              | `variable_compensation.manage` | P2                          |
+| `WORK_SCHEDULE_CREATED`                       | `time.manage`                  | P3                          |
+| `WORK_SCHEDULE_ASSIGNED`                      | `time.manage`                  | P3                          |
+| `HOLIDAY_CREATED`                             | `time.manage`                  | P3                          |
+| `TIME_ENTRY_CREATED`                          | `time.manage`                  | P3                          |
+| `TIME_BALANCE_CLOSED`                         | `time.manage`                  | P3                          |
+| `BENEFIT_CREATED`                             | `benefit.manage`               | P3                          |
+| `BENEFIT_PLAN_CREATED`                        | `benefit.manage`               | P3                          |
+| `BENEFIT_ENROLLMENT_CREATED`                  | `benefit.manage`               | P3                          |
+| `BENEFIT_ENROLLMENT_STATUS_CHANGED`           | `benefit.manage`               | P3                          |
+| `VACATION_PERIOD_CREATED`                     | `vacation.manage`              | P3                          |
+| `VACATION_REQUEST_CREATED`                    | `vacation.manage`              | P3                          |
+| `VACATION_REQUEST_APPROVED`                   | `vacation.manage`              | P3                          |
+| `VACATION_REQUEST_CANCELLED`                  | `vacation.manage`              | P3                          |
+| `COLLECTIVE_VACATION_CREATED`                 | `vacation.manage`              | P3                          |
+| `PAYROLL_PERIOD_CREATED`                      | `payroll.period.manage`        | P0-RESIDUAL                 |
+| `PAYROLL_PERIOD_UPDATED`                      | `payroll.period.manage`        | P0-RESIDUAL                 |
+| `PAYROLL_PERIOD_OPENED`                       | `payroll.period.manage`        | P0-RESIDUAL                 |
+| `PAYROLL_INPUT_CREATED`                       | `payroll.input.manage`         | P0-RESIDUAL                 |
+| `PAYROLL_INPUT_UPDATED`                       | `payroll.input.manage`         | P0-RESIDUAL                 |
+| `PAYROLL_RUN_STARTED`                         | `payroll.run.manage`           | P0-RESIDUAL                 |
+| `PAYROLL_RUN_MESSAGE_CREATED`                 | `payroll.run.manage`           | P0-RESIDUAL; `payrollRunId` |
 
 ## Campos canônicos de todos os eventos
 

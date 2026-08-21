@@ -71,6 +71,7 @@ pnpm demo:smoke:essential
 pnpm demo:smoke:p1
 pnpm demo:smoke:p2
 pnpm demo:smoke:p3
+pnpm demo:smoke:p0-residual
 pnpm demo:access:revoke
 pnpm demo:stop
 pnpm demo:reset -- --confirm-reset

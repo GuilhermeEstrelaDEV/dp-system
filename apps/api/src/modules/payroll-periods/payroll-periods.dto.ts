@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsDateString,
   IsIn,
@@ -16,8 +17,8 @@ import {
 export class PayrollPeriodQueryDto {
   @IsUUID() companyId!: string;
   @IsOptional() @IsIn(['OPEN', 'CLOSED', 'VALIDATING']) status?: string;
-  @IsOptional() @Min(1) page = 1;
-  @IsOptional() @Min(1) pageSize = 20;
+  @IsOptional() @Type(() => Number) @IsInt() @Min(1) page = 1;
+  @IsOptional() @Type(() => Number) @IsInt() @Min(1) pageSize = 20;
   @IsOptional() @IsIn(['referenceDate', 'createdAt', 'status']) sortBy:
     'referenceDate' | 'createdAt' | 'status' = 'referenceDate';
   @IsOptional() @IsIn(['asc', 'desc']) sortDirection: 'asc' | 'desc' = 'desc';

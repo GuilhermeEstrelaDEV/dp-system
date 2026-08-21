@@ -44,11 +44,4 @@ export const payrollPeriodsApi = {
       `/payroll-periods/${id}/validate`,
       { method: 'POST' },
     ),
-  close: (id: string) =>
-    apiRequest<PayrollPeriod>(`/payroll-periods/${id}/close`, { method: 'POST' }),
-  reopen: (id: string, reason: string) =>
-    apiRequest<PayrollPeriod>(`/payroll-periods/${id}/reopen`, {
-      method: 'POST',
-      body: JSON.stringify({ reason }),
-    }),
 };

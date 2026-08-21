@@ -180,7 +180,8 @@ BDP-001 e BDP-011 permanecem `PENDING`, e BDP-014 permanece
 
 ## Full Functional Delivery
 
-**Status:** `FULL DELIVERY P3 — READY TO MERGE`; the Essential MVP, P1 and P2 remain preserved.
+**Status:** `FULL FUNCTIONAL DELIVERY — READY TO MERGE`; Essential MVP and waves P1, P2 and P3
+remain preserved.
 
 The human delivery decision replaces the earlier permanent-defer target with incremental completion
 of every user-facing function. The [delivery plan](full-delivery/FULL_DELIVERY_PLAN.md) separates P1,
@@ -189,17 +190,21 @@ P2, P3 and P0-RESIDUAL so that no legacy surface is released by bypass.
 - **P1:** Company 6/6, Employee 12/12, Contract 7/7, Payroll Parameters 4/4 and Payroll Rubrics 4/4;
 - **P2:** Organization 24/24, Admission 19/19, Leave 5/5 and Variable Compensation 8/8;
 - **P3:** Time 8/8, Benefit 6/6 and Vacation 7/7;
-- **authorization:** twenty-four explicit resource/family capabilities across P1, P2 and P3, active-company
+- **P0-RESIDUAL:** Payroll Period 6/6, Payroll Input 4/4 and Payroll Run 5/5;
+- **authorization:** twenty-nine explicit resource/family capabilities across all waves, active-company
   semantics and deny-by-default;
-- **audit:** forty-seven transaction-required P1/P2/P3 events with restricted metadata;
+- **audit:** fifty-four transaction-required Full Delivery events with restricted metadata;
 - **data:** explicit minimum projections and fictitious demo fixtures for both companies;
 - **database:** zero new migrations and zero automatic assignments;
-- **later waves:** P0-RESIDUAL (15) remains `NOT STARTED`.
+- **runtime:** 165 classified, 156 capability-protected, zero `LEGACY_DEFERRED` and zero
+  unclassified.
 
 The [P1](full-delivery/P1_ACCEPTANCE.md), [P2](full-delivery/P2_ACCEPTANCE.md) and
-[P3](full-delivery/P3_ACCEPTANCE.md) acceptance inventories are the authoritative records for 110
-migrated handlers. Relevant BDPs remain unresolved; P2 and P3 use only existing company-local and
-operational domain models.
+[P3](full-delivery/P3_ACCEPTANCE.md) and
+[P0-RESIDUAL](full-delivery/P0_RESIDUAL_ACCEPTANCE.md) acceptance inventories are the authoritative
+records for 125 migrated handlers. Relevant BDPs remain unresolved; delivery uses only existing
+company-local and operational domain models. Production, cloud, deploy, Gate D and ETP-015.10
+remain unauthorized/not started.
 
 ## MVP-001 — Protótipo executivo local
 

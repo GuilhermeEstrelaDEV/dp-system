@@ -512,6 +512,52 @@ export const AUDIT_EVENT_CATALOG = Object.freeze({
     ['payroll.period.close.reopen'],
     ['details'],
   ),
+  PAYROLL_PERIOD_CREATED: descriptor(
+    'PAYROLL_PERIOD_CREATED',
+    'PAYROLL_PERIOD',
+    'REQUIRED',
+    'REQUIRED',
+    ['payroll.period.manage'],
+  ),
+  PAYROLL_PERIOD_UPDATED: descriptor(
+    'PAYROLL_PERIOD_UPDATED',
+    'PAYROLL_PERIOD',
+    'REQUIRED',
+    'REQUIRED',
+    ['payroll.period.manage'],
+  ),
+  PAYROLL_PERIOD_OPENED: descriptor(
+    'PAYROLL_PERIOD_OPENED',
+    'PAYROLL_PERIOD',
+    'REQUIRED',
+    'REQUIRED',
+    ['payroll.period.manage'],
+  ),
+  PAYROLL_INPUT_CREATED: descriptor(
+    'PAYROLL_INPUT_CREATED',
+    'PAYROLL_PERIOD',
+    'REQUIRED',
+    'REQUIRED',
+    ['payroll.input.manage'],
+  ),
+  PAYROLL_INPUT_UPDATED: descriptor(
+    'PAYROLL_INPUT_UPDATED',
+    'PAYROLL_PERIOD',
+    'REQUIRED',
+    'REQUIRED',
+    ['payroll.input.manage'],
+  ),
+  PAYROLL_RUN_STARTED: descriptor('PAYROLL_RUN_STARTED', 'PAYROLL_PERIOD', 'REQUIRED', 'REQUIRED', [
+    'payroll.run.manage',
+  ]),
+  PAYROLL_RUN_MESSAGE_CREATED: descriptor(
+    'PAYROLL_RUN_MESSAGE_CREATED',
+    'PAYROLL_PERIOD',
+    'REQUIRED',
+    'REQUIRED',
+    ['payroll.run.manage'],
+    ['payrollRunId'],
+  ),
 } satisfies Record<
   string,
   Readonly<Omit<AuditEventDescriptor, 'code'> & { readonly code: string }>

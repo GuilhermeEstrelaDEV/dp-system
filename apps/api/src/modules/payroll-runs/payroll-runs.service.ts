@@ -1,6 +1,9 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { PrismaService } from '../../prisma/prisma.service';
+import { AuditWriterService } from '../auth/audit-writer.service';
+import { AuthorizationService } from '../auth/authorization.service';
 import {
   CalculationInput,
   PayrollCalculationService,
@@ -12,19 +15,59 @@ import {
   PayrollRunQueryDto,
 } from './payroll-runs.dto';
 
+const payrollRunMessageProjection = {
+  id: true,
+  severity: true,
+  code: true,
+  message: true,
+  resolvedAt: true,
+  createdAt: true,
+} satisfies Prisma.PayrollRunMessageSelect;
+
+const payrollRunProjection = {
+  id: true,
+  payrollPeriodId: true,
+  sequence: true,
+  status: true,
+  engineVersion: true,
+  parameterVersion: true,
+  startedAt: true,
+  completedAt: true,
+  createdAt: true,
+  messages: { select: payrollRunMessageProjection, orderBy: { createdAt: 'asc' as const } },
+  employees: {
+    select: {
+      id: true,
+      employmentContractId: true,
+      status: true,
+      grossAmount: true,
+      netAmount: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: 'asc' as const },
+  },
+} satisfies Prisma.PayrollRunSelect;
+
 @Injectable()
 export class PayrollRunsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly calculator: PayrollCalculationService,
+    private readonly audit: AuditWriterService,
+    private readonly authorization: AuthorizationService,
   ) {}
 
-  async list(q: PayrollRunQueryDto) {
-    const where = { payrollPeriodId: q.payrollPeriodId, status: q.status };
+  async list(q: PayrollRunQueryDto, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, 'payroll.run.read');
+    const where: Prisma.PayrollRunWhereInput = {
+      payrollPeriodId: q.payrollPeriodId,
+      status: q.status,
+      payrollPeriod: { companyId: principal.activeCompanyId! },
+    };
     const [items, totalItems] = await this.prisma.$transaction([
       this.prisma.payrollRun.findMany({
         where,
-        include: { messages: true, employees: true },
+        select: payrollRunProjection,
         skip: (q.page - 1) * q.pageSize,
         take: q.pageSize,
         orderBy: { [q.sortBy]: q.sortDirection },
@@ -42,28 +85,28 @@ export class PayrollRunsService {
     };
   }
 
-  async find(id: string) {
-    const item = await this.prisma.payrollRun.findUnique({
-      where: { id },
-      include: { messages: true, employees: { include: { calculationItems: true } } },
-    });
-    if (!item) throw new NotFoundException('Execução não encontrada');
-    return item;
+  async find(id: string, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, 'payroll.run.read');
+    return this.findInCompany(id, principal.activeCompanyId!);
   }
 
-  async start(dto: CreatePayrollRunDto) {
-    const period = await this.prisma.payrollPeriod.findUnique({
-      where: { id: dto.payrollPeriodId },
+  async start(dto: CreatePayrollRunDto, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, 'payroll.run.manage');
+    const companyId = principal.activeCompanyId!;
+    const period = await this.prisma.payrollPeriod.findFirst({
+      where: { id: dto.payrollPeriodId, companyId },
+      select: { id: true, status: true, referenceDate: true },
     });
     if (!period) throw new NotFoundException('Competência não encontrada');
-    if (period.status === 'CLOSED')
+    if (period.status === 'CLOSED') {
       throw new ConflictException('Competência fechada não pode ser executada');
+    }
     const running = await this.prisma.payrollRun.count({
-      where: { payrollPeriodId: period.id, status: 'RUNNING' },
+      where: { payrollPeriodId: period.id, status: 'RUNNING', payrollPeriod: { companyId } },
     });
     if (running) throw new ConflictException('Já existe execução em andamento para a competência');
 
-    return this.prisma.$transaction(async (tx) => {
+    return this.audit.transaction(async (tx) => {
       const sequence = (await tx.payrollRun.count({ where: { payrollPeriodId: period.id } })) + 1;
       const run = await tx.payrollRun.create({
         data: {
@@ -79,9 +122,15 @@ export class PayrollRunsService {
           },
           startedAt: new Date(),
         },
+        select: { id: true },
       });
       const inputs = await tx.payrollInput.findMany({
-        where: { payrollPeriodId: period.id, status: 'PENDING' },
+        where: {
+          payrollPeriodId: period.id,
+          status: 'PENDING',
+          payrollPeriod: { companyId },
+          employmentContract: { companyId },
+        },
         include: {
           payrollRubric: { include: { payrollRubricCategory: true, versions: true } },
         },
@@ -103,10 +152,7 @@ export class PayrollRunsService {
             message: `Natureza de rubrica não suportada: ${invalidNatures.join(', ')}`,
           },
         });
-        return tx.payrollRun.update({
-          where: { id: run.id },
-          data: { status: 'FAILED', completedAt: new Date() },
-        });
+        return this.completeRun(tx, run.id, 'FAILED', principal);
       }
 
       const byContract = new Map<string, CalculationInput[]>();
@@ -177,23 +223,77 @@ export class PayrollRunsService {
             'Cálculo determinístico de lançamentos configurados, sem regras legais homologadas.',
         },
       });
-      return tx.payrollRun.update({
-        where: { id: run.id },
-        data: { status: blockingErrors ? 'FAILED' : 'COMPLETED', completedAt: new Date() },
-      });
+      return this.completeRun(tx, run.id, blockingErrors ? 'FAILED' : 'COMPLETED', principal);
     });
   }
 
-  async addMessage(id: string, dto: CreatePayrollRunMessageDto) {
-    await this.find(id);
-    return this.prisma.payrollRunMessage.create({ data: { payrollRunId: id, ...dto } });
+  async addMessage(id: string, dto: CreatePayrollRunMessageDto, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, 'payroll.run.manage');
+    const run = await this.findInCompany(id, principal.activeCompanyId!);
+    return this.audit.transaction(async (tx) => {
+      const message = await tx.payrollRunMessage.create({
+        data: { payrollRunId: id, ...dto },
+        select: payrollRunMessageProjection,
+      });
+      await this.audit.append(
+        {
+          principal,
+          action: 'PAYROLL_RUN_MESSAGE_CREATED',
+          entityType: 'PayrollRunMessage',
+          entityId: message.id,
+          nextState: { severity: message.severity, code: message.code },
+          metadata: { payrollRunId: run.id },
+        },
+        tx,
+      );
+      return message;
+    });
   }
 
-  async messages(id: string) {
-    await this.find(id);
+  async messages(id: string, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, 'payroll.run.read');
+    await this.findInCompany(id, principal.activeCompanyId!);
     return this.prisma.payrollRunMessage.findMany({
-      where: { payrollRunId: id },
+      where: {
+        payrollRunId: id,
+        payrollRun: { payrollPeriod: { companyId: principal.activeCompanyId! } },
+      },
+      select: payrollRunMessageProjection,
       orderBy: { createdAt: 'asc' },
     });
+  }
+
+  private async findInCompany(id: string, companyId: string) {
+    const item = await this.prisma.payrollRun.findFirst({
+      where: { id, payrollPeriod: { companyId } },
+      select: payrollRunProjection,
+    });
+    if (!item) throw new NotFoundException('Execução não encontrada');
+    return item;
+  }
+
+  private async completeRun(
+    tx: Prisma.TransactionClient,
+    id: string,
+    status: 'COMPLETED' | 'FAILED',
+    principal: AuthenticatedPrincipal,
+  ) {
+    const updated = await tx.payrollRun.update({
+      where: { id },
+      data: { status, completedAt: new Date() },
+      select: payrollRunProjection,
+    });
+    await this.audit.append(
+      {
+        principal,
+        action: 'PAYROLL_RUN_STARTED',
+        entityType: 'PayrollRun',
+        entityId: id,
+        previousState: { status: 'RUNNING' },
+        nextState: { status: updated.status },
+      },
+      tx,
+    );
+    return updated;
   }
 }

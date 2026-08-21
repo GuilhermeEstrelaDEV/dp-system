@@ -184,6 +184,51 @@ const permissions = [
     'MEDIUM',
     'RESTRICTED',
   ],
+  [
+    'payroll.period.manage',
+    'Manage payroll period lifecycle before canonical closure',
+    'payroll.period',
+    'manage',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.input.read',
+    'View minimum operational payroll inputs',
+    'payroll.input',
+    'read',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.input.manage',
+    'Manage operational payroll inputs without legal-rule expansion',
+    'payroll.input',
+    'manage',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.run.read',
+    'View minimum payroll run status and permitted aggregates',
+    'payroll.run',
+    'read',
+    'COMPANY',
+    'HIGH',
+    'RESTRICTED',
+  ],
+  [
+    'payroll.run.manage',
+    'Execute existing payroll run operations without engine expansion',
+    'payroll.run',
+    'manage',
+    'COMPANY',
+    'CRITICAL',
+    'RESTRICTED',
+  ],
   ['company.read', 'View company records', 'company', 'read', 'COMPANY', 'MEDIUM', 'SENSITIVE'],
   [
     'company.manage',
@@ -409,7 +454,7 @@ async function main() {
   );
   if (existingPermissions.length > 0) {
     if (existingPermissions.length > permissions.length) {
-      throw new Error('Permission seed blocked: inventory differs from the 37 approved codes');
+      throw new Error('Permission seed blocked: inventory exceeds the approved catalog');
     }
     for (const existing of existingPermissions) {
       const approved = approvedPermissions.get(existing.code);

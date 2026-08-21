@@ -61,17 +61,19 @@ describe('Payroll period workflows', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Competência duplicada');
     expect(screen.getByRole('textbox', { name: 'Empresa' })).toHaveValue('company');
   });
-  it('shows immutable closed periods and opens the reopening workflow', async () => {
+  it('directs closed periods to the canonical history and reopening workflow', async () => {
     apiRequest.mockResolvedValueOnce({
-      items: [{ id: 'period', referenceDate: '2026-07-01', status: 'CLOSED' }],
+      items: [{ id: 'period', referenceDate: '2026-07-01', type: 'REGULAR', status: 'CLOSED' }],
       pagination: { page: 1, pageSize: 20, totalItems: 1, totalPages: 1 },
     });
     renderPage();
     fireEvent.change(screen.getByRole('textbox', { name: 'Filtrar por empresa' }), {
       target: { value: 'company' },
     });
-    expect(await screen.findByText(/imutável/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Reabrir' }));
-    expect(screen.getByRole('button', { name: 'Confirmar reabertura' })).toBeDisabled();
+    expect(await screen.findByText('Fechada')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Fechamento e histórico' })).toHaveAttribute(
+      'href',
+      '/folha/competencias/period/historico',
+    );
   });
 });

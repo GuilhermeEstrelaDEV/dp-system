@@ -126,6 +126,19 @@ export const AUTHORIZATION_AUDIT_PRODUCER_MANIFEST = Object.freeze({
   'src/modules/payroll-periods/payroll-period-controlled-reopening.service.ts': [
     'PAYROLL_PERIOD_REOPENED',
   ],
+  'src/modules/payroll-periods/payroll-periods.service.ts': [
+    'PAYROLL_PERIOD_CREATED',
+    'PAYROLL_PERIOD_UPDATED',
+    'PAYROLL_PERIOD_OPENED',
+  ],
+  'src/modules/payroll-inputs/payroll-inputs.service.ts': [
+    'PAYROLL_INPUT_CREATED',
+    'PAYROLL_INPUT_UPDATED',
+  ],
+  'src/modules/payroll-runs/payroll-runs.service.ts': [
+    'PAYROLL_RUN_STARTED',
+    'PAYROLL_RUN_MESSAGE_CREATED',
+  ],
 } satisfies Record<string, readonly AuditEventCode[]>);
 
 export class AuthorizationAuditVerifierService {

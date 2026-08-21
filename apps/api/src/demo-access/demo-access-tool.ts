@@ -16,6 +16,11 @@ export const DEMO_ACCESS_CAPABILITIES = Object.freeze([
   'payroll.period.close.history',
   'payroll.period.close.execute',
   'payroll.period.close.reopen',
+  'payroll.period.manage',
+  'payroll.input.read',
+  'payroll.input.manage',
+  'payroll.run.read',
+  'payroll.run.manage',
   'company.read',
   'company.manage',
   'employee.read',
@@ -43,7 +48,7 @@ export const DEMO_ACCESS_CAPABILITIES = Object.freeze([
 ] as const);
 
 const DEMO_ADMIN_EMAIL = 'admin.demo@dp-system.local';
-const EXPECTED_CAPABILITY_CATALOG_SIZE = 43;
+const EXPECTED_CAPABILITY_CATALOG_SIZE = 48;
 
 export interface DemoAccessEnvironment {
   readonly DEMO_ENV?: string;
