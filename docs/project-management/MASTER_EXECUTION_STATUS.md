@@ -411,6 +411,33 @@ NOT AUTHORIZED`.
 - **Deferred:** P0-RESIDUAL remains 15 handlers. Open BDPs and later-wave scope are preserved; the
   system as a whole is not declared complete.
 
+### Full Functional Delivery — Wave P0-RESIDUAL
+
+- **Status:** `FULL FUNCTIONAL DELIVERY — READY TO MERGE`.
+- **Baseline:** `develop@798552f3d1ed62a00542be7bb8d05b9f9e0bfa18`; Essential MVP 17/17, P1
+  33/33, P2 56/56 and P3 21/21 remain mandatory regression gates.
+- **Scope:** Payroll Period legacy 6, Payroll Input 4 and Payroll Run 5; total 15/15 handlers.
+- **Authorization:** five indispensable company-scoped capabilities; reads reuse the canonical
+  period view capability. No `platform.manage` fallback, role-name decision or automatic
+  assignment. Runtime classification is 156 capability-protected, zero `LEGACY_DEFERRED` and zero
+  unclassified out of 165 handlers.
+- **Canonical reuse:** close, reopen, readiness and history remain exclusively in their canonical
+  services. Residual period routes are protected projections or distinct pre-closure lifecycle
+  operations; no parallel payroll rule was introduced.
+- **Isolation/projection/audit:** all resources derive company from the principal, foreign resources
+  return `404`, all fifteen handlers use explicit selects, and seven mutation events are written in
+  the same transaction. Runtime audit catalog is 81.
+- **Frontend:** Competências, Lançamentos and Execuções are functional and reuse the PR #94
+  `DataTable` standard with capability-aware actions. Closing and reopening link to the canonical
+  workflow.
+- **Database:** zero P0-RESIDUAL migrations; all 16 existing migrations remain unchanged. Horizon
+  and Atlas receive only fictitious payroll-input fixtures. The canonical seed creates zero
+  assignments.
+- **Evidence:** [plan](../full-delivery/FULL_DELIVERY_PLAN.md) and
+  [acceptance inventory](../full-delivery/P0_RESIDUAL_ACCEPTANCE.md).
+- **Boundaries:** Full Functional Delivery is local/demonstrative. Production, cloud, deploy, Gate
+  D, ETP-015.10 and unresolved legal/business BDPs remain outside this delivery.
+
 ### MVP-001 — Protótipo executivo local
 
 - **Status:** `IMPLEMENTED — LOCAL PROTOTYPE READY FOR MANAGEMENT VALIDATION`.

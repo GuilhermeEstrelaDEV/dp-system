@@ -21,7 +21,7 @@
 | Payroll period close  | `POST /payroll-periods/:payrollPeriodId/close`                    | Autenticada e empresarial | JWT, `payroll.period.close.execute`, empresa ativa, idempotência e `404` |
 | Payroll configuration | oito rotas de rubricas e parâmetros                               | Autenticada e empresarial | `payroll.parameter.*` e `payroll.rubric.*`; projeções mínimas            |
 | Payroll operation P0  | quatro aliases sob `/payroll-closures`                            | Autenticada e empresarial | adapters deprecated, capabilities de history/execute/reopen e `404`      |
-| Payroll operation P1+ | lançamentos, execuções e demais operações                         | Ainda legada              | fora da ETP-015.8                                                        |
+| Payroll residual      | 6 competências, 4 lançamentos e 5 execuções                       | Autenticada e empresarial | capabilities específicas, projeção mínima, audit em writes e `404`       |
 | Payroll review        | quatorze rotas incluindo fechamento, reabertura e histórico       | Autenticada e empresarial | JWT, capability, policy e `404`                                          |
 | Variable compensation | 8 sob `/variable-compensation`                                    | Autenticada e empresarial | `variable_compensation.read/manage`; BDP-006 continua pendente           |
 
@@ -116,3 +116,13 @@ passa a 4 public, 5 authenticated, 141 capability-protected e 15 deferred, perma
 handlers e zero não classificados. Os quinze aliases residuais de folha continuam P0-RESIDUAL. As
 seis capabilities P3 são específicas por família e leitura/escrita, sem fallback para
 `platform.manage`. Consulte o [aceite autoritativo](../full-delivery/P3_ACCEPTANCE.md).
+
+## Full Delivery P0-RESIDUAL
+
+Os quinze handlers finais deixam `LEGACY_DEFERRED`: Payroll Period legacy (6), Payroll Input (4) e
+Payroll Run (5). O total runtime final é 4 public, 5 authenticated-only, 156
+capability-protected, zero deferred e zero não classificados, permanecendo 165 handlers. As
+leituras de competência reutilizam `payroll.period.close.view`; as operações de gestão usam as
+cinco capabilities novas estritamente necessárias. Close, reopen, readiness e history continuam
+nos serviços canônicos, sem regra paralela. Consulte o
+[aceite autoritativo](../full-delivery/P0_RESIDUAL_ACCEPTANCE.md).
