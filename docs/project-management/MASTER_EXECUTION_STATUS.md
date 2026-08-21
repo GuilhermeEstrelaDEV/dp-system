@@ -389,6 +389,28 @@ NOT AUTHORIZED`.
 - **Deferred:** P3 remains 21 handlers and P0-RESIDUAL remains 15. Open BDPs and later-wave scope are
   preserved; the system as a whole is not declared complete.
 
+### Full Functional Delivery — Wave P3
+
+- **Status:** `FULL DELIVERY P3 — READY TO MERGE`.
+- **Baseline:** `develop@627ebce4e11b1ad06d434c0fe1dde9da00c043dc`; Essential MVP 17/17, P1
+  33/33 and P2 56/56 remain mandatory regression gates.
+- **Scope:** Time 8, Benefit 6 and Vacation 7; total 21/21 handlers.
+- **Authorization:** six company-scoped family capabilities; no role-name decision,
+  super-capability or automatic assignment. Runtime classification is 141 capability-protected and
+  15 `LEGACY_DEFERRED` out of 165 handlers, with zero unclassified.
+- **Isolation:** all P3 resources derive authority from the principal's active company, validate
+  related records in that company and return `404` across companies.
+- **Projection/audit:** explicit minimum projections and fourteen new transaction-required audit
+  events; runtime audit catalog is 74.
+- **Frontend:** Time, Benefit and Vacation workflows are functional and reuse the shared PR #94
+  DataTable standard with capability-aware actions and company-isolated cache keys.
+- **Database:** zero P3 migrations; all 16 existing migrations remain unchanged. The canonical seed
+  creates zero assignments.
+- **Evidence:** [plan](../full-delivery/FULL_DELIVERY_PLAN.md) and
+  [acceptance inventory](../full-delivery/P3_ACCEPTANCE.md).
+- **Deferred:** P0-RESIDUAL remains 15 handlers. Open BDPs and later-wave scope are preserved; the
+  system as a whole is not declared complete.
+
 ### MVP-001 — Protótipo executivo local
 
 - **Status:** `IMPLEMENTED — LOCAL PROTOTYPE READY FOR MANAGEMENT VALIDATION`.

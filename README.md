@@ -4,13 +4,14 @@ Sistema web para substituir a planilha operacional de Departamento Pessoal, cent
 
 ## Estado do projeto
 
-Estado atual: **MVP essencial preservado e Full Delivery P2 pronta para revisão**.
+Estado atual: **MVP essencial preservado e Full Delivery P3 pronta para revisão**.
 
 A nova meta de entrega funcional é executada em ondas. A
 [onda P1](docs/full-delivery/P1_ACCEPTANCE.md) conclui 33 handlers de cadastros e configuração de
-folha. A [onda P2](docs/full-delivery/P2_ACCEPTANCE.md) acrescenta os 56 handlers de Organization,
-Admission, Leave e Variable Compensation. O [plano completo](docs/full-delivery/FULL_DELIVERY_PLAN.md)
-mantém P3 e P0-RESIDUAL fora deste incremento.
+folha. A [onda P2](docs/full-delivery/P2_ACCEPTANCE.md) acrescenta 56 handlers de Organization,
+Admission, Leave e Variable Compensation, e a [onda P3](docs/full-delivery/P3_ACCEPTANCE.md) conclui
+21 handlers de Time, Benefit e Vacation. O [plano completo](docs/full-delivery/FULL_DELIVERY_PLAN.md)
+mantém P0-RESIDUAL fora deste incremento.
 
 ## Topologia planejada
 
@@ -68,6 +69,8 @@ pnpm demo:ready
 pnpm demo:rehearse
 pnpm demo:smoke:essential
 pnpm demo:smoke:p1
+pnpm demo:smoke:p2
+pnpm demo:smoke:p3
 pnpm demo:access:revoke
 pnpm demo:stop
 pnpm demo:reset -- --confirm-reset
