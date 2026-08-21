@@ -52,10 +52,10 @@ describe('AuthorizationRouteGuard', () => {
     expect(identity.canActivate).not.toHaveBeenCalled();
   });
 
-  it('preserves only a nominally inventoried legacy handler', async () => {
+  it('denies a formerly deferred handler when policy metadata is absent', async () => {
     await expect(
       createGuard(undefined).canActivate(context('PayrollInputsController', 'list')),
-    ).resolves.toBe(true);
+    ).rejects.toBeInstanceOf(ForbiddenException);
   });
 
   it('blocks an unclassified new handler before invoking downstream guards', async () => {

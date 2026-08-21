@@ -41,7 +41,9 @@ describe('Payroll inputs page', () => {
       target: { value: 'period-1' },
     });
 
-    expect(await screen.findByRole('listitem')).toHaveTextContent('Lançamento demonstrativo');
+    expect(
+      await screen.findByRole('table', { name: 'Tabela de lançamentos de folha' }),
+    ).toHaveTextContent('Lançamento demonstrativo');
     expect(apiRequest).toHaveBeenCalledWith(
       '/payroll-inputs?payrollPeriodId=period-1&page=1&pageSize=20&sortBy=createdAt&sortDirection=desc',
     );
@@ -85,7 +87,7 @@ describe('Payroll inputs page', () => {
     fireEvent.change(screen.getByLabelText('Filtrar por competência'), {
       target: { value: 'period-1' },
     });
-    fireEvent.click(await screen.findByRole('button', { name: 'Inativar lançamento' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Inativar' }));
 
     await waitFor(() =>
       expect(apiRequest).toHaveBeenCalledWith('/payroll-inputs/input-1', {

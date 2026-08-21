@@ -61,13 +61,19 @@ export const appRoutes: RouteObject[] = [
         children: [
           { index: true, element: <DashboardPage /> },
           {
-            element: <CapabilityRoute capability="platform.manage" />,
+            element: <CapabilityRoute capability="payroll.period.close.view" />,
             children: [
               { path: 'folha', element: <PayrollPage /> },
               { path: 'folha/competencias', element: <PayrollPage /> },
-              { path: 'folha/lancamentos', element: <PayrollPage /> },
-              { path: 'folha/execucoes', element: <PayrollPage /> },
             ],
+          },
+          {
+            element: <CapabilityRoute capability="payroll.input.read" />,
+            children: [{ path: 'folha/lancamentos', element: <PayrollPage /> }],
+          },
+          {
+            element: <CapabilityRoute capability="payroll.run.read" />,
+            children: [{ path: 'folha/execucoes', element: <PayrollPage /> }],
           },
           {
             element: <CapabilityRoute capability="time.read" />,

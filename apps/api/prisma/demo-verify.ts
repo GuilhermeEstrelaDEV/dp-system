@@ -61,6 +61,7 @@ async function main() {
     contracts,
     admissions,
     periods,
+    inputs,
     runs,
     cycles,
     findings,
@@ -101,6 +102,9 @@ async function main() {
     prisma.employmentContract.count({ where: { companyId: { in: [...companyIds] } } }),
     prisma.admissionProcess.count({ where: { companyId: { in: [...companyIds] } } }),
     prisma.payrollPeriod.count({ where: { companyId: { in: [...companyIds] } } }),
+    prisma.payrollInput.count({
+      where: { payrollPeriod: { companyId: { in: [...companyIds] } } },
+    }),
     prisma.payrollRun.count({ where: { payrollPeriod: { companyId: { in: [...companyIds] } } } }),
     prisma.payrollReviewCycle.count({ where: { companyId: { in: [...companyIds] } } }),
     prisma.payrollReviewFinding.count({ where: { companyId: { in: [...companyIds] } } }),
@@ -169,7 +173,7 @@ async function main() {
   exact('empresas', companies.length, 2);
   exact('usuários', users.length, 2);
   exact('vínculos', companyRoles, 3);
-  exact('catálogo homologado', permissions, 43);
+  exact('catálogo homologado', permissions, 48);
   exact('filiais', branches, 2);
   exact('departamentos', departments, 8);
   exact('cargos', positions, 13);
@@ -179,6 +183,7 @@ async function main() {
   exact('contratos', contracts, 26);
   exact('admissões', admissions, 6);
   exact('competências', periods, 10);
+  exact('lançamentos', inputs, 2);
   exact('execuções', runs, 10);
   exact('conferências', cycles, 8);
   exact('achados', findings, 8);
@@ -197,8 +202,8 @@ async function main() {
       validTo > now &&
       revokedAt === null,
   );
-  if (![0, 30].includes(activeDemoGrants.length)) {
-    throw new Error(`grants demo ativos: esperado 0 ou 30, encontrado ${activeDemoGrants.length}`);
+  if (![0, 35].includes(activeDemoGrants.length)) {
+    throw new Error(`grants demo ativos: esperado 0 ou 35, encontrado ${activeDemoGrants.length}`);
   }
   const approvedCodes = new Set<string>(DEMO_ACCESS_CAPABILITIES);
   if (
@@ -261,8 +266,8 @@ async function main() {
     })),
   });
   if (
-    activeDemoGrants.length === 30 &&
-    new Set(activeDemoGrants.map(({ permission }) => permission.code)).size !== 30
+    activeDemoGrants.length === 35 &&
+    new Set(activeDemoGrants.map(({ permission }) => permission.code)).size !== 35
   ) {
     throw new Error('grants demo ativos não correspondem às capabilities aprovadas');
   }
@@ -327,6 +332,7 @@ async function main() {
           contracts,
           admissions,
           periods,
+          inputs,
           runs,
           cycles,
           findings,
