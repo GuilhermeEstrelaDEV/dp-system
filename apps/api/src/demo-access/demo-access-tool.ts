@@ -34,10 +34,16 @@ export const DEMO_ACCESS_CAPABILITIES = Object.freeze([
   'leave.manage',
   'variable_compensation.read',
   'variable_compensation.manage',
+  'time.read',
+  'time.manage',
+  'benefit.read',
+  'benefit.manage',
+  'vacation.read',
+  'vacation.manage',
 ] as const);
 
 const DEMO_ADMIN_EMAIL = 'admin.demo@dp-system.local';
-const EXPECTED_CAPABILITY_CATALOG_SIZE = 37;
+const EXPECTED_CAPABILITY_CATALOG_SIZE = 43;
 
 export interface DemoAccessEnvironment {
   readonly DEMO_ENV?: string;

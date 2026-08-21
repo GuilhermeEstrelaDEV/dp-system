@@ -10,8 +10,9 @@ import {
 } from 'class-validator';
 
 export class CreateBenefitDto {
+  @IsOptional()
   @IsUUID()
-  companyId!: string;
+  companyId?: string;
 
   @IsString()
   @IsNotEmpty()

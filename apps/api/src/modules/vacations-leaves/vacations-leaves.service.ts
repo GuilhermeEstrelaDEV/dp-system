@@ -17,6 +17,59 @@ import {
 const invalidPeriod = (start: string, end?: string) =>
   Boolean(end && new Date(end) < new Date(start));
 
+const vacationDecisionAuditEvent = {
+  APPROVED: 'VACATION_REQUEST_APPROVED',
+  CANCELLED: 'VACATION_REQUEST_CANCELLED',
+} as const;
+
+const vacationPeriodProjection = {
+  id: true,
+  employmentContractId: true,
+  accrualStart: true,
+  accrualEnd: true,
+  grantStart: true,
+  grantEnd: true,
+  status: true,
+  createdAt: true,
+  updatedAt: true,
+  _count: { select: { requests: true, alerts: true } },
+} satisfies Prisma.VacationPeriodSelect;
+
+const vacationRequestProjection = {
+  id: true,
+  employmentContractId: true,
+  vacationPeriodId: true,
+  collectiveVacationId: true,
+  startDate: true,
+  endDate: true,
+  status: true,
+  approvedAt: true,
+  cancelledAt: true,
+  createdAt: true,
+  updatedAt: true,
+  vacationPeriod: {
+    select: { id: true, accrualStart: true, accrualEnd: true, status: true },
+  },
+  collectiveVacation: {
+    select: { id: true, name: true, startDate: true, endDate: true, status: true },
+  },
+  history: {
+    select: { id: true, action: true, occurredAt: true },
+    orderBy: { occurredAt: 'desc' as const },
+  },
+} satisfies Prisma.VacationRequestSelect;
+
+const collectiveVacationProjection = {
+  id: true,
+  companyId: true,
+  name: true,
+  startDate: true,
+  endDate: true,
+  status: true,
+  createdAt: true,
+  updatedAt: true,
+} satisfies Prisma.CollectiveVacationSelect;
+
 const leaveTypeProjection = {
   id: true,
   companyId: true,
@@ -53,56 +106,84 @@ export class VacationsLeavesService {
     private readonly authorization: AuthorizationService,
   ) {}
 
-  listVacationPeriods(employmentContractId?: string) {
+  async listVacationPeriods(principal: AuthenticatedPrincipal, employmentContractId?: string) {
+    this.authorization.requireCapability(principal, 'vacation.read');
+    const companyId = this.companyId(principal);
+    if (employmentContractId) await this.requireScopedContract(employmentContractId, companyId);
     return this.prisma.vacationPeriod.findMany({
-      where: { employmentContractId },
-      include: { requests: true, alerts: true },
+      where: { employmentContractId, employmentContract: { companyId } },
+      select: vacationPeriodProjection,
       orderBy: { accrualStart: 'desc' },
     });
   }
 
-  async createVacationPeriod(dto: CreateVacationPeriodDto) {
+  async createVacationPeriod(dto: CreateVacationPeriodDto, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, 'vacation.manage');
     if (
       invalidPeriod(dto.accrualStart, dto.accrualEnd) ||
       invalidPeriod(dto.grantStart ?? '', dto.grantEnd)
     ) {
       throw new ConflictException('As datas do período de férias são incoerentes');
     }
-    const contract = await this.prisma.employmentContract.findUnique({
-      where: { id: dto.employmentContractId },
-    });
-    if (!contract) throw new NotFoundException('Contrato não encontrado');
-    return this.prisma.vacationPeriod.create({
-      data: {
-        ...dto,
-        accrualStart: new Date(dto.accrualStart),
-        accrualEnd: new Date(dto.accrualEnd),
-        grantStart: dto.grantStart ? new Date(dto.grantStart) : null,
-        grantEnd: dto.grantEnd ? new Date(dto.grantEnd) : null,
-      },
+    await this.requireScopedContract(dto.employmentContractId, this.companyId(principal));
+    return this.audit.transaction(async (tx) => {
+      const created = await tx.vacationPeriod.create({
+        data: {
+          employmentContractId: dto.employmentContractId,
+          accrualStart: new Date(dto.accrualStart),
+          accrualEnd: new Date(dto.accrualEnd),
+          grantStart: dto.grantStart ? new Date(dto.grantStart) : null,
+          grantEnd: dto.grantEnd ? new Date(dto.grantEnd) : null,
+          notes: dto.notes,
+        },
+        select: vacationPeriodProjection,
+      });
+      await this.audit.append(
+        {
+          principal,
+          action: 'VACATION_PERIOD_CREATED',
+          entityType: 'VacationPeriod',
+          entityId: created.id,
+          nextState: { status: created.status },
+        },
+        tx,
+      );
+      return created;
     });
   }
 
-  listVacationRequests(employmentContractId?: string) {
+  async listVacationRequests(principal: AuthenticatedPrincipal, employmentContractId?: string) {
+    this.authorization.requireCapability(principal, 'vacation.read');
+    const companyId = this.companyId(principal);
+    if (employmentContractId) await this.requireScopedContract(employmentContractId, companyId);
     return this.prisma.vacationRequest.findMany({
-      where: { employmentContractId },
-      include: {
-        vacationPeriod: true,
-        collectiveVacation: true,
-        history: { orderBy: { occurredAt: 'desc' } },
-      },
+      where: { employmentContractId, employmentContract: { companyId } },
+      select: vacationRequestProjection,
       orderBy: { startDate: 'desc' },
     });
   }
 
-  async createVacationRequest(dto: CreateVacationRequestDto) {
+  async createVacationRequest(dto: CreateVacationRequestDto, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, 'vacation.manage');
     if (invalidPeriod(dto.startDate, dto.endDate))
       throw new ConflictException('As datas da solicitação são incoerentes');
-    const period = await this.prisma.vacationPeriod.findUnique({
-      where: { id: dto.vacationPeriodId },
+    const companyId = this.companyId(principal);
+    await this.requireScopedContract(dto.employmentContractId, companyId);
+    const period = await this.prisma.vacationPeriod.findFirst({
+      where: {
+        id: dto.vacationPeriodId,
+        employmentContractId: dto.employmentContractId,
+        employmentContract: { companyId },
+      },
+      select: { id: true, employmentContractId: true },
     });
-    if (!period || period.employmentContractId !== dto.employmentContractId) {
-      throw new ConflictException('Período aquisitivo incompatível com o contrato');
+    if (!period) throw new NotFoundException('Período aquisitivo não encontrado');
+    if (dto.collectiveVacationId) {
+      const collective = await this.prisma.collectiveVacation.findFirst({
+        where: { id: dto.collectiveVacationId, companyId },
+        select: { id: true },
+      });
+      if (!collective) throw new NotFoundException('Férias coletivas não encontradas');
     }
     const [vacationOverlap, leaveOverlap] = await Promise.all([
       this.prisma.vacationRequest.findFirst({
@@ -127,16 +208,36 @@ export class VacationsLeavesService {
     return this.prisma.$transaction(async (tx) => {
       const request = await tx.vacationRequest.create({
         data: { ...dto, startDate: new Date(dto.startDate), endDate: new Date(dto.endDate) },
+        select: vacationRequestProjection,
       });
       await tx.vacationRequestHistory.create({
         data: { vacationRequestId: request.id, action: 'REQUESTED', reason: dto.requestReason },
       });
+      await this.audit.append(
+        {
+          principal,
+          action: 'VACATION_REQUEST_CREATED',
+          entityType: 'VacationRequest',
+          entityId: request.id,
+          nextState: { status: request.status },
+        },
+        tx,
+      );
       return request;
     });
   }
 
-  async decideVacationRequest(id: string, action: 'APPROVED' | 'CANCELLED', dto: DecisionDto) {
-    const request = await this.prisma.vacationRequest.findUnique({ where: { id } });
+  async decideVacationRequest(
+    id: string,
+    action: 'APPROVED' | 'CANCELLED',
+    dto: DecisionDto,
+    principal: AuthenticatedPrincipal,
+  ) {
+    this.authorization.requireCapability(principal, 'vacation.manage');
+    const request = await this.prisma.vacationRequest.findFirst({
+      where: { id, employmentContract: { companyId: this.companyId(principal) } },
+      select: { id: true, status: true },
+    });
     if (!request) throw new NotFoundException('Solicitação de férias não encontrada');
     if (['APPROVED', 'CANCELLED'].includes(request.status))
       throw new ConflictException('Solicitação já foi decidida');
@@ -149,19 +250,53 @@ export class VacationsLeavesService {
           action === 'APPROVED'
             ? { status: action, approvedAt: new Date(), approvalReason: dto.reason }
             : { status: action, cancelledAt: new Date(), approvalReason: dto.reason },
+        select: vacationRequestProjection,
       });
       await tx.vacationRequestHistory.create({
         data: { vacationRequestId: id, action, reason: dto.reason },
       });
+      await this.audit.append(
+        {
+          principal,
+          action: vacationDecisionAuditEvent[action],
+          entityType: 'VacationRequest',
+          entityId: id,
+          previousState: { status: request.status },
+          nextState: { status: updated.status },
+        },
+        tx,
+      );
       return updated;
     });
   }
 
-  createCollectiveVacation(dto: CreateCollectiveVacationDto) {
+  createCollectiveVacation(dto: CreateCollectiveVacationDto, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, 'vacation.manage');
     if (invalidPeriod(dto.startDate, dto.endDate))
       throw new ConflictException('As datas das férias coletivas são incoerentes');
-    return this.prisma.collectiveVacation.create({
-      data: { ...dto, startDate: new Date(dto.startDate), endDate: new Date(dto.endDate) },
+    const companyId = this.companyId(principal, dto.companyId);
+    return this.audit.transaction(async (tx) => {
+      const created = await tx.collectiveVacation.create({
+        data: {
+          companyId,
+          name: dto.name,
+          startDate: new Date(dto.startDate),
+          endDate: new Date(dto.endDate),
+          notes: dto.notes,
+        },
+        select: collectiveVacationProjection,
+      });
+      await this.audit.append(
+        {
+          principal,
+          action: 'COLLECTIVE_VACATION_CREATED',
+          entityType: 'CollectiveVacation',
+          entityId: created.id,
+          nextState: { status: created.status },
+        },
+        tx,
+      );
+      return created;
     });
   }
 

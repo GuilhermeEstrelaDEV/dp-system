@@ -34,7 +34,7 @@ describe('authorization audit event catalog', () => {
   });
 
   it('keeps PAYROLL_PERIOD_CLOSED on the approved metadata contract', () => {
-    expect(AUDIT_EVENT_CODES).toHaveLength(60);
+    expect(AUDIT_EVENT_CODES).toHaveLength(74);
     expect(AUDIT_EVENT_CATALOG.PAYROLL_PERIOD_CLOSED.allowedMetadata).toEqual([
       'closureId',
       'manifestId',

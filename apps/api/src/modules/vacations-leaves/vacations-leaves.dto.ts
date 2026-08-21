@@ -63,8 +63,9 @@ export class DecisionDto {
 }
 
 export class CreateCollectiveVacationDto {
+  @IsOptional()
   @IsUUID()
-  companyId!: string;
+  companyId?: string;
 
   @IsString()
   @IsNotEmpty()
