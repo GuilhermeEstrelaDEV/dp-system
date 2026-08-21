@@ -24,39 +24,97 @@ import { VacationsLeavesService } from './vacations-leaves.service';
 export class VacationsLeavesController {
   constructor(private readonly service: VacationsLeavesService) {}
 
+  @RequireCapabilities('vacation.read')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
   @Get('vacation-periods')
-  listPeriods(@Query('employmentContractId') id?: string) {
-    return this.service.listVacationPeriods(id);
+  listPeriods(
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+    @Query('employmentContractId') id?: string,
+  ) {
+    return this.service.listVacationPeriods(principal, id);
   }
 
+  @RequireCapabilities('vacation.manage')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
   @Post('vacation-periods')
-  createPeriod(@Body() dto: CreateVacationPeriodDto) {
-    return this.service.createVacationPeriod(dto);
+  createPeriod(
+    @Body() dto: CreateVacationPeriodDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.createVacationPeriod(dto, principal);
   }
 
+  @RequireCapabilities('vacation.read')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
   @Get('vacation-requests')
-  listRequests(@Query('employmentContractId') id?: string) {
-    return this.service.listVacationRequests(id);
+  listRequests(
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+    @Query('employmentContractId') id?: string,
+  ) {
+    return this.service.listVacationRequests(principal, id);
   }
 
+  @RequireCapabilities('vacation.manage')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
   @Post('vacation-requests')
-  createRequest(@Body() dto: CreateVacationRequestDto) {
-    return this.service.createVacationRequest(dto);
+  createRequest(
+    @Body() dto: CreateVacationRequestDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.createVacationRequest(dto, principal);
   }
 
+  @RequireCapabilities('vacation.manage')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
   @Post('vacation-requests/:id/approve')
-  approve(@Param('id') id: string, @Body() dto: DecisionDto) {
-    return this.service.decideVacationRequest(id, 'APPROVED', dto);
+  approve(
+    @Param('id') id: string,
+    @Body() dto: DecisionDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.decideVacationRequest(id, 'APPROVED', dto, principal);
   }
 
+  @RequireCapabilities('vacation.manage')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
   @Post('vacation-requests/:id/cancel')
-  cancel(@Param('id') id: string, @Body() dto: DecisionDto) {
-    return this.service.decideVacationRequest(id, 'CANCELLED', dto);
+  cancel(
+    @Param('id') id: string,
+    @Body() dto: DecisionDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.decideVacationRequest(id, 'CANCELLED', dto, principal);
   }
 
+  @RequireCapabilities('vacation.manage')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
   @Post('collective-vacations')
-  createCollective(@Body() dto: CreateCollectiveVacationDto) {
-    return this.service.createCollectiveVacation(dto);
+  createCollective(
+    @Body() dto: CreateCollectiveVacationDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.createCollectiveVacation(dto, principal);
   }
 
   @RequireCapabilities('leave.read')

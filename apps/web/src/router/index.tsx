@@ -22,7 +22,7 @@ import { AdmissionFormPage } from '@/features/admissions/AdmissionFormPage';
 import { ChecklistTemplatesPage } from '@/features/admissions/ChecklistTemplatesPage';
 import { TimeManagementPage } from '@/features/time-management';
 import { BenefitsPage } from '@/features/benefits';
-import { VacationsLeavesPage } from '@/features/vacations-leaves';
+import { VacationManagementPage, VacationsLeavesPage } from '@/features/vacations-leaves';
 import { PayrollPage } from '@/features/payroll';
 import {
   AuthenticatedRoute,
@@ -63,13 +63,23 @@ export const appRoutes: RouteObject[] = [
           {
             element: <CapabilityRoute capability="platform.manage" />,
             children: [
-              { path: 'jornada', element: <TimeManagementPage /> },
-              { path: 'beneficios', element: <BenefitsPage /> },
               { path: 'folha', element: <PayrollPage /> },
               { path: 'folha/competencias', element: <PayrollPage /> },
               { path: 'folha/lancamentos', element: <PayrollPage /> },
               { path: 'folha/execucoes', element: <PayrollPage /> },
             ],
+          },
+          {
+            element: <CapabilityRoute capability="time.read" />,
+            children: [{ path: 'jornada', element: <TimeManagementPage /> }],
+          },
+          {
+            element: <CapabilityRoute capability="benefit.read" />,
+            children: [{ path: 'beneficios', element: <BenefitsPage /> }],
+          },
+          {
+            element: <CapabilityRoute capability="vacation.read" />,
+            children: [{ path: 'ferias', element: <VacationManagementPage /> }],
           },
           {
             element: <CapabilityRoute capability="organization.read" />,

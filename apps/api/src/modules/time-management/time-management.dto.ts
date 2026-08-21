@@ -20,7 +20,7 @@ export class SchedulePeriodDto {
   @IsOptional() @IsInt() @Min(0) breakMinutes?: number;
 }
 export class CreateScheduleDto {
-  @IsUUID() companyId!: string;
+  @IsOptional() @IsUUID() companyId?: string;
   @IsString() @IsNotEmpty() @MaxLength(50) code!: string;
   @IsString() @IsNotEmpty() @MaxLength(160) name!: string;
   @IsInt() @Min(1) weeklyMinutes!: number;
@@ -49,7 +49,7 @@ export class CreateTimeEntryDto {
   @IsOptional() @IsString() @MaxLength(1000) reason?: string;
 }
 export class CloseBalanceDto {
-  @IsUUID() companyId!: string;
+  @IsOptional() @IsUUID() companyId?: string;
   @IsDateString() referenceMonth!: string;
   @IsOptional() @IsString() @MaxLength(1000) reason?: string;
 }

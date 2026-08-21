@@ -6,12 +6,6 @@ export const PUBLIC_ROUTE_HANDLER_ALLOWLIST = new Set<string>([
 ]);
 
 export const LEGACY_DEFERRED_HANDLER_ALLOWLIST = new Set<string>([
-  'BenefitsController#changeEnrollmentStatus',
-  'BenefitsController#create',
-  'BenefitsController#enroll',
-  'BenefitsController#list',
-  'BenefitsController#listEnrollments',
-  'BenefitsController#plan',
   'PayrollInputsController#create',
   'PayrollInputsController#find',
   'PayrollInputsController#list',
@@ -27,21 +21,6 @@ export const LEGACY_DEFERRED_HANDLER_ALLOWLIST = new Set<string>([
   'PayrollRunsController#list',
   'PayrollRunsController#messages',
   'PayrollRunsController#start',
-  'TimeManagementController#assign',
-  'TimeManagementController#balance',
-  'TimeManagementController#close',
-  'TimeManagementController#createSchedule',
-  'TimeManagementController#entries',
-  'TimeManagementController#entry',
-  'TimeManagementController#holiday',
-  'TimeManagementController#schedules',
-  'VacationsLeavesController#approve',
-  'VacationsLeavesController#cancel',
-  'VacationsLeavesController#createCollective',
-  'VacationsLeavesController#createPeriod',
-  'VacationsLeavesController#createRequest',
-  'VacationsLeavesController#listPeriods',
-  'VacationsLeavesController#listRequests',
 ]);
 
 export function routeHandlerId(

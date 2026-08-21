@@ -2,8 +2,8 @@
 
 ## Estado
 
-**Estado atual:** a fundação histórica da ETP-015.3 permanece preservada e a Full Delivery P2
-expande controladamente o catálogo para 37 capabilities. O seed canônico continua sem grant
+**Estado atual:** a fundação histórica da ETP-015.3 permanece preservada e a Full Delivery P3
+expande controladamente o catálogo para 43 capabilities. O seed canônico continua sem grant
 automático.
 
 ## Catálogo canônico
@@ -13,9 +13,10 @@ sensibilidade, ciclo de vida, substituição e metadata. Os 19 códigos de PC-01
 a allowlist imutável da migration `0016`. O seed adiciona dez códigos P1 aprovados, sem alterar os
 19 existentes: `company.read/manage`, `employee.read/manage`, `contract.read/manage`,
 `payroll.parameter.read/manage` e `payroll.rubric.read/manage`. `platform.read` e `platform.manage`
-possuem escopo `PLATFORM`; os outros 35 possuem escopo `COMPANY`. A P2 adiciona os pares
+possuem escopo `PLATFORM`; os outros 41 possuem escopo `COMPANY`. A P2 adiciona os pares
 `organization.read/manage`, `admission.read/manage`, `leave.read/manage` e
-`variable_compensation.read/manage`, sem alterar código ou semântica dos 29 anteriores.
+`variable_compensation.read/manage`. A P3 adiciona `time.read/manage`, `benefit.read/manage` e
+`vacation.read/manage`, sem alterar código ou semântica dos 37 anteriores.
 
 PC-20 e PC-21 são fail-closed: upgrade com código extra, ausente, duplicado ou não classificado é
 bloqueado antes do backfill. Banco limpo pode permanecer sem catálogo até o seed homologado. Código
@@ -48,14 +49,14 @@ A migration `0016_capability_catalog_assignments`:
 5. não insere `RolePermission`, `UserCompanyRole`, grant ou associação;
 6. substitui a unicidade parcial pela garantia temporal na mesma migration.
 
-O seed cria ou atualiza somente os sete papéis e as 37 capabilities aprovadas. Contagens de
-assignments permanecem zero em banco limpo. O acréscimo P2 é catalog-only e não requer migration,
+O seed cria ou atualiza somente os sete papéis e as 43 capabilities aprovadas. Contagens de
+assignments permanecem zero em banco limpo. Os acréscimos P2 e P3 são catalog-only e não requerem migration,
 pois `Permission` já suporta a classificação aprovada.
 
-## Acesso demonstrativo P2
+## Acesso demonstrativo P3
 
-`demo:access:grant` concede temporariamente as capabilities aprovadas do MVP essencial, da P1 e os
-oito códigos P2
+`demo:access:grant` concede temporariamente as capabilities aprovadas do MVP essencial, da P1, os
+oito códigos P2 e os seis códigos P3
 somente ao papel fictício `ADMINISTRATOR`. Esse mecanismo não usa o seed canônico: a origem é
 `MANUAL`, a validade máxima é oito horas, operações são idempotentes, revogáveis e auditadas. A
 conta `HR` não recebe esses assignments e permanece controle negativo.

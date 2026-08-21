@@ -54,7 +54,7 @@ describe('AuthorizationRouteGuard', () => {
 
   it('preserves only a nominally inventoried legacy handler', async () => {
     await expect(
-      createGuard(undefined).canActivate(context('BenefitsController', 'list')),
+      createGuard(undefined).canActivate(context('PayrollInputsController', 'list')),
     ).resolves.toBe(true);
   });
 

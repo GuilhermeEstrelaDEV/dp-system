@@ -810,6 +810,213 @@ async function seedP2Domains(
   });
 }
 
+async function seedP3Domains(
+  companyId: string,
+  companyKey: 'horizon' | 'atlas',
+  contracts: Array<{ id: string }>,
+) {
+  const offset = companyKey === 'horizon' ? 0 : 100;
+  const schedule = await prisma.workSchedule.upsert({
+    where: { companyId_code: { companyId, code: 'DEMO-P3' } },
+    update: { status: 'ACTIVE' },
+    create: {
+      id: demoId('4', 100 + offset),
+      companyId,
+      code: 'DEMO-P3',
+      name: 'Jornada demonstrativa P3',
+      weeklyMinutes: 2400,
+    },
+  });
+  await prisma.workSchedulePeriod.upsert({
+    where: {
+      workScheduleId_weekday_startMinute: {
+        workScheduleId: schedule.id,
+        weekday: 1,
+        startMinute: 480,
+      },
+    },
+    update: { endMinute: 1020, breakMinutes: 60 },
+    create: {
+      id: demoId('4', 110 + offset),
+      workScheduleId: schedule.id,
+      weekday: 1,
+      startMinute: 480,
+      endMinute: 1020,
+      breakMinutes: 60,
+    },
+  });
+  await prisma.contractWorkSchedule.upsert({
+    where: {
+      employmentContractId_validFrom: {
+        employmentContractId: contracts[0]!.id,
+        validFrom,
+      },
+    },
+    update: { workScheduleId: schedule.id },
+    create: {
+      id: demoId('4', 120 + offset),
+      employmentContractId: contracts[0]!.id,
+      workScheduleId: schedule.id,
+      validFrom,
+      reason: 'Vínculo fictício da wave P3',
+    },
+  });
+  await prisma.holiday.upsert({
+    where: {
+      companyId_holidayDate_name: {
+        companyId,
+        holidayDate: new Date('2026-09-07T00:00:00.000Z'),
+        name: 'Feriado demonstrativo P3',
+      },
+    },
+    update: {},
+    create: {
+      id: demoId('4', 130 + offset),
+      companyId,
+      holidayDate: new Date('2026-09-07T00:00:00.000Z'),
+      name: 'Feriado demonstrativo P3',
+      scope: 'COMPANY',
+    },
+  });
+  const timeEntry = await prisma.timeEntry.upsert({
+    where: { id: demoId('4', 140 + offset) },
+    update: {},
+    create: {
+      id: demoId('4', 140 + offset),
+      employmentContractId: contracts[0]!.id,
+      companyId,
+      occurredOn: new Date('2026-08-03T00:00:00.000Z'),
+      type: 'WORKED',
+      minutes: 480,
+      reason: 'Registro fictício da wave P3',
+    },
+  });
+  await prisma.timeBalanceEntry.upsert({
+    where: { id: demoId('4', 150 + offset) },
+    update: {},
+    create: {
+      id: demoId('4', 150 + offset),
+      employmentContractId: contracts[0]!.id,
+      timeEntryId: timeEntry.id,
+      occurredOn: timeEntry.occurredOn,
+      minutes: 480,
+      type: 'WORKED',
+      reason: 'Movimento fictício da wave P3',
+    },
+  });
+
+  const benefit = await prisma.benefit.upsert({
+    where: { companyId_code: { companyId, code: 'DEMO-BENEFIT' } },
+    update: { status: 'ACTIVE' },
+    create: {
+      id: demoId('4', 160 + offset),
+      companyId,
+      code: 'DEMO-BENEFIT',
+      name: 'Benefício administrativo demonstrativo',
+      type: 'GENERIC',
+    },
+  });
+  const plan = await prisma.benefitPlan.upsert({
+    where: {
+      benefitId_name_validFrom: {
+        benefitId: benefit.id,
+        name: 'Plano fictício P3',
+        validFrom,
+      },
+    },
+    update: { status: 'ACTIVE' },
+    create: {
+      id: demoId('4', 170 + offset),
+      benefitId: benefit.id,
+      name: 'Plano fictício P3',
+      employeeAmount: '10.00',
+      companyAmount: '20.00',
+      validFrom,
+    },
+  });
+  const enrollment = await prisma.benefitEnrollment.upsert({
+    where: { id: demoId('4', 180 + offset) },
+    update: {},
+    create: {
+      id: demoId('4', 180 + offset),
+      employmentContractId: contracts[0]!.id,
+      benefitPlanId: plan.id,
+      validFrom,
+      reason: 'Adesão fictícia da wave P3',
+    },
+  });
+  const enrollmentHistory = await prisma.benefitEnrollmentHistory.findFirst({
+    where: { benefitEnrollmentId: enrollment.id, action: 'ENROLLED' },
+  });
+  if (!enrollmentHistory) {
+    await prisma.benefitEnrollmentHistory.create({
+      data: {
+        id: demoId('4', 190 + offset),
+        benefitEnrollmentId: enrollment.id,
+        action: 'ENROLLED',
+        reason: 'Histórico fictício da wave P3',
+      },
+    });
+  }
+
+  const period = await prisma.vacationPeriod.upsert({
+    where: {
+      employmentContractId_accrualStart: {
+        employmentContractId: contracts[0]!.id,
+        accrualStart: new Date('2025-01-01T00:00:00.000Z'),
+      },
+    },
+    update: { status: 'OPEN' },
+    create: {
+      id: demoId('4', 200 + offset),
+      employmentContractId: contracts[0]!.id,
+      accrualStart: new Date('2025-01-01T00:00:00.000Z'),
+      accrualEnd: new Date('2025-12-31T00:00:00.000Z'),
+      grantStart: new Date('2026-01-01T00:00:00.000Z'),
+      grantEnd: new Date('2026-12-31T00:00:00.000Z'),
+      notes: 'Período fictício da wave P3',
+    },
+  });
+  const collective = await prisma.collectiveVacation.upsert({
+    where: { id: demoId('4', 210 + offset) },
+    update: {},
+    create: {
+      id: demoId('4', 210 + offset),
+      companyId,
+      name: 'Férias coletivas demonstrativas P3',
+      startDate: new Date('2026-12-20T00:00:00.000Z'),
+      endDate: new Date('2026-12-24T00:00:00.000Z'),
+      notes: 'Registro fictício sem regra legal',
+    },
+  });
+  const request = await prisma.vacationRequest.upsert({
+    where: { id: demoId('4', 220 + offset) },
+    update: {},
+    create: {
+      id: demoId('4', 220 + offset),
+      employmentContractId: contracts[0]!.id,
+      vacationPeriodId: period.id,
+      collectiveVacationId: collective.id,
+      startDate: new Date('2026-09-14T00:00:00.000Z'),
+      endDate: new Date('2026-09-18T00:00:00.000Z'),
+      requestReason: 'Solicitação fictícia da wave P3',
+    },
+  });
+  const requestHistory = await prisma.vacationRequestHistory.findFirst({
+    where: { vacationRequestId: request.id, action: 'REQUESTED' },
+  });
+  if (!requestHistory) {
+    await prisma.vacationRequestHistory.create({
+      data: {
+        id: demoId('4', 230 + offset),
+        vacationRequestId: request.id,
+        action: 'REQUESTED',
+        reason: 'Histórico fictício da wave P3',
+      },
+    });
+  }
+}
+
 async function main() {
   assertLocalDemo();
   const horizon = await prisma.company.findUniqueOrThrow({
@@ -854,6 +1061,8 @@ async function main() {
   await seedPayroll(atlas.id, 'atlas', users.get('ADMINISTRATOR')!, atlasContracts);
   await seedP2Domains(horizon.id, 'horizon', horizonContracts);
   await seedP2Domains(atlas.id, 'atlas', atlasContracts);
+  await seedP3Domains(horizon.id, 'horizon', horizonContracts);
+  await seedP3Domains(atlas.id, 'atlas', atlasContracts);
 
   console.log(
     `Demo dataset concluído em ${referenceDate.toISOString().slice(0, 10)}: 2 empresas, 26 colaboradores, 10 competências e zero grants automáticos.`,

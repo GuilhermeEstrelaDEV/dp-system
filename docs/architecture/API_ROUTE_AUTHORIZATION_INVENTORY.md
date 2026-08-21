@@ -14,9 +14,9 @@
 | Organização           | 24 sob `/branches`, `/departments`, `/positions`, `/cost-centers` | Autenticada e empresarial | `organization.read/manage`, empresa ativa, projeção mínima e `404`       |
 | Employees/contracts   | 19 rotas sob `/employees`, `/employment-contracts`                | Autenticada e empresarial | capabilities próprias, empresa ativa, projeção mínima e `404`            |
 | Admission             | 19 em processos, checklists, documentos e templates               | Autenticada e empresarial | `admission.read/manage`, empresa ativa, projeção mínima e `404`          |
-| Time management       | jornadas, feriados, marcações e saldos                            | Ainda legada              | Exige inventário por operação                                            |
-| Benefits              | todas sob `/benefits`                                             | Ainda legada              | Exige visibilidade por capability                                        |
-| Vacations/leaves      | 5 afastamentos protegidos; 7 handlers de férias legados           | Estado misto              | `leave.read/manage`; férias permanecem P3                                |
+| Time management       | 8 em jornadas, feriados, marcações e saldos                       | Autenticada e empresarial | `time.read/manage`, empresa ativa, projeção mínima e `404`               |
+| Benefits              | 6 sob `/benefits`                                                 | Autenticada e empresarial | `benefit.read/manage`, empresa ativa, projeção mínima e `404`            |
+| Vacations/leaves      | 5 afastamentos e 7 handlers de férias protegidos                  | Autenticada e empresarial | `leave.*` e `vacation.*`, empresa ativa, projeção mínima e `404`         |
 | Payroll readiness     | `GET /payroll-periods/:payrollPeriodId/closure-readiness`         | Autenticada e empresarial | JWT, capability, serviço e `404`                                         |
 | Payroll period close  | `POST /payroll-periods/:payrollPeriodId/close`                    | Autenticada e empresarial | JWT, `payroll.period.close.execute`, empresa ativa, idempotência e `404` |
 | Payroll configuration | oito rotas de rubricas e parâmetros                               | Autenticada e empresarial | `payroll.parameter.*` e `payroll.rubric.*`; projeções mínimas            |
@@ -108,3 +108,11 @@ deferred, permanecendo 165 handlers e zero não classificados. Os sete handlers 
 P3 e os quinze aliases residuais de folha continuam P0-RESIDUAL. As oito capabilities P2 são
 específicas por família e leitura/escrita, sem fallback para `platform.manage`. Consulte o
 [aceite autoritativo](../full-delivery/P2_ACCEPTANCE.md).
+
+## Full Delivery P3
+
+Mais 21 handlers deixaram `LEGACY_DEFERRED`: Time (8), Benefit (6) e Vacation (7). O total runtime
+passa a 4 public, 5 authenticated, 141 capability-protected e 15 deferred, permanecendo 165
+handlers e zero não classificados. Os quinze aliases residuais de folha continuam P0-RESIDUAL. As
+seis capabilities P3 são específicas por família e leitura/escrita, sem fallback para
+`platform.manage`. Consulte o [aceite autoritativo](../full-delivery/P3_ACCEPTANCE.md).

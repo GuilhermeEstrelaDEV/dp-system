@@ -1,40 +1,10 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { type ReactNode, useState } from 'react';
+import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
 import { PageHeader } from '@/components/common/PageHeader';
+import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
 
-const benefitSchema = z.object({
-  companyId: z.string().uuid('Informe o identificador da empresa.'),
-  code: z.string().min(1, 'Informe o código.').max(50),
-  name: z.string().min(1, 'Informe o nome.').max(160),
-  type: z.enum(['TRANSPORT', 'MEAL', 'FOOD', 'GENERIC']),
-});
-const planSchema = z.object({
-  benefitId: z.string().uuid('Informe o benefício.'),
-  name: z.string().min(1, 'Informe o nome do plano.').max(160),
-  employeeAmount: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Use valor decimal com até duas casas.'),
-  companyAmount: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Use valor decimal com até duas casas.'),
-  copayAmount: z
-    .string()
-    .regex(/^\d+(\.\d{1,2})?$/, 'Use valor decimal com até duas casas.')
-    .or(z.literal('')),
-  validFrom: z.string().min(1, 'Informe o início da vigência.'),
-  validTo: z.string(),
-});
-const enrollmentSchema = z.object({
-  employmentContractId: z.string().uuid('Informe o contrato.'),
-  benefitPlanId: z.string().uuid('Informe o plano.'),
-  validFrom: z.string().min(1, 'Informe o início da vigência.'),
-  validTo: z.string(),
-  reason: z.string().max(1000),
-});
-
-type BenefitValues = z.infer<typeof benefitSchema>;
-type PlanValues = z.infer<typeof planSchema>;
-type EnrollmentValues = z.infer<typeof enrollmentSchema>;
 type Benefit = {
   id: string;
   code: string;
@@ -46,9 +16,9 @@ type Benefit = {
     name: string;
     employeeAmount: string;
     companyAmount: string;
-    copayAmount?: string | null;
     validFrom: string;
     validTo?: string | null;
+    status: string;
   }>;
 };
 type Enrollment = {
@@ -56,56 +26,18 @@ type Enrollment = {
   status: string;
   validFrom: string;
   validTo?: string | null;
-  reason?: string | null;
   benefitPlan: { name: string; benefit: { name: string; type: string } };
 };
 
-const typeLabels: Record<BenefitValues['type'], string> = {
-  TRANSPORT: 'Vale-transporte',
-  MEAL: 'Vale-refeição',
-  FOOD: 'Vale-alimentação',
-  GENERIC: 'Genérico',
-};
-const pageSize = 5;
-
-function FormError({ message }: { message?: string }) {
-  return message ? <span role="alert">{message}</span> : null;
-}
-
 export function BenefitsPage() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('benefit.manage') ?? true;
   const client = useQueryClient();
   const [search, setSearch] = useState('');
-  const [type, setType] = useState<'ALL' | BenefitValues['type']>('ALL');
-  const [page, setPage] = useState(0);
+  const [type, setType] = useState('ALL');
   const [contractId, setContractId] = useState('');
-  const benefitForm = useForm<BenefitValues>({
-    resolver: zodResolver(benefitSchema),
-    defaultValues: { companyId: '', code: '', name: '', type: 'GENERIC' },
-  });
-  const planForm = useForm<PlanValues>({
-    resolver: zodResolver(planSchema),
-    defaultValues: {
-      benefitId: '',
-      name: '',
-      employeeAmount: '0.00',
-      companyAmount: '0.00',
-      copayAmount: '',
-      validFrom: '',
-      validTo: '',
-    },
-  });
-  const enrollmentForm = useForm<EnrollmentValues>({
-    resolver: zodResolver(enrollmentSchema),
-    defaultValues: {
-      employmentContractId: '',
-      benefitPlanId: '',
-      validFrom: '',
-      validTo: '',
-      reason: '',
-    },
-  });
   const benefits = useQuery({
-    queryKey: ['benefits', search, type],
+    queryKey: ['benefits', auth?.activeCompanyId, search, type],
     queryFn: () =>
       apiRequest<Benefit[]>(
         `/benefits?search=${encodeURIComponent(search)}${type === 'ALL' ? '' : `&type=${type}`}`,
@@ -113,297 +45,298 @@ export function BenefitsPage() {
   });
   const enrollments = useQuery({
     enabled: Boolean(contractId),
-    queryKey: ['benefit-enrollments', contractId],
+    queryKey: ['benefit-enrollments', auth?.activeCompanyId, contractId],
     queryFn: () => apiRequest<Enrollment[]>(`/benefits/enrollments/${contractId}`),
   });
-  const invalidateBenefits = () => void client.invalidateQueries({ queryKey: ['benefits'] });
+  const invalidate = () => {
+    void client.invalidateQueries({ queryKey: ['benefits'] });
+    void client.invalidateQueries({ queryKey: ['benefit-enrollments'] });
+  };
   const createBenefit = useMutation({
-    mutationFn: (values: BenefitValues) =>
-      apiRequest('/benefits', { method: 'POST', body: JSON.stringify(values) }),
-    onSuccess: () => {
-      benefitForm.reset();
-      invalidateBenefits();
-    },
+    mutationFn: (form: FormData) =>
+      apiRequest('/benefits', {
+        method: 'POST',
+        body: JSON.stringify({
+          code: form.get('code'),
+          name: form.get('name'),
+          type: form.get('type'),
+        }),
+      }),
+    onSuccess: invalidate,
   });
   const createPlan = useMutation({
-    mutationFn: ({ validTo, ...values }: PlanValues) =>
+    mutationFn: (form: FormData) =>
       apiRequest('/benefits/plans', {
         method: 'POST',
         body: JSON.stringify({
-          ...values,
-          copayAmount: values.copayAmount || undefined,
-          validTo: validTo || undefined,
+          benefitId: form.get('benefitId'),
+          name: form.get('name'),
+          employeeAmount: form.get('employeeAmount'),
+          companyAmount: form.get('companyAmount'),
+          copayAmount: form.get('copayAmount') || undefined,
+          validFrom: form.get('validFrom'),
+          validTo: form.get('validTo') || undefined,
         }),
       }),
-    onSuccess: () => {
-      planForm.reset();
-      invalidateBenefits();
-    },
+    onSuccess: invalidate,
   });
   const createEnrollment = useMutation({
-    mutationFn: ({ validTo, ...values }: EnrollmentValues) =>
+    mutationFn: (form: FormData) =>
       apiRequest('/benefits/enrollments', {
         method: 'POST',
-        body: JSON.stringify({ ...values, validTo: validTo || undefined }),
+        body: JSON.stringify({
+          employmentContractId: form.get('employmentContractId'),
+          benefitPlanId: form.get('benefitPlanId'),
+          validFrom: form.get('validFrom'),
+          validTo: form.get('validTo') || undefined,
+          reason: form.get('reason') || undefined,
+        }),
       }),
-    onSuccess: () => {
-      enrollmentForm.reset();
-      void client.invalidateQueries({ queryKey: ['benefit-enrollments'] });
-    },
+    onSuccess: invalidate,
   });
   const changeEnrollment = useMutation({
     mutationFn: ({ id, status }: { id: string; status: 'SUSPENDED' | 'CANCELLED' }) =>
       apiRequest(`/benefits/enrollments/${id}`, {
         method: 'PATCH',
-        body: JSON.stringify({
-          status,
-          reason: 'Alteração demonstrativa registrada pela interface.',
-        }),
+        body: JSON.stringify({ status, reason: 'Ação administrativa fictícia da demonstração.' }),
       }),
-    onSuccess: () => void client.invalidateQueries({ queryKey: ['benefit-enrollments'] }),
+    onSuccess: invalidate,
   });
-  const filtered = useMemo(() => benefits.data ?? [], [benefits.data]);
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const visibleBenefits = useMemo(
-    () => filtered.slice(page * pageSize, (page + 1) * pageSize),
-    [filtered, page],
-  );
+  const mutationError =
+    createBenefit.error ?? createPlan.error ?? createEnrollment.error ?? changeEnrollment.error;
 
   return (
     <section aria-labelledby="benefits-title">
       <PageHeader
         title="Benefícios"
-        description="Ambiente demonstrativo: valores são parametrizações futuras para folha. Não há dados médicos, integração com operadoras, cálculo de desconto ou dados reais."
+        description="Operação administrativa da empresa ativa, sem elegibilidade legal, cálculo de desconto ou integração com operadoras."
       />
-      <section aria-labelledby="catalog-title">
-        <h2 id="catalog-title">Catálogo por empresa</h2>
-        <form onSubmit={benefitForm.handleSubmit((values) => createBenefit.mutate(values))}>
-          <label>
-            Identificador da empresa
-            <input aria-describedby="company-error" {...benefitForm.register('companyId')} />
-          </label>
-          <FormError message={benefitForm.formState.errors.companyId?.message} />
-          <label>
-            Código
-            <input {...benefitForm.register('code')} />
-          </label>
-          <FormError message={benefitForm.formState.errors.code?.message} />
-          <label>
-            Nome
-            <input {...benefitForm.register('name')} />
-          </label>
-          <FormError message={benefitForm.formState.errors.name?.message} />
-          <label>
-            Tipo
-            <select {...benefitForm.register('type')}>
-              {Object.entries(typeLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit" disabled={createBenefit.isPending}>
-            Criar benefício
-          </button>
-          {createBenefit.isError && <p role="alert">{createBenefit.error.message}</p>}
-        </form>
-        <div role="search">
-          <label>
-            Pesquisar catálogo
-            <input
-              value={search}
-              onChange={(event) => {
-                setSearch(event.target.value);
-                setPage(0);
-              }}
-            />
-          </label>
-          <label>
-            Filtrar por tipo
-            <select
-              value={type}
-              onChange={(event) => {
-                setType(event.target.value as typeof type);
-                setPage(0);
-              }}
-            >
-              <option value="ALL">Todos</option>
-              {Object.entries(typeLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        {benefits.isLoading ? (
-          <p role="status">Carregando benefícios…</p>
-        ) : benefits.isError ? (
-          <p role="alert">{benefits.error.message}</p>
-        ) : filtered.length === 0 ? (
-          <p>Nenhum benefício demonstrativo encontrado.</p>
-        ) : (
-          <>
-            <ul aria-label="Benefícios cadastrados">
-              {visibleBenefits.map((item) => (
-                <li key={item.id}>
-                  <strong>
+      {canManage && (
+        <div className="grid gap-6 lg:grid-cols-3">
+          <BenefitForm title="Novo benefício" mutation={createBenefit}>
+            <label>
+              Código
+              <input name="code" maxLength={50} required />
+            </label>
+            <label>
+              Nome
+              <input name="name" maxLength={160} required />
+            </label>
+            <label>
+              Tipo
+              <select name="type">
+                <option value="GENERIC">Genérico</option>
+                <option value="TRANSPORT">Transporte</option>
+                <option value="MEAL">Refeição</option>
+                <option value="FOOD">Alimentação</option>
+              </select>
+            </label>
+          </BenefitForm>
+          <BenefitForm title="Novo plano" mutation={createPlan}>
+            <label>
+              Benefício
+              <select name="benefitId" required>
+                <option value="">Selecione</option>
+                {benefits.data?.map((item) => (
+                  <option key={item.id} value={item.id}>
                     {item.code} — {item.name}
-                  </strong>{' '}
-                  ({typeLabels[item.type as BenefitValues['type']] ?? item.type}) ·{' '}
-                  {item.plans.length} plano(s)
-                  {item.plans.map((plan) => (
-                    <div key={plan.id}>
-                      Plano {plan.name}: empresa {plan.companyAmount}, colaborador{' '}
-                      {plan.employeeAmount}, coparticipação {plan.copayAmount ?? 'não configurada'};
-                      vigência {plan.validFrom} a {plan.validTo ?? 'em aberto'}.
-                    </div>
-                  ))}
-                </li>
-              ))}
-            </ul>
-            <nav aria-label="Paginação do catálogo">
-              <button
-                type="button"
-                disabled={page === 0}
-                onClick={() => setPage((current) => current - 1)}
-              >
-                Anterior
-              </button>
-              <span>
-                {' '}
-                Página {page + 1} de {totalPages}{' '}
-              </span>
-              <button
-                type="button"
-                disabled={page + 1 >= totalPages}
-                onClick={() => setPage((current) => current + 1)}
-              >
-                Próxima
-              </button>
-            </nav>
-          </>
-        )}
-      </section>
-      <section aria-labelledby="plans-title">
-        <h2 id="plans-title">Planos, elegibilidade e vigência</h2>
-        <p>
-          Um plano é vinculado ao catálogo da empresa; a elegibilidade é conferida pelo vínculo do
-          contrato com essa empresa no momento da adesão.
-        </p>
-        <form onSubmit={planForm.handleSubmit((values) => createPlan.mutate(values))}>
-          <label>
-            Benefício
-            <input {...planForm.register('benefitId')} />
-          </label>
-          <FormError message={planForm.formState.errors.benefitId?.message} />
-          <label>
-            Nome do plano
-            <input {...planForm.register('name')} />
-          </label>
-          <FormError message={planForm.formState.errors.name?.message} />
-          <label>
-            Valor da empresa
-            <input inputMode="decimal" {...planForm.register('companyAmount')} />
-          </label>
-          <FormError message={planForm.formState.errors.companyAmount?.message} />
-          <label>
-            Valor do colaborador
-            <input inputMode="decimal" {...planForm.register('employeeAmount')} />
-          </label>
-          <FormError message={planForm.formState.errors.employeeAmount?.message} />
-          <label>
-            Coparticipação opcional
-            <input inputMode="decimal" {...planForm.register('copayAmount')} />
-          </label>
-          <FormError message={planForm.formState.errors.copayAmount?.message} />
-          <label>
-            Início
-            <input type="date" {...planForm.register('validFrom')} />
-          </label>
-          <FormError message={planForm.formState.errors.validFrom?.message} />
-          <label>
-            Fim opcional
-            <input type="date" {...planForm.register('validTo')} />
-          </label>
-          <button type="submit" disabled={createPlan.isPending}>
-            Criar plano
-          </button>
-          {createPlan.isError && <p role="alert">{createPlan.error.message}</p>}
-        </form>
-      </section>
-      <section aria-labelledby="enrollments-title">
-        <h2 id="enrollments-title">Adesões por colaborador</h2>
-        <form onSubmit={enrollmentForm.handleSubmit((values) => createEnrollment.mutate(values))}>
-          <label>
-            Identificador do contrato
-            <input {...enrollmentForm.register('employmentContractId')} />
-          </label>
-          <FormError message={enrollmentForm.formState.errors.employmentContractId?.message} />
-          <label>
-            Identificador do plano
-            <input {...enrollmentForm.register('benefitPlanId')} />
-          </label>
-          <FormError message={enrollmentForm.formState.errors.benefitPlanId?.message} />
-          <label>
-            Início
-            <input type="date" {...enrollmentForm.register('validFrom')} />
-          </label>
-          <FormError message={enrollmentForm.formState.errors.validFrom?.message} />
-          <label>
-            Fim opcional
-            <input type="date" {...enrollmentForm.register('validTo')} />
-          </label>
-          <label>
-            Justificativa opcional
-            <input {...enrollmentForm.register('reason')} />
-          </label>
-          <button type="submit" disabled={createEnrollment.isPending}>
-            Registrar adesão
-          </button>
-          {createEnrollment.isError && <p role="alert">{createEnrollment.error.message}</p>}
-        </form>
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Nome
+              <input name="name" required />
+            </label>
+            <label>
+              Valor colaborador
+              <input name="employeeAmount" inputMode="decimal" defaultValue="0.00" required />
+            </label>
+            <label>
+              Valor empresa
+              <input name="companyAmount" inputMode="decimal" defaultValue="0.00" required />
+            </label>
+            <label>
+              Coparticipação opcional
+              <input name="copayAmount" inputMode="decimal" />
+            </label>
+            <label>
+              Início
+              <input name="validFrom" type="date" required />
+            </label>
+            <label>
+              Fim opcional
+              <input name="validTo" type="date" />
+            </label>
+          </BenefitForm>
+          <BenefitForm title="Nova adesão" mutation={createEnrollment}>
+            <label>
+              Contrato
+              <input name="employmentContractId" required />
+            </label>
+            <label>
+              Plano
+              <input name="benefitPlanId" required />
+            </label>
+            <label>
+              Início
+              <input name="validFrom" type="date" required />
+            </label>
+            <label>
+              Fim opcional
+              <input name="validTo" type="date" />
+            </label>
+            <label>
+              Motivo administrativo
+              <input name="reason" />
+            </label>
+          </BenefitForm>
+        </div>
+      )}
+      {mutationError && <p role="alert">{mutationError.message}</p>}
+      <div role="search" className="grid gap-3 md:grid-cols-2">
         <label>
-          Consultar adesões do contrato
+          Pesquisar catálogo
+          <input value={search} onChange={(event) => setSearch(event.target.value)} />
+        </label>
+        <label>
+          Filtrar por tipo
+          <select value={type} onChange={(event) => setType(event.target.value)}>
+            <option value="ALL">Todos</option>
+            <option value="GENERIC">Genérico</option>
+            <option value="TRANSPORT">Transporte</option>
+            <option value="MEAL">Refeição</option>
+            <option value="FOOD">Alimentação</option>
+          </select>
+        </label>
+      </div>
+      {benefits.isLoading ? <p role="status">Carregando benefícios…</p> : null}
+      {benefits.isError ? <p role="alert">{benefits.error.message}</p> : null}
+      {benefits.data?.length === 0 ? <p>Nenhum benefício demonstrativo encontrado.</p> : null}
+      {benefits.data?.length ? (
+        <DataTable label="Tabela de benefícios">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Nome</th>
+              <th>Tipo</th>
+              <th>Planos ativos</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {benefits.data.map((item) => (
+              <tr key={item.id}>
+                <td className="ui-table-cell--compact">{item.code}</td>
+                <td>{item.name}</td>
+                <td className="ui-table-cell--compact">{item.type}</td>
+                <td>
+                  {item.plans
+                    .map((plan) => `${plan.name} (${plan.validFrom.slice(0, 10)})`)
+                    .join(', ') || '—'}
+                </td>
+                <td>
+                  <DataTableStatus active={item.status === 'ACTIVE'} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </DataTable>
+      ) : null}
+      <section className="mt-6" aria-labelledby="enrollments-title">
+        <h2 id="enrollments-title">Adesões por contrato</h2>
+        <label>
+          Identificador do contrato
           <input value={contractId} onChange={(event) => setContractId(event.target.value)} />
         </label>
-        {enrollments.isLoading ? (
-          <p role="status">Carregando adesões…</p>
-        ) : enrollments.isError ? (
-          <p role="alert">{enrollments.error.message}</p>
-        ) : enrollments.data?.length ? (
-          <ul aria-label="Adesões do contrato">
-            {enrollments.data.map((item) => (
-              <li key={item.id}>
-                {item.benefitPlan.benefit.name} — {item.benefitPlan.name}; {item.status};{' '}
-                {item.validFrom} a {item.validTo ?? 'em aberto'}{' '}
-                {item.status === 'ACTIVE' && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => changeEnrollment.mutate({ id: item.id, status: 'SUSPENDED' })}
-                    >
-                      Suspender
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => changeEnrollment.mutate({ id: item.id, status: 'CANCELLED' })}
-                    >
-                      Cancelar
-                    </button>
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : contractId ? (
+        {enrollments.isLoading ? <p role="status">Carregando adesões…</p> : null}
+        {enrollments.isError ? <p role="alert">{enrollments.error.message}</p> : null}
+        {contractId && enrollments.data?.length === 0 ? (
           <p>Nenhuma adesão demonstrativa encontrada para o contrato.</p>
-        ) : (
-          <p>Informe um contrato para consultar adesões.</p>
-        )}
-        {changeEnrollment.isError && <p role="alert">{changeEnrollment.error.message}</p>}
+        ) : null}
+        {!contractId ? <p>Informe um contrato para consultar adesões.</p> : null}
+        {enrollments.data?.length ? (
+          <DataTable label="Tabela de adesões a benefícios">
+            <thead>
+              <tr>
+                <th>Benefício</th>
+                <th>Plano</th>
+                <th>Vigência</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {enrollments.data.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.benefitPlan.benefit.name}</td>
+                  <td>{item.benefitPlan.name}</td>
+                  <td className="ui-table-cell--compact">
+                    {item.validFrom.slice(0, 10)} — {item.validTo?.slice(0, 10) ?? 'em aberto'}
+                  </td>
+                  <td>
+                    <DataTableStatus
+                      active={item.status === 'ACTIVE'}
+                      activeLabel={item.status}
+                      inactiveLabel={item.status}
+                    />
+                  </td>
+                  <td>
+                    <DataTableActions>
+                      {canManage && item.status === 'ACTIVE' && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              changeEnrollment.mutate({ id: item.id, status: 'SUSPENDED' })
+                            }
+                          >
+                            Suspender
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              changeEnrollment.mutate({ id: item.id, status: 'CANCELLED' })
+                            }
+                          >
+                            Cancelar
+                          </button>
+                        </>
+                      )}
+                    </DataTableActions>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </DataTable>
+        ) : null}
       </section>
     </section>
+  );
+}
+
+function BenefitForm({
+  title,
+  mutation,
+  children,
+}: {
+  readonly title: string;
+  readonly mutation: { mutate(form: FormData): void; isPending: boolean };
+  readonly children: ReactNode;
+}) {
+  return (
+    <form
+      className="grid gap-3 rounded border p-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        mutation.mutate(new FormData(event.currentTarget));
+      }}
+    >
+      <h2>{title}</h2>
+      {children}
+      <DataTableActions>
+        <button disabled={mutation.isPending}>Salvar</button>
+      </DataTableActions>
+    </form>
   );
 }

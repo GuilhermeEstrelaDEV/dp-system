@@ -1,5 +1,13 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import type { AuthenticatedPrincipal } from '../../common/http/request-context';
+import { CurrentPrincipal, RequireCapabilities } from '../auth/auth.decorators';
 import {
   AssignScheduleDto,
   CloseBalanceDto,
@@ -10,34 +18,79 @@ import {
 import { TimeManagementService } from './time-management.service';
 
 @ApiTags('time-management')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse()
+@ApiForbiddenResponse()
 @Controller()
 export class TimeManagementController {
   constructor(private readonly service: TimeManagementService) {}
-  @Get('work-schedules') schedules(@Query('companyId') companyId?: string) {
-    return this.service.schedules(companyId);
+
+  @RequireCapabilities('time.read')
+  @ApiNotFoundResponse()
+  @Get('work-schedules')
+  schedules(
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+    @Query('companyId') companyId?: string,
+  ) {
+    return this.service.schedules(principal, companyId);
   }
-  @Post('work-schedules') createSchedule(@Body() dto: CreateScheduleDto) {
-    return this.service.createSchedule(dto);
+
+  @RequireCapabilities('time.manage')
+  @ApiNotFoundResponse()
+  @Post('work-schedules')
+  createSchedule(
+    @Body() dto: CreateScheduleDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.createSchedule(dto, principal);
   }
-  @Post('employment-contracts/:id/work-schedules') assign(
+
+  @RequireCapabilities('time.manage')
+  @ApiNotFoundResponse()
+  @Post('employment-contracts/:id/work-schedules')
+  assign(
     @Param('id') id: string,
     @Body() dto: AssignScheduleDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
   ) {
-    return this.service.assignSchedule(id, dto);
+    return this.service.assignSchedule(id, dto, principal);
   }
-  @Post('holidays') holiday(@Body() dto: CreateHolidayDto) {
-    return this.service.createHoliday(dto);
+
+  @RequireCapabilities('time.manage')
+  @ApiNotFoundResponse()
+  @Post('holidays')
+  holiday(@Body() dto: CreateHolidayDto, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.createHoliday(dto, principal);
   }
-  @Get('time-entries') entries(@Query('employmentContractId') employmentContractId?: string) {
-    return this.service.entries(employmentContractId);
+
+  @RequireCapabilities('time.read')
+  @ApiNotFoundResponse()
+  @Get('time-entries')
+  entries(
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+    @Query('employmentContractId') employmentContractId?: string,
+  ) {
+    return this.service.entries(principal, employmentContractId);
   }
-  @Post('time-entries') entry(@Body() dto: CreateTimeEntryDto) {
-    return this.service.createEntry(dto);
+
+  @RequireCapabilities('time.manage')
+  @ApiNotFoundResponse()
+  @Post('time-entries')
+  entry(@Body() dto: CreateTimeEntryDto, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.createEntry(dto, principal);
   }
-  @Get('employment-contracts/:id/time-balance') balance(@Param('id') id: string) {
-    return this.service.balance(id);
+
+  @RequireCapabilities('time.read')
+  @ApiNotFoundResponse()
+  @Get('employment-contracts/:id/time-balance')
+  balance(@Param('id') id: string, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.balance(id, principal);
   }
-  @Post('time-balance-closings') close(@Body() dto: CloseBalanceDto) {
-    return this.service.close(dto);
+
+  @RequireCapabilities('time.manage')
+  @ApiNotFoundResponse()
+  @Post('time-balance-closings')
+  close(@Body() dto: CloseBalanceDto, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.close(dto, principal);
   }
 }

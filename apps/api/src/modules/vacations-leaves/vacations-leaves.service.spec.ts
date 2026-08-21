@@ -5,16 +5,15 @@ import { VacationsLeavesService } from './vacations-leaves.service';
 describe('VacationsLeavesService', () => {
   const prisma = {
     employmentContract: { findUnique: jest.fn(), findFirst: jest.fn() },
-    vacationPeriod: { findMany: jest.fn(), findUnique: jest.fn(), create: jest.fn() },
+    vacationPeriod: { findMany: jest.fn(), findFirst: jest.fn(), create: jest.fn() },
     vacationRequest: {
       findMany: jest.fn(),
-      findUnique: jest.fn(),
       findFirst: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
     },
     vacationRequestHistory: { create: jest.fn() },
-    collectiveVacation: { create: jest.fn() },
+    collectiveVacation: { findFirst: jest.fn(), create: jest.fn() },
     leaveType: { findMany: jest.fn(), findFirst: jest.fn(), create: jest.fn() },
     leaveCase: { findMany: jest.fn(), findFirst: jest.fn(), create: jest.fn(), update: jest.fn() },
     leaveCaseHistory: { create: jest.fn() },
@@ -32,7 +31,7 @@ describe('VacationsLeavesService', () => {
     traceId: 'trace',
     ipAddress: '127.0.0.1',
     userAgent: null,
-    permissions: ['leave.read', 'leave.manage'],
+    permissions: ['leave.read', 'leave.manage', 'vacation.read', 'vacation.manage'],
     accessGrants: [],
   } satisfies AuthenticatedPrincipal;
   const service = new VacationsLeavesService(
@@ -48,28 +47,39 @@ describe('VacationsLeavesService', () => {
 
   it('rejects incoherent vacation period dates', async () => {
     await expect(
-      service.createVacationPeriod({
-        employmentContractId: 'contract',
-        accrualStart: '2026-08-01',
-        accrualEnd: '2026-07-31',
-      }),
+      service.createVacationPeriod(
+        {
+          employmentContractId: 'contract',
+          accrualStart: '2026-08-01',
+          accrualEnd: '2026-07-31',
+        },
+        principal,
+      ),
     ).rejects.toBeInstanceOf(ConflictException);
   });
 
   it('blocks a vacation request that overlaps an open leave', async () => {
-    prisma.vacationPeriod.findUnique.mockResolvedValue({
+    prisma.employmentContract.findFirst.mockResolvedValue({
+      id: 'contract',
+      companyId: 'company',
+      status: 'ACTIVE',
+    });
+    prisma.vacationPeriod.findFirst.mockResolvedValue({
       id: 'period',
       employmentContractId: 'contract',
     });
     prisma.vacationRequest.findFirst.mockResolvedValue(null);
     prisma.leaveCase.findFirst.mockResolvedValue({ id: 'leave' });
     await expect(
-      service.createVacationRequest({
-        employmentContractId: 'contract',
-        vacationPeriodId: 'period',
-        startDate: '2026-08-01',
-        endDate: '2026-08-10',
-      }),
+      service.createVacationRequest(
+        {
+          employmentContractId: 'contract',
+          vacationPeriodId: 'period',
+          startDate: '2026-08-01',
+          endDate: '2026-08-10',
+        },
+        principal,
+      ),
     ).rejects.toBeInstanceOf(ConflictException);
   });
 
@@ -90,6 +100,27 @@ describe('VacationsLeavesService', () => {
     });
     expect(audit.append).toHaveBeenCalledWith(
       expect.objectContaining({ action: 'LEAVE_CASE_RETURNED' }),
+      prisma,
+    );
+  });
+
+  it('creates a company-scoped vacation period with transactional audit', async () => {
+    prisma.employmentContract.findFirst.mockResolvedValue({
+      id: 'contract',
+      companyId: 'company',
+      status: 'ACTIVE',
+    });
+    prisma.vacationPeriod.create.mockResolvedValue({ id: 'period', status: 'OPEN' });
+    await service.createVacationPeriod(
+      {
+        employmentContractId: 'contract',
+        accrualStart: '2026-01-01',
+        accrualEnd: '2026-12-31',
+      },
+      principal,
+    );
+    expect(audit.append).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'VACATION_PERIOD_CREATED', entityId: 'period' }),
       prisma,
     );
   });

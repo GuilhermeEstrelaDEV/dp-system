@@ -18,8 +18,8 @@ minimum projection, audit where required, frontend consumption and tests are ava
 | Wave        | Families                                                         | Handlers | State          |
 | ----------- | ---------------------------------------------------------------- | -------: | -------------- |
 | P1          | Company, Employee, Contract, Payroll Parameters, Payroll Rubrics |       33 | Implemented    |
-| P2          | Organization, Admission, Leave, Variable Compensation            |       56 | Ready to merge |
-| P3          | Time, Benefit, Vacation                                          |       21 | Not started    |
+| P2          | Organization, Admission, Leave, Variable Compensation            |       56 | Implemented    |
+| P3          | Time, Benefit, Vacation                                          |       21 | Ready to merge |
 | P0-RESIDUAL | legacy Payroll Period, Payroll Input and Payroll Run             |       15 | Not started    |
 
 P1 uses independent `Company` entities. It does not create an economic-group model, sibling-company
@@ -59,8 +59,21 @@ The canonical seed remains assignment-free. The manual demo access mechanism is 
 the fictitious administrator and remains expirable, revocable and audited. P2 frontend tables reuse
 the shared PR #94 standard. Detailed evidence is in [P2_ACCEPTANCE.md](P2_ACCEPTANCE.md).
 
+## P3 outcome
+
+P3 migrates exactly 21 handlers to six family-level read/manage capabilities and adds fourteen
+produced audit event types. Time, Benefit and Vacation derive authority from the authenticated
+principal's active company, use explicit projections and return `404` for foreign-company resources.
+All critical writes persist the domain mutation and restricted audit evidence in the same
+transaction.
+
+No migration is required. The canonical seed remains assignment-free; the local demonstration
+command grants the 30 approved demo capabilities only to the fictitious administrator with
+`MANUAL` provenance and an eight-hour maximum. The functional frontend reuses the shared PR #94
+table standard. Detailed evidence is in [P3_ACCEPTANCE.md](P3_ACCEPTANCE.md).
+
 ## Exit and continuation
 
-P2 acceptance does not declare the system complete. P3 and P0-RESIDUAL require separate
-branches, inventories, capabilities, projections, audit decisions, tests and human review. No later
-wave is initiated by this delivery.
+P3 acceptance does not declare the system complete. P0-RESIDUAL retains fifteen legacy payroll
+handlers and requires a separate branch, inventory, capability, projection, audit decision, tests
+and human review. No later wave is initiated by this delivery.

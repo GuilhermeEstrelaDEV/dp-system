@@ -79,8 +79,7 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Jornadas e registros de ponto.',
     icon: 'time',
     group: 'Pessoas',
-    comingSoon: true,
-    availabilityLabel: 'Fora do MVP',
+    capability: 'time.read',
   },
   {
     label: 'Benefícios',
@@ -88,8 +87,15 @@ export const navigationItems: readonly NavigationItem[] = [
     description: 'Benefícios vinculados aos colaboradores.',
     icon: 'benefits',
     group: 'Pessoas',
-    comingSoon: true,
-    availabilityLabel: 'Fora do MVP',
+    capability: 'benefit.read',
+  },
+  {
+    label: 'Férias',
+    path: '/ferias',
+    description: 'Períodos e solicitações da empresa ativa.',
+    icon: 'movements',
+    group: 'Pessoas',
+    capability: 'vacation.read',
   },
   {
     label: 'Folha',

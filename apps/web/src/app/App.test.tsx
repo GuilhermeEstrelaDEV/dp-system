@@ -45,7 +45,7 @@ describe('application shell', () => {
     expect(screen.getByText('Desligamentos').closest('[aria-disabled="true"]')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Desligamentos' })).not.toBeInTheDocument();
     expect(screen.getAllByText('Em breve')).toHaveLength(3);
-    expect(screen.getAllByText('Fora do MVP')).toHaveLength(2);
+    expect(screen.queryAllByText('Fora do MVP')).toHaveLength(0);
     expect(screen.queryByRole('link', { name: /Colaboradores/ })).not.toBeInTheDocument();
   });
 
