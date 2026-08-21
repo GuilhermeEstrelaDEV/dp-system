@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
+import { useOptionalAuth } from '@/features/auth/AuthContext';
 
 type ChecklistItem = {
   id: string;
@@ -14,10 +15,12 @@ type ChecklistItem = {
 type Checklist = { id: string; templateName: string; items: ChecklistItem[] };
 
 export function AdmissionChecklistPage() {
+  const auth = useOptionalAuth();
+  const canManage = auth?.hasCapability('admission.manage') ?? true;
   const { admissionId = '' } = useParams();
   const client = useQueryClient();
   const checklist = useQuery({
-    queryKey: ['admission-checklist', admissionId],
+    queryKey: ['admission-checklist', auth?.activeCompanyId, admissionId],
     queryFn: () => apiRequest<Checklist>(`/admission-processes/${admissionId}/checklist`),
   });
   const update = useMutation({
@@ -54,26 +57,28 @@ export function AdmissionChecklistPage() {
               Status: {item.status}
               {item.dueDate ? ` · prazo configurado: ${item.dueDate}` : ''}
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => update.mutate({ id: item.id, status: 'COMPLETED' })}
-              >
-                Concluir
-              </button>
-              <button
-                type="button"
-                onClick={() => update.mutate({ id: item.id, status: 'NOT_APPLICABLE' })}
-              >
-                Não aplicável
-              </button>
-              <button
-                type="button"
-                onClick={() => update.mutate({ id: item.id, status: 'BLOCKED' })}
-              >
-                Bloquear
-              </button>
-            </div>
+            {canManage && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => update.mutate({ id: item.id, status: 'COMPLETED' })}
+                >
+                  Concluir
+                </button>
+                <button
+                  type="button"
+                  onClick={() => update.mutate({ id: item.id, status: 'NOT_APPLICABLE' })}
+                >
+                  Não aplicável
+                </button>
+                <button
+                  type="button"
+                  onClick={() => update.mutate({ id: item.id, status: 'BLOCKED' })}
+                >
+                  Bloquear
+                </button>
+              </div>
+            )}
           </li>
         ))}
       </ul>

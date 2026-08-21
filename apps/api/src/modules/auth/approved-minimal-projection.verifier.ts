@@ -90,8 +90,8 @@ export function verifyApprovedMinimalProjection(): readonly string[] {
     )
   )
     errors.push('catalog contains an unapproved profile or masking strategy');
-  if (AUDIT_EVENT_CODES.length !== 41)
-    errors.push('runtime audit catalog does not contain 41 events');
+  if (AUDIT_EVENT_CODES.length !== 60)
+    errors.push('runtime audit catalog does not contain 60 events');
   const ar03 = auditEventDescriptor('ACCESS_GRANTS_VIEWED');
   if (
     ar03.category !== 'AUTHORIZATION' ||

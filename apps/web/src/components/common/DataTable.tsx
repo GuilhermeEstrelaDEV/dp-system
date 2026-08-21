@@ -15,6 +15,16 @@ export function DataTableActions({ children }: PropsWithChildren) {
   return <div className="ui-table-actions">{children}</div>;
 }
 
-export function DataTableStatus({ active }: { readonly active: boolean }) {
-  return <Badge tone={active ? 'success' : 'neutral'}>{active ? 'Ativo' : 'Inativo'}</Badge>;
+export function DataTableStatus({
+  active,
+  activeLabel = 'Ativo',
+  inactiveLabel = 'Inativo',
+}: {
+  readonly active: boolean;
+  readonly activeLabel?: string;
+  readonly inactiveLabel?: string;
+}) {
+  return (
+    <Badge tone={active ? 'success' : 'neutral'}>{active ? activeLabel : inactiveLabel}</Badge>
+  );
 }

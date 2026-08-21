@@ -50,7 +50,7 @@ function dependencies(overrides: Partial<DemoAccessRepository> = {}): DemoAccess
     findRole: jest.fn().mockResolvedValue({ id: 'role-admin', code: 'ADMINISTRATOR' }),
     findActiveActor: jest.fn().mockResolvedValue({ id: 'admin-user' }),
     findActivePermissions: jest.fn().mockResolvedValue(permissions),
-    countCapabilityCatalog: jest.fn().mockResolvedValue(29),
+    countCapabilityCatalog: jest.fn().mockResolvedValue(37),
     findCurrentAssignments: jest.fn().mockResolvedValue([]),
     findSourceAssignments: jest.fn().mockResolvedValue([]),
     ...overrides,
@@ -96,8 +96,8 @@ describe('DemoAccessTool grants', () => {
 
     const results = await tool.grant(validEnvironment);
 
-    expect(results).toHaveLength(16);
-    expect(deps.governance.createRolePermission).toHaveBeenCalledTimes(16);
+    expect(results).toHaveLength(24);
+    expect(deps.governance.createRolePermission).toHaveBeenCalledTimes(24);
     for (const [input, principal] of deps.governance.createRolePermission.mock.calls as Array<
       [
         {
@@ -134,16 +134,16 @@ describe('DemoAccessTool grants', () => {
 
     const results = await new DemoAccessTool(deps).grant(validEnvironment);
 
-    expect(results).toHaveLength(16);
+    expect(results).toHaveLength(24);
     expect(results.every(({ result }) => result === 'ALREADY ACTIVE')).toBe(true);
     expect(deps.governance.createRolePermission).not.toHaveBeenCalled();
   });
 
-  it('fails closed when the capability catalog is not exactly the approved 29 entries', async () => {
+  it('fails closed when the capability catalog is not exactly the approved 37 entries', async () => {
     const deps = dependencies({ countCapabilityCatalog: jest.fn().mockResolvedValue(30) });
 
     await expect(new DemoAccessTool(deps).grant(validEnvironment)).rejects.toThrow(
-      'catálogo esperado=29, encontrado=30',
+      'catálogo esperado=37, encontrado=30',
     );
     expect(deps.governance.createRolePermission).not.toHaveBeenCalled();
   });
@@ -159,7 +159,7 @@ describe('DemoAccessTool status and revocation', () => {
 
     const results = await new DemoAccessTool(deps).status(validEnvironment);
 
-    expect(results).toHaveLength(16);
+    expect(results).toHaveLength(24);
     expect(results[0]).toEqual(
       expect.objectContaining({
         role: 'ADMINISTRATOR',
@@ -192,9 +192,9 @@ describe('DemoAccessTool status and revocation', () => {
 
     const results = await new DemoAccessTool(deps).revoke(validEnvironment);
 
-    expect(results).toHaveLength(16);
+    expect(results).toHaveLength(24);
     expect(results.every(({ result }) => result === 'REVOKED')).toBe(true);
-    expect(deps.governance.revokeRolePermission).toHaveBeenCalledTimes(16);
+    expect(deps.governance.revokeRolePermission).toHaveBeenCalledTimes(24);
     expect(deps.governance.revokeRolePermission).not.toHaveBeenCalledWith(
       'assignment-platform.manage',
       expect.anything(),

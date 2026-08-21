@@ -366,6 +366,29 @@ NOT AUTHORIZED`.
 - **Deferred:** P2, P3 and P0-RESIDUAL are not started. BDP-012 remains open and no economic group or
   sibling-company authority was inferred.
 
+### Full Functional Delivery — Wave P2
+
+- **Status:** `FULL DELIVERY P2 — READY TO MERGE`.
+- **Baseline:** `develop@ad099b8cf0d223533e5b17d2d69324ce2e562b21`; Essential MVP 17/17 and P1
+  33/33 remain mandatory regression gates.
+- **Scope:** Organization 24, Admission 19, Leave 5 and Variable Compensation 8; total 56/56
+  handlers.
+- **Authorization:** eight company-scoped family capabilities; no role-name decision,
+  super-capability or automatic assignment. Runtime classification is 120 capability-protected and
+  36 `LEGACY_DEFERRED` out of 165 handlers, with zero unclassified.
+- **Isolation:** all P2 resources derive authority from the principal's active company, validate
+  related records in that company and return `404` across companies.
+- **Projection/audit:** explicit minimum projections and nineteen new transaction-required audit
+  events; runtime audit catalog is 60.
+- **Frontend:** Organization, Admission, Leave and Variable Compensation are functional and reuse the
+  shared PR #94 DataTable standard with capability-aware actions and company-isolated cache keys.
+- **Database:** zero P2 migrations; all 16 existing migrations remain unchanged. The canonical seed
+  creates zero assignments.
+- **Evidence:** [plan](../full-delivery/FULL_DELIVERY_PLAN.md) and
+  [acceptance inventory](../full-delivery/P2_ACCEPTANCE.md).
+- **Deferred:** P3 remains 21 handlers and P0-RESIDUAL remains 15. Open BDPs and later-wave scope are
+  preserved; the system as a whole is not declared complete.
+
 ### MVP-001 — Protótipo executivo local
 
 - **Status:** `IMPLEMENTED — LOCAL PROTOTYPE READY FOR MANAGEMENT VALIDATION`.

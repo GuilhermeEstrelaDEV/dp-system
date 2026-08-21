@@ -1,31 +1,80 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { AdmissionProcessesService } from './admission-processes.service';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import {
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import type { AuthenticatedPrincipal } from '../../common/http/request-context';
+import { CurrentPrincipal, RequireCapabilities } from '../auth/auth.decorators';
+import {
+  AdmissionProcessListQueryDto,
   CreateAdmissionProcessDto,
   ReasonDto,
   UpdateAdmissionProcessDto,
 } from './admission-processes.dto';
+import { AdmissionProcessesService } from './admission-processes.service';
+
 @ApiTags('admission-processes')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse()
+@ApiForbiddenResponse()
 @Controller('admission-processes')
 export class AdmissionProcessesController {
   constructor(private readonly service: AdmissionProcessesService) {}
-  @Get() list() {
-    return this.service.list();
+
+  @RequireCapabilities('admission.read')
+  @Get()
+  list(
+    @Query() query: AdmissionProcessListQueryDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.list(query, principal);
   }
-  @Post() create(@Body() dto: CreateAdmissionProcessDto) {
-    return this.service.create(dto);
+
+  @RequireCapabilities('admission.manage')
+  @Post()
+  create(
+    @Body() dto: CreateAdmissionProcessDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.create(dto, principal);
   }
-  @Get(':id') find(@Param('id') id: string) {
-    return this.service.find(id);
+
+  @RequireCapabilities('admission.read')
+  @ApiNotFoundResponse()
+  @Get(':id')
+  find(@Param('id') id: string, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.find(id, principal);
   }
-  @Patch(':id') update(@Param('id') id: string, @Body() dto: UpdateAdmissionProcessDto) {
-    return this.service.update(id, dto);
+
+  @RequireCapabilities('admission.manage')
+  @ApiNotFoundResponse()
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateAdmissionProcessDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.update(id, dto, principal);
   }
-  @Post(':id/complete') complete(@Param('id') id: string) {
-    return this.service.complete(id);
+
+  @RequireCapabilities('admission.manage')
+  @ApiNotFoundResponse()
+  @Post(':id/complete')
+  complete(@Param('id') id: string, @CurrentPrincipal() principal: AuthenticatedPrincipal) {
+    return this.service.complete(id, principal);
   }
-  @Post(':id/cancel') cancel(@Param('id') id: string, @Body() dto: ReasonDto) {
-    return this.service.cancel(id, dto.reason);
+
+  @RequireCapabilities('admission.manage')
+  @ApiNotFoundResponse()
+  @Post(':id/cancel')
+  cancel(
+    @Param('id') id: string,
+    @Body() dto: ReasonDto,
+    @CurrentPrincipal() principal: AuthenticatedPrincipal,
+  ) {
+    return this.service.cancel(id, dto.reason, principal);
   }
 }

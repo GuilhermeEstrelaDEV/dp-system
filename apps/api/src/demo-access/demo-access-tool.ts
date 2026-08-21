@@ -26,10 +26,18 @@ export const DEMO_ACCESS_CAPABILITIES = Object.freeze([
   'payroll.parameter.manage',
   'payroll.rubric.read',
   'payroll.rubric.manage',
+  'organization.read',
+  'organization.manage',
+  'admission.read',
+  'admission.manage',
+  'leave.read',
+  'leave.manage',
+  'variable_compensation.read',
+  'variable_compensation.manage',
 ] as const);
 
 const DEMO_ADMIN_EMAIL = 'admin.demo@dp-system.local';
-const EXPECTED_CAPABILITY_CATALOG_SIZE = 29;
+const EXPECTED_CAPABILITY_CATALOG_SIZE = 37;
 
 export interface DemoAccessEnvironment {
   readonly DEMO_ENV?: string;
@@ -299,7 +307,9 @@ export class DemoAccessTool {
   private async assertCatalog(): Promise<void> {
     const count = await this.dependencies.repository.countCapabilityCatalog();
     if (count !== EXPECTED_CAPABILITY_CATALOG_SIZE) {
-      throw new Error(`Acesso demo recusado: catálogo esperado=29, encontrado=${count}`);
+      throw new Error(
+        `Acesso demo recusado: catálogo esperado=${EXPECTED_CAPABILITY_CATALOG_SIZE}, encontrado=${count}`,
+      );
     }
   }
 

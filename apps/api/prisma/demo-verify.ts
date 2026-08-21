@@ -169,7 +169,7 @@ async function main() {
   exact('empresas', companies.length, 2);
   exact('usuários', users.length, 2);
   exact('vínculos', companyRoles, 3);
-  exact('catálogo homologado', permissions, 29);
+  exact('catálogo homologado', permissions, 37);
   exact('filiais', branches, 2);
   exact('departamentos', departments, 8);
   exact('cargos', positions, 13);
@@ -197,8 +197,8 @@ async function main() {
       validTo > now &&
       revokedAt === null,
   );
-  if (![0, 16].includes(activeDemoGrants.length)) {
-    throw new Error(`grants demo ativos: esperado 0 ou 16, encontrado ${activeDemoGrants.length}`);
+  if (![0, 24].includes(activeDemoGrants.length)) {
+    throw new Error(`grants demo ativos: esperado 0 ou 24, encontrado ${activeDemoGrants.length}`);
   }
   const approvedCodes = new Set<string>(DEMO_ACCESS_CAPABILITIES);
   if (
@@ -261,8 +261,8 @@ async function main() {
     })),
   });
   if (
-    activeDemoGrants.length === 16 &&
-    new Set(activeDemoGrants.map(({ permission }) => permission.code)).size !== 16
+    activeDemoGrants.length === 24 &&
+    new Set(activeDemoGrants.map(({ permission }) => permission.code)).size !== 24
   ) {
     throw new Error('grants demo ativos não correspondem às capabilities aprovadas');
   }

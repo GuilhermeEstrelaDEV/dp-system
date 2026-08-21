@@ -1,5 +1,9 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import { PrismaService } from '../../prisma/prisma.service';
+import { AuditWriterService } from '../auth/audit-writer.service';
+import { AuthorizationService } from '../auth/authorization.service';
 import {
   CreateCollectiveVacationDto,
   CreateLeaveCaseDto,
@@ -13,9 +17,41 @@ import {
 const invalidPeriod = (start: string, end?: string) =>
   Boolean(end && new Date(end) < new Date(start));
 
+const leaveTypeProjection = {
+  id: true,
+  companyId: true,
+  code: true,
+  name: true,
+  requiresExpectedReturn: true,
+  status: true,
+  createdAt: true,
+  updatedAt: true,
+} satisfies Prisma.LeaveTypeSelect;
+
+const leaveCaseProjection = {
+  id: true,
+  employmentContractId: true,
+  leaveTypeId: true,
+  startDate: true,
+  endDate: true,
+  expectedReturnDate: true,
+  actualReturnDate: true,
+  status: true,
+  createdAt: true,
+  updatedAt: true,
+  leaveType: { select: leaveTypeProjection },
+  employmentContract: {
+    select: { id: true, companyId: true, registrationNumber: true, status: true },
+  },
+} satisfies Prisma.LeaveCaseSelect;
+
 @Injectable()
 export class VacationsLeavesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly audit: AuditWriterService,
+    private readonly authorization: AuthorizationService,
+  ) {}
 
   listVacationPeriods(employmentContractId?: string) {
     return this.prisma.vacationPeriod.findMany({
@@ -129,34 +165,70 @@ export class VacationsLeavesService {
     });
   }
 
-  listLeaveTypes(companyId?: string) {
-    return this.prisma.leaveType.findMany({ where: { companyId }, orderBy: { name: 'asc' } });
+  listLeaveTypes(principal: AuthenticatedPrincipal, requestedCompanyId?: string) {
+    this.authorization.requireCapability(principal, 'leave.read');
+    const companyId = this.companyId(principal, requestedCompanyId);
+    return this.prisma.leaveType.findMany({
+      where: { companyId },
+      select: leaveTypeProjection,
+      orderBy: { name: 'asc' },
+    });
   }
 
-  createLeaveType(dto: CreateLeaveTypeDto) {
-    return this.prisma.leaveType.create({ data: dto });
+  async createLeaveType(dto: CreateLeaveTypeDto, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, 'leave.manage');
+    const companyId = this.companyId(principal, dto.companyId);
+    return this.audit.transaction(async (tx) => {
+      const created = await tx.leaveType.create({
+        data: {
+          companyId,
+          code: dto.code,
+          name: dto.name,
+          requiresExpectedReturn: dto.requiresExpectedReturn,
+        },
+        select: leaveTypeProjection,
+      });
+      await this.audit.append(
+        {
+          principal,
+          action: 'LEAVE_TYPE_CREATED',
+          entityType: 'LeaveType',
+          entityId: created.id,
+          nextState: { status: created.status },
+        },
+        tx,
+      );
+      return created;
+    });
   }
 
-  listLeaveCases(employmentContractId?: string) {
+  async listLeaveCases(principal: AuthenticatedPrincipal, employmentContractId?: string) {
+    this.authorization.requireCapability(principal, 'leave.read');
+    const companyId = this.companyId(principal);
+    if (employmentContractId) await this.requireScopedContract(employmentContractId, companyId);
     return this.prisma.leaveCase.findMany({
-      where: { employmentContractId },
-      include: { leaveType: true, history: { orderBy: { occurredAt: 'desc' } } },
+      where: { employmentContractId, employmentContract: { companyId } },
+      select: leaveCaseProjection,
       orderBy: { startDate: 'desc' },
     });
   }
 
-  async createLeaveCase(dto: CreateLeaveCaseDto) {
+  async createLeaveCase(dto: CreateLeaveCaseDto, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, 'leave.manage');
+    const companyId = this.companyId(principal);
     if (
       invalidPeriod(dto.startDate, dto.endDate) ||
       invalidPeriod(dto.startDate, dto.expectedReturnDate)
     )
       throw new ConflictException('As datas do afastamento são incoerentes');
     const [contract, type] = await Promise.all([
-      this.prisma.employmentContract.findUnique({ where: { id: dto.employmentContractId } }),
-      this.prisma.leaveType.findUnique({ where: { id: dto.leaveTypeId } }),
+      this.requireScopedContract(dto.employmentContractId, companyId),
+      this.prisma.leaveType.findFirst({
+        where: { id: dto.leaveTypeId, companyId, status: 'ACTIVE' },
+        select: leaveTypeProjection,
+      }),
     ]);
-    if (!contract || !type || contract.companyId !== type.companyId)
-      throw new ConflictException('Tipo de afastamento incompatível com o contrato');
+    if (!type) throw new NotFoundException('Tipo de afastamento não encontrado');
     if (type.requiresExpectedReturn && !dto.expectedReturnDate)
       throw new ConflictException('Este tipo exige retorno previsto');
     const vacationOverlap = await this.prisma.vacationRequest.findFirst({
@@ -169,37 +241,82 @@ export class VacationsLeavesService {
     });
     if (vacationOverlap)
       throw new ConflictException('Existe férias aprovada incompatível com o afastamento');
-    return this.prisma.$transaction(async (tx) => {
+    return this.audit.transaction(async (tx) => {
       const item = await tx.leaveCase.create({
         data: {
-          ...dto,
+          employmentContractId: dto.employmentContractId,
+          leaveTypeId: dto.leaveTypeId,
           startDate: new Date(dto.startDate),
           endDate: dto.endDate ? new Date(dto.endDate) : null,
           expectedReturnDate: dto.expectedReturnDate ? new Date(dto.expectedReturnDate) : null,
+          reason: dto.reason,
         },
+        select: leaveCaseProjection,
       });
       await tx.leaveCaseHistory.create({
         data: { leaveCaseId: item.id, action: 'OPENED', reason: dto.reason },
       });
+      await this.audit.append(
+        {
+          principal,
+          action: 'LEAVE_CASE_CREATED',
+          entityType: 'LeaveCase',
+          entityId: item.id,
+          nextState: { status: item.status },
+        },
+        tx,
+      );
       return item;
     });
   }
 
-  async returnFromLeave(id: string, dto: ReturnLeaveDto) {
-    const item = await this.prisma.leaveCase.findUnique({ where: { id } });
+  async returnFromLeave(id: string, dto: ReturnLeaveDto, principal: AuthenticatedPrincipal) {
+    this.authorization.requireCapability(principal, 'leave.manage');
+    const item = await this.prisma.leaveCase.findFirst({
+      where: { id, employmentContract: { companyId: this.companyId(principal) } },
+      select: leaveCaseProjection,
+    });
     if (!item) throw new NotFoundException('Afastamento não encontrado');
     if (item.status !== 'OPEN') throw new ConflictException('Afastamento já foi encerrado');
     if (new Date(dto.actualReturnDate) < item.startDate)
       throw new ConflictException('Retorno não pode ser anterior ao início');
-    return this.prisma.$transaction(async (tx) => {
+    return this.audit.transaction(async (tx) => {
       const updated = await tx.leaveCase.update({
         where: { id },
         data: { status: 'RETURNED', actualReturnDate: new Date(dto.actualReturnDate) },
+        select: leaveCaseProjection,
       });
       await tx.leaveCaseHistory.create({
         data: { leaveCaseId: id, action: 'RETURNED', reason: dto.reason },
       });
+      await this.audit.append(
+        {
+          principal,
+          action: 'LEAVE_CASE_RETURNED',
+          entityType: 'LeaveCase',
+          entityId: id,
+          previousState: { status: item.status },
+          nextState: { status: updated.status },
+        },
+        tx,
+      );
       return updated;
     });
+  }
+
+  private async requireScopedContract(id: string, companyId: string) {
+    const contract = await this.prisma.employmentContract.findFirst({
+      where: { id, companyId },
+      select: { id: true, companyId: true, status: true },
+    });
+    if (!contract) throw new NotFoundException('Contrato não encontrado');
+    return contract;
+  }
+
+  private companyId(principal: AuthenticatedPrincipal, requested?: string): string {
+    const companyId = principal.activeCompanyId;
+    if (!companyId || (requested && requested !== companyId))
+      throw new NotFoundException('Recurso não encontrado');
+    return companyId;
   }
 }

@@ -2,28 +2,28 @@
 
 ## Classificação atual
 
-| Controller/família    | Rotas                                                                | Classificação             | Estado                                                                   |
-| --------------------- | -------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------ |
-| Health                | `/health`, `/health/live`, `/health/ready`                           | Pública                   | Mantida pública para operação                                            |
-| Auth login            | `POST /auth/login`                                                   | Pública                   | Rate limit; credenciais validadas                                        |
-| Auth bootstrap        | `GET /auth/me`, `GET /auth/companies`, `POST /auth/context`          | Autenticada               | JWT; seleção valida assignment                                           |
-| Dashboard executivo   | `GET /dashboard/summary`                                             | Autenticada e empresarial | JWT; empresa ativa e seções filtradas por capability                     |
-| Access grants         | seis rotas sob `/access-grants`                                      | Autenticada e empresarial | JWT, capability e validação no serviço                                   |
-| Swagger               | `/api/docs`, `/api/docs-json`                                        | Pública/configurável      | Somente quando habilitado                                                |
-| Companies             | seis rotas sob `/companies`                                          | Autenticada e empresarial | `company.read/manage`; administração global controlada                   |
-| Organização           | todas sob `/branches`, `/departments`, `/positions`, `/cost-centers` | Ainda legada              | Recebem companyId do cliente                                             |
-| Employees/contracts   | 19 rotas sob `/employees`, `/employment-contracts`                   | Autenticada e empresarial | capabilities próprias, empresa ativa, projeção mínima e `404`            |
-| Admission             | `/admission-processes`, checklists e documentos                      | Ainda legada              | Exige capabilities homologadas                                           |
-| Time management       | jornadas, feriados, marcações e saldos                               | Ainda legada              | Exige inventário por operação                                            |
-| Benefits              | todas sob `/benefits`                                                | Ainda legada              | Exige visibilidade por capability                                        |
-| Vacations/leaves      | férias, afastamentos e tipos                                         | Ainda legada              | Exige migração por caso de uso                                           |
-| Payroll readiness     | `GET /payroll-periods/:payrollPeriodId/closure-readiness`            | Autenticada e empresarial | JWT, capability, serviço e `404`                                         |
-| Payroll period close  | `POST /payroll-periods/:payrollPeriodId/close`                       | Autenticada e empresarial | JWT, `payroll.period.close.execute`, empresa ativa, idempotência e `404` |
-| Payroll configuration | oito rotas de rubricas e parâmetros                                  | Autenticada e empresarial | `payroll.parameter.*` e `payroll.rubric.*`; projeções mínimas            |
-| Payroll operation P0  | quatro aliases sob `/payroll-closures`                               | Autenticada e empresarial | adapters deprecated, capabilities de history/execute/reopen e `404`      |
-| Payroll operation P1+ | lançamentos, execuções e demais operações                            | Ainda legada              | fora da ETP-015.8                                                        |
-| Payroll review        | quatorze rotas incluindo fechamento, reabertura e histórico          | Autenticada e empresarial | JWT, capability, policy e `404`                                          |
-| Variable compensation | todas sob `/variable-compensation`                                   | Ainda legada              | BDP-006 continua pendente                                                |
+| Controller/família    | Rotas                                                             | Classificação             | Estado                                                                   |
+| --------------------- | ----------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------ |
+| Health                | `/health`, `/health/live`, `/health/ready`                        | Pública                   | Mantida pública para operação                                            |
+| Auth login            | `POST /auth/login`                                                | Pública                   | Rate limit; credenciais validadas                                        |
+| Auth bootstrap        | `GET /auth/me`, `GET /auth/companies`, `POST /auth/context`       | Autenticada               | JWT; seleção valida assignment                                           |
+| Dashboard executivo   | `GET /dashboard/summary`                                          | Autenticada e empresarial | JWT; empresa ativa e seções filtradas por capability                     |
+| Access grants         | seis rotas sob `/access-grants`                                   | Autenticada e empresarial | JWT, capability e validação no serviço                                   |
+| Swagger               | `/api/docs`, `/api/docs-json`                                     | Pública/configurável      | Somente quando habilitado                                                |
+| Companies             | seis rotas sob `/companies`                                       | Autenticada e empresarial | `company.read/manage`; administração global controlada                   |
+| Organização           | 24 sob `/branches`, `/departments`, `/positions`, `/cost-centers` | Autenticada e empresarial | `organization.read/manage`, empresa ativa, projeção mínima e `404`       |
+| Employees/contracts   | 19 rotas sob `/employees`, `/employment-contracts`                | Autenticada e empresarial | capabilities próprias, empresa ativa, projeção mínima e `404`            |
+| Admission             | 19 em processos, checklists, documentos e templates               | Autenticada e empresarial | `admission.read/manage`, empresa ativa, projeção mínima e `404`          |
+| Time management       | jornadas, feriados, marcações e saldos                            | Ainda legada              | Exige inventário por operação                                            |
+| Benefits              | todas sob `/benefits`                                             | Ainda legada              | Exige visibilidade por capability                                        |
+| Vacations/leaves      | 5 afastamentos protegidos; 7 handlers de férias legados           | Estado misto              | `leave.read/manage`; férias permanecem P3                                |
+| Payroll readiness     | `GET /payroll-periods/:payrollPeriodId/closure-readiness`         | Autenticada e empresarial | JWT, capability, serviço e `404`                                         |
+| Payroll period close  | `POST /payroll-periods/:payrollPeriodId/close`                    | Autenticada e empresarial | JWT, `payroll.period.close.execute`, empresa ativa, idempotência e `404` |
+| Payroll configuration | oito rotas de rubricas e parâmetros                               | Autenticada e empresarial | `payroll.parameter.*` e `payroll.rubric.*`; projeções mínimas            |
+| Payroll operation P0  | quatro aliases sob `/payroll-closures`                            | Autenticada e empresarial | adapters deprecated, capabilities de history/execute/reopen e `404`      |
+| Payroll operation P1+ | lançamentos, execuções e demais operações                         | Ainda legada              | fora da ETP-015.8                                                        |
+| Payroll review        | quatorze rotas incluindo fechamento, reabertura e histórico       | Autenticada e empresarial | JWT, capability, policy e `404`                                          |
+| Variable compensation | 8 sob `/variable-compensation`                                    | Autenticada e empresarial | `variable_compensation.read/manage`; BDP-006 continua pendente           |
 
 Não há rota administrativa da plataforma protegida nesta fase; capabilities globais continuam disponíveis apenas como fundação.
 
@@ -99,3 +99,12 @@ Payroll Parameter (4) e Payroll Rubric (4). O total runtime passa a 4 public, 5 
 capability-protected e 92 deferred, permanecendo 165 handlers e zero não classificados. As dez
 capabilities P1 são específicas por recurso e leitura/escrita; não existe fallback para
 `platform.manage`. Consulte o [aceite autoritativo](../full-delivery/P1_ACCEPTANCE.md).
+
+## Full Delivery P2
+
+Mais 56 handlers deixaram `LEGACY_DEFERRED`: Organization (24), Admission (19), Leave (5) e Variable
+Compensation (8). O total runtime passa a 4 public, 5 authenticated, 120 capability-protected e 36
+deferred, permanecendo 165 handlers e zero não classificados. Os sete handlers de férias continuam
+P3 e os quinze aliases residuais de folha continuam P0-RESIDUAL. As oito capabilities P2 são
+específicas por família e leitura/escrita, sem fallback para `platform.manage`. Consulte o
+[aceite autoritativo](../full-delivery/P2_ACCEPTANCE.md).
