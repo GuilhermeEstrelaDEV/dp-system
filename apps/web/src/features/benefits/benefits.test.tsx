@@ -25,8 +25,7 @@ describe('BenefitsPage', () => {
     expect(
       await screen.findByText('Nenhum benefício demonstrativo encontrado.'),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Criar plano' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Registrar adesão' })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Salvar' })).toHaveLength(3);
   });
 
   it('applies the accessible catalog search filter', async () => {
@@ -42,6 +41,6 @@ describe('BenefitsPage', () => {
     apiRequest.mockRejectedValueOnce(new Error('Falha demonstrativa'));
     renderPage();
     expect(await screen.findByRole('alert')).toHaveTextContent('Falha demonstrativa');
-    expect(screen.getByRole('heading', { name: 'Adesões por colaborador' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Adesões por contrato' })).toBeInTheDocument();
   });
 });

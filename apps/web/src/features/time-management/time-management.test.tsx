@@ -17,6 +17,9 @@ describe('TimeManagementPage', () => {
     expect(
       await screen.findByRole('heading', { name: 'Jornada e banco de horas' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Fechar competência' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Fechar competência de saldo' }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Salvar' })).toHaveLength(5);
   });
 });
