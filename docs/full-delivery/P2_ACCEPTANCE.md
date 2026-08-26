@@ -6,7 +6,7 @@ Wave P2 migrates exactly 56 handlers from `LEGACY_DEFERRED` to
 `CAPABILITY_PROTECTED`: Organization 24, Admission 19, Leave 5 and Variable Compensation 8. The
 delivery is limited to the existing company-local model and does not start P3 or P0-RESIDUAL.
 
-**Status:** `FULL DELIVERY P2 — READY TO MERGE`.
+**Status:** `FULL DELIVERY P2 — POST-MERGE VERIFIED`.
 
 - baseline: `develop@ad099b8cf0d223533e5b17d2d69324ce2e562b21`;
 - database: 16 existing migrations, zero new migrations;

@@ -4,9 +4,10 @@
 
 Wave P3 migrates exactly 21 handlers from `LEGACY_DEFERRED` to
 `CAPABILITY_PROTECTED`: Time 8, Benefit 6 and Vacation 7. It reuses the existing operational model
-without defining working-time, benefit, vacation or legal policy. P0-RESIDUAL is not started.
+without defining working-time, benefit, vacation or legal policy. P0-RESIDUAL was outside this
+wave's baseline and is now post-merge verified in its own acceptance record.
 
-**Status:** `FULL DELIVERY P3 — READY TO MERGE`.
+**Status:** `FULL DELIVERY P3 — POST-MERGE VERIFIED`.
 
 - baseline: `develop@627ebce4e11b1ad06d434c0fe1dde9da00c043dc`;
 - database: 16 existing migrations, zero new migrations;

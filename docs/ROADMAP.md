@@ -180,8 +180,10 @@ BDP-001 e BDP-011 permanecem `PENDING`, e BDP-014 permanece
 
 ## Full Functional Delivery
 
-**Status:** `FULL FUNCTIONAL DELIVERY — READY TO MERGE`; Essential MVP and waves P1, P2 and P3
-remain preserved.
+**Status:** `FULL FUNCTIONAL DELIVERY — POST-MERGE VERIFIED`; Essential MVP and waves P1, P2, P3
+and P0-RESIDUAL passed the global acceptance against
+`develop@3a7b4bd5aa0864f9630fb2bc67f5ad9087fec271`. The consolidated evidence is recorded in the
+[global post-merge acceptance](full-delivery/FULL_FUNCTIONAL_POST_MERGE_ACCEPTANCE.md).
 
 The human delivery decision replaces the earlier permanent-defer target with incremental completion
 of every user-facing function. The [delivery plan](full-delivery/FULL_DELIVERY_PLAN.md) separates P1,

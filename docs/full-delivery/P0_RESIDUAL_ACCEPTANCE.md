@@ -1,5 +1,7 @@
 # Full Delivery P0-RESIDUAL Acceptance
 
+**Status:** `FULL FUNCTIONAL DELIVERY — POST-MERGE VERIFIED`.
+
 ## Resultado
 
 P0-RESIDUAL conclui os quinze handlers que ainda estavam em `LEGACY_DEFERRED` na baseline

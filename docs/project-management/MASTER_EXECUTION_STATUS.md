@@ -347,7 +347,7 @@ NOT AUTHORIZED`.
 
 ### Full Functional Delivery — Wave P1
 
-- **Status:** `FULL DELIVERY P1 — READY TO MERGE`.
+- **Status:** `FULL DELIVERY P1 — POST-MERGE VERIFIED`.
 - **Baseline:** `develop@75aa22c391bdf849a73a4076e6bb628ae4ad0913`; Essential MVP remains a
   mandatory 17/17 regression gate.
 - **Scope:** Company 6, Employee 12, Employment Contract 7, Payroll Parameter 4 and Payroll Rubric
@@ -363,12 +363,13 @@ NOT AUTHORIZED`.
 - **Database:** zero P1 migrations; existing 16 migrations are unchanged.
 - **Evidence:** [plan](../full-delivery/FULL_DELIVERY_PLAN.md) and
   [acceptance inventory](../full-delivery/P1_ACCEPTANCE.md).
-- **Deferred:** P2, P3 and P0-RESIDUAL are not started. BDP-012 remains open and no economic group or
-  sibling-company authority was inferred.
+- **Historical boundary:** P2, P3 and P0-RESIDUAL were outside the P1 baseline and are now
+  post-merge verified in their own acceptance records. BDP-012 remains open and no economic group
+  or sibling-company authority was inferred.
 
 ### Full Functional Delivery — Wave P2
 
-- **Status:** `FULL DELIVERY P2 — READY TO MERGE`.
+- **Status:** `FULL DELIVERY P2 — POST-MERGE VERIFIED`.
 - **Baseline:** `develop@ad099b8cf0d223533e5b17d2d69324ce2e562b21`; Essential MVP 17/17 and P1
   33/33 remain mandatory regression gates.
 - **Scope:** Organization 24, Admission 19, Leave 5 and Variable Compensation 8; total 56/56
@@ -391,7 +392,7 @@ NOT AUTHORIZED`.
 
 ### Full Functional Delivery — Wave P3
 
-- **Status:** `FULL DELIVERY P3 — READY TO MERGE`.
+- **Status:** `FULL DELIVERY P3 — POST-MERGE VERIFIED`.
 - **Baseline:** `develop@627ebce4e11b1ad06d434c0fe1dde9da00c043dc`; Essential MVP 17/17, P1
   33/33 and P2 56/56 remain mandatory regression gates.
 - **Scope:** Time 8, Benefit 6 and Vacation 7; total 21/21 handlers.
@@ -413,7 +414,7 @@ NOT AUTHORIZED`.
 
 ### Full Functional Delivery — Wave P0-RESIDUAL
 
-- **Status:** `FULL FUNCTIONAL DELIVERY — READY TO MERGE`.
+- **Status:** `FULL FUNCTIONAL DELIVERY — POST-MERGE VERIFIED`.
 - **Baseline:** `develop@798552f3d1ed62a00542be7bb8d05b9f9e0bfa18`; Essential MVP 17/17, P1
   33/33, P2 56/56 and P3 21/21 remain mandatory regression gates.
 - **Scope:** Payroll Period legacy 6, Payroll Input 4 and Payroll Run 5; total 15/15 handlers.
@@ -434,7 +435,9 @@ NOT AUTHORIZED`.
   and Atlas receive only fictitious payroll-input fixtures. The canonical seed creates zero
   assignments.
 - **Evidence:** [plan](../full-delivery/FULL_DELIVERY_PLAN.md) and
-  [acceptance inventory](../full-delivery/P0_RESIDUAL_ACCEPTANCE.md).
+  [acceptance inventory](../full-delivery/P0_RESIDUAL_ACCEPTANCE.md). The
+  [global post-merge acceptance](../full-delivery/FULL_FUNCTIONAL_POST_MERGE_ACCEPTANCE.md) validates
+  the integrated baseline `develop@3a7b4bd5aa0864f9630fb2bc67f5ad9087fec271`.
 - **Boundaries:** Full Functional Delivery is local/demonstrative. Production, cloud, deploy, Gate
   D, ETP-015.10 and unresolved legal/business BDPs remain outside this delivery.
 

@@ -15,12 +15,12 @@ minimum projection, audit where required, frontend consumption and tests are ava
 
 ## Delivery waves
 
-| Wave        | Families                                                         | Handlers | State          |
-| ----------- | ---------------------------------------------------------------- | -------: | -------------- |
-| P1          | Company, Employee, Contract, Payroll Parameters, Payroll Rubrics |       33 | Implemented    |
-| P2          | Organization, Admission, Leave, Variable Compensation            |       56 | Implemented    |
-| P3          | Time, Benefit, Vacation                                          |       21 | Implemented    |
-| P0-RESIDUAL | legacy Payroll Period, Payroll Input and Payroll Run             |       15 | Ready to merge |
+| Wave        | Families                                                         | Handlers | State               |
+| ----------- | ---------------------------------------------------------------- | -------: | ------------------- |
+| P1          | Company, Employee, Contract, Payroll Parameters, Payroll Rubrics |       33 | Implemented         |
+| P2          | Organization, Admission, Leave, Variable Compensation            |       56 | Implemented         |
+| P3          | Time, Benefit, Vacation                                          |       21 | Implemented         |
+| P0-RESIDUAL | legacy Payroll Period, Payroll Input and Payroll Run             |       15 | Post-merge verified |
 
 P1 uses independent `Company` entities. It does not create an economic-group model, sibling-company
 authority or a legal resolution for BDP-012.
