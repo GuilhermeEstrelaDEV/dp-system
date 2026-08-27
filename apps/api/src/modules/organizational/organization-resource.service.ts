@@ -94,7 +94,7 @@ export class OrganizationResourceService {
     this.authorization.requireCapability(principal, 'organization.read');
     const companyId = this.companyId(principal);
     const entity = await this.findByKind(kind, id, companyId);
-    if (!entity) throw new NotFoundException('Recurso organizacional nÃ£o encontrado');
+    if (!entity) throw new NotFoundException('Recurso organizacional não encontrado');
     return entity;
   }
 
@@ -196,15 +196,15 @@ export class OrganizationResourceService {
   ) {
     const companyId = this.companyId(principal);
     const entity = await this.findByKind(kind, id, companyId);
-    if (!entity) throw new NotFoundException('Recurso organizacional nÃ£o encontrado');
+    if (!entity) throw new NotFoundException('Recurso organizacional não encontrado');
     return entity;
   }
 
   private companyId(principal: AuthenticatedPrincipal, requested?: string): string {
     const companyId = principal.activeCompanyId;
-    if (!companyId) throw new NotFoundException('Recurso organizacional nÃ£o encontrado');
+    if (!companyId) throw new NotFoundException('Recurso organizacional não encontrado');
     if (requested && requested !== companyId)
-      throw new NotFoundException('Recurso organizacional nÃ£o encontrado');
+      throw new NotFoundException('Recurso organizacional não encontrado');
     return companyId;
   }
 
@@ -393,7 +393,7 @@ export class OrganizationResourceService {
 
   private handleDuplicate(error: unknown): never {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-      throw new ConflictException('CÃ³digo ou identificador jÃ¡ utilizado nesta empresa');
+      throw new ConflictException('Código ou identificador já utilizado nesta empresa');
     }
     throw error;
   }
