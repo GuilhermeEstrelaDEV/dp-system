@@ -14,13 +14,23 @@ advisories:
 
 No major upgrade or forced incompatible transitive override was applied. Release Candidate
 promotion requires a reviewed upgrade plan or an explicit, time-bounded security risk acceptance.
+The detailed decision package is
+[SECURITY_DEPENDENCY_RISK_DECISION.md](SECURITY_DEPENDENCY_RISK_DECISION.md).
+
+The high advisory is not loaded by the current API runtime and has no HTTP input path; it is
+reachable by the trusted Prisma CLI configuration loader. This lowers observed application
+reachability without changing its advisory severity. Two React Router open-redirect findings have
+a potentially reachable post-login return-path flow and therefore cannot be dismissed solely from
+the Prisma analysis.
 
 ### 2. Visual and responsive evidence unavailable
 
 The application, API and frontend were healthy, but no controllable browser was connected to this
 execution. Static inspection and all frontend tests passed; however, desktop/notebook/tablet/mobile
 screenshots and keyboard/dialog execution were not produced. Human homologation must execute the
-viewport matrix in `HOMOLOGATION_SCRIPT.md`.
+viewport matrix in [HOMOLOGATION_VISUAL_EVIDENCE.md](HOMOLOGATION_VISUAL_EVIDENCE.md) and the
+keyboard script in
+[HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md](HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md).
 
 ## Non-blocking technical limitations
 

@@ -62,3 +62,21 @@ PostgreSQL 16 bootstrap and all smoke suites.
 
 The dependency and visual-evidence blockers remain open. Final classification is
 `BLOCKED — RELEASE CANDIDATE READINESS`.
+
+## Blocker resolution package
+
+The follow-up audit at the PR #99 head confirmed four findings: one high and three moderate. The
+exact advisories, dependency paths, reachability and three human decision options are recorded in
+[SECURITY_DEPENDENCY_RISK_DECISION.md](SECURITY_DEPENDENCY_RISK_DECISION.md).
+
+- dependency security: `BLOCKER — PENDING HUMAN DECISION`;
+- functional regression and security architecture: `PASS`;
+- UX automated/static checks: `PASS`;
+- UX visual evidence: `PENDING HUMAN EXECUTION` in
+  [HOMOLOGATION_VISUAL_EVIDENCE.md](HOMOLOGATION_VISUAL_EVIDENCE.md);
+- accessibility static checks: `PASS`;
+- keyboard/dialog accessibility: `PENDING HUMAN EXECUTION` in
+  [HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md](HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md).
+
+No dependency risk was accepted, no major upgrade was performed and no human evidence was
+fabricated.

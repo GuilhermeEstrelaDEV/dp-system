@@ -11,33 +11,35 @@
 
 ## Consolidated evidence
 
-| Control                           | Result                                           |
-| --------------------------------- | ------------------------------------------------ |
-| Route inventory                   | 165 total / 0 deferred / 0 unclassified          |
-| Public routes                     | 4                                                |
-| Authenticated-only routes         | 5                                                |
-| Capability-protected routes       | 156                                              |
-| Capabilities                      | 48                                               |
-| Audit events                      | 81                                               |
-| Migrations                        | 16                                               |
-| Automatic grants                  | 0                                                |
-| Temporary grants tested           | 35 MANUAL; idempotent; revoked                   |
-| API tests                         | `PASS` — 86 suites / 410 active tests            |
-| Frontend tests                    | `PASS` — 22 files / 87 tests                     |
-| Essential                         | `17/17 PASS`                                     |
-| P1                                | `33/33 PASS`                                     |
-| P2                                | `56/56 PASS`                                     |
-| P3                                | `21/21 PASS`                                     |
-| P0-RESIDUAL                       | `15/15 PASS`                                     |
-| Unexpected 5xx                    | 0                                                |
-| Security                          | `PASS`                                           |
-| Company isolation                 | `PASS`                                           |
-| Audit fail-closed                 | `PASS`                                           |
-| Canonical payroll flow            | `PASS`                                           |
-| DataTable static/automated review | `PASS`                                           |
-| UX readiness                      | `FAIL` — visual viewport evidence unavailable    |
-| Accessibility sanity              | `FAIL` — browser keyboard execution unavailable  |
-| Dependency review                 | `FAIL` — 1 high and 3 moderate advisories remain |
+| Control                           | Result                                   |
+| --------------------------------- | ---------------------------------------- |
+| Route inventory                   | 165 total / 0 deferred / 0 unclassified  |
+| Public routes                     | 4                                        |
+| Authenticated-only routes         | 5                                        |
+| Capability-protected routes       | 156                                      |
+| Capabilities                      | 48                                       |
+| Audit events                      | 81                                       |
+| Migrations                        | 16                                       |
+| Automatic grants                  | 0                                        |
+| Temporary grants tested           | 35 MANUAL; idempotent; revoked           |
+| API tests                         | `PASS` — 86 suites / 410 active tests    |
+| Frontend tests                    | `PASS` — 22 files / 87 tests             |
+| Essential                         | `17/17 PASS`                             |
+| P1                                | `33/33 PASS`                             |
+| P2                                | `56/56 PASS`                             |
+| P3                                | `21/21 PASS`                             |
+| P0-RESIDUAL                       | `15/15 PASS`                             |
+| Unexpected 5xx                    | 0                                        |
+| Security                          | `PASS`                                   |
+| Company isolation                 | `PASS`                                   |
+| Audit fail-closed                 | `PASS`                                   |
+| Canonical payroll flow            | `PASS`                                   |
+| DataTable static/automated review | `PASS`                                   |
+| UX automated/static               | `PASS`                                   |
+| UX visual execution               | `PENDING HUMAN EXECUTION`                |
+| Accessibility static              | `PASS`                                   |
+| Accessibility keyboard/dialog     | `PENDING HUMAN EXECUTION`                |
+| Dependency review                 | `BLOCKED` — 1 high and 3 moderate remain |
 
 ## Coverage
 
@@ -62,6 +64,14 @@ material regression and no functional branch was removed by this hardening work.
 1. `deepmerge-ts` requires a major remediation through the Prisma tooling dependency chain, and
    current React Router advisories also require a reviewed major upgrade or risk decision.
 2. No browser surface was available to produce the mandatory responsive and keyboard evidence.
+
+The exact dependency evidence and human options are recorded in
+[SECURITY_DEPENDENCY_RISK_DECISION.md](SECURITY_DEPENDENCY_RISK_DECISION.md). The security human
+decision remains `PENDING`; no risk was accepted. Visual evidence remains
+`PENDING HUMAN EXECUTION` in
+[HOMOLOGATION_VISUAL_EVIDENCE.md](HOMOLOGATION_VISUAL_EVIDENCE.md), and keyboard/dialog evidence
+remains `PENDING HUMAN EXECUTION` in
+[HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md](HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md).
 
 The exact exit criteria are recorded in
 [RELEASE_CANDIDATE_CHECKLIST.md](RELEASE_CANDIDATE_CHECKLIST.md). Human execution must use
