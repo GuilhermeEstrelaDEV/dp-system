@@ -81,7 +81,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       throw new Error('Resposta de sessão inválida.');
     }
     const next = sanitizeStoredSession({ token, user, companies });
-    if (!next) throw new Error('Resposta de sessÃ£o invÃ¡lida.');
+    if (!next) throw new Error('Resposta de sessão inválida.');
     return next;
   }, []);
 

@@ -51,7 +51,7 @@ describe('CompaniesService', () => {
     prisma.company.create.mockResolvedValue(company);
     audit.append.mockRejectedValueOnce(new Error('audit unavailable'));
     await expect(
-      service.create({ legalName: 'Empresa FictÃ­cia', tradeName: 'Demo', taxId: '00' }, principal),
+      service.create({ legalName: 'Empresa Fictícia', tradeName: 'Demo', taxId: '00' }, principal),
     ).rejects.toThrow('audit unavailable');
   });
   it('returns 404 for an absent company', async () => {
