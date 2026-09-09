@@ -9,6 +9,21 @@
 - stop on unexpected 5xx, data leakage, authorization bypass or cross-company visibility;
 - revoke demo access after the session.
 
+## Preliminary human gates
+
+Results supplied by the authorized human reviewer on 2026-09-09:
+
+| Gate       | Result         |
+| ---------- | -------------- |
+| Visual     | `PASS — HUMAN` |
+| Responsive | `PASS — HUMAN` |
+| Keyboard   | `PASS — HUMAN` |
+| Dialogs    | `PASS — HUMAN` |
+
+No screenshot, browser metadata or detailed per-screen/per-flow artifact was supplied or invented.
+The functional journey below remains available and its `PENDING` cells are intentionally unchanged
+until that separate homologation execution records evidence.
+
 ## Journey
 
 |   # | Journey                | Precondition                                                       | Action                                                         | Expected result                                                                      | PASS/FAIL | Evidence |
@@ -45,9 +60,9 @@ Repeat representative dashboard, list, long table, form and dialog journeys at a
 - tablet: 768 × 1024;
 - mobile sanity: 390 × 844.
 
-For each size, record keyboard focus, visible labels, error association, action spacing, horizontal
-table overflow and absence of critical hidden controls. This visual evidence remains mandatory
-before the checklist can be promoted to ready.
+The preliminary aggregate human gates passed. For future regression evidence, record keyboard
+focus, visible labels, error association, action spacing, horizontal table overflow and absence of
+critical hidden controls for each size.
 
 ## Exit
 

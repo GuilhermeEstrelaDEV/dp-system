@@ -2,44 +2,52 @@
 
 ## Result
 
-`BLOCKED — RELEASE CANDIDATE READINESS`
+`RELEASE CANDIDATE — READY FOR HUMAN HOMOLOGATION`
+
+`NOT PRODUCTION READY`
 
 - baseline: `c23c68deff6e542febe07db74d7da3119c05d1dd`;
-- validation date: 2026-08-26;
+- technical validation date: 2026-08-26;
+- human gate acceptance date: 2026-09-09;
 - scope: local/demonstrative hardening and homologation preparation;
-- known blockers: 2.
+- known blockers for local human homologation: 0;
+- known unresolved advisories: 1 high and 3 moderate.
 
 ## Consolidated evidence
 
-| Control                           | Result                                   |
-| --------------------------------- | ---------------------------------------- |
-| Route inventory                   | 165 total / 0 deferred / 0 unclassified  |
-| Public routes                     | 4                                        |
-| Authenticated-only routes         | 5                                        |
-| Capability-protected routes       | 156                                      |
-| Capabilities                      | 48                                       |
-| Audit events                      | 81                                       |
-| Migrations                        | 16                                       |
-| Automatic grants                  | 0                                        |
-| Temporary grants tested           | 35 MANUAL; idempotent; revoked           |
-| API tests                         | `PASS` — 86 suites / 410 active tests    |
-| Frontend tests                    | `PASS` — 22 files / 87 tests             |
-| Essential                         | `17/17 PASS`                             |
-| P1                                | `33/33 PASS`                             |
-| P2                                | `56/56 PASS`                             |
-| P3                                | `21/21 PASS`                             |
-| P0-RESIDUAL                       | `15/15 PASS`                             |
-| Unexpected 5xx                    | 0                                        |
-| Security                          | `PASS`                                   |
-| Company isolation                 | `PASS`                                   |
-| Audit fail-closed                 | `PASS`                                   |
-| Canonical payroll flow            | `PASS`                                   |
-| DataTable static/automated review | `PASS`                                   |
-| UX automated/static               | `PASS`                                   |
-| UX visual execution               | `PENDING HUMAN EXECUTION`                |
-| Accessibility static              | `PASS`                                   |
-| Accessibility keyboard/dialog     | `PENDING HUMAN EXECUTION`                |
-| Dependency review                 | `BLOCKED` — 1 high and 3 moderate remain |
+| Control                           | Result                                  |
+| --------------------------------- | --------------------------------------- |
+| Route inventory                   | 165 total / 0 deferred / 0 unclassified |
+| Public routes                     | 4                                       |
+| Authenticated-only routes         | 5                                       |
+| Capability-protected routes       | 156                                     |
+| Capabilities                      | 48                                      |
+| Audit events                      | 81                                      |
+| Migrations                        | 16                                      |
+| Automatic grants                  | 0                                       |
+| Temporary grants tested           | 35 MANUAL; idempotent; revoked          |
+| API tests                         | `PASS` — 86 suites / 410 active tests   |
+| Frontend tests                    | `PASS` — 22 files / 87 tests            |
+| Essential                         | `17/17 PASS`                            |
+| P1                                | `33/33 PASS`                            |
+| P2                                | `56/56 PASS`                            |
+| P3                                | `21/21 PASS`                            |
+| P0-RESIDUAL                       | `15/15 PASS`                            |
+| HR negative                       | `PASS`                                  |
+| Cross-company                     | `PASS`                                  |
+| Unexpected 5xx                    | 0                                       |
+| Security architecture             | `PASS`                                  |
+| Company isolation                 | `PASS`                                  |
+| Audit fail-closed                 | `PASS`                                  |
+| Canonical payroll flow            | `PASS`                                  |
+| DataTable static/automated review | `PASS`                                  |
+| UX automated/static               | `PASS`                                  |
+| UX visual execution               | `PASS — HUMAN`                          |
+| Responsive sanity                 | `PASS — HUMAN`                          |
+| Accessibility static              | `PASS`                                  |
+| Accessibility keyboard/dialog     | `PASS — HUMAN`                          |
+| Dependency security decision      | `APPROVED — TEMPORARY LOCAL ONLY`       |
+| Known unresolved advisories       | 1 high and 3 moderate                   |
 
 ## Coverage
 
@@ -59,18 +67,21 @@ material regression and no functional branch was removed by this hardening work.
 - produced the readiness inventory, configuration review, human script, checklist and known
   limitations.
 
-## Blocking conditions
+## Human gate acceptance
 
-1. `deepmerge-ts` requires a major remediation through the Prisma tooling dependency chain, and
-   current React Router advisories also require a reviewed major upgrade or risk decision.
-2. No browser surface was available to produce the mandatory responsive and keyboard evidence.
+1. Security dependency risk: `APPROVED — TEMPORARY LOCAL HOMOLOGATION ONLY`.
+2. Visual desktop: `PASS — HUMAN`.
+3. Visual notebook: `PASS — HUMAN`.
+4. Visual tablet: `PASS — HUMAN`.
+5. Visual mobile sanity: `PASS — HUMAN`.
+6. Keyboard navigation: `PASS — HUMAN`.
+7. Dialogs: `PASS — HUMAN`.
 
 The exact dependency evidence and human options are recorded in
-[SECURITY_DEPENDENCY_RISK_DECISION.md](SECURITY_DEPENDENCY_RISK_DECISION.md). The security human
-decision remains `PENDING`; no risk was accepted. Visual evidence remains
-`PENDING HUMAN EXECUTION` in
-[HOMOLOGATION_VISUAL_EVIDENCE.md](HOMOLOGATION_VISUAL_EVIDENCE.md), and keyboard/dialog evidence
-remains `PENDING HUMAN EXECUTION` in
+[SECURITY_DEPENDENCY_RISK_DECISION.md](SECURITY_DEPENDENCY_RISK_DECISION.md). The findings retain
+their original severity and remain unresolved. Visual results are recorded in
+[HOMOLOGATION_VISUAL_EVIDENCE.md](HOMOLOGATION_VISUAL_EVIDENCE.md), and keyboard/dialog results are
+recorded in
 [HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md](HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md).
 
 The exact exit criteria are recorded in
@@ -82,3 +93,7 @@ The exact exit criteria are recorded in
 
 This result does not authorize production, cloud, deployment, Gate D, ETP-015.10 or resolution of
 pending BDP/legal/business decisions.
+
+The temporary security acceptance is invalid for real data, public exposure or any scope other
+than local human homologation. It must be reassessed before Gate D, production, cloud, external
+deployment, Prisma upgrade or material dependency-chain change.

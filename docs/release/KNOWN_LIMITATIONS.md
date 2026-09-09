@@ -1,6 +1,6 @@
 # Known Limitations
 
-## Release Candidate blockers
+## Accepted local-homologation limitations
 
 ### 1. Dependency advisories requiring major remediation
 
@@ -12,10 +12,11 @@ advisories:
 - one React Router DOM open-redirect/XSS advisory with no patched version reported for the current
   line.
 
-No major upgrade or forced incompatible transitive override was applied. Release Candidate
-promotion requires a reviewed upgrade plan or an explicit, time-bounded security risk acceptance.
-The detailed decision package is
+No major upgrade or forced incompatible transitive override was applied. Status:
+`ACCEPTED ONLY FOR LOCAL HOMOLOGATION`. The explicit temporary decision is recorded in
 [SECURITY_DEPENDENCY_RISK_DECISION.md](SECURITY_DEPENDENCY_RISK_DECISION.md).
+
+`MUST BE REASSESSED BEFORE GATE D / PRODUCTION / CLOUD / EXTERNAL DEPLOYMENT`.
 
 The high advisory is not loaded by the current API runtime and has no HTTP input path; it is
 reachable by the trusted Prisma CLI configuration loader. This lowers observed application
@@ -23,13 +24,12 @@ reachability without changing its advisory severity. Two React Router open-redir
 a potentially reachable post-login return-path flow and therefore cannot be dismissed solely from
 the Prisma analysis.
 
-### 2. Visual and responsive evidence unavailable
+### 2. Visual and accessibility artifact boundary
 
-The application, API and frontend were healthy, but no controllable browser was connected to this
-execution. Static inspection and all frontend tests passed; however, desktop/notebook/tablet/mobile
-screenshots and keyboard/dialog execution were not produced. Human homologation must execute the
-viewport matrix in [HOMOLOGATION_VISUAL_EVIDENCE.md](HOMOLOGATION_VISUAL_EVIDENCE.md) and the
-keyboard script in
+Human visual, responsive, keyboard and dialog sanity results were supplied as `PASS` on
+2026-09-09. Screenshots, browser metadata, assistive-technology reports and individual screen/flow
+artifacts were not supplied and were not invented. The aggregate decisions and reusable evidence
+templates remain in [HOMOLOGATION_VISUAL_EVIDENCE.md](HOMOLOGATION_VISUAL_EVIDENCE.md) and
 [HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md](HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md).
 
 ## Non-blocking technical limitations
@@ -53,7 +53,9 @@ keyboard script in
 - Cloud: `NOT AUTHORIZED`;
 - Deploy: `NOT AUTHORIZED`;
 - Gate D: `NOT STARTED`;
-- ETP-015.10: `NOT COMPLETED`;
+- ETP-015.10: `NOT COMPLETE`;
 - external integrations: `NOT AUTHORIZED`.
+
+The temporary dependency acceptance does not extend any of these boundaries.
 
 No item in this document authorizes production or represents legal compliance approval.

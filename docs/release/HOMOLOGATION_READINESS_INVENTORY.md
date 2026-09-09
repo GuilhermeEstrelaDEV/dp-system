@@ -60,8 +60,8 @@ PostgreSQL 16 bootstrap and all smoke suites.
 - visual responsive and keyboard evidence could not be produced because no controllable browser
   was available.
 
-The dependency and visual-evidence blockers remain open. Final classification is
-`BLOCKED — RELEASE CANDIDATE READINESS`.
+At the end of the technical hardening execution, dependency and visual-evidence gates remained
+open. Their later human disposition is recorded below.
 
 ## Blocker resolution package
 
@@ -69,14 +69,22 @@ The follow-up audit at the PR #99 head confirmed four findings: one high and thr
 exact advisories, dependency paths, reachability and three human decision options are recorded in
 [SECURITY_DEPENDENCY_RISK_DECISION.md](SECURITY_DEPENDENCY_RISK_DECISION.md).
 
-- dependency security: `BLOCKER — PENDING HUMAN DECISION`;
+- dependency security: `PASS WITH TEMPORARY LOCAL-HOMOLOGATION RISK ACCEPTANCE`;
 - functional regression and security architecture: `PASS`;
 - UX automated/static checks: `PASS`;
-- UX visual evidence: `PENDING HUMAN EXECUTION` in
+- visual homologation: `PASS — HUMAN` in
   [HOMOLOGATION_VISUAL_EVIDENCE.md](HOMOLOGATION_VISUAL_EVIDENCE.md);
+- responsive sanity: `PASS — HUMAN`;
 - accessibility static checks: `PASS`;
-- keyboard/dialog accessibility: `PENDING HUMAN EXECUTION` in
+- keyboard/dialog accessibility: `PASS — HUMAN` in
   [HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md](HOMOLOGATION_ACCESSIBILITY_EVIDENCE.md).
 
-No dependency risk was accepted, no major upgrade was performed and no human evidence was
-fabricated.
+The human decisions were supplied on 2026-09-09. Dependency acceptance is limited exclusively to
+local human homologation; the high and moderate advisories remain unresolved and retain their
+severity. No major upgrade was performed and no screenshot, browser metadata or detailed
+screen-level evidence was fabricated.
+
+Current classification: `RELEASE CANDIDATE — READY FOR HUMAN HOMOLOGATION`.
+
+This status is immediately constrained by `NOT PRODUCTION READY` and does not authorize cloud,
+external deployment, Gate D, real data or completion of ETP-015.10.

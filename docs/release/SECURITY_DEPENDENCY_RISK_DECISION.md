@@ -5,11 +5,11 @@
 Audit executed on 2026-08-26 with `pnpm audit --prod --json` on
 `release/homologation-readiness@3384ca9101269b83c1ee3ddb4b899193f618ffe6`.
 
-| Severity | Before compatible remediation | Current | Decision state           |
-| -------- | ----------------------------: | ------: | ------------------------ |
-| High     |                             7 |       1 | `PENDING HUMAN DECISION` |
-| Moderate |                             3 |       3 | `PENDING HUMAN DECISION` |
-| Total    |                            10 |       4 | `BLOCKED`                |
+| Severity | Before compatible remediation | Current | Decision state                       |
+| -------- | ----------------------------: | ------: | ------------------------------------ |
+| High     |                             7 |       1 | `ACCEPTED — LOCAL HOMOLOGATION ONLY` |
+| Moderate |                             3 |       3 | `ACCEPTED — LOCAL HOMOLOGATION ONLY` |
+| Total    |                            10 |       4 | `TEMPORARY LOCAL ACCEPTANCE`         |
 
 All four current findings are reported by pnpm as production dependency paths. No package was
 upgraded in this blocker-resolution package.
@@ -178,17 +178,46 @@ visual script can be treated as an RC gate.
 
 ## Security recommendation
 
-Keep the overall status `BLOCKED — RELEASE CANDIDATE READINESS` while Security chooses among the
-documented options. If business timing requires local homologation before major remediation,
-consider only an explicit, expiring, local-only exception with the compensating controls above and
-a separate decision for the potentially reachable React Router return-path findings. Production,
-cloud, external deployment and Gate D must remain blocked.
+Apply the supplied temporary acceptance only to controlled local human homologation, retain the
+compensating controls above and keep remediation tracked. Reassess both the Prisma CLI finding and
+the potentially reachable React Router return-path findings before any expanded scope. Production,
+cloud, external deployment, public exposure, real data and Gate D remain blocked.
 
 ## Human decision
 
-`PENDING`
+`APPROVED — TEMPORARY LOCAL HOMOLOGATION RISK ACCEPTANCE`
 
-- decision: _not supplied_;
-- approver: _not supplied_;
-- date: _not supplied_;
-- expiration/conditions: _not supplied_.
+- scope: `LOCAL HOMOLOGATION ONLY`;
+- decision date: 2026-09-09;
+- approver: authorized human decision-maker; a personal name was not supplied in the acceptance
+  instruction;
+- evidence: explicit human approval supplied for this Release Candidate execution;
+- expiration: this acceptance ends with the local homologation scope and must be reassessed before
+  any scope expansion or material dependency-chain change.
+
+### Mandatory boundaries
+
+| Scope                    | Authorization                               |
+| ------------------------ | ------------------------------------------- |
+| Local human homologation | `AUTHORIZED WITH TEMPORARY RISK ACCEPTANCE` |
+| Production               | `NOT AUTHORIZED`                            |
+| Cloud                    | `NOT AUTHORIZED`                            |
+| External deployment      | `NOT AUTHORIZED`                            |
+| Public exposure          | `NOT AUTHORIZED`                            |
+| Real data                | `NOT AUTHORIZED`                            |
+| Gate D                   | `NOT AUTHORIZED`                            |
+| ETP-015.10               | `NOT COMPLETE`                              |
+
+The acceptance does not correct or downgrade the findings. The unresolved inventory remains:
+
+- 1 high: `deepmerge-ts`, GHSA-ggr8-5vv4-36mx / CVE-2026-40345;
+- 3 moderate: the React Router advisories documented above.
+
+Confirmed technical reachability remains:
+
+- `deepmerge-ts` API runtime reachable: `NO`;
+- direct HTTP or user-controlled input into the vulnerable merge: `NO`;
+- Prisma CLI/configuration-chain reachability: `YES`.
+
+A new security evaluation is mandatory before Gate D, production, cloud, external deployment, a
+Prisma upgrade or any material dependency-chain change.

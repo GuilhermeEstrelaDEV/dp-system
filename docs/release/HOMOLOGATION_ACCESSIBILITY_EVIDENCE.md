@@ -2,11 +2,24 @@
 
 ## State
 
-`PENDING HUMAN EXECUTION`
+`ACCESSIBILITY SANITY — HUMAN PASS`
 
-Static source review and automated component tests do not replace this keyboard/dialog execution.
-The reviewer must avoid the mouse while running the primary pass and attach evidence for each
-failure.
+The authorized human results supplied on 2026-09-09 are:
+
+| Control             | Result         |
+| ------------------- | -------------- |
+| Keyboard navigation | `PASS — HUMAN` |
+| Dialogs             | `PASS — HUMAN` |
+| `TAB`               | `PASS — HUMAN` |
+| `SHIFT+TAB`         | `PASS — HUMAN` |
+| `ENTER`             | `PASS — HUMAN` |
+| `SPACE`             | `PASS — HUMAN` |
+| `ESC`               | `PASS — HUMAN` |
+
+This is an accessibility sanity result, not WCAG certification. No assistive-technology report or
+flow-level artifact was supplied or invented. The detailed script below remains available for
+future regression evidence; its `PENDING` rows record the absence of individual artifacts and do
+not override the approved aggregate keyboard/dialog results above.
 
 ## Keyboard commands
 
@@ -58,14 +71,14 @@ failure.
 - focus styles and status text exist in the shared visual system;
 - frontend unit tests, typecheck and build pass.
 
-These checks support `Accessibility static: PASS`; they do not change the manual result from
-`PENDING HUMAN EXECUTION`.
+These checks support `Accessibility static: PASS`; the supplied aggregate manual result is
+`ACCESSIBILITY SANITY — HUMAN PASS`.
 
 ## Session record
 
-- tested commit: _pending_;
-- reviewer: _pending_;
-- date/time: _pending_;
+- tested commit: `5d455c18a103c0fdb879bacfe99b2edd4828acd6`;
+- reviewer: authorized human reviewer; personal name not supplied;
+- date/time: 2026-09-09; time not supplied;
 - browser/version: _pending_;
 - assistive technology, if used: _pending_;
-- final keyboard/dialog decision: `PENDING HUMAN EXECUTION`.
+- final keyboard/dialog decision: `ACCESSIBILITY SANITY — HUMAN PASS`.

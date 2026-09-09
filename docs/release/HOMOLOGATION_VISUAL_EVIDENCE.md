@@ -2,11 +2,21 @@
 
 ## State
 
-`PENDING HUMAN EXECUTION`
+`HUMAN EXECUTION — PASS`
 
-No visual result is inferred from automated tests or source inspection. A human reviewer must run
-this matrix against the local Release Candidate, record `PASS` or `FAIL`, attach evidence and add
-notes for every row.
+The authorized human result supplied on 2026-09-09 is:
+
+| Viewport                                 | Result         | Evidence boundary                                 |
+| ---------------------------------------- | -------------- | ------------------------------------------------- |
+| Large desktop — 1440 × 900 or equivalent | `PASS — HUMAN` | Human result supplied; no screenshot was provided |
+| Notebook — 1366 × 768 or equivalent      | `PASS — HUMAN` | Human result supplied; no screenshot was provided |
+| Tablet — approximately 768 px            | `PASS — HUMAN` | Human result supplied; no screenshot was provided |
+| Mobile sanity — approximately 390 px     | `PASS — HUMAN` | Human result supplied; no screenshot was provided |
+
+No screenshot, browser version or screen-by-screen evidence was invented. The detailed matrix below
+remains available as a reusable evidence template; its `PENDING` cells indicate that the supplied
+human gate did not include individual artifacts for those rows and do not override the approved
+aggregate viewport results above.
 
 ## Execution preparation
 
@@ -28,6 +38,8 @@ For every screen validate:
 - company switch does not retain stale detail or list data.
 
 ## Large desktop — 1440 × 900 or equivalent
+
+Gate result: `PASS — HUMAN`.
 
 | Screen                | PASS / FAIL | Evidence | Notes |
 | --------------------- | ----------- | -------- | ----- |
@@ -55,6 +67,8 @@ For every screen validate:
 
 ## Notebook — 1366 × 768 or equivalent
 
+Gate result: `PASS — HUMAN`.
+
 | Screen                | PASS / FAIL | Evidence | Notes |
 | --------------------- | ----------- | -------- | ----- |
 | Dashboard             | `PENDING`   |          |       |
@@ -80,6 +94,8 @@ For every screen validate:
 | Reopen                | `PENDING`   |          |       |
 
 ## Tablet — approximately 768 px wide
+
+Gate result: `PASS — HUMAN`.
 
 | Screen                | PASS / FAIL | Evidence | Notes |
 | --------------------- | ----------- | -------- | ----- |
@@ -110,6 +126,8 @@ For every screen validate:
 This is a sanity gate for administrative workflows, not a requirement for a redesigned mobile
 experience.
 
+Gate result: `PASS — HUMAN`.
+
 | Screen                | PASS / FAIL | Evidence | Notes |
 | --------------------- | ----------- | -------- | ----- |
 | Dashboard             | `PENDING`   |          |       |
@@ -136,10 +154,10 @@ experience.
 
 ## Session record
 
-- tested commit: _pending_;
-- reviewer: _pending_;
-- date/time: _pending_;
+- tested commit: `5d455c18a103c0fdb879bacfe99b2edd4828acd6`;
+- reviewer: authorized human reviewer; personal name not supplied;
+- date/time: 2026-09-09; time not supplied;
 - browser/version: _pending_;
 - display scaling: _pending_;
-- failed evidence references: _pending_;
-- final visual decision: `PENDING HUMAN EXECUTION`.
+- screenshot references: not supplied;
+- final visual decision: `HUMAN EXECUTION — PASS`.
