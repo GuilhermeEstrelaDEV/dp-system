@@ -6,6 +6,8 @@ export function CompaniesPage() {
     <>
       <OrganizationNavigation />
       <ResourcePage<CompanyContract>
+        createLabel="Nova empresa"
+        description="Cadastre e mantenha as empresas disponíveis para operação."
         title="Empresas"
         endpoint="/companies"
         manageCapability="company.manage"

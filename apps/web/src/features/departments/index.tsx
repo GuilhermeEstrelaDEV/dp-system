@@ -6,6 +6,8 @@ export function DepartmentsPage() {
     <>
       <OrganizationNavigation />
       <ResourcePage<DepartmentContract>
+        createLabel="Novo departamento"
+        description="Mantenha os departamentos operacionais da empresa ativa."
         title="Departamentos"
         endpoint="/departments"
         companyScoped
