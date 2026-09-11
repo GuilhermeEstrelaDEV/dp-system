@@ -13,12 +13,14 @@ A etapa introduz os cadastros demonstrativos de `employees`, `employee_contacts`
 - `GET`, `POST`, `PATCH`, histórico e ativação/inativação em `/employment-contracts`;
 - telas em `/colaboradores`, `/colaboradores/:employeeId`, `/contratos`, `/contratos/:contractId` e `/employees/:employeeId/contracts`.
 
-## LGPD: dados tratados e adiados
+## Expansão posterior do perfil e LGPD
 
-Esta etapa trata somente nome legal, nome preferencial opcional, e-mail ou telefone fornecido manualmente e dados operacionais do contrato. Todos os exemplos e testes devem usar dados evidentemente fictícios. Logs e documentação não devem registrar valores de contatos.
+Uma entrega posterior adicionou CPF normalizado, data de nascimento, estado civil, nacionalidade e naturalidade opcionais no banco/API, além de endereço estruturado e contato de emergência. E-mail e telefones continuam em `employee_contacts`; empresa, organização, matrícula e condições do vínculo continuam em `employment_contracts` e `Admission`. A criação pela interface exige nome, CPF e nascimento, sem endurecer registros ou integrações legadas.
 
-Foram deliberadamente adiados: CPF, data de nascimento, endereço, documentos identificáveis, dependentes, dados bancários, saúde, salário, histórico salarial, anexos e categoria eSocial. Esses dados dependem das decisões BDP-001 e BDP-004, de fonte oficial, retenção, controles de acesso e estratégia de proteção antes de qualquer persistência.
+A listagem não expõe os novos dados. O detalhe exige `employee.read`, a escrita exige `employee.manage` e ambos preservam o isolamento pela empresa ativa. Os eventos de auditoria registram ação e identificador, sem CPF, nascimento, contato, endereço ou payload pessoal. Todos os exemplos e testes usam dados fictícios.
+
+Permanecem deliberadamente adiados: documentos, dependentes, dados bancários, saúde, salário, histórico salarial, anexos e categoria eSocial. Categorias sensíveis não são coletadas. A matriz completa está em [Expansão do perfil de colaborador](../product/EMPLOYEE_PROFILE_EXPANSION.md).
 
 ## Limites
 
-Não há autenticação funcional, autorização, regras de Departamento Pessoal, cálculo, integração externa, importação de planilha ou uso de dados reais. `User`, `Role`, `Permission` e `AuditLog` não foram alterados.
+Não foram criadas regras trabalhistas, cálculos, integrações externas, importação de planilha, dados reais, capabilities ou grants. Autenticação, autorização deny-by-default, auditoria e isolamento empresarial já existentes foram preservados.

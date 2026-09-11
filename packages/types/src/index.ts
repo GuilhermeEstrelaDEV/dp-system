@@ -97,9 +97,37 @@ export interface EmployeeContract {
   id: string;
   legalName: string;
   preferredName: string | null;
+  cpf?: string | null;
+  birthDate?: string | null;
+  maritalStatus?: MaritalStatus | null;
+  nationality?: string | null;
+  placeOfBirth?: string | null;
   status: RecordStatus;
   createdAt: string;
   updatedAt: string;
+}
+
+export type MaritalStatus = 'SINGLE' | 'MARRIED' | 'DIVORCED' | 'WIDOWED' | 'SEPARATED' | 'OTHER';
+
+export interface EmployeeAddressContract {
+  id: string;
+  employeeId: string;
+  postalCode: string | null;
+  street: string | null;
+  number: string | null;
+  complement: string | null;
+  district: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+}
+
+export interface EmployeeEmergencyContactContract {
+  id: string;
+  employeeId: string;
+  name: string;
+  relationship: string;
+  phone: string;
 }
 
 export interface EmployeeContactContract {

@@ -40,7 +40,7 @@ Empresas, filiais, departamentos, cargos e centros de custo passam a compor a fu
 
 **Status:** concluída.
 
-Colaboradores, contatos mínimos, contratos e histórico contratual passam a usar a estrutura organizacional. Dados pessoais e trabalhistas sensíveis, como CPF, endereço, documentos, banco e remuneração, permanecem fora do escopo até validação formal do DP. Consulte [Colaboradores e contratos](modules/EMPLOYEES_AND_CONTRACTS.md).
+Colaboradores, contatos, perfil pessoal mínimo, endereço, contato de emergência, contratos e histórico contratual usam a estrutura organizacional. A expansão posterior do perfil preserva compatibilidade, projeção mínima e isolamento empresarial; documentos, dados bancários, remuneração e categorias sensíveis permanecem fora do escopo. Consulte [Colaboradores e contratos](modules/EMPLOYEES_AND_CONTRACTS.md) e [Expansão do perfil de colaborador](product/EMPLOYEE_PROFILE_EXPANSION.md).
 
 ## ETP-006 — Admissão e checklist admissional
 

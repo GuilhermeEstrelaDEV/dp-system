@@ -1,4 +1,5 @@
 import {
+  MaritalStatus,
   PayrollReviewCycleStatus,
   PayrollReviewEventType,
   PayrollReviewFindingSeverity,
@@ -43,6 +44,20 @@ const accounts = [
 
 function demoId(group: string, sequence: number) {
   return `${group}0000000-0000-4000-8000-${sequence.toString().padStart(12, '0')}`;
+}
+
+function demoCpf(sequence: number) {
+  const root = (700_000_000 + sequence).toString();
+  const digit = (value: string, length: number) => {
+    const sum = value
+      .slice(0, length)
+      .split('')
+      .reduce((total, current, index) => total + Number(current) * (length + 1 - index), 0);
+    const remainder = (sum * 10) % 11;
+    return remainder === 10 ? 0 : remainder;
+  };
+  const first = `${root}${digit(root, 9)}`;
+  return `${first}${digit(first, 10)}`;
 }
 
 export function assertLocalDemo(environment: NodeJS.ProcessEnv = process.env) {
@@ -213,13 +228,28 @@ async function seedPeople(
   for (let index = 0; index < count; index += 1) {
     const sequence = offset + index + 1;
     const label = `${isHorizon ? 'H' : 'A'}${(index + 1).toString().padStart(2, '0')}`;
+    const profile = {
+      legalName: `Colaborador Demo ${label}`,
+      preferredName: `Demo ${label}`,
+      cpf: demoCpf(sequence),
+      birthDate: new Date(Date.UTC(1980 + (index % 20), index % 12, 1 + (index % 20))),
+      maritalStatus: [
+        MaritalStatus.SINGLE,
+        MaritalStatus.MARRIED,
+        MaritalStatus.DIVORCED,
+        MaritalStatus.WIDOWED,
+        MaritalStatus.SEPARATED,
+        MaritalStatus.OTHER,
+      ][index % 6]!,
+      nationality: 'Brasil',
+      placeOfBirth: 'Cidade Demonstrativa',
+    };
     const employee = await prisma.employee.upsert({
       where: { id: demoId('7', sequence) },
-      update: { legalName: `Colaborador Demo ${label}` },
+      update: profile,
       create: {
         id: demoId('7', sequence),
-        legalName: `Colaborador Demo ${label}`,
-        preferredName: `Demo ${label}`,
+        ...profile,
       },
     });
     await prisma.employeeContact.upsert({
@@ -237,6 +267,61 @@ async function seedPeople(
         type: 'EMAIL',
         value: `colaborador.${label.toLowerCase()}@dp-system.local`,
         isPrimary: true,
+      },
+    });
+    const primaryPhone = `5511900${sequence.toString().padStart(6, '0')}`;
+    const secondaryPhone = `5511800${sequence.toString().padStart(6, '0')}`;
+    for (const [phoneIndex, value] of [primaryPhone, secondaryPhone].entries()) {
+      await prisma.employeeContact.upsert({
+        where: { employeeId_type_value: { employeeId: employee.id, type: 'PHONE', value } },
+        update: { status: 'ACTIVE', isPrimary: phoneIndex === 0 },
+        create: {
+          id: demoId('7', (phoneIndex === 0 ? 700 : 900) + sequence),
+          employeeId: employee.id,
+          type: 'PHONE',
+          value,
+          isPrimary: phoneIndex === 0,
+        },
+      });
+    }
+    await prisma.employeeAddress.upsert({
+      where: { employeeId: employee.id },
+      update: {
+        postalCode: `${70000000 + sequence}`,
+        street: 'Rua Demonstrativa',
+        number: String(index + 1),
+        complement: index % 2 === 0 ? 'Sala Demo' : null,
+        district: 'Bairro Exemplo',
+        city: 'Cidade Demonstrativa',
+        state: 'DF',
+        country: 'Brasil',
+      },
+      create: {
+        id: demoId('c', sequence),
+        employeeId: employee.id,
+        postalCode: `${70000000 + sequence}`,
+        street: 'Rua Demonstrativa',
+        number: String(index + 1),
+        complement: index % 2 === 0 ? 'Sala Demo' : null,
+        district: 'Bairro Exemplo',
+        city: 'Cidade Demonstrativa',
+        state: 'DF',
+        country: 'Brasil',
+      },
+    });
+    await prisma.employeeEmergencyContact.upsert({
+      where: { employeeId: employee.id },
+      update: {
+        name: `Contato Emergência Demo ${label}`,
+        relationship: 'Contato indicado',
+        phone: `5511700${sequence.toString().padStart(6, '0')}`,
+      },
+      create: {
+        id: demoId('d', sequence),
+        employeeId: employee.id,
+        name: `Contato Emergência Demo ${label}`,
+        relationship: 'Contato indicado',
+        phone: `5511700${sequence.toString().padStart(6, '0')}`,
       },
     });
     const ended = index >= count - (isHorizon ? 2 : 1);
