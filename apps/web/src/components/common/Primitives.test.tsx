@@ -1,6 +1,18 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { ConfirmDialog, ErrorState, FormSection, Select, Textarea } from './Primitives';
+import {
+  Button,
+  ConfirmDialog,
+  ErrorState,
+  FormActions,
+  FormField,
+  FormSection,
+  Input,
+  Select,
+  Textarea,
+} from './Primitives';
 
 describe('ConfirmDialog', () => {
   it('focuses the safe action and supports Escape', () => {
@@ -94,5 +106,57 @@ describe('form and feedback primitives', () => {
 
     expect(screen.getByRole('heading', { name: 'Dados básicos' })).toBeInTheDocument();
     expect(screen.getByText('Campo demonstrativo')).toBeInTheDocument();
+  });
+
+  it('keeps label, control, help text and error in a readable field sequence', () => {
+    render(
+      <form className="ui-form-card">
+        <FormSection description="Dados demonstrativos." title="Dados básicos">
+          <FormField
+            error="Versão inválida"
+            errorId="version-error"
+            help="Use a versão aprovada."
+            helpId="version-help"
+            label="Versão"
+            required
+          >
+            <Input aria-describedby="version-help version-error" aria-invalid="true" />
+          </FormField>
+        </FormSection>
+        <FormActions>
+          <Button type="button" variant="secondary">
+            Cancelar
+          </Button>
+          <Button type="submit">Salvar</Button>
+        </FormActions>
+      </form>,
+    );
+
+    const control = screen.getByLabelText(/Versão/);
+    const field = control.closest('label');
+    expect(field).toHaveClass('ui-field');
+    expect(field?.children).toHaveLength(4);
+    expect(field?.children[0]).toHaveClass('ui-field__label');
+    expect(field?.children[1]).toBe(control);
+    expect(field?.children[2]).toHaveClass('ui-field-help');
+    expect(field?.children[3]).toHaveClass('ui-field-error');
+    expect(screen.getByText('Use a versão aprovada.')).toHaveAttribute('id', 'version-help');
+    expect(screen.getByRole('alert')).toHaveAttribute('id', 'version-error');
+    expect(screen.getByRole('button', { name: 'Cancelar' }).parentElement).toHaveClass(
+      'ui-form-actions',
+    );
+  });
+
+  it('preserves the shared responsive form and table spacing contract', () => {
+    const formStyles = readFileSync(resolve('src/styles/index.css'), 'utf8');
+
+    expect(formStyles).toContain('--form-label-control-gap: 0.5rem');
+    expect(formStyles).toContain('.app-content label:not(.flex)');
+    expect(formStyles).toContain('.app-content form.grid');
+    expect(formStyles).toContain('@media (max-width: 640px)');
+    expect(formStyles).toMatch(
+      /\.ui-form-grid\s*\{[\s\S]*grid-template-columns: minmax\(0, 1fr\)/u,
+    );
+    expect(formStyles).toContain('scrollbar-gutter: stable');
   });
 });

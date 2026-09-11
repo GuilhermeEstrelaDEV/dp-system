@@ -2,13 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import {
-  Button,
-  FieldError,
-  FormActions,
-  FormSection,
-  Input,
-} from '@/components/common/Primitives';
+import { Button, FormActions, FormField, FormSection, Input } from '@/components/common/Primitives';
 
 const employeeSchema = z.object({
   legalName: z.string().min(1, 'Nome legal é obrigatório').max(160),
@@ -62,13 +56,7 @@ export function EmployeeForm({
         description="Use somente informações fictícias no ambiente demonstrativo."
         title="Informações básicas"
       >
-        <label className="ui-field">
-          <span>
-            Nome legal{' '}
-            <span aria-hidden="true" className="ui-required">
-              *
-            </span>
-          </span>
+        <FormField error={legalNameError} errorId={legalNameErrorId} label="Nome legal" required>
           <Input
             {...form.register('legalName')}
             aria-describedby={legalNameError ? legalNameErrorId : undefined}
@@ -77,13 +65,19 @@ export function EmployeeForm({
             autoComplete="off"
             placeholder="Nome completo do colaborador"
           />
-          <FieldError id={legalNameErrorId}>{legalNameError}</FieldError>
-        </label>
-        <label className="ui-field">
-          <span>
-            Nome social ou preferencial{' '}
-            <small>{currentPreferredName ? '(remoção indisponível)' : '(opcional)'}</small>
-          </span>
+        </FormField>
+        <FormField
+          error={preferredNameError}
+          errorId={preferredNameErrorId}
+          help={
+            currentPreferredName
+              ? 'O contrato atual aceita substituir, mas ainda não permite remover este valor.'
+              : undefined
+          }
+          helpId={preferredNameHelpId}
+          label="Nome social ou preferencial"
+          optional={!currentPreferredName}
+        >
           <Input
             {...form.register('preferredName')}
             aria-describedby={
@@ -99,13 +93,7 @@ export function EmployeeForm({
             autoComplete="off"
             placeholder="Como prefere ser chamado (opcional)"
           />
-          {currentPreferredName ? (
-            <small id={preferredNameHelpId}>
-              O contrato atual aceita substituir, mas ainda não permite remover este valor.
-            </small>
-          ) : null}
-          <FieldError id={preferredNameErrorId}>{preferredNameError}</FieldError>
-        </label>
+        </FormField>
       </FormSection>
       <FormActions>
         {onCancel ? (

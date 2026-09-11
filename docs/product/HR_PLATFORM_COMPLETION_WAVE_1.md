@@ -48,6 +48,29 @@ drawer móvel agora possuem rolagem vertical, e o subtítulo da marca pode quebr
 cortado. O inventário completo está em
 [HR_PLATFORM_NAVIGATION_ROUTE_INVENTORY.md](HR_PLATFORM_NAVIGATION_ROUTE_INVENTORY.md).
 
+## Correção global de legibilidade de formulários e tabelas
+
+**Estado:** `RESOLVED`
+
+Foram auditados os 27 formulários renderizados pelo frontend, distribuídos entre autenticação e as
+20 superfícies funcionais da Wave 1. A correção foi concentrada na camada compartilhada:
+
+- `FormField` consolida label em linha própria, indicador de obrigatoriedade/opcionalidade, controle,
+  help text e erro na ordem de leitura;
+- os formulários baseados em HTML legado recebem o mesmo ritmo visual por seletores restritos ao
+  conteúdo da aplicação, sem mudar nome, tipo, obrigatoriedade ou payload de campo;
+- o espaçamento entre label e controle, entre campos, entre seções e antes das ações passa a usar
+  tokens únicos;
+- inputs, selects e textareas preservam altura, largura e quebra de texto adequadas;
+- em telas estreitas, grids e ações passam para uma coluna sem esmagar controles;
+- tabelas mantêm overflow horizontal e recebem padding de célula, line-height, badges e ações com
+  separação consistente.
+
+`EmployeeForm`, `ContractForm` e o `ResourcePage` passaram a reutilizar o `FormField`. Os demais
+formulários existentes recebem o padrão compartilhado sem alteração funcional. A expansão de dados
+de `Employee` não integra este PR e continua condicionada ao merge humano da Wave 1 e a uma branch
+separada baseada em `develop`.
+
 ## Revisão sistemática dos CRUDs
 
 | Recurso               | Create                    | Read                    | Update/action           | Resultado da revisão                           |
@@ -87,7 +110,7 @@ canônicas de ativação, inativação, cancelamento ou transição de workflow.
 
 ## Evidência automatizada
 
-- frontend: 24 arquivos de teste, 116 testes aprovados na validação atual;
+- frontend: 24 arquivos de teste, 118 testes aprovados na validação atual;
 - cobertura API preservada em 75,09% de linhas e 71,03% de branches;
 - cobertura frontend em 80,50% de linhas e 73,59% de branches;
 - cobertura adicional: edição de colaborador, edição de contrato, confirmação explícita e teclado;
@@ -112,6 +135,8 @@ canônicas de ativação, inativação, cancelamento ou transição de workflow.
 | itens de navegação                       |        25 |
 | rotas de entrada órfãs                   |         0 |
 | ações de criação verificadas             |         7 |
+| formulários auditados                    |        27 |
+| formulários cobertos pelo ritmo global   |        27 |
 
 ## Limites e próximos passos
 

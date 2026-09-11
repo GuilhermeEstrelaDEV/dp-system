@@ -125,6 +125,50 @@ export function FormActions({ children }: PropsWithChildren) {
   return <div className="ui-form-actions">{children}</div>;
 }
 
+export function FormField({
+  label,
+  children,
+  className = '',
+  required = false,
+  optional = false,
+  help,
+  helpId,
+  error,
+  errorId,
+}: PropsWithChildren<{
+  readonly label: ReactNode;
+  readonly className?: string;
+  readonly required?: boolean;
+  readonly optional?: boolean;
+  readonly help?: ReactNode;
+  readonly helpId?: string;
+  readonly error?: ReactNode;
+  readonly errorId?: string;
+}>) {
+  return (
+    <label className={`ui-field ${className}`.trim()}>
+      <span className="ui-field__label">
+        {label}
+        {required ? (
+          <span aria-hidden="true" className="ui-required">
+            {' '}
+            *
+          </span>
+        ) : optional ? (
+          <small> (opcional)</small>
+        ) : null}
+      </span>
+      {children}
+      {help ? (
+        <small className="ui-field-help" id={helpId}>
+          {help}
+        </small>
+      ) : null}
+      <FieldError id={errorId}>{error}</FieldError>
+    </label>
+  );
+}
+
 export function FieldError({ children, id }: PropsWithChildren<{ readonly id?: string }>) {
   if (!children) return null;
   return (

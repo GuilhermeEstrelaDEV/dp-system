@@ -12,9 +12,9 @@ import {
   ConfirmDialog,
   EmptyState,
   ErrorState,
-  FieldError,
   FilterBar,
   FormActions,
+  FormField,
   FormSection,
   Input,
   LoadingState,
@@ -180,25 +180,21 @@ export function ResourcePage<TItem extends RecordItem>({
               const error = form.formState.errors[key]?.message;
               const errorId = `${formId}-${key}-error`;
               return (
-                <label className="ui-field" key={key}>
-                  <span>
-                    {label}{' '}
-                    {required ? (
-                      <span aria-hidden="true" className="ui-required">
-                        *
-                      </span>
-                    ) : (
-                      <small>(opcional)</small>
-                    )}
-                  </span>
+                <FormField
+                  error={error}
+                  errorId={errorId}
+                  key={key}
+                  label={label}
+                  optional={!required}
+                  required={required}
+                >
                   <Input
                     {...form.register(key)}
                     aria-describedby={error ? errorId : undefined}
                     aria-invalid={Boolean(error)}
                     aria-required={required}
                   />
-                  <FieldError id={errorId}>{error}</FieldError>
-                </label>
+                </FormField>
               );
             })}
           </FormSection>

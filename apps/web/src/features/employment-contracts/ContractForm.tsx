@@ -2,13 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { z } from 'zod';
-import {
-  Button,
-  FieldError,
-  FormActions,
-  FormSection,
-  Input,
-} from '@/components/common/Primitives';
+import { Button, FormActions, FormField, FormSection, Input } from '@/components/common/Primitives';
 
 const contractSchema = z.object({
   employeeId: z.string().uuid('Informe o ID do colaborador'),
@@ -94,17 +88,14 @@ export function ContractForm({
           const error = form.formState.errors[key]?.message;
           const errorId = `${formId}-${key}-error`;
           return (
-            <label className="ui-field" key={key}>
-              <span>
-                {label}{' '}
-                {required ? (
-                  <span aria-hidden="true" className="ui-required">
-                    *
-                  </span>
-                ) : (
-                  <small>(opcional)</small>
-                )}
-              </span>
+            <FormField
+              error={error}
+              errorId={errorId}
+              key={key}
+              label={label}
+              optional={!required}
+              required={required}
+            >
               <Input
                 {...form.register(key)}
                 aria-describedby={error ? errorId : undefined}
@@ -113,8 +104,7 @@ export function ContractForm({
                 readOnly={key === 'companyId' || (editing && key === 'employeeId')}
                 type={type}
               />
-              <FieldError id={errorId}>{error}</FieldError>
-            </label>
+            </FormField>
           );
         })}
       </FormSection>
