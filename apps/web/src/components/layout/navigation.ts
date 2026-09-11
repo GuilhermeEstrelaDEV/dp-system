@@ -12,11 +12,14 @@ export type NavigationIcon =
   | 'documents'
   | 'reports';
 
-export type NavigationGroup = 'Visão geral' | 'Cadastros' | 'Pessoas' | 'Administração';
+export type NavigationGroup =
+  'Visão geral' | 'Pessoas' | 'Organização' | 'Jornada' | 'Folha' | 'Administração' | 'Futuro';
 
 export interface NavigationItem {
   readonly label: string;
   readonly path?: string;
+  readonly aliases?: readonly string[];
+  readonly activePatterns?: readonly RegExp[];
   readonly description: string;
   readonly icon: NavigationIcon;
   readonly group: NavigationGroup;
@@ -34,16 +37,9 @@ export const navigationItems: readonly NavigationItem[] = [
     group: 'Visão geral',
   },
   {
-    label: 'Estrutura',
-    path: '/estrutura',
-    description: 'Empresas, filiais, departamentos, cargos e centros de custo.',
-    icon: 'structure',
-    group: 'Cadastros',
-    capability: 'company.read',
-  },
-  {
     label: 'Colaboradores',
     path: '/colaboradores',
+    activePatterns: [/^\/colaboradores(?:\/[^/]+)?$/],
     description: 'Cadastros de colaboradores e contatos.',
     icon: 'people',
     group: 'Pessoas',
@@ -52,8 +48,13 @@ export const navigationItems: readonly NavigationItem[] = [
   {
     label: 'Contratos',
     path: '/contratos',
+    activePatterns: [
+      /^\/contratos(?:\/[^/]+)?$/,
+      /^\/colaboradores\/[^/]+\/contratos(?:\/.*)?$/,
+      /^\/employees\/[^/]+\/contracts(?:\/.*)?$/,
+    ],
     description: 'Vínculos de trabalho e histórico.',
-    icon: 'people',
+    icon: 'documents',
     group: 'Pessoas',
     capability: 'contract.read',
   },
@@ -66,28 +67,12 @@ export const navigationItems: readonly NavigationItem[] = [
     capability: 'admission.read',
   },
   {
-    label: 'Movimentações',
+    label: 'Afastamentos',
     path: '/movimentacoes',
     description: 'Afastamentos e retornos da empresa ativa.',
     icon: 'movements',
     group: 'Pessoas',
     capability: 'leave.read',
-  },
-  {
-    label: 'Jornada',
-    path: '/jornada',
-    description: 'Jornadas e registros de ponto.',
-    icon: 'time',
-    group: 'Pessoas',
-    capability: 'time.read',
-  },
-  {
-    label: 'Benefícios',
-    path: '/beneficios',
-    description: 'Benefícios vinculados aos colaboradores.',
-    icon: 'benefits',
-    group: 'Pessoas',
-    capability: 'benefit.read',
   },
   {
     label: 'Férias',
@@ -98,70 +83,182 @@ export const navigationItems: readonly NavigationItem[] = [
     capability: 'vacation.read',
   },
   {
-    label: 'Folha',
-    path: '/folha/conferencia',
-    description: 'Conferência e fechamento no recorte aprovado do MVP.',
-    icon: 'payroll',
-    group: 'Administração',
+    label: 'Benefícios',
+    path: '/beneficios',
+    description: 'Benefícios vinculados aos colaboradores.',
+    icon: 'benefits',
+    group: 'Pessoas',
+    capability: 'benefit.read',
   },
   {
-    label: 'Rubricas',
-    path: '/folha/rubricas',
-    description: 'Cadastro operacional de rubricas da empresa ativa.',
+    label: 'Empresas',
+    path: '/estrutura/empresas',
+    aliases: ['/estrutura'],
+    description: 'Empresas disponíveis no escopo autorizado.',
+    icon: 'administration',
+    group: 'Organização',
+    capability: 'company.read',
+  },
+  {
+    label: 'Filiais',
+    path: '/estrutura/filiais',
+    description: 'Filiais da empresa ativa.',
+    icon: 'structure',
+    group: 'Organização',
+    capability: 'organization.read',
+  },
+  {
+    label: 'Departamentos',
+    path: '/estrutura/departamentos',
+    description: 'Departamentos da estrutura organizacional.',
+    icon: 'structure',
+    group: 'Organização',
+    capability: 'organization.read',
+  },
+  {
+    label: 'Cargos',
+    path: '/estrutura/cargos',
+    description: 'Cargos da estrutura organizacional.',
+    icon: 'people',
+    group: 'Organização',
+    capability: 'organization.read',
+  },
+  {
+    label: 'Centros de custo',
+    path: '/estrutura/centros-de-custo',
+    description: 'Centros de custo da empresa ativa.',
+    icon: 'reports',
+    group: 'Organização',
+    capability: 'organization.read',
+  },
+  {
+    label: 'Jornada / Ponto',
+    path: '/jornada',
+    description: 'Jornadas, ocorrências e saldos de ponto.',
+    icon: 'time',
+    group: 'Jornada',
+    capability: 'time.read',
+  },
+  {
+    label: 'Períodos',
+    path: '/folha/competencias',
+    aliases: ['/folha'],
+    activePatterns: [/^\/folha(?:\/competencias)?$/],
+    description: 'Competências e períodos da folha.',
     icon: 'payroll',
-    group: 'Administração',
-    capability: 'payroll.rubric.read',
+    group: 'Folha',
+    capability: 'payroll.period.close.view',
+  },
+  {
+    label: 'Lançamentos',
+    path: '/folha/lancamentos',
+    description: 'Lançamentos demonstrativos da folha.',
+    icon: 'payroll',
+    group: 'Folha',
+    capability: 'payroll.input.read',
+  },
+  {
+    label: 'Processamentos',
+    path: '/folha/execucoes',
+    activePatterns: [/^\/folha\/execucoes$/],
+    description: 'Execuções técnicas da folha.',
+    icon: 'payroll',
+    group: 'Folha',
+    capability: 'payroll.run.read',
+  },
+  {
+    label: 'Revisão',
+    path: '/folha/conferencia',
+    activePatterns: [/^\/folha\/conferencia(?:\/[^/]+)?$/, /^\/folha\/execucoes\/[^/]+$/],
+    description: 'Conferência e aprovação da folha.',
+    icon: 'payroll',
+    group: 'Folha',
+    capability: 'payroll.review.view',
   },
   {
     label: 'Parâmetros',
     path: '/folha/parametros',
     description: 'Parâmetros versionados da empresa ativa.',
     icon: 'payroll',
-    group: 'Administração',
+    group: 'Folha',
     capability: 'payroll.parameter.read',
+  },
+  {
+    label: 'Rubricas',
+    path: '/folha/rubricas',
+    description: 'Cadastro operacional de rubricas da empresa ativa.',
+    icon: 'payroll',
+    group: 'Folha',
+    capability: 'payroll.rubric.read',
+  },
+  {
+    label: 'Histórico',
+    path: '/folha/fechamentos',
+    activePatterns: [
+      /^\/folha\/fechamentos(?:\/.*)?$/,
+      /^\/folha\/competencias\/[^/]+\/historico(?:\/.*)?$/,
+    ],
+    description: 'Fechamentos e histórico público dos períodos.',
+    icon: 'reports',
+    group: 'Folha',
+    capability: 'payroll.period.close.history',
   },
   {
     label: 'Remuneração variável',
     path: '/folha/remuneracao-variavel',
     description: 'Eventos, adiantamentos, pagamentos externos e conciliações.',
     icon: 'payroll',
-    group: 'Administração',
+    group: 'Folha',
     capability: 'variable_compensation.read',
+  },
+  {
+    label: 'Modelos de checklist',
+    path: '/configuracoes/checklists',
+    description: 'Modelos reutilizáveis para processos admissionais.',
+    icon: 'documents',
+    group: 'Administração',
+    capability: 'admission.read',
   },
   {
     label: 'Desligamentos',
     description: 'Fluxo ainda não implementado.',
     icon: 'termination',
-    group: 'Administração',
+    group: 'Futuro',
     comingSoon: true,
   },
   {
     label: 'Documentos',
     description: 'Central ainda não implementada.',
     icon: 'documents',
-    group: 'Administração',
+    group: 'Futuro',
     comingSoon: true,
   },
   {
     label: 'Relatórios',
     description: 'Relatórios executivos pertencem a uma etapa futura.',
     icon: 'reports',
-    group: 'Administração',
+    group: 'Futuro',
     comingSoon: true,
   },
 ];
 
 export const navigationGroups: readonly NavigationGroup[] = [
   'Visão geral',
-  'Cadastros',
   'Pessoas',
+  'Organização',
+  'Jornada',
+  'Folha',
   'Administração',
+  'Futuro',
 ];
 
+export function isNavigationItemActive(item: NavigationItem, pathname: string) {
+  if (!item.path) return false;
+  if (item.activePatterns) return item.activePatterns.some((pattern) => pattern.test(pathname));
+  if (item.aliases?.includes(pathname)) return true;
+  return pathname === item.path || (item.path !== '/' && pathname.startsWith(`${item.path}/`));
+}
+
 export function getNavigationItem(pathname: string) {
-  return navigationItems.find(
-    (item) =>
-      item.path &&
-      (pathname === item.path || (item.path !== '/' && pathname.startsWith(`${item.path}/`))),
-  );
+  return navigationItems.find((item) => isNavigationItemActive(item, pathname));
 }

@@ -30,14 +30,16 @@ describe('application shell', () => {
     expect(screen.getAllByText(/Ambiente (demonstrativo|local)/).length).toBeGreaterThan(0);
   });
 
-  it('navigates only to the approved payroll surface and marks the active route', async () => {
+  it('navigates to the approved payroll review surface and marks the active route', async () => {
     renderWithRouter();
-    fireEvent.click(screen.getByRole('link', { name: /Folha/ }));
+    fireEvent.click(screen.getByRole('link', { name: 'Revisão' }));
     expect(
       await screen.findByRole('heading', { name: 'Execuções e conferências' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Folha/ })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByLabelText('Navegação estrutural')).toHaveTextContent(/Início\s*\/\s*Folha/);
+    expect(screen.getByRole('link', { name: 'Revisão' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByLabelText('Navegação estrutural')).toHaveTextContent(
+      /Início\s*\/\s*Revisão/,
+    );
   });
 
   it('identifies future modules without creating actionable links', () => {
@@ -54,18 +56,20 @@ describe('application shell', () => {
       'company.read',
       'employee.read',
       'contract.read',
+      'organization.read',
       'payroll.parameter.read',
       'payroll.rubric.read',
     ]);
-    expect(screen.getByRole('link', { name: /Estrutura/ })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Colaboradores/ })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Contratos/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Empresas' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Filiais' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Colaboradores' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Contratos' })).toBeInTheDocument();
   });
 
   it('exposes P2 navigation only through its read capabilities', () => {
     renderWithRouter('/', true, ['admission.read', 'leave.read', 'variable_compensation.read']);
     expect(screen.getByRole('link', { name: /Admissões/ })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Movimentações/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Afastamentos/ })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Remuneração variável/ })).toBeInTheDocument();
   });
 
@@ -103,7 +107,7 @@ describe('application shell', () => {
       'aria-expanded',
       'false',
     );
-    expect(screen.getByRole('link', { name: /Folha/ })).toHaveAttribute('title', 'Folha');
+    expect(screen.getByRole('link', { name: 'Revisão' })).toHaveAttribute('title', 'Revisão');
   });
 
   it('fecha o menu móvel e devolve o foco ao gatilho', async () => {
@@ -129,7 +133,7 @@ describe('application shell', () => {
     fireEvent.click(trigger);
     fireEvent.click(
       within(screen.getByRole('dialog', { name: 'Menu de navegação' })).getByRole('link', {
-        name: /Folha/,
+        name: 'Revisão',
       }),
     );
     expect(

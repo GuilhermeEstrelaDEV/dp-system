@@ -2,7 +2,7 @@
 
 ## Estado
 
-`READY FOR HUMAN REVIEW`
+`READY FOR HUMAN RETEST`
 
 Recorte executado sobre `develop@ff656c6` em 10/09/2026. A wave trata exclusivamente de
 consistência de UX e de descoberta dos CRUDs existentes. Não cria domínio, regra legal, rota,
@@ -23,6 +23,30 @@ capability, evento de auditoria ou migration.
   compactas, badges e ações com espaçamento;
 - loading, erro com retry, estado vazio orientado e feedback de sucesso reutilizáveis;
 - confirmação segura antes de inativar/ativar, com foco inicial em `Cancelar` e suporte a `Escape`.
+
+## Correção de revisão humana — UX/NAV-01
+
+**Classificação:** `UX/NAV-01 — MAJOR`
+**Estado:** `RESOLVED`
+
+Sidebar sections Cadastros/Pessoas were rendered without accessible feature entries during human
+review.
+
+A correção eliminou o grupo genérico `Cadastros`, impede a renderização de qualquer grupo sem item
+visível e conecta somente rotas reais, protegidas pelas capabilities canônicas existentes:
+
+- Pessoas: Colaboradores, Contratos, Admissões, Afastamentos, Férias e Benefícios;
+- Organização: Empresas, Filiais, Departamentos, Cargos e Centros de custo;
+- Jornada: Jornada / Ponto;
+- Folha: Períodos, Lançamentos, Processamentos, Revisão, Parâmetros, Rubricas, Histórico e
+  Remuneração variável;
+- Administração: Modelos de checklist;
+- Futuro: Desligamentos, Documentos e Relatórios permanecem desabilitados como `Em breve`.
+
+O active state cobre detalhes de colaborador, contratos, revisão e histórico. O sidebar desktop e o
+drawer móvel agora possuem rolagem vertical, e o subtítulo da marca pode quebrar linha sem ser
+cortado. O inventário completo está em
+[HR_PLATFORM_NAVIGATION_ROUTE_INVENTORY.md](HR_PLATFORM_NAVIGATION_ROUTE_INVENTORY.md).
 
 ## Revisão sistemática dos CRUDs
 
@@ -63,10 +87,12 @@ canônicas de ativação, inativação, cancelamento ou transição de workflow.
 
 ## Evidência automatizada
 
-- frontend: 23 arquivos de teste, 102 testes aprovados na validação atual;
+- frontend: 24 arquivos de teste, 116 testes aprovados na validação atual;
 - cobertura API preservada em 75,09% de linhas e 71,03% de branches;
 - cobertura frontend em 80,50% de linhas e 73,59% de branches;
 - cobertura adicional: edição de colaborador, edição de contrato, confirmação explícita e teclado;
+- as sete ações de criação são evidência dos testes de CRUD já incorporados na Wave 1 e
+  reexecutados nesta correção; nenhum CTA funcional foi criado ou ampliado por `UX/NAV-01`;
 - as cinco suítes de smoke são parte do gate global desta wave;
 - a ausência de navegador controlável impede declarar nova homologação visual humana.
 
@@ -82,6 +108,10 @@ canônicas de ativação, inativação, cancelamento ou transição de workflow.
 | capabilities adicionadas                 |         0 |
 | eventos de auditoria adicionados         |         0 |
 | migrations adicionadas                   |         0 |
+| grupos de navegação                      |         7 |
+| itens de navegação                       |        25 |
+| rotas de entrada órfãs                   |         0 |
+| ações de criação verificadas             |         7 |
 
 ## Limites e próximos passos
 

@@ -507,9 +507,14 @@ button:disabled,
   padding: 1.5rem clamp(1rem, 2.2vw, 2rem) 3rem;
 }
 .app-sidebar {
+  position: sticky;
+  top: 0;
   width: 17rem;
+  height: 100vh;
   min-height: 100vh;
   flex: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1.25rem 0.75rem;
   color: white;
   background: linear-gradient(180deg, var(--color-brand-950), #071c2c);
@@ -526,6 +531,16 @@ button:disabled,
   margin-bottom: 1.25rem;
   overflow: hidden;
 }
+.app-sidebar__brand .brand__copy {
+  min-width: 0;
+}
+.app-sidebar__brand .brand__copy small {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.navigation {
+  padding-bottom: 0.5rem;
+}
 .navigation__group {
   margin: 0 0 1.1rem;
 }
@@ -540,7 +555,7 @@ button:disabled,
 .navigation__item {
   position: relative;
   display: flex;
-  min-height: 2.65rem;
+  min-height: 2.75rem;
   align-items: center;
   gap: 0.75rem;
   margin: 0.15rem 0;
@@ -550,7 +565,12 @@ button:disabled,
   text-decoration: none;
   font-size: 0.84rem;
   font-weight: 580;
+  line-height: 1.25;
   transition: 140ms ease;
+}
+.navigation__item > span:not(.navigation__soon) {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .navigation__item:hover:not(.navigation__item--disabled) {
   color: white;
@@ -565,6 +585,7 @@ button:disabled,
   color: #9ab0be;
 }
 .navigation__soon {
+  flex: none;
   margin-left: auto;
   border-radius: 999px;
   padding: 0.14rem 0.38rem;
@@ -737,6 +758,8 @@ button:disabled,
   width: min(18rem, calc(100vw - 2rem));
   height: 100%;
   flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1rem;
   color: white;
   background: var(--color-brand-950);

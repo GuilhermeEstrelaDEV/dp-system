@@ -1,6 +1,6 @@
-import { NavLink } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { NavigationIcon } from './NavigationIcon';
-import { navigationGroups, navigationItems } from './navigation';
+import { isNavigationItemActive, navigationGroups, navigationItems } from './navigation';
 import { useAuth } from '@/features/auth/AuthContext';
 
 interface NavigationLinksProps {
@@ -10,6 +10,7 @@ interface NavigationLinksProps {
 
 export function NavigationLinks({ collapsed = false, onNavigate }: NavigationLinksProps) {
   const auth = useAuth();
+  const { pathname } = useLocation();
   return (
     <nav aria-label="Navegação principal" className="navigation">
       {navigationGroups.map((group) => {
@@ -17,6 +18,7 @@ export function NavigationLinks({ collapsed = false, onNavigate }: NavigationLin
           (item) =>
             item.group === group && (!item.capability || auth.hasCapability(item.capability)),
         );
+        if (items.length === 0) return null;
         return (
           <section aria-label={group} className="navigation__group" key={group}>
             {!collapsed && <p className="navigation__heading">{group}</p>}
@@ -35,12 +37,12 @@ export function NavigationLinks({ collapsed = false, onNavigate }: NavigationLin
                   )}
                 </div>
               ) : (
-                <NavLink
+                <Link
                   aria-label={collapsed ? item.label : undefined}
-                  className={({ isActive }) =>
-                    `navigation__item ${isActive ? 'navigation__item--active' : ''}`
-                  }
-                  end={item.path === '/'}
+                  aria-current={isNavigationItemActive(item, pathname) ? 'page' : undefined}
+                  className={`navigation__item ${
+                    isNavigationItemActive(item, pathname) ? 'navigation__item--active' : ''
+                  }`}
                   key={item.path}
                   onClick={onNavigate}
                   title={collapsed ? item.label : undefined}
@@ -48,7 +50,7 @@ export function NavigationLinks({ collapsed = false, onNavigate }: NavigationLin
                 >
                   <NavigationIcon name={item.icon} />
                   <span className={collapsed ? 'sr-only' : undefined}>{item.label}</span>
-                </NavLink>
+                </Link>
               ),
             )}
           </section>
