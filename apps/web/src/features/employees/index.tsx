@@ -2,11 +2,21 @@ import type { EmployeeContract } from '@dp-system/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PageHeader } from '@/components/common/PageHeader';
-import { Button } from '@/components/common/Primitives';
 import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
-import { apiRequest } from '@/lib/api';
+import { PageHeader } from '@/components/common/PageHeader';
+import {
+  Alert,
+  Button,
+  ConfirmDialog,
+  EmptyState,
+  ErrorState,
+  FilterBar,
+  Input,
+  LoadingState,
+  Select,
+} from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
+import { apiRequest } from '@/lib/api';
 import { EmployeeForm, type EmployeeValues } from './EmployeeForm';
 
 export function EmployeesPage() {
@@ -15,18 +25,28 @@ export function EmployeesPage() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<EmployeeContract | null>(null);
   const client = useQueryClient();
   const navigate = useNavigate();
   const list = useQuery({
     queryKey: ['employees', auth?.activeCompanyId, search, status],
-    queryFn: () =>
-      apiRequest<{ items: EmployeeContract[] }>(
-        `/employees?search=${encodeURIComponent(search)}&status=${status}`,
-      ),
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (search.trim()) params.set('search', search.trim());
+      if (status) params.set('status', status);
+      const query = params.toString();
+      return apiRequest<{ items: EmployeeContract[] }>(`/employees${query ? `?${query}` : ''}`);
+    },
   });
   const create = useMutation({
     mutationFn: (values: EmployeeValues) =>
-      apiRequest<EmployeeContract>('/employees', { method: 'POST', body: JSON.stringify(values) }),
+      apiRequest<EmployeeContract>('/employees', {
+        method: 'POST',
+        body: JSON.stringify({
+          legalName: values.legalName,
+          ...(values.preferredName ? { preferredName: values.preferredName } : {}),
+        }),
+      }),
     onSuccess: (employee) => {
       void client.invalidateQueries({ queryKey: ['employees'] });
       navigate(`/colaboradores/${employee.id}/contratos`);
@@ -40,49 +60,79 @@ export function EmployeesPage() {
       ),
     onSuccess: () => void client.invalidateQueries({ queryKey: ['employees'] }),
   });
+
   return (
     <section aria-labelledby="employees-title">
       <PageHeader
-        title="Colaboradores"
         description="Ambiente demonstrativo: nenhum dado pessoal real deve ser informado."
-      />
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        <input
-          aria-label="Pesquisar colaboradores"
-          className="rounded border p-2"
-          placeholder="Pesquisar por nome"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
-        <select
-          aria-label="Filtrar colaboradores por status"
-          className="rounded border p-2"
-          value={status}
-          onChange={(event) => setStatus(event.target.value)}
-        >
-          <option value="">Todos os status</option>
-          <option value="ACTIVE">Ativos</option>
-          <option value="INACTIVE">Inativos</option>
-        </select>
-        {canManage && (
-          <button type="button" onClick={() => setCreateOpen((value) => !value)}>
-            Novo colaborador
-          </button>
-        )}
-      </div>
-      {createOpen && (
+        headingId="employees-title"
+        title="Colaboradores"
+      >
+        {canManage ? (
+          <Button aria-label="Novo colaborador" onClick={() => setCreateOpen(true)} type="button">
+            + Novo colaborador
+          </Button>
+        ) : null}
+      </PageHeader>
+
+      <FilterBar>
+        <label className="ui-field">
+          Buscar
+          <Input
+            aria-label="Pesquisar colaboradores"
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Pesquisar por nome"
+            type="search"
+            value={search}
+          />
+        </label>
+        <label className="ui-field">
+          Status
+          <Select
+            aria-label="Filtrar colaboradores por status"
+            onChange={(event) => setStatus(event.target.value)}
+            value={status}
+          >
+            <option value="">Todos os status</option>
+            <option value="ACTIVE">Ativos</option>
+            <option value="INACTIVE">Inativos</option>
+          </Select>
+        </label>
+      </FilterBar>
+
+      {createOpen ? (
         <EmployeeForm
+          onCancel={() => setCreateOpen(false)}
           onSubmit={(values) => create.mutate(values)}
+          pending={create.isPending}
           submitLabel="Criar colaborador"
         />
-      )}
-      {create.isError && <p role="alert">{create.error.message}</p>}
+      ) : null}
+      {create.isError ? <Alert tone="danger">{create.error.message}</Alert> : null}
       {list.isLoading ? (
-        <p role="status">Carregando colaboradores…</p>
+        <LoadingState label="Carregando colaboradores…" />
       ) : list.isError ? (
-        <p role="alert">{list.error.message}</p>
+        <ErrorState message={list.error.message} onRetry={() => void list.refetch()} />
       ) : list.data?.items.length === 0 ? (
-        <p>Nenhum colaborador demonstrativo encontrado.</p>
+        <EmptyState
+          action={
+            canManage && !search && !status ? (
+              <Button
+                aria-label="Novo colaborador"
+                onClick={() => setCreateOpen(true)}
+                type="button"
+              >
+                + Novo colaborador
+              </Button>
+            ) : undefined
+          }
+          description={
+            search || status
+              ? 'Ajuste a busca ou o filtro para encontrar outros colaboradores.'
+              : 'Cadastre o primeiro colaborador fictício para começar.'
+          }
+          title="Nenhum colaborador demonstrativo encontrado"
+        />
       ) : (
         <DataTable label="Tabela de colaboradores">
           <thead>
@@ -105,11 +155,24 @@ export function EmployeesPage() {
                 </td>
                 <td>
                   <DataTableActions>
-                    {canManage && (
-                      <Button variant="ghost" type="button" onClick={() => toggle.mutate(employee)}>
+                    <Link
+                      className="ui-button ui-button--ghost"
+                      to={`/colaboradores/${employee.id}`}
+                    >
+                      Detalhes
+                    </Link>
+                    {canManage ? (
+                      <Button
+                        onClick={() => {
+                          toggle.reset();
+                          setPendingStatus(employee);
+                        }}
+                        type="button"
+                        variant="ghost"
+                      >
                         {employee.status === 'ACTIVE' ? 'Inativar' : 'Ativar'}
                       </Button>
-                    )}
+                    ) : null}
                   </DataTableActions>
                 </td>
               </tr>
@@ -117,6 +180,25 @@ export function EmployeesPage() {
           </tbody>
         </DataTable>
       )}
+
+      <ConfirmDialog
+        confirmLabel={
+          pendingStatus?.status === 'ACTIVE' ? 'Inativar colaborador' : 'Ativar colaborador'
+        }
+        description="A alteração preserva o cadastro e o histórico do colaborador."
+        error={toggle.isError ? toggle.error.message : undefined}
+        onCancel={() => {
+          toggle.reset();
+          setPendingStatus(null);
+        }}
+        onConfirm={() => {
+          if (!pendingStatus) return;
+          toggle.mutate(pendingStatus, { onSuccess: () => setPendingStatus(null) });
+        }}
+        open={Boolean(pendingStatus)}
+        pending={toggle.isPending}
+        title="Confirmar alteração de status"
+      />
     </section>
   );
 }

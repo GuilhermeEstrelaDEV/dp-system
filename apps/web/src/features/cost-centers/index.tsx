@@ -6,6 +6,8 @@ export function CostCentersPage() {
     <>
       <OrganizationNavigation />
       <ResourcePage<CostCenterContract>
+        createLabel="Novo centro de custo"
+        description="Mantenha os centros de custo disponíveis na empresa ativa."
         title="Centros de custo"
         endpoint="/cost-centers"
         companyScoped

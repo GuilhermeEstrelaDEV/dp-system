@@ -6,6 +6,8 @@ export function BranchesPage() {
     <>
       <OrganizationNavigation />
       <ResourcePage<BranchContract>
+        createLabel="Nova filial"
+        description="Organize as unidades vinculadas à empresa ativa."
         title="Filiais"
         endpoint="/branches"
         companyScoped
@@ -13,7 +15,7 @@ export function BranchesPage() {
         fields={[
           ['code', 'Código'],
           ['name', 'Nome'],
-          ['taxId', 'CNPJ fictício'],
+          ['taxId', 'CNPJ fictício', false],
         ]}
       />
     </>

@@ -34,6 +34,9 @@
   --layer-navigation: 40;
   --layer-toast: 60;
   --focus-ring: 0 0 0 3px rgb(21 150 196 / 28%);
+  --form-label-control-gap: 0.5rem;
+  --form-field-gap: 1.125rem;
+  --form-section-gap: 1.5rem;
 }
 
 * {
@@ -178,16 +181,215 @@ button:disabled,
   padding: 0;
   font-size: 1.25rem;
 }
-.ui-input {
+.ui-input,
+.app-content :where(input:not([type='checkbox']):not([type='radio']), select, textarea) {
   width: 100%;
+  min-width: 0;
   min-height: 2.75rem;
   border: 1px solid #9cafbc;
   border-radius: var(--radius-sm);
   padding: 0.62rem 0.75rem;
   background: white;
   color: var(--color-brand-950);
+  line-height: 1.4;
 }
-.ui-input:hover {
+.ui-select,
+.app-content select {
+  appearance: auto;
+  background-color: white;
+}
+.ui-textarea,
+.app-content textarea {
+  min-height: 6.5rem;
+  resize: vertical;
+}
+.ui-field,
+.app-content label:not(.flex) {
+  display: grid;
+  min-width: 0;
+  gap: var(--form-label-control-gap);
+  color: var(--color-brand-950);
+  font-size: 0.875rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+.app-content label.flex,
+.app-content label:has(> input[type='checkbox']),
+.app-content label:has(> input[type='radio']) {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.app-content label:has(> input[type='checkbox']) > input,
+.app-content label:has(> input[type='radio']) > input {
+  flex: none;
+}
+.ui-field__label {
+  display: block;
+  min-width: 0;
+}
+.ui-field small {
+  color: var(--color-muted);
+  font-weight: 450;
+}
+.ui-field-help,
+.app-content form label + small {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  font-weight: 450;
+  line-height: 1.45;
+}
+.ui-field-error {
+  color: var(--color-danger);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.ui-required {
+  color: var(--color-danger);
+}
+.ui-filter-bar {
+  align-items: end;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 1.125rem;
+}
+.ui-filter-bar > .ui-field {
+  flex: 1 1 13rem;
+}
+.ui-form-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: var(--form-section-gap);
+  margin-bottom: 1.5rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+.ui-form-section {
+  display: grid;
+  gap: 1.25rem;
+}
+.ui-form-section + .ui-form-section {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--form-section-gap);
+}
+.ui-form-section__heading h2 {
+  color: var(--color-brand-950);
+  font-size: 1.05rem;
+  font-weight: 750;
+  margin: 0;
+}
+.ui-form-section__heading p {
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0.3rem 0 0;
+}
+.ui-form-grid {
+  display: grid;
+  column-gap: 1rem;
+  row-gap: var(--form-field-gap);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+.app-content form.grid {
+  column-gap: 1rem;
+  row-gap: var(--form-field-gap);
+}
+.app-content form.grid > button {
+  justify-self: start;
+  margin-top: 0.25rem;
+}
+.app-content form.flex > label:not(.flex) {
+  flex: 1 1 15rem;
+}
+.ui-form-actions {
+  align-items: center;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+  padding-top: 1.25rem;
+}
+.ui-state-panel {
+  align-items: center;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  justify-content: center;
+  min-height: 8rem;
+  padding: 1.5rem;
+}
+.ui-pagination {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+.ui-details-panel {
+  margin-top: 1rem;
+}
+.ui-details-list {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  margin: 1rem 0 0;
+}
+.ui-details-list div {
+  min-width: 0;
+}
+.ui-details-list dt {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ui-details-list dd {
+  margin: 0.25rem 0 0;
+  overflow-wrap: anywhere;
+}
+.ui-dialog-backdrop {
+  background: rgb(12 42 66 / 55%);
+  display: grid;
+  inset: 0;
+  padding: 1rem;
+  place-items: center;
+  position: fixed;
+  z-index: var(--layer-toast);
+}
+.ui-dialog {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-width: 30rem;
+  padding: 1.5rem;
+  width: 100%;
+}
+.ui-dialog h2 {
+  color: var(--color-brand-950);
+  font-size: 1.15rem;
+  margin: 0;
+}
+.ui-dialog p {
+  color: var(--color-muted);
+  line-height: 1.6;
+  margin: 0.75rem 0 0;
+}
+.ui-input:hover,
+.app-content :where(input:not([type='checkbox']):not([type='radio']), select, textarea):hover {
   border-color: var(--color-brand-700);
 }
 .ui-card {
@@ -200,6 +402,8 @@ button:disabled,
 .ui-table-scroll {
   width: 100%;
   overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
@@ -212,20 +416,21 @@ button:disabled,
   table-layout: auto;
 }
 .ui-data-table th {
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
   border-bottom: 1px solid var(--color-border);
   background: #edf3f7;
   color: var(--color-brand-950);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+  line-height: 1.35;
   text-align: left;
   white-space: nowrap;
 }
 .ui-data-table td {
   min-width: 10rem;
   max-width: 28rem;
-  padding: 0.75rem 1rem;
+  padding: 0.9rem 1rem;
   border-bottom: 1px solid var(--color-border);
   line-height: 1.45;
   overflow-wrap: anywhere;
@@ -247,7 +452,7 @@ button:disabled,
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.625rem;
   min-width: max-content;
 }
 .ui-table-actions .ui-button {
@@ -261,6 +466,7 @@ button:disabled,
   padding: 0.3rem 0.65rem;
   font-size: 0.72rem;
   font-weight: 700;
+  line-height: 1.2;
   white-space: nowrap;
 }
 .ui-badge--warning {
@@ -357,9 +563,14 @@ button:disabled,
   padding: 1.5rem clamp(1rem, 2.2vw, 2rem) 3rem;
 }
 .app-sidebar {
+  position: sticky;
+  top: 0;
   width: 17rem;
+  height: 100vh;
   min-height: 100vh;
   flex: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1.25rem 0.75rem;
   color: white;
   background: linear-gradient(180deg, var(--color-brand-950), #071c2c);
@@ -376,6 +587,16 @@ button:disabled,
   margin-bottom: 1.25rem;
   overflow: hidden;
 }
+.app-sidebar__brand .brand__copy {
+  min-width: 0;
+}
+.app-sidebar__brand .brand__copy small {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.navigation {
+  padding-bottom: 0.5rem;
+}
 .navigation__group {
   margin: 0 0 1.1rem;
 }
@@ -390,7 +611,7 @@ button:disabled,
 .navigation__item {
   position: relative;
   display: flex;
-  min-height: 2.65rem;
+  min-height: 2.75rem;
   align-items: center;
   gap: 0.75rem;
   margin: 0.15rem 0;
@@ -400,7 +621,12 @@ button:disabled,
   text-decoration: none;
   font-size: 0.84rem;
   font-weight: 580;
+  line-height: 1.25;
   transition: 140ms ease;
+}
+.navigation__item > span:not(.navigation__soon) {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .navigation__item:hover:not(.navigation__item--disabled) {
   color: white;
@@ -415,6 +641,7 @@ button:disabled,
   color: #9ab0be;
 }
 .navigation__soon {
+  flex: none;
   margin-left: auto;
   border-radius: 999px;
   padding: 0.14rem 0.38rem;
@@ -587,6 +814,8 @@ button:disabled,
   width: min(18rem, calc(100vw - 2rem));
   height: 100%;
   flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1rem;
   color: white;
   background: var(--color-brand-950);
@@ -754,6 +983,30 @@ button:disabled,
   .app-topbar__end .ui-badge,
   .user-menu__avatar {
     display: none;
+  }
+}
+@media (max-width: 640px) {
+  .ui-form-card {
+    gap: 1.25rem;
+    padding: 1rem;
+  }
+  .ui-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ui-form-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .ui-form-actions .ui-button {
+    width: 100%;
+  }
+  .ui-filter-bar {
+    align-items: stretch;
+    padding: 1rem;
+  }
+  .ui-data-table th,
+  .ui-data-table td {
+    padding-inline: 0.875rem;
   }
 }
 @media (max-width: 520px) {

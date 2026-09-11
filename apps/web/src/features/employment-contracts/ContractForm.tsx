@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useId } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { z } from 'zod';
+import { Button, FormActions, FormField, FormSection, Input } from '@/components/common/Primitives';
 
 const contractSchema = z.object({
   employeeId: z.string().uuid('Informe o ID do colaborador'),
@@ -17,16 +19,30 @@ const contractSchema = z.object({
   weeklyHours: z.coerce.number().int().min(1).max(168),
   reason: z.string().max(500).optional(),
 });
+
 export type ContractValues = z.infer<typeof contractSchema>;
+
+interface ContractFormProps {
+  readonly employeeId?: string;
+  readonly companyId?: string;
+  readonly initialValues?: Partial<ContractValues>;
+  readonly onSubmit: (values: ContractValues) => void;
+  readonly onCancel?: () => void;
+  readonly pending?: boolean;
+  readonly submitLabel?: string;
+}
+
 export function ContractForm({
   employeeId,
   companyId,
+  initialValues,
   onSubmit,
-}: {
-  employeeId?: string;
-  companyId?: string;
-  onSubmit: (values: ContractValues) => void;
-}) {
+  onCancel,
+  pending = false,
+  submitLabel = 'Salvar contrato',
+}: ContractFormProps) {
+  const formId = useId();
+  const editing = Boolean(initialValues);
   const form = useForm<ContractValues>({
     resolver: zodResolver(contractSchema) as Resolver<ContractValues>,
     defaultValues: {
@@ -43,43 +59,65 @@ export function ContractForm({
       endDate: '',
       weeklyHours: 44,
       reason: '',
+      ...initialValues,
     },
   });
-  const fields: Array<[keyof ContractValues, string, 'text' | 'date' | 'number']> = [
-    ['employeeId', 'ID do colaborador', 'text'],
-    ['companyId', 'ID da empresa', 'text'],
-    ['branchId', 'ID da filial (opcional)', 'text'],
-    ['departmentId', 'ID do departamento (opcional)', 'text'],
-    ['positionId', 'ID do cargo', 'text'],
-    ['costCenterId', 'ID do centro de custo (opcional)', 'text'],
-    ['registrationNumber', 'Matrícula manual', 'text'],
-    ['contractType', 'Tipo de contrato', 'text'],
-    ['employmentRegime', 'Regime de trabalho', 'text'],
-    ['startDate', 'Data de início', 'date'],
-    ['endDate', 'Data final (opcional)', 'date'],
-    ['weeklyHours', 'Carga horária semanal', 'number'],
-    ['reason', 'Motivo do registro (opcional)', 'text'],
+  const fields: Array<[keyof ContractValues, string, 'text' | 'date' | 'number', boolean]> = [
+    ['employeeId', 'ID do colaborador', 'text', true],
+    ['companyId', 'ID da empresa', 'text', true],
+    ['branchId', 'ID da filial', 'text', false],
+    ['departmentId', 'ID do departamento', 'text', false],
+    ['positionId', 'ID do cargo', 'text', true],
+    ['costCenterId', 'ID do centro de custo', 'text', false],
+    ['registrationNumber', 'Matrícula manual', 'text', true],
+    ['contractType', 'Tipo de contrato', 'text', true],
+    ['employmentRegime', 'Regime de trabalho', 'text', true],
+    ['startDate', 'Data de início', 'date', true],
+    ['endDate', 'Data final', 'date', false],
+    ['weeklyHours', 'Carga horária semanal', 'number', true],
+    ['reason', 'Motivo do registro', 'text', false],
   ];
+
   return (
-    <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="grid gap-3 rounded border border-slate-200 bg-white p-4 shadow-sm"
-    >
-      {fields.map(([key, label, type]) => (
-        <label key={key}>
-          {label}
-          <input
-            type={type}
-            className="mt-1 block w-full rounded border p-2"
-            {...form.register(key)}
-            readOnly={key === 'companyId'}
-          />
-          {form.formState.errors[key] && (
-            <span role="alert">{form.formState.errors[key]?.message}</span>
-          )}
-        </label>
-      ))}
-      <button type="submit">Salvar contrato</button>
+    <form className="ui-form-card" onSubmit={form.handleSubmit(onSubmit)}>
+      <FormSection
+        description="O vínculo usa somente identificadores já autorizados. Campos opcionais podem permanecer vazios."
+        title="Dados do vínculo"
+      >
+        {fields.map(([key, label, type, required]) => {
+          const error = form.formState.errors[key]?.message;
+          const errorId = `${formId}-${key}-error`;
+          return (
+            <FormField
+              error={error}
+              errorId={errorId}
+              key={key}
+              label={label}
+              optional={!required}
+              required={required}
+            >
+              <Input
+                {...form.register(key)}
+                aria-describedby={error ? errorId : undefined}
+                aria-invalid={Boolean(error)}
+                aria-required={required}
+                readOnly={key === 'companyId' || (editing && key === 'employeeId')}
+                type={type}
+              />
+            </FormField>
+          );
+        })}
+      </FormSection>
+      <FormActions>
+        {onCancel ? (
+          <Button disabled={pending} onClick={onCancel} type="button" variant="secondary">
+            Cancelar
+          </Button>
+        ) : null}
+        <Button disabled={pending} type="submit">
+          {pending ? 'Salvando…' : submitLabel}
+        </Button>
+      </FormActions>
     </form>
   );
 }

@@ -6,6 +6,8 @@ export function PositionsPage() {
     <>
       <OrganizationNavigation />
       <ResourcePage<PositionContract>
+        createLabel="Novo cargo"
+        description="Mantenha o catálogo administrativo de cargos da empresa ativa."
         title="Cargos"
         endpoint="/positions"
         companyScoped
@@ -13,7 +15,7 @@ export function PositionsPage() {
         fields={[
           ['code', 'Código'],
           ['name', 'Nome'],
-          ['description', 'Descrição'],
+          ['description', 'Descrição', false],
         ]}
       />
     </>
