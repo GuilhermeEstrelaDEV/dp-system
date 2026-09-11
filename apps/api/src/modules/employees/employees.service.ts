@@ -18,14 +18,31 @@ import {
   UpdateEmployeeDto,
   validateContactValue,
 } from './employees.dto';
+import {
+  isValidCpf,
+  isValidPhone,
+  normalizeCpf,
+  normalizePhone,
+  normalizePostalCode,
+  parseEmployeeBirthDate,
+} from './employee-profile.validation';
 
-const employeeProjection = {
+const employeeListProjection = {
   id: true,
   legalName: true,
   preferredName: true,
   status: true,
   createdAt: true,
   updatedAt: true,
+} satisfies Prisma.EmployeeSelect;
+
+const employeeProfileProjection = {
+  ...employeeListProjection,
+  cpf: true,
+  birthDate: true,
+  maritalStatus: true,
+  nationality: true,
+  placeOfBirth: true,
 } satisfies Prisma.EmployeeSelect;
 
 const contactProjection = {
@@ -88,7 +105,7 @@ export class EmployeesService {
     const [items, totalItems] = await this.prisma.$transaction([
       this.prisma.employee.findMany({
         where,
-        select: employeeProjection,
+        select: employeeListProjection,
         skip: (query.page - 1) * query.pageSize,
         take: query.pageSize,
         orderBy: { [query.sortBy]: query.sortDirection },
@@ -115,11 +132,20 @@ export class EmployeesService {
     const entity = await this.prisma.employee.findFirst({
       where: { id, employmentContracts: { some: { companyId } } },
       select: {
-        ...employeeProjection,
+        ...employeeProfileProjection,
         contacts: { select: contactProjection, orderBy: { createdAt: 'asc' } },
+        address: true,
+        emergencyContact: true,
         employmentContracts: {
           where: { companyId },
-          select: contractProjection,
+          select: {
+            ...contractProjection,
+            company: { select: { id: true, tradeName: true } },
+            branch: { select: { id: true, name: true } },
+            department: { select: { id: true, name: true } },
+            position: { select: { id: true, name: true } },
+            costCenter: { select: { id: true, name: true } },
+          },
           orderBy: { startDate: 'desc' },
         },
       },
@@ -130,45 +156,77 @@ export class EmployeesService {
 
   async create(dto: CreateEmployeeDto, principal: AuthenticatedPrincipal) {
     this.authorization.requireCapability(principal, 'employee.manage');
-    return this.audit.transaction(async (tx) => {
-      const employee = await tx.employee.create({ data: dto, select: employeeProjection });
-      await this.audit.append(
-        {
-          principal,
-          action: 'EMPLOYEE_CREATED',
-          entityType: 'Employee',
-          entityId: employee.id,
-          nextState: { status: employee.status },
-        },
-        tx,
-      );
-      return employee;
-    });
+    try {
+      return await this.audit.transaction(async (tx) => {
+        const employee = await tx.employee.create({
+          data: { legalName: dto.legalName, ...this.employeeProfileData(dto) },
+          select: employeeProfileProjection,
+        });
+        await this.syncProfileRelations(tx, employee.id, dto);
+        await this.audit.append(
+          {
+            principal,
+            action: 'EMPLOYEE_CREATED',
+            entityType: 'Employee',
+            entityId: employee.id,
+            nextState: { status: employee.status },
+          },
+          tx,
+        );
+        return tx.employee.findUniqueOrThrow({
+          where: { id: employee.id },
+          select: {
+            ...employeeProfileProjection,
+            contacts: { select: contactProjection, orderBy: { createdAt: 'asc' } },
+            address: true,
+            emergencyContact: true,
+          },
+        });
+      });
+    } catch (error) {
+      this.handleDuplicate(error);
+    }
   }
 
   async update(id: string, dto: UpdateEmployeeDto, principal: AuthenticatedPrincipal) {
     this.authorization.requireCapability(principal, 'employee.manage');
     const current = await this.findInCompany(id, principal.activeCompanyId!);
     await this.assertExclusiveCompany(id, principal.activeCompanyId!);
-    return this.audit.transaction(async (tx) => {
-      const employee = await tx.employee.update({
-        where: { id },
-        data: dto,
-        select: employeeProjection,
+    try {
+      return await this.audit.transaction(async (tx) => {
+        const employee = await tx.employee.update({
+          where: { id },
+          data: {
+            ...(dto.legalName !== undefined ? { legalName: dto.legalName } : {}),
+            ...this.employeeProfileData(dto),
+          },
+          select: employeeProfileProjection,
+        });
+        await this.syncProfileRelations(tx, id, dto);
+        await this.audit.append(
+          {
+            principal,
+            action: 'EMPLOYEE_UPDATED',
+            entityType: 'Employee',
+            entityId: id,
+            previousState: { status: current.status },
+            nextState: { status: employee.status },
+          },
+          tx,
+        );
+        return tx.employee.findUniqueOrThrow({
+          where: { id },
+          select: {
+            ...employeeProfileProjection,
+            contacts: { select: contactProjection, orderBy: { createdAt: 'asc' } },
+            address: true,
+            emergencyContact: true,
+          },
+        });
       });
-      await this.audit.append(
-        {
-          principal,
-          action: 'EMPLOYEE_UPDATED',
-          entityType: 'Employee',
-          entityId: id,
-          previousState: { status: current.status },
-          nextState: { status: employee.status },
-        },
-        tx,
-      );
-      return employee;
-    });
+    } catch (error) {
+      this.handleDuplicate(error);
+    }
   }
 
   async setStatus(id: string, status: RecordStatus, principal: AuthenticatedPrincipal) {
@@ -186,7 +244,7 @@ export class EmployeesService {
       const updated = await tx.employee.update({
         where: { id },
         data: { status },
-        select: employeeProjection,
+        select: employeeListProjection,
       });
       await this.audit.append(
         {
@@ -351,6 +409,121 @@ export class EmployeesService {
       },
       tx,
     );
+  }
+
+  private employeeProfileData(dto: CreateEmployeeDto | UpdateEmployeeDto) {
+    let birthDate: Date | undefined;
+    if (dto.birthDate !== undefined) {
+      const parsed = parseEmployeeBirthDate(dto.birthDate);
+      if (!parsed) {
+        throw new BadRequestException(
+          'Data de nascimento deve ser uma data real, não futura e posterior a 1900-01-01',
+        );
+      }
+      birthDate = parsed;
+    }
+    let cpf: string | undefined;
+    if (dto.cpf !== undefined) {
+      cpf = normalizeCpf(dto.cpf);
+      if (!isValidCpf(cpf)) throw new BadRequestException('CPF inválido');
+    }
+    return {
+      ...(dto.preferredName !== undefined ? { preferredName: dto.preferredName } : {}),
+      ...(cpf !== undefined ? { cpf } : {}),
+      ...(birthDate !== undefined ? { birthDate } : {}),
+      ...(dto.maritalStatus !== undefined ? { maritalStatus: dto.maritalStatus } : {}),
+      ...(dto.nationality !== undefined ? { nationality: dto.nationality } : {}),
+      ...(dto.placeOfBirth !== undefined ? { placeOfBirth: dto.placeOfBirth } : {}),
+    } satisfies Prisma.EmployeeUpdateInput;
+  }
+
+  private async syncProfileRelations(
+    tx: Prisma.TransactionClient,
+    employeeId: string,
+    dto: CreateEmployeeDto | UpdateEmployeeDto,
+  ) {
+    if (dto.personalEmail !== undefined) {
+      await this.upsertProfileContact(
+        tx,
+        employeeId,
+        'EMAIL',
+        dto.personalEmail.toLowerCase(),
+        true,
+      );
+    }
+    if (dto.phone !== undefined) {
+      if (!isValidPhone(dto.phone)) throw new BadRequestException('Telefone principal inválido');
+      await this.upsertProfileContact(tx, employeeId, 'PHONE', normalizePhone(dto.phone), true);
+    }
+    if (dto.secondaryPhone !== undefined) {
+      if (!isValidPhone(dto.secondaryPhone))
+        throw new BadRequestException('Telefone secundário inválido');
+      await this.upsertProfileContact(
+        tx,
+        employeeId,
+        'PHONE',
+        normalizePhone(dto.secondaryPhone),
+        false,
+      );
+    }
+    if (dto.address !== undefined) {
+      const address = {
+        ...dto.address,
+        ...(dto.address.postalCode !== undefined
+          ? { postalCode: normalizePostalCode(dto.address.postalCode) }
+          : {}),
+        ...(dto.address.state !== undefined ? { state: dto.address.state.toUpperCase() } : {}),
+      };
+      await tx.employeeAddress.upsert({
+        where: { employeeId },
+        create: { ...address, employeeId },
+        update: address,
+      });
+    }
+    if (dto.emergencyContact !== undefined) {
+      if (!isValidPhone(dto.emergencyContact.phone)) {
+        throw new BadRequestException('Telefone do contato de emergência inválido');
+      }
+      const emergencyContact = {
+        ...dto.emergencyContact,
+        phone: normalizePhone(dto.emergencyContact.phone),
+      };
+      await tx.employeeEmergencyContact.upsert({
+        where: { employeeId },
+        create: { ...emergencyContact, employeeId },
+        update: emergencyContact,
+      });
+    }
+  }
+
+  private async upsertProfileContact(
+    tx: Prisma.TransactionClient,
+    employeeId: string,
+    type: 'EMAIL' | 'PHONE',
+    value: string,
+    isPrimary: boolean,
+  ) {
+    const contact = await tx.employeeContact.findFirst({
+      where: { employeeId, type, isPrimary, status: 'ACTIVE' },
+      orderBy: { createdAt: 'asc' },
+      select: { id: true },
+    });
+    if (isPrimary) {
+      await tx.employeeContact.updateMany({
+        where: {
+          employeeId,
+          type,
+          isPrimary: true,
+          ...(contact ? { id: { not: contact.id } } : {}),
+        },
+        data: { isPrimary: false },
+      });
+    }
+    if (contact) {
+      await tx.employeeContact.update({ where: { id: contact.id }, data: { value } });
+      return;
+    }
+    await tx.employeeContact.create({ data: { employeeId, type, value, isPrimary } });
   }
 
   private handleDuplicate(error: unknown): never {

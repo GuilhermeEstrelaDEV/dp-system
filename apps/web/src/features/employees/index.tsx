@@ -17,7 +17,8 @@ import {
 } from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
-import { EmployeeForm, type EmployeeValues } from './EmployeeForm';
+import { EmployeeForm } from './EmployeeForm';
+import { type EmployeeValues, toEmployeeProfilePayload } from './employee-profile';
 
 export function EmployeesPage() {
   const auth = useOptionalAuth();
@@ -42,10 +43,7 @@ export function EmployeesPage() {
     mutationFn: (values: EmployeeValues) =>
       apiRequest<EmployeeContract>('/employees', {
         method: 'POST',
-        body: JSON.stringify({
-          legalName: values.legalName,
-          ...(values.preferredName ? { preferredName: values.preferredName } : {}),
-        }),
+        body: JSON.stringify(toEmployeeProfilePayload(values)),
       }),
     onSuccess: (employee) => {
       void client.invalidateQueries({ queryKey: ['employees'] });

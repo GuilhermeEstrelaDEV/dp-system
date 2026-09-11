@@ -58,6 +58,15 @@ enum PermissionStatus {
   RETIRED
 }
 
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+  SEPARATED
+  OTHER
+}
+
 enum AccessGrantStatus {
   ACTIVE
   REVOKED
@@ -514,19 +523,57 @@ model CostCenter {
 }
 
 model Employee {
-  id                  String               @id @default(uuid()) @db.Uuid
-  legalName           String               @map("legal_name") @db.VarChar(160)
-  preferredName       String?              @map("preferred_name") @db.VarChar(160)
-  status              String               @default("ACTIVE") @db.VarChar(20)
-  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                  String                    @id @default(uuid()) @db.Uuid
+  legalName           String                    @map("legal_name") @db.VarChar(160)
+  preferredName       String?                   @map("preferred_name") @db.VarChar(160)
+  cpf                 String?                   @db.VarChar(11)
+  birthDate           DateTime?                 @map("birth_date") @db.Date
+  maritalStatus       MaritalStatus?            @map("marital_status")
+  nationality         String?                   @db.VarChar(80)
+  placeOfBirth        String?                   @map("place_of_birth") @db.VarChar(120)
+  status              String                    @default("ACTIVE") @db.VarChar(20)
+  createdAt           DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime                  @updatedAt @map("updated_at") @db.Timestamptz(6)
   contacts            EmployeeContact[]
+  address             EmployeeAddress?
+  emergencyContact    EmployeeEmergencyContact?
   employmentContracts EmploymentContract[]
   admissionProcesses  AdmissionProcess[]
 
   @@index([status])
   @@index([legalName])
   @@map("employees")
+}
+
+model EmployeeAddress {
+  id         String   @id @default(uuid()) @db.Uuid
+  employeeId String   @unique @map("employee_id") @db.Uuid
+  postalCode String?  @map("postal_code") @db.VarChar(8)
+  street     String?  @db.VarChar(160)
+  number     String?  @db.VarChar(30)
+  complement String?  @db.VarChar(120)
+  district   String?  @db.VarChar(120)
+  city       String?  @db.VarChar(120)
+  state      String?  @db.VarChar(2)
+  country    String?  @db.VarChar(80)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+
+  @@map("employee_addresses")
+}
+
+model EmployeeEmergencyContact {
+  id           String   @id @default(uuid()) @db.Uuid
+  employeeId   String   @unique @map("employee_id") @db.Uuid
+  name         String   @db.VarChar(160)
+  relationship String   @db.VarChar(80)
+  phone        String   @db.VarChar(30)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  employee     Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+
+  @@map("employee_emergency_contacts")
 }
 
 model EmployeeContact {

@@ -58,6 +58,8 @@ async function main() {
     costCenters,
     employees,
     contacts,
+    addresses,
+    emergencyContacts,
     contracts,
     admissions,
     periods,
@@ -95,6 +97,16 @@ async function main() {
       where: { employmentContracts: { some: { companyId: { in: [...companyIds] } } } },
     }),
     prisma.employeeContact.count({
+      where: {
+        employee: { employmentContracts: { some: { companyId: { in: [...companyIds] } } } },
+      },
+    }),
+    prisma.employeeAddress.count({
+      where: {
+        employee: { employmentContracts: { some: { companyId: { in: [...companyIds] } } } },
+      },
+    }),
+    prisma.employeeEmergencyContact.count({
       where: {
         employee: { employmentContracts: { some: { companyId: { in: [...companyIds] } } } },
       },
@@ -179,7 +191,9 @@ async function main() {
   exact('cargos', positions, 13);
   exact('centros de custo', costCenters, 5);
   exact('colaboradores', employees, 26);
-  exact('contatos', contacts, 26);
+  exact('contatos', contacts, 78);
+  exact('endereços de colaboradores', addresses, 26);
+  exact('contatos de emergência', emergencyContacts, 26);
   exact('contratos', contracts, 26);
   exact('admissões', admissions, 6);
   exact('competências', periods, 10);
@@ -190,7 +204,7 @@ async function main() {
   exact('eventos', events, 28);
   exact('parâmetros', parameters, 4);
   exact('rubricas', rubrics, 4);
-  exact('migrations', Number(migrations[0]?.count ?? 0), 16);
+  exact('migrations', Number(migrations[0]?.count ?? 0), 17);
 
   const now = new Date();
   const activeDemoGrants = rolePermissions.filter(
@@ -329,6 +343,8 @@ async function main() {
           costCenters,
           employees,
           contacts,
+          addresses,
+          emergencyContacts,
           contracts,
           admissions,
           periods,

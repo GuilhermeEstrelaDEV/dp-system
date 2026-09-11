@@ -1,7 +1,10 @@
 import type {
+  EmployeeAddressContract,
   EmployeeContactContract,
   EmployeeContract,
+  EmployeeEmergencyContactContract,
   EmploymentContractContract,
+  MaritalStatus,
 } from '@dp-system/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -27,12 +30,51 @@ import {
 } from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
-import { EmployeeForm, type EmployeeValues } from './EmployeeForm';
+import { EmployeeForm } from './EmployeeForm';
+import { type EmployeeValues, toEmployeeProfilePayload } from './employee-profile';
 
 type Details = EmployeeContract & {
   contacts: EmployeeContactContract[];
-  employmentContracts: EmploymentContractContract[];
+  address: EmployeeAddressContract | null;
+  emergencyContact: EmployeeEmergencyContactContract | null;
+  employmentContracts: Array<
+    EmploymentContractContract & {
+      company: { id: string; tradeName: string };
+      branch: { id: string; name: string } | null;
+      department: { id: string; name: string } | null;
+      position: { id: string; name: string };
+      costCenter: { id: string; name: string } | null;
+    }
+  >;
 };
+
+const maritalStatusLabels: Record<MaritalStatus, string> = {
+  SINGLE: 'Solteiro(a)',
+  MARRIED: 'Casado(a)',
+  DIVORCED: 'Divorciado(a)',
+  WIDOWED: 'Viúvo(a)',
+  SEPARATED: 'Separado(a)',
+  OTHER: 'Outro',
+};
+
+function displayDate(value: string | null | undefined): string {
+  if (!value) return 'Não informado';
+  return new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(new Date(value));
+}
+
+function displayCpf(value: string | null | undefined): string {
+  if (!value || value.length !== 11) return 'Não informado';
+  return `***.***.${value.slice(6, 9)}-${value.slice(9)}`;
+}
+
+function displayAddress(address: EmployeeAddressContract | null): string {
+  if (!address) return 'Não informado';
+  const street = [address.street, address.number].filter(Boolean).join(', ');
+  const locality = [address.district, address.city, address.state].filter(Boolean).join(' — ');
+  return [street, address.complement, locality, address.postalCode, address.country]
+    .filter(Boolean)
+    .join(' · ');
+}
 
 const contactSchema = z.object({
   type: z.enum(['EMAIL', 'PHONE']),
@@ -64,10 +106,7 @@ export function EmployeeDetailsPage() {
     mutationFn: (values: EmployeeValues) =>
       apiRequest<Details>(`/employees/${employeeId}`, {
         method: 'PATCH',
-        body: JSON.stringify({
-          legalName: values.legalName,
-          ...(values.preferredName ? { preferredName: values.preferredName } : {}),
-        }),
+        body: JSON.stringify(toEmployeeProfilePayload(values)),
       }),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ['employee'] });
@@ -106,6 +145,19 @@ export function EmployeeDetailsPage() {
     return <ErrorState message={employee.error.message} onRetry={() => void employee.refetch()} />;
 
   const item = employee.data!;
+  const activeContacts = item.contacts.filter((contact) => contact.status === 'ACTIVE');
+  const primaryEmail =
+    activeContacts.find((contact) => contact.type === 'EMAIL' && contact.isPrimary) ??
+    activeContacts.find((contact) => contact.type === 'EMAIL');
+  const primaryPhone =
+    activeContacts.find((contact) => contact.type === 'PHONE' && contact.isPrimary) ??
+    activeContacts.find((contact) => contact.type === 'PHONE');
+  const secondaryPhone = activeContacts.find(
+    (contact) => contact.type === 'PHONE' && contact.id !== primaryPhone?.id,
+  );
+  const currentContract =
+    item.employmentContracts.find((contract) => contract.status === 'ACTIVE') ??
+    item.employmentContracts[0];
   const beginContactEdit = (contact: EmployeeContactContract) => {
     setEditingContact(contact);
     contactForm.reset({
@@ -118,7 +170,7 @@ export function EmployeeDetailsPage() {
   return (
     <section aria-labelledby="employee-details-title">
       <PageHeader
-        description="Cadastro demonstrativo sem CPF, endereço, documentos, banco ou remuneração."
+        description="Perfil pessoal e contatos minimizados; dados contratuais permanecem no vínculo de trabalho."
         headingId="employee-details-title"
         title={item.preferredName || item.legalName}
       >
@@ -134,6 +186,29 @@ export function EmployeeDetailsPage() {
           initialValues={{
             legalName: item.legalName,
             preferredName: item.preferredName ?? '',
+            cpf: item.cpf ?? '',
+            birthDate: item.birthDate?.slice(0, 10) ?? '',
+            maritalStatus: item.maritalStatus ?? '',
+            nationality: item.nationality ?? '',
+            placeOfBirth: item.placeOfBirth ?? '',
+            personalEmail: primaryEmail?.value ?? '',
+            phone: primaryPhone?.value ?? '',
+            secondaryPhone: secondaryPhone?.value ?? '',
+            address: {
+              postalCode: item.address?.postalCode ?? '',
+              street: item.address?.street ?? '',
+              number: item.address?.number ?? '',
+              complement: item.address?.complement ?? '',
+              district: item.address?.district ?? '',
+              city: item.address?.city ?? '',
+              state: item.address?.state ?? '',
+              country: item.address?.country ?? 'Brasil',
+            },
+            emergencyContact: {
+              name: item.emergencyContact?.name ?? '',
+              relationship: item.emergencyContact?.relationship ?? '',
+              phone: item.emergencyContact?.phone ?? '',
+            },
           }}
           onCancel={() => setEditingEmployee(false)}
           onSubmit={(values) => updateEmployee.mutate(values)}
@@ -146,24 +221,186 @@ export function EmployeeDetailsPage() {
         <Alert tone="success">Colaborador atualizado com sucesso.</Alert>
       ) : null}
 
-      <Card>
-        <dl className="ui-details-list">
-          <div>
-            <dt>Nome legal</dt>
-            <dd>{item.legalName}</dd>
-          </div>
-          <div>
-            <dt>Nome preferencial</dt>
-            <dd>{item.preferredName || 'Não informado'}</dd>
-          </div>
-          <div>
-            <dt>Status</dt>
-            <dd>
-              <DataTableStatus active={item.status === 'ACTIVE'} />
-            </dd>
-          </div>
-        </dl>
-      </Card>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <section aria-labelledby="employee-summary-title">
+          <h2 className="mb-3" id="employee-summary-title">
+            Resumo
+          </h2>
+          <Card className="ui-details-panel">
+            <dl className="ui-details-list">
+              <div>
+                <dt>Nome de exibição</dt>
+                <dd>{item.preferredName || item.legalName}</dd>
+              </div>
+              <div>
+                <dt>Status</dt>
+                <dd>
+                  <DataTableStatus active={item.status === 'ACTIVE'} />
+                </dd>
+              </div>
+            </dl>
+          </Card>
+        </section>
+
+        <section aria-labelledby="employee-personal-title">
+          <h2 className="mb-3" id="employee-personal-title">
+            Dados pessoais
+          </h2>
+          <Card className="ui-details-panel">
+            <dl className="ui-details-list">
+              <div>
+                <dt>Nome completo</dt>
+                <dd>{item.legalName}</dd>
+              </div>
+              <div>
+                <dt>Nome preferido ou social</dt>
+                <dd>{item.preferredName || 'Não informado'}</dd>
+              </div>
+              <div>
+                <dt>CPF</dt>
+                <dd>{displayCpf(item.cpf)}</dd>
+              </div>
+              <div>
+                <dt>Data de nascimento</dt>
+                <dd>{displayDate(item.birthDate)}</dd>
+              </div>
+              <div>
+                <dt>Estado civil</dt>
+                <dd>
+                  {item.maritalStatus ? maritalStatusLabels[item.maritalStatus] : 'Não informado'}
+                </dd>
+              </div>
+              <div>
+                <dt>Nacionalidade</dt>
+                <dd>{item.nationality || 'Não informado'}</dd>
+              </div>
+              <div>
+                <dt>Naturalidade</dt>
+                <dd>{item.placeOfBirth || 'Não informado'}</dd>
+              </div>
+            </dl>
+          </Card>
+        </section>
+
+        <section aria-labelledby="employee-contact-summary-title">
+          <h2 className="mb-3" id="employee-contact-summary-title">
+            Contato
+          </h2>
+          <Card className="ui-details-panel">
+            <dl className="ui-details-list">
+              <div>
+                <dt>E-mail pessoal</dt>
+                <dd>{primaryEmail?.value || 'Não informado'}</dd>
+              </div>
+              <div>
+                <dt>Telefone principal</dt>
+                <dd>{primaryPhone?.value || 'Não informado'}</dd>
+              </div>
+              <div>
+                <dt>Telefone secundário</dt>
+                <dd>{secondaryPhone?.value || 'Não informado'}</dd>
+              </div>
+            </dl>
+          </Card>
+        </section>
+
+        <section aria-labelledby="employee-address-title">
+          <h2 className="mb-3" id="employee-address-title">
+            Endereço
+          </h2>
+          <Card className="ui-details-panel">
+            <p>{displayAddress(item.address)}</p>
+          </Card>
+        </section>
+
+        <section aria-labelledby="employee-emergency-title">
+          <h2 className="mb-3" id="employee-emergency-title">
+            Contato de emergência
+          </h2>
+          <Card className="ui-details-panel">
+            <dl className="ui-details-list">
+              <div>
+                <dt>Nome</dt>
+                <dd>{item.emergencyContact?.name || 'Não informado'}</dd>
+              </div>
+              <div>
+                <dt>Relação</dt>
+                <dd>{item.emergencyContact?.relationship || 'Não informado'}</dd>
+              </div>
+              <div>
+                <dt>Telefone</dt>
+                <dd>{item.emergencyContact?.phone || 'Não informado'}</dd>
+              </div>
+            </dl>
+          </Card>
+        </section>
+
+        <section aria-labelledby="employee-organization-title">
+          <h2 className="mb-3" id="employee-organization-title">
+            Organização
+          </h2>
+          <Card className="ui-details-panel">
+            <dl className="ui-details-list">
+              <div>
+                <dt>Empresa</dt>
+                <dd>{currentContract?.company?.tradeName || 'Sem vínculo'}</dd>
+              </div>
+              <div>
+                <dt>Filial</dt>
+                <dd>{currentContract?.branch?.name || 'Não informado'}</dd>
+              </div>
+              <div>
+                <dt>Departamento</dt>
+                <dd>{currentContract?.department?.name || 'Não informado'}</dd>
+              </div>
+              <div>
+                <dt>Cargo</dt>
+                <dd>{currentContract?.position?.name || 'Não informado'}</dd>
+              </div>
+              <div>
+                <dt>Centro de custo</dt>
+                <dd>{currentContract?.costCenter?.name || 'Não informado'}</dd>
+              </div>
+            </dl>
+          </Card>
+        </section>
+
+        <section aria-labelledby="employee-current-contract-title">
+          <h2 className="mb-3" id="employee-current-contract-title">
+            Contrato atual
+          </h2>
+          <Card className="ui-details-panel">
+            <dl className="ui-details-list">
+              <div>
+                <dt>Matrícula</dt>
+                <dd>{currentContract?.registrationNumber || 'Sem vínculo'}</dd>
+              </div>
+              <div>
+                <dt>Situação</dt>
+                <dd>{currentContract?.status || 'Não informado'}</dd>
+              </div>
+            </dl>
+          </Card>
+        </section>
+
+        <section aria-labelledby="employee-history-title">
+          <h2 className="mb-3" id="employee-history-title">
+            Histórico
+          </h2>
+          <Card className="ui-details-panel">
+            <dl className="ui-details-list">
+              <div>
+                <dt>Cadastrado em</dt>
+                <dd>{displayDate(item.createdAt)}</dd>
+              </div>
+              <div>
+                <dt>Última atualização</dt>
+                <dd>{displayDate(item.updatedAt)}</dd>
+              </div>
+            </dl>
+          </Card>
+        </section>
+      </div>
 
       <section aria-labelledby="contacts-title" className="mt-6">
         <h2 id="contacts-title">Contatos</h2>
