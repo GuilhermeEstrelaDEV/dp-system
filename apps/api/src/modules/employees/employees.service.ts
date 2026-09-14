@@ -99,6 +99,14 @@ export class EmployeesService {
         ? [
             { legalName: { contains: query.search, mode: 'insensitive' } },
             { preferredName: { contains: query.search, mode: 'insensitive' } },
+            {
+              employmentContracts: {
+                some: {
+                  companyId,
+                  registrationNumber: { contains: query.search, mode: 'insensitive' },
+                },
+              },
+            },
           ]
         : undefined,
     };

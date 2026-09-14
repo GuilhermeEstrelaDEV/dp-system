@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import type { AuthenticatedPrincipal } from '../../common/http/request-context';
 import type { EnterpriseScope } from '../auth/enterprise-scope';
 import { DashboardRepository } from './dashboard.repository';
-import type { DashboardDataPoint, DashboardSummary } from './dashboard.types';
+import type { DashboardDataPoint, DashboardMetric, DashboardSummary } from './dashboard.types';
 
 @Injectable()
 export class DashboardService {
@@ -13,7 +13,7 @@ export class DashboardService {
     principal: AuthenticatedPrincipal,
     now = new Date(),
   ): Promise<DashboardSummary> {
-    const canViewDashboard = principal.permissions.includes('platform.read');
+    const canViewLegacyDashboard = principal.permissions.includes('platform.read');
     const company = await this.repository.findActiveCompany(scope);
     if (!company) throw new NotFoundException('Empresa não encontrada');
 
@@ -24,13 +24,79 @@ export class DashboardService {
         generatedAt: now.toISOString(),
         timezone: 'UTC',
       },
-      access: canViewDashboard ? 'AVAILABLE' : 'RESTRICTED',
+      access: 'RESTRICTED',
     };
-    if (canViewDashboard) {
+    const operationalMetrics = await this.operationalSummary(scope, principal, now);
+    if (operationalMetrics.length) {
+      result.operations = { metrics: operationalMetrics };
+      result.access = 'AVAILABLE';
+    }
+    if (canViewLegacyDashboard) {
       result.review = await this.reviewSummary(scope, now);
       result.payrollPeriod = await this.periodSummary(scope);
+      result.access = 'AVAILABLE';
+    } else {
+      if (principal.permissions.includes('payroll.review.view')) {
+        result.review = await this.reviewSummary(scope, now);
+        result.access = 'AVAILABLE';
+      }
+      if (principal.permissions.includes('payroll.period.close.view')) {
+        result.payrollPeriod = await this.periodSummary(scope);
+        result.access = 'AVAILABLE';
+      }
     }
     return result;
+  }
+
+  private async operationalSummary(
+    scope: EnterpriseScope,
+    principal: AuthenticatedPrincipal,
+    now: Date,
+  ) {
+    const metric = async (
+      capability: string,
+      label: string,
+      description: string,
+      count: () => Promise<number>,
+    ): Promise<DashboardMetric | undefined> => {
+      if (!principal.permissions.includes(capability)) return undefined;
+      return { value: await count(), label, description };
+    };
+    const vacationHorizon = new Date(now);
+    vacationHorizon.setUTCDate(vacationHorizon.getUTCDate() + 90);
+    const metrics = await Promise.all([
+      metric('employee.read', 'Colaboradores ativos', 'Cadastros ativos na empresa.', () =>
+        this.repository.activeEmployeeCount(scope),
+      ),
+      metric('contract.read', 'Contratos ativos', 'Vinculos ativos na empresa.', () =>
+        this.repository.activeContractCount(scope),
+      ),
+      metric('admission.read', 'Admissoes pendentes', 'Processos ainda nao concluidos.', () =>
+        this.repository.pendingAdmissionCount(scope),
+      ),
+      metric('leave.read', 'Afastamentos ativos', 'Casos com status OPEN.', () =>
+        this.repository.activeLeaveCount(scope),
+      ),
+      metric(
+        'vacation.read',
+        'Ferias proximas',
+        'Solicitacoes aprovadas nos proximos 90 dias.',
+        () => this.repository.upcomingVacationCount(scope, now, vacationHorizon),
+      ),
+      metric('benefit.read', 'Beneficios ativos', 'Itens ativos do catalogo.', () =>
+        this.repository.activeBenefitCount(scope),
+      ),
+      metric(
+        'payroll.run.read',
+        'Processamentos em andamento',
+        'Execucoes em rascunho ou andamento.',
+        () => this.repository.activePayrollRunCount(scope),
+      ),
+      metric('payroll.review.view', 'Revisoes pendentes', 'Ciclos ainda nao encerrados.', () =>
+        this.repository.pendingReviewCount(scope),
+      ),
+    ]);
+    return metrics.filter((item): item is DashboardMetric => item !== undefined);
   }
 
   private async reviewSummary(scope: EnterpriseScope, now: Date) {

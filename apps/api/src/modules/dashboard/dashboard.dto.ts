@@ -39,6 +39,13 @@ export class DashboardSummaryMinimalDto {
   @ApiProperty({ type: DashboardContextMinimalDto }) context!: DashboardContextMinimalDto;
   @ApiProperty({ enum: ['AVAILABLE', 'RESTRICTED'] })
   access!: 'AVAILABLE' | 'RESTRICTED';
+  @ApiPropertyOptional({
+    type: 'object',
+    properties: {
+      metrics: { type: 'array', items: { $ref: '#/components/schemas/DashboardMetricMinimalDto' } },
+    },
+  })
+  operations?: { metrics: DashboardMetricMinimalDto[] };
   @ApiPropertyOptional({ type: DashboardReviewMinimalDto }) review?: DashboardReviewMinimalDto;
   @ApiPropertyOptional({
     type: 'object',
