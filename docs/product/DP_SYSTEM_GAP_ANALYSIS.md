@@ -52,3 +52,16 @@ Categorias: `A` UX de algo existente; `B` backend existe/frontend incompleto; `C
 
 Não há feature classificada como `BROKEN` na baseline automatizada. Isso não elimina os achados de
 usabilidade relatados nem substitui homologação humana das jornadas.
+
+## Execução da Wave 2
+
+A Wave 2 foi implementada sobre `develop@8c10b66a5ae25e961b445938c8e9758e720133bf`, mantendo zero
+migrations, zero capabilities e zero eventos de auditoria novos. O recorte entrega breadcrumbs
+hierárquicos, retorno com filtros, navegação rápida por módulos autorizados, ações rápidas e um
+dashboard com agregados reais condicionados por capability e empresa ativa. Busca e filtros foram
+padronizados nas superfícies prioritárias e os filtros compartilhados passaram a usar a URL quando
+o contrato existente permite.
+
+A busca global de registros permanece `DEFERRED`: sua implementação depende de contrato próprio de
+projeção mínima e classificação de dados. Histórico consolidado, relatórios e exportação continuam
+reservados à Wave 3. Consulte [HR Platform Completion — Wave 2](HR_PLATFORM_COMPLETION_WAVE_2.md).
