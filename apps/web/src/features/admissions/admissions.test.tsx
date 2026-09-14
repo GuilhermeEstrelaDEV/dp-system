@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AdmissionsPage } from './index';
@@ -34,6 +34,23 @@ describe('AdmissionsPage', () => {
     expect(
       await screen.findByText('Nenhuma admissão demonstrativa encontrada.'),
     ).toBeInTheDocument();
+  });
+
+  it('applies searchable URL-backed filters to the company-scoped API', async () => {
+    apiRequest.mockResolvedValue([]);
+    view();
+    await screen.findByText(/Nenhuma admiss/);
+
+    fireEvent.change(screen.getByRole('searchbox', { name: /Pesquisar admiss/ }), {
+      target: { value: 'DEMO-010' },
+    });
+
+    await waitFor(() =>
+      expect(apiRequest).toHaveBeenLastCalledWith('/admission-processes?search=DEMO-010'),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Limpar filtros' }));
+    await waitFor(() => expect(apiRequest).toHaveBeenLastCalledWith('/admission-processes'));
   });
 
   it('uses the shared responsive table and hides management actions without capability', async () => {

@@ -10,9 +10,24 @@ describe('DashboardRepository', () => {
   const findingCount = jest.fn();
   const eventFindMany = jest.fn();
   const periodGroupBy = jest.fn();
+  const employeeCount = jest.fn();
+  const contractCount = jest.fn();
+  const admissionCount = jest.fn();
+  const leaveCount = jest.fn();
+  const vacationCount = jest.fn();
+  const benefitCount = jest.fn();
+  const runCount = jest.fn();
+  const reviewCount = jest.fn();
   const repository = new DashboardRepository({
     company: { findFirst: companyFindFirst },
-    payrollReviewCycle: { groupBy: cycleGroupBy },
+    employee: { count: employeeCount },
+    employmentContract: { count: contractCount },
+    admissionProcess: { count: admissionCount },
+    leaveCase: { count: leaveCount },
+    vacationRequest: { count: vacationCount },
+    benefit: { count: benefitCount },
+    payrollRun: { count: runCount },
+    payrollReviewCycle: { groupBy: cycleGroupBy, count: reviewCount },
     payrollReviewFinding: { count: findingCount },
     payrollReviewEvent: { findMany: eventFindMany },
     payrollPeriod: { groupBy: periodGroupBy },
@@ -71,6 +86,56 @@ describe('DashboardRepository', () => {
     );
     expect(periodGroupBy).toHaveBeenCalledWith(
       expect.objectContaining({ where: { companyId: 'company-a' } }),
+    );
+  });
+
+  it('scopes operational counts without selecting personal records', async () => {
+    await Promise.all([
+      repository.activeEmployeeCount(scope),
+      repository.activeContractCount(scope),
+      repository.pendingAdmissionCount(scope),
+      repository.activeLeaveCount(scope),
+      repository.upcomingVacationCount(
+        scope,
+        new Date('2026-09-01T00:00:00.000Z'),
+        new Date('2026-12-01T00:00:00.000Z'),
+      ),
+      repository.activeBenefitCount(scope),
+      repository.activePayrollRunCount(scope),
+      repository.pendingReviewCount(scope),
+    ]);
+    expect(employeeCount).toHaveBeenCalledWith({
+      where: {
+        status: 'ACTIVE',
+        employmentContracts: { some: { companyId: 'company-a' } },
+      },
+    });
+    expect(contractCount).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ companyId: 'company-a' }) }),
+    );
+    expect(admissionCount).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ companyId: 'company-a' }) }),
+    );
+    expect(leaveCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ employmentContract: { companyId: 'company-a' } }),
+      }),
+    );
+    expect(vacationCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ employmentContract: { companyId: 'company-a' } }),
+      }),
+    );
+    expect(benefitCount).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ companyId: 'company-a' }) }),
+    );
+    expect(runCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ payrollPeriod: { companyId: 'company-a' } }),
+      }),
+    );
+    expect(reviewCount).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ companyId: 'company-a' }) }),
     );
   });
 });

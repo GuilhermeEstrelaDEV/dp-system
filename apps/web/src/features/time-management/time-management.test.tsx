@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TimeManagementPage } from './index';
 const { apiRequest } = vi.hoisted(() => ({ apiRequest: vi.fn() }));
@@ -8,11 +9,13 @@ describe('TimeManagementPage', () => {
   beforeEach(() => apiRequest.mockResolvedValue([]));
   it('identifies the demonstrative time controls', async () => {
     render(
-      <QueryClientProvider
-        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
-      >
-        <TimeManagementPage />
-      </QueryClientProvider>,
+      <MemoryRouter>
+        <QueryClientProvider
+          client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+        >
+          <TimeManagementPage />
+        </QueryClientProvider>
+      </MemoryRouter>,
     );
     expect(
       await screen.findByRole('heading', { name: 'Jornada e banco de horas' }),

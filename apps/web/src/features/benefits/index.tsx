@@ -1,7 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
 import { PageHeader } from '@/components/common/PageHeader';
+import {
+  ClearFiltersButton,
+  FilterBar,
+  FilterSelect,
+  SearchInput,
+} from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
 
@@ -33,9 +40,16 @@ export function BenefitsPage() {
   const auth = useOptionalAuth();
   const canManage = auth?.hasCapability('benefit.manage') ?? true;
   const client = useQueryClient();
-  const [search, setSearch] = useState('');
-  const [type, setType] = useState('ALL');
+  const [filters, setFilters] = useSearchParams();
+  const search = filters.get('search') ?? '';
+  const type = filters.get('type') ?? 'ALL';
   const [contractId, setContractId] = useState('');
+  const updateFilter = (key: 'search' | 'type', value: string) => {
+    const next = new URLSearchParams(filters);
+    if (value && value !== 'ALL') next.set(key, value);
+    else next.delete(key);
+    setFilters(next, { replace: true });
+  };
   const benefits = useQuery({
     queryKey: ['benefits', auth?.activeCompanyId, search, type],
     queryFn: () =>
@@ -194,25 +208,39 @@ export function BenefitsPage() {
         </div>
       )}
       {mutationError && <p role="alert">{mutationError.message}</p>}
-      <div role="search" className="grid gap-3 md:grid-cols-2">
-        <label>
-          Pesquisar catálogo
-          <input value={search} onChange={(event) => setSearch(event.target.value)} />
-        </label>
-        <label>
-          Filtrar por tipo
-          <select value={type} onChange={(event) => setType(event.target.value)}>
-            <option value="ALL">Todos</option>
-            <option value="GENERIC">Genérico</option>
-            <option value="TRANSPORT">Transporte</option>
-            <option value="MEAL">Refeição</option>
-            <option value="FOOD">Alimentação</option>
-          </select>
-        </label>
-      </div>
+      <FilterBar>
+        <SearchInput
+          aria-label="Pesquisar catálogo"
+          onChange={(event) => updateFilter('search', event.target.value)}
+          placeholder="Código ou nome"
+          value={search}
+        />
+        <FilterSelect
+          aria-label="Filtrar por tipo"
+          label="Tipo"
+          onChange={(event) => updateFilter('type', event.target.value)}
+          value={type}
+        >
+          <option value="ALL">Todos</option>
+          <option value="GENERIC">Genérico</option>
+          <option value="TRANSPORT">Transporte</option>
+          <option value="MEAL">Refeição</option>
+          <option value="FOOD">Alimentação</option>
+        </FilterSelect>
+        <ClearFiltersButton
+          disabled={!search && type === 'ALL'}
+          onClear={() => setFilters(new URLSearchParams(), { replace: true })}
+        />
+      </FilterBar>
       {benefits.isLoading ? <p role="status">Carregando benefícios…</p> : null}
       {benefits.isError ? <p role="alert">{benefits.error.message}</p> : null}
-      {benefits.data?.length === 0 ? <p>Nenhum benefício demonstrativo encontrado.</p> : null}
+      {benefits.data?.length === 0 ? (
+        <p>
+          {search || type !== 'ALL'
+            ? 'Nenhum benefício corresponde aos filtros aplicados.'
+            : 'Nenhum benefício demonstrativo encontrado.'}
+        </p>
+      ) : null}
       {benefits.data?.length ? (
         <DataTable label="Tabela de benefícios">
           <thead>

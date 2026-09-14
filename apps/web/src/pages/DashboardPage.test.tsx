@@ -38,6 +38,34 @@ const summary = {
 };
 
 describe('executive dashboard', () => {
+  it('renders capability-scoped operational counters and quick actions', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      success({
+        ...summary,
+        operations: {
+          metrics: [
+            {
+              value: 8,
+              label: 'Colaboradores ativos',
+              description: 'Cadastros ativos na empresa.',
+            },
+          ],
+        },
+        review: undefined,
+      }),
+    );
+    renderWithRouter('/', true, ['employee.read', 'employee.manage']);
+
+    expect(
+      await screen.findByRole('link', { name: 'Colaboradores ativos: abrir listagem' }),
+    ).toHaveAttribute('href', '/colaboradores');
+    expect(screen.getByRole('link', { name: 'Novo colaborador' })).toHaveAttribute(
+      'href',
+      '/colaboradores?create=true',
+    );
+    expect(screen.queryByRole('link', { name: 'Nova admissão' })).not.toBeInTheDocument();
+  });
+
   it('renders real metrics, accessible charts, activity and authorized shortcut', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(success(summary));
     renderWithRouter('/');

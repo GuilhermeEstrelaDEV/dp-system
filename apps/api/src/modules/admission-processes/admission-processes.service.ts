@@ -76,6 +76,24 @@ export class AdmissionProcessesService {
         employeeId: query.employeeId,
         employmentContractId: query.contractId,
         status: query.status,
+        plannedAdmissionDate:
+          query.plannedFrom || query.plannedTo
+            ? {
+                gte: query.plannedFrom ? new Date(query.plannedFrom) : undefined,
+                lte: query.plannedTo ? new Date(query.plannedTo) : undefined,
+              }
+            : undefined,
+        OR: query.search
+          ? [
+              { employee: { legalName: { contains: query.search, mode: 'insensitive' } } },
+              { employee: { preferredName: { contains: query.search, mode: 'insensitive' } } },
+              {
+                employmentContract: {
+                  registrationNumber: { contains: query.search, mode: 'insensitive' },
+                },
+              },
+            ]
+          : undefined,
       },
       select: admissionListProjection,
       orderBy: { plannedAdmissionDate: 'asc' },

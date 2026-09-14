@@ -44,4 +44,65 @@ export class DashboardRepository {
       orderBy: { status: 'asc' },
     });
   }
+
+  activeEmployeeCount(scope: EnterpriseScope) {
+    return this.prisma.employee.count({
+      where: {
+        status: 'ACTIVE',
+        employmentContracts: { some: { companyId: scope.companyId } },
+      },
+    });
+  }
+
+  activeContractCount(scope: EnterpriseScope) {
+    return this.prisma.employmentContract.count({
+      where: { companyId: scope.companyId, status: 'ACTIVE' },
+    });
+  }
+
+  pendingAdmissionCount(scope: EnterpriseScope) {
+    return this.prisma.admissionProcess.count({
+      where: { companyId: scope.companyId, status: { in: ['DRAFT', 'IN_PROGRESS', 'PENDING'] } },
+    });
+  }
+
+  activeLeaveCount(scope: EnterpriseScope) {
+    return this.prisma.leaveCase.count({
+      where: { employmentContract: { companyId: scope.companyId }, status: 'OPEN' },
+    });
+  }
+
+  upcomingVacationCount(scope: EnterpriseScope, start: Date, end: Date) {
+    return this.prisma.vacationRequest.count({
+      where: {
+        employmentContract: { companyId: scope.companyId },
+        status: 'APPROVED',
+        startDate: { gte: start, lt: end },
+      },
+    });
+  }
+
+  activeBenefitCount(scope: EnterpriseScope) {
+    return this.prisma.benefit.count({
+      where: { companyId: scope.companyId, status: 'ACTIVE' },
+    });
+  }
+
+  activePayrollRunCount(scope: EnterpriseScope) {
+    return this.prisma.payrollRun.count({
+      where: {
+        payrollPeriod: { companyId: scope.companyId },
+        status: { in: ['DRAFT', 'RUNNING'] },
+      },
+    });
+  }
+
+  pendingReviewCount(scope: EnterpriseScope) {
+    return this.prisma.payrollReviewCycle.count({
+      where: {
+        companyId: scope.companyId,
+        status: { in: ['OPEN', 'IN_REVIEW', 'SUBMITTED', 'REJECTED'] },
+      },
+    });
+  }
 }

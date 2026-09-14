@@ -13,6 +13,7 @@ type Activity = { type: string; occurredAt: string };
 type DashboardSummary = {
   context: { companyId: string; companyName: string; generatedAt: string; timezone: 'UTC' };
   access: 'AVAILABLE' | 'RESTRICTED';
+  operations?: { metrics: Metric[] };
   review?: {
     metrics: Metric[];
     statusDistribution: Point[];
@@ -20,6 +21,17 @@ type DashboardSummary = {
     recentActivity: Activity[];
   };
   payrollPeriod?: { metrics: Metric[]; statusDistribution: Point[] };
+};
+
+const metricDestinations: Readonly<Record<string, { path: string; capability: string }>> = {
+  'Colaboradores ativos': { path: '/colaboradores', capability: 'employee.read' },
+  'Contratos ativos': { path: '/contratos', capability: 'contract.read' },
+  'Admissoes pendentes': { path: '/admissoes', capability: 'admission.read' },
+  'Afastamentos ativos': { path: '/movimentacoes', capability: 'leave.read' },
+  'Ferias proximas': { path: '/ferias', capability: 'vacation.read' },
+  'Beneficios ativos': { path: '/beneficios', capability: 'benefit.read' },
+  'Processamentos em andamento': { path: '/folha/execucoes', capability: 'payroll.run.read' },
+  'Revisoes pendentes': { path: '/folha/conferencia', capability: 'payroll.review.view' },
 };
 
 function Bars({ title, points }: { readonly title: string; readonly points: Point[] }) {
@@ -86,9 +98,10 @@ export function DashboardPage() {
 
   const summary = query.data;
   const metrics = [
+    ...(summary.operations?.metrics ?? []),
     ...(summary.review?.metrics ?? []),
     ...(summary.payrollPeriod?.metrics ?? []),
-  ].slice(0, 6);
+  ];
   const distribution =
     summary.review?.statusDistribution ?? summary.payrollPeriod?.statusDistribution ?? [];
   return (
@@ -116,14 +129,28 @@ export function DashboardPage() {
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {metrics.map((metric) => (
-              <StatCard
-                detail={`${metric.description} Empresa: ${summary.context.companyName}.`}
-                key={metric.label}
-                label={metric.label}
-                value={metric.value.toLocaleString('pt-BR')}
-              />
-            ))}
+            {metrics.map((metric) => {
+              const destination = metricDestinations[metric.label];
+              const card = (
+                <StatCard
+                  detail={`${metric.description} Empresa: ${summary.context.companyName}.`}
+                  label={metric.label}
+                  value={metric.value.toLocaleString('pt-BR')}
+                />
+              );
+              return destination && auth.hasCapability(destination.capability) ? (
+                <Link
+                  aria-label={`${metric.label}: abrir listagem`}
+                  className="dashboard-card-link"
+                  key={metric.label}
+                  to={destination.path}
+                >
+                  {card}
+                </Link>
+              ) : (
+                <div key={metric.label}>{card}</div>
+              );
+            })}
           </div>
           <div className="dashboard-visuals">
             <Bars
@@ -164,6 +191,23 @@ export function DashboardPage() {
               )}
             </Card>
           )}
+          <nav aria-label="Acoes rapidas" className="dashboard-shortcuts">
+            {auth.hasCapability('employee.manage') && (
+              <Link className="ui-button ui-button--secondary" to="/colaboradores?create=true">
+                Novo colaborador
+              </Link>
+            )}
+            {auth.hasCapability('admission.manage') && (
+              <Link className="ui-button ui-button--secondary" to="/admissoes/nova">
+                Nova admissao
+              </Link>
+            )}
+            {auth.hasCapability('contract.manage') && (
+              <Link className="ui-button ui-button--secondary" to="/contratos?create=true">
+                Novo contrato
+              </Link>
+            )}
+          </nav>
           {auth.hasCapability('payroll.review.view') && (
             <nav aria-label="Atalhos do dashboard" className="dashboard-shortcuts">
               <Link to="/folha/conferencia">Consultar conferências de folha</Link>

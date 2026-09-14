@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { VacationManagementPage, VacationsLeavesPage } from './index';
 
@@ -20,11 +21,13 @@ describe('VacationsLeavesPage', () => {
   });
   it('renders only the approved demonstrative leave controls', async () => {
     render(
-      <QueryClientProvider
-        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
-      >
-        <VacationsLeavesPage />
-      </QueryClientProvider>,
+      <MemoryRouter>
+        <QueryClientProvider
+          client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+        >
+          <VacationsLeavesPage />
+        </QueryClientProvider>
+      </MemoryRouter>,
     );
     expect(await screen.findByRole('heading', { name: 'Afastamentos' })).toBeInTheDocument();
     expect(
@@ -50,11 +53,13 @@ describe('VacationsLeavesPage', () => {
       },
     ]);
     render(
-      <QueryClientProvider
-        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
-      >
-        <VacationsLeavesPage />
-      </QueryClientProvider>,
+      <MemoryRouter>
+        <QueryClientProvider
+          client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+        >
+          <VacationsLeavesPage />
+        </QueryClientProvider>
+      </MemoryRouter>,
     );
 
     const table = await screen.findByRole('table', { name: 'Tabela de afastamentos' });
@@ -78,11 +83,13 @@ describe('VacationsLeavesPage', () => {
       ])
       .mockResolvedValueOnce([]);
     render(
-      <QueryClientProvider
-        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
-      >
-        <VacationManagementPage />
-      </QueryClientProvider>,
+      <MemoryRouter>
+        <QueryClientProvider
+          client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+        >
+          <VacationManagementPage />
+        </QueryClientProvider>
+      </MemoryRouter>,
     );
     expect(await screen.findByRole('heading', { name: 'Férias' })).toBeInTheDocument();
     expect(await screen.findByRole('table', { name: 'Tabela de períodos de férias' })).toHaveClass(

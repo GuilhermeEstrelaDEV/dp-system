@@ -17,6 +17,9 @@ export class AdmissionProcessListQueryDto {
   @IsOptional() @IsUUID() companyId?: string;
   @IsOptional() @IsUUID() employeeId?: string;
   @IsOptional() @IsUUID() contractId?: string;
+  @IsOptional() @IsString() @MaxLength(160) search?: string;
+  @IsOptional() @IsDateString() plannedFrom?: string;
+  @IsOptional() @IsDateString() plannedTo?: string;
   @IsOptional()
   @IsIn(['DRAFT', 'IN_PROGRESS', 'PENDING', 'COMPLETED', 'CANCELLED'])
   status?: 'DRAFT' | 'IN_PROGRESS' | 'PENDING' | 'COMPLETED' | 'CANCELLED';

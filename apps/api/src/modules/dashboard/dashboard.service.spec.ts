@@ -11,12 +11,28 @@ describe('DashboardService', () => {
   const findingCount = jest.fn();
   const eventFindMany = jest.fn();
   const periodGroupBy = jest.fn();
+  const activeEmployeeCount = jest.fn();
+  const activeContractCount = jest.fn();
+  const pendingAdmissionCount = jest.fn();
+  const activeLeaveCount = jest.fn();
+  const upcomingVacationCount = jest.fn();
+  const activeBenefitCount = jest.fn();
+  const activePayrollRunCount = jest.fn();
+  const pendingReviewCount = jest.fn();
   const service = new DashboardService({
     findActiveCompany: companyFindFirst,
     reviewStatusCounts: cycleGroupBy,
     openFindingCount: findingCount,
     reviewEvents: eventFindMany,
     payrollPeriodStatusCounts: periodGroupBy,
+    activeEmployeeCount,
+    activeContractCount,
+    pendingAdmissionCount,
+    activeLeaveCount,
+    upcomingVacationCount,
+    activeBenefitCount,
+    activePayrollRunCount,
+    pendingReviewCount,
   } as unknown as DashboardRepository);
   const principal = (companyId: string | null, permissions: string[]): AuthenticatedPrincipal => ({
     actorId: 'user-1',
@@ -49,6 +65,14 @@ describe('DashboardService', () => {
       { eventType: 'REVIEW_STARTED', occurredAt: new Date('2026-07-10T12:00:00Z') },
     ]);
     periodGroupBy.mockResolvedValue([{ status: 'OPEN', _count: { _all: 3 } }]);
+    activeEmployeeCount.mockResolvedValue(12);
+    activeContractCount.mockResolvedValue(10);
+    pendingAdmissionCount.mockResolvedValue(2);
+    activeLeaveCount.mockResolvedValue(1);
+    upcomingVacationCount.mockResolvedValue(3);
+    activeBenefitCount.mockResolvedValue(4);
+    activePayrollRunCount.mockResolvedValue(1);
+    pendingReviewCount.mockResolvedValue(2);
   });
 
   it('returns a restricted contract and executes no metric query without capabilities', async () => {
@@ -73,6 +97,26 @@ describe('DashboardService', () => {
     expect(result.review?.recentActivity[0]).not.toHaveProperty('actorId');
     expect(result.review?.recentActivity[0]).not.toHaveProperty('description');
     expect(cycleGroupBy).toHaveBeenCalledWith(expect.objectContaining({ companyId: 'company-a' }));
+  });
+
+  it('queries only operational metrics authorized by explicit domain capabilities', async () => {
+    const actor = principal('company-a', ['employee.read', 'admission.read']);
+    const result = await service.summary(scope(actor), actor);
+    expect(result).toMatchObject({
+      access: 'AVAILABLE',
+      operations: {
+        metrics: [
+          { label: 'Colaboradores ativos', value: 12 },
+          { label: 'Admissoes pendentes', value: 2 },
+        ],
+      },
+    });
+    expect(activeEmployeeCount).toHaveBeenCalledWith(
+      expect.objectContaining({ companyId: 'company-a' }),
+    );
+    expect(pendingAdmissionCount).toHaveBeenCalled();
+    expect(activeContractCount).not.toHaveBeenCalled();
+    expect(cycleGroupBy).not.toHaveBeenCalled();
   });
 
   it('scopes payroll period aggregation under the approved dashboard capability', async () => {

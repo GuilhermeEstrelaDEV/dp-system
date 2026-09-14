@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
 import { PageHeader } from '@/components/common/PageHeader';
+import { ClearFiltersButton, FilterBar, SearchInput } from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
 
@@ -42,6 +44,8 @@ export function TimeManagementPage() {
   const auth = useOptionalAuth();
   const canManage = auth?.hasCapability('time.manage') ?? true;
   const client = useQueryClient();
+  const [filters, setFilters] = useSearchParams();
+  const search = filters.get('search') ?? '';
   const [contractId, setContractId] = useState('');
   const schedules = useQuery({
     queryKey: ['work-schedules', auth?.activeCompanyId],
@@ -130,6 +134,17 @@ export function TimeManagementPage() {
   });
   const mutationError =
     createSchedule.error ?? assign.error ?? createHoliday.error ?? createEntry.error ?? close.error;
+  const normalizedSearch = search.toLocaleLowerCase('pt-BR');
+  const visibleSchedules = schedules.data?.filter(
+    (item) =>
+      item.code.toLocaleLowerCase('pt-BR').includes(normalizedSearch) ||
+      item.name.toLocaleLowerCase('pt-BR').includes(normalizedSearch),
+  );
+  const visibleEntries = entries.data?.filter(
+    (item) =>
+      item.employmentContractId.toLocaleLowerCase('pt-BR').includes(normalizedSearch) ||
+      item.type.toLocaleLowerCase('pt-BR').includes(normalizedSearch),
+  );
 
   return (
     <section aria-labelledby="time-title">
@@ -137,6 +152,23 @@ export function TimeManagementPage() {
         title="Jornada e banco de horas"
         description="Controles internos da empresa ativa, sem definição de jornada legal, tolerância, adicional ou regra sindical."
       />
+      <FilterBar>
+        <SearchInput
+          aria-label="Pesquisar jornadas e ocorrencias"
+          onChange={(event) => {
+            const next = new URLSearchParams(filters);
+            if (event.target.value) next.set('search', event.target.value);
+            else next.delete('search');
+            setFilters(next, { replace: true });
+          }}
+          placeholder="Codigo, nome, contrato ou tipo"
+          value={search}
+        />
+        <ClearFiltersButton
+          disabled={!search}
+          onClear={() => setFilters(new URLSearchParams(), { replace: true })}
+        />
+      </FilterBar>
       {canManage && (
         <div className="grid gap-6 lg:grid-cols-2">
           <MutationForm title="Nova jornada" mutation={createSchedule}>
@@ -255,7 +287,10 @@ export function TimeManagementPage() {
       <h2>Jornadas configuradas</h2>
       {schedules.isLoading ? <p role="status">Carregando jornadas…</p> : null}
       {schedules.data?.length === 0 ? <p>Nenhuma jornada demonstrativa.</p> : null}
-      {schedules.data?.length ? (
+      {search && schedules.data?.length && visibleSchedules?.length === 0 ? (
+        <p>Nenhuma jornada corresponde a busca aplicada.</p>
+      ) : null}
+      {visibleSchedules?.length ? (
         <DataTable label="Tabela de jornadas">
           <thead>
             <tr>
@@ -267,7 +302,7 @@ export function TimeManagementPage() {
             </tr>
           </thead>
           <tbody>
-            {schedules.data.map((item) => (
+            {visibleSchedules.map((item) => (
               <tr key={item.id}>
                 <td className="ui-table-cell--compact">{item.code}</td>
                 <td>{item.name}</td>
@@ -284,7 +319,10 @@ export function TimeManagementPage() {
       <h2>Ocorrências</h2>
       {entries.isLoading ? <p role="status">Carregando ocorrências…</p> : null}
       {entries.data?.length === 0 ? <p>Nenhuma ocorrência demonstrativa.</p> : null}
-      {entries.data?.length ? (
+      {search && entries.data?.length && visibleEntries?.length === 0 ? (
+        <p>Nenhuma ocorrencia corresponde a busca aplicada.</p>
+      ) : null}
+      {visibleEntries?.length ? (
         <DataTable label="Tabela de ocorrências de jornada">
           <thead>
             <tr>
@@ -296,7 +334,7 @@ export function TimeManagementPage() {
             </tr>
           </thead>
           <tbody>
-            {entries.data.map((item) => (
+            {visibleEntries.map((item) => (
               <tr key={item.id}>
                 <td className="ui-table-cell--compact">{item.employmentContractId}</td>
                 <td className="ui-table-cell--compact">{item.occurredOn.slice(0, 10)}</td>

@@ -4,12 +4,16 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import {
   Button,
+  ClearFiltersButton,
   ConfirmDialog,
   ErrorState,
+  FilterBar,
+  FilterSelect,
   FormActions,
   FormField,
   FormSection,
   Input,
+  SearchInput,
   Select,
   Textarea,
 } from './Primitives';
@@ -76,6 +80,25 @@ describe('ConfirmDialog', () => {
 });
 
 describe('form and feedback primitives', () => {
+  it('provides an accessible shared search and filter toolbar', () => {
+    const onClear = vi.fn();
+    render(
+      <FilterBar>
+        <SearchInput aria-label="Pesquisar registros" />
+        <FilterSelect aria-label="Filtrar registros" label="Status">
+          <option value="">Todos</option>
+        </FilterSelect>
+        <ClearFiltersButton onClear={onClear} />
+      </FilterBar>,
+    );
+
+    expect(screen.getByRole('search', { name: 'Busca e filtros' })).toBeInTheDocument();
+    expect(screen.getByRole('searchbox', { name: 'Pesquisar registros' })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Filtrar registros' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Limpar filtros' }));
+    expect(onClear).toHaveBeenCalledOnce();
+  });
+
   it('applies the shared control styles to select and textarea', () => {
     render(
       <>

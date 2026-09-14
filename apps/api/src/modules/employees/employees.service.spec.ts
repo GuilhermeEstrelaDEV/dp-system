@@ -71,6 +71,38 @@ describe('EmployeesService profile expansion', () => {
     prisma.employeeEmergencyContact.upsert.mockResolvedValue({ id: 'emergency-id' });
   });
 
+  it('searches by name, preferred name and company-scoped registration number', async () => {
+    prisma.$transaction.mockResolvedValue([[], 0]);
+    await service.list(
+      {
+        page: 1,
+        pageSize: 20,
+        search: 'DEMO-001',
+        sortBy: 'legalName',
+        sortDirection: 'asc',
+      },
+      principal,
+    );
+    expect(prisma.employee.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.arrayContaining([
+            expect.objectContaining({ legalName: expect.any(Object) }),
+            expect.objectContaining({ preferredName: expect.any(Object) }),
+            {
+              employmentContracts: {
+                some: {
+                  companyId: 'company-id',
+                  registrationNumber: { contains: 'DEMO-001', mode: 'insensitive' },
+                },
+              },
+            },
+          ]),
+        }),
+      }),
+    );
+  });
+
   it('creates the complete profile while normalizing personal data', async () => {
     await service.create(
       {

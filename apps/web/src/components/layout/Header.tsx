@@ -2,6 +2,7 @@ import type { RefObject } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Button, IconButton, Spinner } from '@/components/common/Primitives';
 import { useAuth } from '@/features/auth/AuthContext';
+import { QuickNavigation } from './QuickNavigation';
 
 interface HeaderProps {
   readonly demoHelpTriggerRef: RefObject<HTMLButtonElement | null>;
@@ -63,6 +64,7 @@ export function Header(props: HeaderProps) {
           </button>
         </div>
       </div>
+      <QuickNavigation />
       <div className="app-topbar__end">
         {auth.isLoading && <Spinner label="Atualizando" />}
         {import.meta.env.VITE_DEMO_MODE === 'true' && (

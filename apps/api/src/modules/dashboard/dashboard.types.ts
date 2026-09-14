@@ -5,6 +5,7 @@ export type DashboardActivity = { type: string; occurredAt: string };
 export type DashboardSummary = {
   context: { companyId: string; companyName: string; generatedAt: string; timezone: 'UTC' };
   access: 'AVAILABLE' | 'RESTRICTED';
+  operations?: { metrics: DashboardMetric[] };
   review?: {
     metrics: DashboardMetric[];
     statusDistribution: DashboardDataPoint[];

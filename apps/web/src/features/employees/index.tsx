@@ -1,19 +1,20 @@
 import type { EmployeeContract } from '@dp-system/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
 import { PageHeader } from '@/components/common/PageHeader';
 import {
   Alert,
   Button,
+  ClearFiltersButton,
   ConfirmDialog,
   EmptyState,
   ErrorState,
   FilterBar,
-  Input,
+  FilterSelect,
   LoadingState,
-  Select,
+  SearchInput,
 } from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
@@ -23,12 +24,27 @@ import { type EmployeeValues, toEmployeeProfilePayload } from './employee-profil
 export function EmployeesPage() {
   const auth = useOptionalAuth();
   const canManage = auth?.hasCapability('employee.manage') ?? true;
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
-  const [createOpen, setCreateOpen] = useState(false);
+  const [filters, setFilters] = useSearchParams();
+  const search = filters.get('search') ?? '';
+  const status = filters.get('status') ?? '';
+  const [createOpen, setCreateOpen] = useState(filters.get('create') === 'true');
   const [pendingStatus, setPendingStatus] = useState<EmployeeContract | null>(null);
   const client = useQueryClient();
   const navigate = useNavigate();
+  const location = useLocation();
+  const updateFilter = (key: 'search' | 'status', value: string) => {
+    const next = new URLSearchParams(filters);
+    if (value) next.set(key, value);
+    else next.delete(key);
+    setFilters(next, { replace: true });
+  };
+  const setCreateVisibility = (open: boolean) => {
+    const next = new URLSearchParams(filters);
+    if (open) next.set('create', 'true');
+    else next.delete('create');
+    setFilters(next, { replace: true });
+    setCreateOpen(open);
+  };
   const list = useQuery({
     queryKey: ['employees', auth?.activeCompanyId, search, status],
     queryFn: () => {
@@ -39,6 +55,7 @@ export function EmployeesPage() {
       return apiRequest<{ items: EmployeeContract[] }>(`/employees${query ? `?${query}` : ''}`);
     },
   });
+  const hasFilters = Boolean(search || status);
   const create = useMutation({
     mutationFn: (values: EmployeeValues) =>
       apiRequest<EmployeeContract>('/employees', {
@@ -67,40 +84,42 @@ export function EmployeesPage() {
         title="Colaboradores"
       >
         {canManage ? (
-          <Button aria-label="Novo colaborador" onClick={() => setCreateOpen(true)} type="button">
+          <Button
+            aria-label="Novo colaborador"
+            onClick={() => setCreateVisibility(true)}
+            type="button"
+          >
             + Novo colaborador
           </Button>
         ) : null}
       </PageHeader>
 
       <FilterBar>
-        <label className="ui-field">
-          Buscar
-          <Input
-            aria-label="Pesquisar colaboradores"
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Pesquisar por nome"
-            type="search"
-            value={search}
-          />
-        </label>
-        <label className="ui-field">
-          Status
-          <Select
-            aria-label="Filtrar colaboradores por status"
-            onChange={(event) => setStatus(event.target.value)}
-            value={status}
-          >
-            <option value="">Todos os status</option>
-            <option value="ACTIVE">Ativos</option>
-            <option value="INACTIVE">Inativos</option>
-          </Select>
-        </label>
+        <SearchInput
+          aria-label="Pesquisar colaboradores"
+          onChange={(event) => updateFilter('search', event.target.value)}
+          placeholder="Nome, nome preferido ou matrÃ­cula"
+          value={search}
+        />
+        <FilterSelect
+          aria-label="Filtrar colaboradores por status"
+          label="Status"
+          onChange={(event) => updateFilter('status', event.target.value)}
+          value={status}
+        >
+          <option value="">Todos os status</option>
+          <option value="ACTIVE">Ativos</option>
+          <option value="INACTIVE">Inativos</option>
+        </FilterSelect>
+        <ClearFiltersButton
+          disabled={!hasFilters}
+          onClear={() => setFilters(new URLSearchParams(), { replace: true })}
+        />
       </FilterBar>
 
       {createOpen ? (
         <EmployeeForm
-          onCancel={() => setCreateOpen(false)}
+          onCancel={() => setCreateVisibility(false)}
           onSubmit={(values) => create.mutate(values)}
           pending={create.isPending}
           submitLabel="Criar colaborador"
@@ -114,10 +133,10 @@ export function EmployeesPage() {
       ) : list.data?.items.length === 0 ? (
         <EmptyState
           action={
-            canManage && !search && !status ? (
+            canManage && !hasFilters ? (
               <Button
                 aria-label="Novo colaborador"
-                onClick={() => setCreateOpen(true)}
+                onClick={() => setCreateVisibility(true)}
                 type="button"
               >
                 + Novo colaborador
@@ -125,7 +144,7 @@ export function EmployeesPage() {
             ) : undefined
           }
           description={
-            search || status
+            hasFilters
               ? 'Ajuste a busca ou o filtro para encontrar outros colaboradores.'
               : 'Cadastre o primeiro colaborador fictício para começar.'
           }
@@ -144,7 +163,10 @@ export function EmployeesPage() {
             {list.data?.items.map((employee) => (
               <tr key={employee.id}>
                 <td>
-                  <Link to={`/colaboradores/${employee.id}`}>
+                  <Link
+                    state={{ from: `${location.pathname}${location.search}` }}
+                    to={`/colaboradores/${employee.id}`}
+                  >
                     {employee.preferredName || employee.legalName}
                   </Link>
                 </td>
@@ -155,6 +177,7 @@ export function EmployeesPage() {
                   <DataTableActions>
                     <Link
                       className="ui-button ui-button--ghost"
+                      state={{ from: `${location.pathname}${location.search}` }}
                       to={`/colaboradores/${employee.id}`}
                     >
                       Detalhes

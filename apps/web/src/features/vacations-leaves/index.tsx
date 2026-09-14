@@ -1,7 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
 import { PageHeader } from '@/components/common/PageHeader';
+import {
+  ClearFiltersButton,
+  FilterBar,
+  FilterSelect,
+  SearchInput,
+} from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
 
@@ -26,6 +33,9 @@ export function VacationsLeavesPage() {
   const auth = useOptionalAuth();
   const canManage = auth?.hasCapability('leave.manage') ?? true;
   const client = useQueryClient();
+  const [filters, setFilters] = useSearchParams();
+  const search = filters.get('search') ?? '';
+  const status = filters.get('status') ?? '';
   const [returning, setReturning] = useState<LeaveCase>();
   const types = useQuery({
     queryKey: ['leave-types', auth?.activeCompanyId],
@@ -75,6 +85,21 @@ export function VacationsLeavesPage() {
       void client.invalidateQueries({ queryKey: ['leave-cases'] });
     },
   });
+  const filteredLeaves = leaves.data?.filter(
+    (item) =>
+      (!status || item.status === status) &&
+      (!search ||
+        item.employmentContract.registrationNumber
+          .toLocaleLowerCase('pt-BR')
+          .includes(search.toLocaleLowerCase('pt-BR')) ||
+        item.leaveType.name.toLocaleLowerCase('pt-BR').includes(search.toLocaleLowerCase('pt-BR'))),
+  );
+  const updateFilter = (key: 'search' | 'status', value: string) => {
+    const next = new URLSearchParams(filters);
+    if (value) next.set(key, value);
+    else next.delete(key);
+    setFilters(next, { replace: true });
+  };
 
   return (
     <section aria-labelledby="leaves-title">
@@ -82,6 +107,28 @@ export function VacationsLeavesPage() {
         title="Afastamentos"
         description="Controles administrativos da empresa ativa. Não há regra legal, cálculo financeiro ou decisão automática."
       />
+      <FilterBar>
+        <SearchInput
+          aria-label="Pesquisar afastamentos"
+          onChange={(event) => updateFilter('search', event.target.value)}
+          placeholder="Matricula ou tipo"
+          value={search}
+        />
+        <FilterSelect
+          aria-label="Filtrar afastamentos por status"
+          label="Status"
+          onChange={(event) => updateFilter('status', event.target.value)}
+          value={status}
+        >
+          <option value="">Todos os status</option>
+          <option value="OPEN">Abertos</option>
+          <option value="RETURNED">Retornados</option>
+        </FilterSelect>
+        <ClearFiltersButton
+          disabled={!search && !status}
+          onClear={() => setFilters(new URLSearchParams(), { replace: true })}
+        />
+      </FilterBar>
       {canManage && (
         <div className="grid gap-6 lg:grid-cols-2">
           <form
@@ -153,8 +200,14 @@ export function VacationsLeavesPage() {
         <p role="alert">{createType.error?.message ?? createLeave.error?.message}</p>
       ) : null}
       {leaves.isLoading ? <p role="status">Carregando afastamentos…</p> : null}
-      {leaves.data?.length === 0 ? <p>Nenhum afastamento demonstrativo encontrado.</p> : null}
-      {leaves.data?.length ? (
+      {filteredLeaves?.length === 0 ? (
+        <p>
+          {search || status
+            ? 'Nenhum afastamento corresponde aos filtros aplicados.'
+            : 'Nenhum afastamento demonstrativo encontrado.'}
+        </p>
+      ) : null}
+      {filteredLeaves?.length ? (
         <DataTable label="Tabela de afastamentos">
           <thead>
             <tr>
@@ -167,7 +220,7 @@ export function VacationsLeavesPage() {
             </tr>
           </thead>
           <tbody>
-            {leaves.data.map((item) => (
+            {filteredLeaves.map((item) => (
               <tr key={item.id}>
                 <td className="ui-table-cell--compact">
                   {item.employmentContract.registrationNumber}
@@ -253,7 +306,9 @@ export function VacationManagementPage() {
   const auth = useOptionalAuth();
   const canManage = auth?.hasCapability('vacation.manage') ?? true;
   const client = useQueryClient();
-  const [contractId, setContractId] = useState('');
+  const [filters, setFilters] = useSearchParams();
+  const contractId = filters.get('contractId') ?? '';
+  const requestStatus = filters.get('status') ?? '';
   const periods = useQuery({
     queryKey: ['vacation-periods', auth?.activeCompanyId, contractId],
     queryFn: () =>
@@ -327,6 +382,15 @@ export function VacationManagementPage() {
   });
   const mutationError =
     createPeriod.error ?? createRequest.error ?? createCollective.error ?? decide.error;
+  const visibleRequests = requests.data?.filter(
+    (item) => !requestStatus || item.status === requestStatus,
+  );
+  const updateFilter = (key: 'contractId' | 'status', value: string) => {
+    const next = new URLSearchParams(filters);
+    if (value) next.set(key, value);
+    else next.delete(key);
+    setFilters(next, { replace: true });
+  };
 
   return (
     <section aria-labelledby="vacation-title">
@@ -336,8 +400,28 @@ export function VacationManagementPage() {
       />
       <label>
         Filtrar por contrato
-        <input value={contractId} onChange={(event) => setContractId(event.target.value)} />
+        <input
+          value={contractId}
+          onChange={(event) => updateFilter('contractId', event.target.value)}
+        />
       </label>
+      <FilterBar>
+        <FilterSelect
+          aria-label="Filtrar solicitacoes de ferias por status"
+          label="Status da solicitacao"
+          onChange={(event) => updateFilter('status', event.target.value)}
+          value={requestStatus}
+        >
+          <option value="">Todos os status</option>
+          <option value="DRAFT">Rascunho</option>
+          <option value="APPROVED">Aprovadas</option>
+          <option value="CANCELLED">Canceladas</option>
+        </FilterSelect>
+        <ClearFiltersButton
+          disabled={!contractId && !requestStatus}
+          onClear={() => setFilters(new URLSearchParams(), { replace: true })}
+        />
+      </FilterBar>
       {canManage && (
         <div className="grid gap-6 lg:grid-cols-3">
           <VacationForm title="Novo período aquisitivo" mutation={createPeriod}>
@@ -463,7 +547,10 @@ export function VacationManagementPage() {
       <h2>Solicitações</h2>
       {requests.isLoading ? <p role="status">Carregando solicitações…</p> : null}
       {requests.data?.length === 0 ? <p>Nenhuma solicitação demonstrativa encontrada.</p> : null}
-      {requests.data?.length ? (
+      {visibleRequests?.length === 0 && requests.data?.length ? (
+        <p>Nenhuma solicitacao corresponde aos filtros aplicados.</p>
+      ) : null}
+      {visibleRequests?.length ? (
         <DataTable label="Tabela de solicitações de férias">
           <thead>
             <tr>
@@ -475,7 +562,7 @@ export function VacationManagementPage() {
             </tr>
           </thead>
           <tbody>
-            {requests.data.map((item) => (
+            {visibleRequests.map((item) => (
               <tr key={item.id}>
                 <td className="ui-table-cell--compact">{item.employmentContractId}</td>
                 <td className="ui-table-cell--compact">

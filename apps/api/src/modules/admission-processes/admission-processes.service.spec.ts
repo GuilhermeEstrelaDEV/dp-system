@@ -5,7 +5,12 @@ import { AdmissionProcessesService } from './admission-processes.service';
 describe('AdmissionProcessesService', () => {
   const prisma = {
     employmentContract: { findFirst: jest.fn() },
-    admissionProcess: { findFirst: jest.fn(), create: jest.fn(), update: jest.fn() },
+    admissionProcess: {
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
     checklistTemplate: { findFirst: jest.fn() },
     admissionStatusHistory: { create: jest.fn() },
   };
@@ -31,6 +36,34 @@ describe('AdmissionProcessesService', () => {
   );
 
   beforeEach(() => jest.clearAllMocks());
+
+  it('applies scoped search, status and planned-date filters to the bounded list', async () => {
+    prisma.admissionProcess.findMany.mockResolvedValue([]);
+    await service.list(
+      {
+        page: 1,
+        pageSize: 20,
+        search: 'Pessoa Demo',
+        status: 'PENDING',
+        plannedFrom: '2026-09-01',
+        plannedTo: '2026-09-30',
+      },
+      principal,
+    );
+    expect(prisma.admissionProcess.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          companyId: 'company',
+          status: 'PENDING',
+          plannedAdmissionDate: {
+            gte: new Date('2026-09-01'),
+            lte: new Date('2026-09-30'),
+          },
+          OR: expect.arrayContaining([expect.objectContaining({ employee: expect.any(Object) })]),
+        }),
+      }),
+    );
+  });
 
   it('returns 404 for a contract outside the active company or employee relation', async () => {
     prisma.employmentContract.findFirst.mockResolvedValue(null);
