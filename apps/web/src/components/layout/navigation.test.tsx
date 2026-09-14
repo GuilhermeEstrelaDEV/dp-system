@@ -1,8 +1,9 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
-import type { RouteObject } from 'react-router-dom';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter, type RouteObject } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { appRoutes } from '@/router';
 import { renderWithRouter } from '@/test/renderWithRouter';
+import { Breadcrumbs } from './Breadcrumbs';
 import { navigationGroups, navigationItems } from './navigation';
 
 const nonMenuStaticRoutes = new Set([
@@ -113,17 +114,56 @@ describe('capability-aware navigation', () => {
     'keeps $activeLabel active for $path',
     ({ path, capabilities, activeLabel, inactiveLabel }) => {
       renderWithRouter(path, true, capabilities);
-      expect(screen.getByRole('link', { name: activeLabel })).toHaveAttribute(
-        'aria-current',
-        'page',
-      );
+      const activeLink = screen
+        .getAllByRole('link', { name: activeLabel })
+        .find((link) => link.getAttribute('aria-current') === 'page');
+      expect(activeLink).toBeDefined();
       if (inactiveLabel) {
-        expect(screen.getByRole('link', { name: inactiveLabel })).not.toHaveAttribute(
-          'aria-current',
-        );
+        expect(
+          screen
+            .getAllByRole('link', { name: inactiveLabel })
+            .every((link) => link.getAttribute('aria-current') !== 'page'),
+        ).toBe(true);
       }
     },
   );
+
+  it('offers only authorized modules in quick navigation and opens a selected module', async () => {
+    const { router } = renderWithRouter('/', true, ['employee.read']);
+    const input = screen.getByRole('combobox', { name: 'Ir para modulo' });
+    const options = Array.from(
+      document.querySelectorAll<HTMLOptionElement>('#quick-navigation-options option'),
+      (option) => option.value,
+    );
+    expect(options).toContain('Colaboradores');
+    expect(options).not.toContain('Empresas');
+
+    fireEvent.change(input, { target: { value: 'Colaboradores' } });
+    fireEvent.submit(input.closest('form')!);
+
+    await waitFor(() => expect(router.state.location.pathname).toBe('/colaboradores'));
+  });
+
+  it('preserves list filters in the breadcrumb return link', async () => {
+    render(
+      <MemoryRouter
+        initialEntries={[
+          {
+            pathname: '/colaboradores/employee-1',
+            state: { from: '/colaboradores?search=demo&status=ACTIVE' },
+          },
+        ]}
+      >
+        <Breadcrumbs />
+      </MemoryRouter>,
+    );
+
+    const breadcrumb = screen.getByRole('navigation', { name: 'Navegacao estrutural' });
+    expect(within(breadcrumb).getByRole('link', { name: 'Colaboradores' })).toHaveAttribute(
+      'href',
+      '/colaboradores?search=demo&status=ACTIVE',
+    );
+  });
 
   it('keeps the bottom navigation available in the mobile drawer', async () => {
     const { router } = renderWithRouter('/', true, ['admission.read']);

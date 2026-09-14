@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
 import { PageHeader } from '@/components/common/PageHeader';
@@ -10,6 +11,7 @@ import {
   Button,
   Card,
   ConfirmDialog,
+  ClearFiltersButton,
   EmptyState,
   ErrorState,
   FilterBar,
@@ -18,7 +20,8 @@ import {
   FormSection,
   Input,
   LoadingState,
-  Select,
+  SearchInput,
+  FilterSelect,
 } from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
@@ -51,9 +54,11 @@ export function ResourcePage<TItem extends RecordItem>({
 }: PageProps) {
   const auth = useOptionalAuth();
   const canManage = !manageCapability || (auth?.hasCapability(manageCapability) ?? true);
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
-  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useSearchParams();
+  const search = filters.get('search') ?? '';
+  const status = filters.get('status') ?? '';
+  const parsedPage = Number(filters.get('page') ?? '1');
+  const page = Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<TItem | null>(null);
   const [selected, setSelected] = useState<TItem | null>(null);
@@ -118,6 +123,21 @@ export function ResourcePage<TItem extends RecordItem>({
     form.reset();
   };
 
+  const updateFilter = (key: 'search' | 'status', value: string) => {
+    const next = new URLSearchParams(filters);
+    if (value) next.set(key, value);
+    else next.delete(key);
+    next.delete('page');
+    setFilters(next, { replace: true });
+  };
+
+  const updatePage = (value: number) => {
+    const next = new URLSearchParams(filters);
+    if (value > 1) next.set('page', String(value));
+    else next.delete('page');
+    setFilters(next);
+  };
+
   const beginEdit = (item: TItem) => {
     save.reset();
     setSelected(null);
@@ -137,34 +157,26 @@ export function ResourcePage<TItem extends RecordItem>({
       </PageHeader>
 
       <FilterBar>
-        <label className="ui-field">
-          Buscar
-          <Input
-            aria-label={`Pesquisar ${title}`}
-            onChange={(event) => {
-              setSearch(event.target.value);
-              setPage(1);
-            }}
-            placeholder={`Buscar em ${title.toLowerCase()}`}
-            type="search"
-            value={search}
-          />
-        </label>
-        <label className="ui-field">
-          Status
-          <Select
-            aria-label="Filtrar por status"
-            onChange={(event) => {
-              setStatus(event.target.value);
-              setPage(1);
-            }}
-            value={status}
-          >
-            <option value="">Todos os status</option>
-            <option value="ACTIVE">Ativos</option>
-            <option value="INACTIVE">Inativos</option>
-          </Select>
-        </label>
+        <SearchInput
+          aria-label={`Pesquisar ${title}`}
+          onChange={(event) => updateFilter('search', event.target.value)}
+          placeholder={`Buscar em ${title.toLowerCase()}`}
+          value={search}
+        />
+        <FilterSelect
+          aria-label="Filtrar por status"
+          label="Status"
+          onChange={(event) => updateFilter('status', event.target.value)}
+          value={status}
+        >
+          <option value="">Todos os status</option>
+          <option value="ACTIVE">Ativos</option>
+          <option value="INACTIVE">Inativos</option>
+        </FilterSelect>
+        <ClearFiltersButton
+          disabled={!search && !status}
+          onClear={() => setFilters(new URLSearchParams(), { replace: true })}
+        />
       </FilterBar>
 
       {showForm ? (
@@ -299,7 +311,7 @@ export function ResourcePage<TItem extends RecordItem>({
         <nav aria-label="Paginação" className="ui-pagination">
           <Button
             disabled={page === 1}
-            onClick={() => setPage((value) => value - 1)}
+            onClick={() => updatePage(page - 1)}
             type="button"
             variant="secondary"
           >
@@ -310,7 +322,7 @@ export function ResourcePage<TItem extends RecordItem>({
           </span>
           <Button
             disabled={page >= list.data.pagination.totalPages}
-            onClick={() => setPage((value) => value + 1)}
+            onClick={() => updatePage(page + 1)}
             type="button"
             variant="secondary"
           >

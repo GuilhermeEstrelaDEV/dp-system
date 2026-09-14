@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BenefitsPage } from './index';
 
@@ -8,11 +9,13 @@ vi.mock('@/lib/api', () => ({ apiRequest }));
 
 function renderPage() {
   render(
-    <QueryClientProvider
-      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
-    >
-      <BenefitsPage />
-    </QueryClientProvider>,
+    <MemoryRouter>
+      <QueryClientProvider
+        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+      >
+        <BenefitsPage />
+      </QueryClientProvider>
+    </MemoryRouter>,
   );
 }
 
@@ -31,7 +34,7 @@ describe('BenefitsPage', () => {
   it('applies the accessible catalog search filter', async () => {
     renderPage();
     await screen.findByText('Nenhum benefício demonstrativo encontrado.');
-    fireEvent.change(screen.getByRole('textbox', { name: 'Pesquisar catálogo' }), {
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Pesquisar catálogo' }), {
       target: { value: 'vale' },
     });
     expect(apiRequest).toHaveBeenLastCalledWith('/benefits?search=vale');

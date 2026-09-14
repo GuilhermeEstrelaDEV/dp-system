@@ -1,16 +1,18 @@
 import type { EmploymentContractContract } from '@dp-system/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
 import { PageHeader } from '@/components/common/PageHeader';
 import {
   Alert,
   Button,
   Card,
+  ClearFiltersButton,
   ConfirmDialog,
   EmptyState,
   ErrorState,
+  FilterSelect,
   FilterBar,
   Input,
   LoadingState,
@@ -43,14 +45,30 @@ export function EmploymentContractsPage() {
   const auth = useOptionalAuth();
   const canManage = auth?.hasCapability('contract.manage') ?? true;
   const { employeeId } = useParams();
-  const [formOpen, setFormOpen] = useState(Boolean(employeeId));
-  const [search, setSearch] = useState('');
+  const [filters, setFilters] = useSearchParams();
+  const search = filters.get('search') ?? '';
+  const status = filters.get('status') ?? '';
+  const [formOpen, setFormOpen] = useState(Boolean(employeeId) || filters.get('create') === 'true');
   const client = useQueryClient();
+  const updateFilter = (key: 'search' | 'status', value: string) => {
+    const next = new URLSearchParams(filters);
+    if (value) next.set(key, value);
+    else next.delete(key);
+    next.delete('create');
+    setFilters(next, { replace: true });
+  };
+  const setFormVisibility = (open: boolean) => {
+    const next = new URLSearchParams(filters);
+    if (open) next.set('create', 'true');
+    else next.delete('create');
+    setFilters(next, { replace: true });
+    setFormOpen(open);
+  };
   const list = useQuery({
-    queryKey: ['employment-contracts', auth?.activeCompanyId, employeeId, search],
+    queryKey: ['employment-contracts', auth?.activeCompanyId, employeeId, search, status],
     queryFn: () =>
       apiRequest<{ items: ContractDetails[] }>(
-        `/employment-contracts?search=${encodeURIComponent(search)}${employeeId ? `&employeeId=${employeeId}` : ''}`,
+        `/employment-contracts?search=${encodeURIComponent(search)}${status ? `&status=${status}` : ''}${employeeId ? `&employeeId=${employeeId}` : ''}`,
       ),
   });
   const create = useMutation({
@@ -62,7 +80,7 @@ export function EmploymentContractsPage() {
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ['employment-contracts'] });
       void client.invalidateQueries({ queryKey: ['employee'] });
-      setFormOpen(false);
+      setFormVisibility(false);
     },
   });
 
@@ -74,7 +92,7 @@ export function EmploymentContractsPage() {
         title="Contratos de trabalho"
       >
         {canManage ? (
-          <Button aria-label="Novo contrato" onClick={() => setFormOpen(true)} type="button">
+          <Button aria-label="Novo contrato" onClick={() => setFormVisibility(true)} type="button">
             + Novo contrato
           </Button>
         ) : null}
@@ -85,19 +103,33 @@ export function EmploymentContractsPage() {
           Buscar
           <Input
             aria-label="Pesquisar contratos"
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => updateFilter('search', event.target.value)}
             placeholder="Pesquisar por matrícula ou nome"
             type="search"
             value={search}
           />
         </label>
+        <FilterSelect
+          aria-label="Filtrar contratos por status"
+          label="Status"
+          onChange={(event) => updateFilter('status', event.target.value)}
+          value={status}
+        >
+          <option value="">Todos os status</option>
+          <option value="ACTIVE">Ativos</option>
+          <option value="INACTIVE">Inativos</option>
+        </FilterSelect>
+        <ClearFiltersButton
+          disabled={!search && !status}
+          onClear={() => setFilters(new URLSearchParams(), { replace: true })}
+        />
       </FilterBar>
 
       {formOpen ? (
         <ContractForm
           companyId={auth?.activeCompanyId ?? undefined}
           employeeId={employeeId}
-          onCancel={() => setFormOpen(false)}
+          onCancel={() => setFormVisibility(false)}
           onSubmit={(values) => create.mutate(values)}
           pending={create.isPending}
         />
@@ -111,14 +143,18 @@ export function EmploymentContractsPage() {
       ) : list.data?.items.length === 0 ? (
         <EmptyState
           action={
-            canManage && !search ? (
-              <Button aria-label="Novo contrato" onClick={() => setFormOpen(true)} type="button">
+            canManage && !search && !status ? (
+              <Button
+                aria-label="Novo contrato"
+                onClick={() => setFormVisibility(true)}
+                type="button"
+              >
                 + Novo contrato
               </Button>
             ) : undefined
           }
           description={
-            search
+            search || status
               ? 'Ajuste a busca para encontrar outros contratos.'
               : 'Crie o primeiro vínculo de trabalho fictício neste contexto.'
           }

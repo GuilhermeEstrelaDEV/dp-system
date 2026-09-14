@@ -37,8 +37,8 @@ describe('application shell', () => {
       await screen.findByRole('heading', { name: 'Execuções e conferências' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Revisão' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByLabelText('Navegação estrutural')).toHaveTextContent(
-      /Início\s*\/\s*Revisão/,
+    expect(screen.getByLabelText('Navegacao estrutural')).toHaveTextContent(
+      /Inicio\s*\/\s*Folha\s*\/\s*Revisão/,
     );
   });
 

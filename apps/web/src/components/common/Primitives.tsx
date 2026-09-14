@@ -102,7 +102,51 @@ export function EmptyState({
 }
 
 export function FilterBar({ children }: PropsWithChildren) {
-  return <div className="ui-filter-bar">{children}</div>;
+  return (
+    <div aria-label="Busca e filtros" className="ui-filter-bar" role="search">
+      {children}
+    </div>
+  );
+}
+
+export function SearchInput({
+  label = 'Buscar',
+  ...props
+}: InputHTMLAttributes<HTMLInputElement> & { readonly label?: string }) {
+  return (
+    <FormField label={label}>
+      <Input type="search" {...props} />
+    </FormField>
+  );
+}
+
+export function FilterSelect({
+  label,
+  children,
+  ...props
+}: SelectHTMLAttributes<HTMLSelectElement> & {
+  readonly label: string;
+  readonly children: ReactNode;
+}) {
+  return (
+    <FormField label={label}>
+      <Select {...props}>{children}</Select>
+    </FormField>
+  );
+}
+
+export function ClearFiltersButton({
+  disabled,
+  onClear,
+}: {
+  readonly disabled?: boolean;
+  readonly onClear: () => void;
+}) {
+  return (
+    <Button disabled={disabled} onClick={onClear} type="button" variant="secondary">
+      Limpar filtros
+    </Button>
+  );
 }
 
 export function FormSection({
