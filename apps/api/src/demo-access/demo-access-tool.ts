@@ -56,6 +56,24 @@ export interface DemoAccessEnvironment {
   readonly DEMO_SEED_ENABLED?: string;
   readonly NODE_ENV?: string;
   readonly DATABASE_URL?: string;
+  readonly DEPLOYMENT_ENV?: string;
+  readonly EXTERNAL_DEMO_MODE?: string;
+  readonly EXTERNAL_DEMO_CONFIRM_DATABASE?: string;
+}
+
+export interface DemoAccessProfile {
+  readonly roleCode: string;
+  readonly sourceId: string;
+  readonly approvalReference: string;
+  readonly grantReason: string;
+  readonly revokeReason: string;
+  readonly actorEmail: string;
+  readonly expectedCapabilityCatalogSize: number;
+  readonly capabilities: readonly string[];
+  readonly sessionPrefix: string;
+  readonly ipAddress: string;
+  readonly userAgent: string;
+  readonly assertEnvironment: (environment: DemoAccessEnvironment) => void;
 }
 
 export interface DemoAccessRole {
@@ -169,17 +187,33 @@ export function assertDemoAccessEnvironment(environment: DemoAccessEnvironment):
 }
 
 export class DemoAccessTool {
-  constructor(private readonly dependencies: DemoAccessDependencies) {}
+  constructor(
+    private readonly dependencies: DemoAccessDependencies,
+    private readonly profile: DemoAccessProfile = {
+      roleCode: DEMO_ACCESS_ROLE,
+      sourceId: DEMO_ACCESS_SOURCE_ID,
+      approvalReference: DEMO_ACCESS_APPROVAL_REFERENCE,
+      grantReason: DEMO_ACCESS_REASON,
+      revokeReason: DEMO_ACCESS_REVOKE_REASON,
+      actorEmail: DEMO_ADMIN_EMAIL,
+      expectedCapabilityCatalogSize: EXPECTED_CAPABILITY_CATALOG_SIZE,
+      capabilities: DEMO_ACCESS_CAPABILITIES,
+      sessionPrefix: 'local-demo',
+      ipAddress: '127.0.0.1',
+      userAgent: 'dp-system-demo-access-tool',
+      assertEnvironment: assertDemoAccessEnvironment,
+    },
+  ) {}
 
   async grant(environment: DemoAccessEnvironment): Promise<readonly DemoAccessGrantResult[]> {
-    assertDemoAccessEnvironment(environment);
+    this.profile.assertEnvironment(environment);
     const now = this.dependencies.now();
     const validTo = new Date(now.getTime() + DEMO_ACCESS_DURATION_MS);
     const { role, actor, permissions } = await this.resolveTargets();
     const active = await this.dependencies.repository.findCurrentAssignments({
       roleId: role.id,
       permissionIds: permissions.map(({ id }) => id),
-      sourceId: DEMO_ACCESS_SOURCE_ID,
+      sourceId: this.profile.sourceId,
       at: now,
     });
     const activeCodes = new Set(active.map(({ permission }) => permission.code));
@@ -206,10 +240,10 @@ export class DemoAccessTool {
           roleId: role.id,
           permissionId: permission.id,
           sourceType: 'MANUAL',
-          sourceId: DEMO_ACCESS_SOURCE_ID,
-          reason: DEMO_ACCESS_REASON,
+          sourceId: this.profile.sourceId,
+          reason: this.profile.grantReason,
           approvedByUserId: actor.id,
-          approvalReference: DEMO_ACCESS_APPROVAL_REFERENCE,
+          approvalReference: this.profile.approvalReference,
           validFrom: now,
           validTo,
         },
@@ -221,20 +255,16 @@ export class DemoAccessTool {
   }
 
   async status(environment: DemoAccessEnvironment): Promise<readonly DemoAccessStatusResult[]> {
-    assertDemoAccessEnvironment(environment);
+    this.profile.assertEnvironment(environment);
     const role = await this.requireRole();
     await this.assertCatalog();
     const now = this.dependencies.now();
     const assignments = await this.dependencies.repository.findSourceAssignments({
       roleId: role.id,
-      sourceId: DEMO_ACCESS_SOURCE_ID,
+      sourceId: this.profile.sourceId,
     });
     return assignments
-      .filter(({ permission }) =>
-        DEMO_ACCESS_CAPABILITIES.includes(
-          permission.code as (typeof DEMO_ACCESS_CAPABILITIES)[number],
-        ),
-      )
+      .filter(({ permission }) => this.profile.capabilities.includes(permission.code))
       .map((assignment) => ({
         role: assignment.role.code,
         permissionCode: assignment.permission.code,
@@ -247,12 +277,12 @@ export class DemoAccessTool {
   }
 
   async revoke(environment: DemoAccessEnvironment): Promise<readonly DemoAccessRevokeResult[]> {
-    assertDemoAccessEnvironment(environment);
+    this.profile.assertEnvironment(environment);
     const role = await this.requireRole();
     await this.assertCatalog();
     const assignments = await this.dependencies.repository.findSourceAssignments({
       roleId: role.id,
-      sourceId: DEMO_ACCESS_SOURCE_ID,
+      sourceId: this.profile.sourceId,
     });
     const now = this.dependencies.now();
     const principal = this.principal(
@@ -261,7 +291,7 @@ export class DemoAccessTool {
     );
     const results: DemoAccessRevokeResult[] = [];
 
-    for (const capability of DEMO_ACCESS_CAPABILITIES) {
+    for (const capability of this.profile.capabilities) {
       const assignment = assignments.find(
         ({ permission, status }) => permission.code === capability && status === 'ACTIVE',
       );
@@ -271,7 +301,7 @@ export class DemoAccessTool {
       }
       await this.dependencies.governance.revokeRolePermission(
         assignment.id,
-        DEMO_ACCESS_REVOKE_REASON,
+        this.profile.revokeReason,
         principal,
         now,
       );
@@ -288,11 +318,11 @@ export class DemoAccessTool {
     const [role, actor, permissions] = await Promise.all([
       this.requireRole(),
       this.requireActor(),
-      this.dependencies.repository.findActivePermissions(DEMO_ACCESS_CAPABILITIES),
+      this.dependencies.repository.findActivePermissions(this.profile.capabilities),
       this.assertCatalog(),
     ]);
     const byCode = new Map(permissions.map((permission) => [permission.code, permission]));
-    const ordered = DEMO_ACCESS_CAPABILITIES.map((code) => byCode.get(code));
+    const ordered = this.profile.capabilities.map((code) => byCode.get(code));
     if (ordered.some((permission) => !permission)) {
       throw new Error('Acesso demo recusado: catálogo não contém as capabilities aprovadas');
     }
@@ -304,22 +334,23 @@ export class DemoAccessTool {
   }
 
   private async requireRole(): Promise<DemoAccessRole> {
-    const role = await this.dependencies.repository.findRole(DEMO_ACCESS_ROLE);
-    if (!role) throw new Error('Acesso demo recusado: papel ADMINISTRATOR não encontrado');
+    const role = await this.dependencies.repository.findRole(this.profile.roleCode);
+    if (!role)
+      throw new Error(`Acesso demo recusado: papel ${this.profile.roleCode} não encontrado`);
     return role;
   }
 
   private async requireActor(): Promise<DemoAccessActor> {
-    const actor = await this.dependencies.repository.findActiveActor(DEMO_ADMIN_EMAIL);
-    if (!actor) throw new Error('Acesso demo recusado: Administrador Demo ativo não encontrado');
+    const actor = await this.dependencies.repository.findActiveActor(this.profile.actorEmail);
+    if (!actor) throw new Error('Acesso demo recusado: identidade operadora ativa não encontrada');
     return actor;
   }
 
   private async assertCatalog(): Promise<void> {
     const count = await this.dependencies.repository.countCapabilityCatalog();
-    if (count !== EXPECTED_CAPABILITY_CATALOG_SIZE) {
+    if (count !== this.profile.expectedCapabilityCatalogSize) {
       throw new Error(
-        `Acesso demo recusado: catálogo esperado=${EXPECTED_CAPABILITY_CATALOG_SIZE}, encontrado=${count}`,
+        `Acesso demo recusado: catálogo esperado=${this.profile.expectedCapabilityCatalogSize}, encontrado=${count}`,
       );
     }
   }
@@ -328,10 +359,10 @@ export class DemoAccessTool {
     return {
       actorId,
       activeCompanyId: null,
-      sessionId: `local-demo-${correlationId}`,
+      sessionId: `${this.profile.sessionPrefix}-${correlationId}`,
       traceId: correlationId,
-      ipAddress: '127.0.0.1',
-      userAgent: 'dp-system-demo-access-tool',
+      ipAddress: this.profile.ipAddress,
+      userAgent: this.profile.userAgent,
       permissions: [],
       accessGrants: [],
     };

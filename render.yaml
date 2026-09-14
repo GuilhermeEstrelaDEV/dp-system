@@ -1,0 +1,105 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+previews:
+  generation: off
+
+services:
+  - type: web
+    name: dp-system-external-demo-api
+    runtime: node
+    plan: free
+    branch: demo/external-review
+    autoDeployTrigger: checksPass
+    buildCommand: >-
+      corepack enable && corepack prepare pnpm@9.15.5 --activate &&
+      pnpm install --frozen-lockfile && pnpm prisma:generate &&
+      pnpm --filter @dp-system/api build
+    preDeployCommand: pnpm prisma:migrate:deploy
+    startCommand: pnpm --filter @dp-system/api start:prod
+    healthCheckPath: /api/v1/health/live
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DEPLOYMENT_ENV
+        value: external-demo
+      - key: EXTERNAL_DEMO_MODE
+        value: 'true'
+      - key: EXTERNAL_DEMO_CONFIRM_DATABASE
+        value: dp_system_external_demo
+      - key: DEMO_ENV
+        value: external-demo
+      - key: DEMO_MODE
+        value: 'true'
+      - key: DEMO_SEED_ENABLED
+        value: 'true'
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dp-system-external-demo-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: API_PREFIX
+        value: api
+      - key: API_VERSION
+        value: 1
+      - key: SWAGGER_ENABLED
+        value: 'false'
+      - key: CORS_ORIGINS
+        sync: false
+      - key: TRUST_PROXY
+        value: 'true'
+      - key: HTTP_BODY_LIMIT
+        value: 1mb
+      - key: RATE_LIMIT_TTL_MS
+        value: 60000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: LOG_LEVEL
+        value: log
+      - key: EMERGENCY_ACCESS_MAX_HOURS
+        value: 8
+      - key: EXTERNAL_DEMO_REVIEWER_EMAIL
+        sync: false
+      - key: EXTERNAL_DEMO_REVIEWER_PASSWORD
+        sync: false
+
+  - type: web
+    name: dp-system-external-demo-web
+    runtime: static
+    branch: demo/external-review
+    autoDeployTrigger: checksPass
+    buildCommand: >-
+      corepack enable && corepack prepare pnpm@9.15.5 --activate &&
+      pnpm install --frozen-lockfile && pnpm external-demo:web:validate &&
+      pnpm --filter @dp-system/web build
+    staticPublishPath: apps/web/dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+      - key: VITE_DEMO_MODE
+        value: 'true'
+      - key: VITE_DEMO_ENV
+        value: external-demo
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: no-referrer
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: dp-system-external-demo-db
+    plan: free
+    databaseName: dp_system_external_demo
+    user: dp_system_external_demo
+    postgresMajorVersion: '16'
+    ipAllowList: []

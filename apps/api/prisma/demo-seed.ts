@@ -5,8 +5,16 @@ import {
   PayrollReviewFindingSeverity,
   PayrollReviewFindingStatus,
   PrismaClient,
+  UserStatus,
 } from '@prisma/client';
 import { DEMO_CLOSURE_FIXTURE } from '../src/demo-access/demo-closure-fixture';
+import {
+  EXTERNAL_DEMO_HR_PLACEHOLDER_EMAIL,
+  EXTERNAL_DEMO_INACTIVE_HR_USER_ID,
+  EXTERNAL_DEMO_REVIEWER_PLACEHOLDER_EMAIL,
+  EXTERNAL_DEMO_REVIEWER_USER_ID,
+} from '../src/demo-access/external-demo-identities';
+import { assertExternalDemoEnvironment } from '../src/demo-access/external-demo-environment';
 import { PasswordHasherService } from '../src/modules/auth/password-hasher.service';
 
 const prisma = new PrismaClient();
@@ -25,13 +33,23 @@ const ids = {
   },
 } as const;
 
-const accounts = [
+interface DemoAccount {
+  readonly id: string;
+  readonly email: string;
+  readonly password?: string;
+  readonly displayName: string;
+  readonly roleCode: 'ADMINISTRATOR' | 'HR';
+  readonly status: UserStatus;
+}
+
+const localAccounts: readonly DemoAccount[] = [
   {
     id: ids.users.admin,
     email: process.env.DEMO_ADMIN_EMAIL ?? 'admin.demo@dp-system.local',
     password: process.env.DEMO_ADMIN_PASSWORD ?? 'DemoAdmin#2026!',
     displayName: 'Administrador Demo',
     roleCode: 'ADMINISTRATOR',
+    status: UserStatus.ACTIVE,
   },
   {
     id: ids.users.hr,
@@ -39,8 +57,28 @@ const accounts = [
     password: process.env.DEMO_HR_PASSWORD ?? 'DemoRh#2026!',
     displayName: 'Analista RH Demo',
     roleCode: 'HR',
+    status: UserStatus.ACTIVE,
   },
-] as const;
+];
+
+const externalSeedActors: readonly DemoAccount[] = [
+  {
+    id: EXTERNAL_DEMO_REVIEWER_USER_ID,
+    email: EXTERNAL_DEMO_REVIEWER_PLACEHOLDER_EMAIL,
+    displayName: 'Reviewer externo pendente de provisionamento',
+    roleCode: 'ADMINISTRATOR',
+    status: UserStatus.INACTIVE,
+  },
+  {
+    id: EXTERNAL_DEMO_INACTIVE_HR_USER_ID,
+    email: EXTERNAL_DEMO_HR_PLACEHOLDER_EMAIL,
+    displayName: 'Identidade RH desativada da demo externa',
+    roleCode: 'HR',
+    status: UserStatus.INACTIVE,
+  },
+];
+
+const externalMode = process.argv.includes('--external-demo');
 
 function demoId(group: string, sequence: number) {
   return `${group}0000000-0000-4000-8000-${sequence.toString().padStart(12, '0')}`;
@@ -80,21 +118,25 @@ export function assertLocalDemo(environment: NodeJS.ProcessEnv = process.env) {
     throw new Error('Demo seed recusado: banco não corresponde ao alvo local dp_system_demo');
   }
   if (
-    accounts.some(
-      ({ email, password }) => !email.endsWith('@dp-system.local') || password.length < 12,
+    localAccounts.some(
+      ({ email, password }) =>
+        !email.endsWith('@dp-system.local') || !password || password.length < 12,
     )
   ) {
     throw new Error('Demo seed recusado: identidade fictícia inválida');
   }
 }
 
-async function ensureAccount(account: (typeof accounts)[number]) {
+async function ensureAccount(account: DemoAccount) {
   const email = account.email.toLowerCase();
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = externalMode
+    ? await prisma.user.findUnique({ where: { id: account.id } })
+    : await prisma.user.findUnique({ where: { email } });
   if (existing) {
+    if (externalMode) return existing;
     return prisma.user.update({
       where: { id: existing.id },
-      data: { displayName: account.displayName, status: 'ACTIVE' },
+      data: { displayName: account.displayName, status: account.status },
     });
   }
   return prisma.user.create({
@@ -102,7 +144,8 @@ async function ensureAccount(account: (typeof accounts)[number]) {
       id: account.id,
       email,
       displayName: account.displayName,
-      passwordHash: await passwords.hash(account.password),
+      passwordHash: account.password ? await passwords.hash(account.password) : null,
+      status: account.status,
     },
   });
 }
@@ -1128,13 +1171,16 @@ async function seedP3Domains(
 }
 
 async function main() {
-  assertLocalDemo();
+  if (externalMode) assertExternalDemoEnvironment(process.env);
+  else assertLocalDemo();
   const horizon = await prisma.company.findUniqueOrThrow({
     where: { taxId: '00.000.000/0001-00' },
   });
   if (horizon.id !== ids.companies.horizon) {
     throw new Error(
-      'Demo seed recusado: execute demo:reset para reconstruir os IDs determinísticos',
+      externalMode
+        ? 'Demo externa recusada: banco não possui o baseline fictício esperado'
+        : 'Demo seed recusado: execute demo:reset para reconstruir os IDs determinísticos',
     );
   }
   const atlas = await prisma.company.upsert({
@@ -1152,6 +1198,7 @@ async function main() {
     },
   });
   const users = new Map<string, string>();
+  const accounts = externalMode ? externalSeedActors : localAccounts;
   for (const account of accounts) users.set(account.roleCode, (await ensureAccount(account)).id);
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { code: 'ADMINISTRATOR' } });
   const hrRole = await prisma.role.findUniqueOrThrow({ where: { code: 'HR' } });
@@ -1175,7 +1222,7 @@ async function main() {
   await seedP3Domains(atlas.id, 'atlas', atlasContracts);
 
   console.log(
-    `Demo dataset concluído em ${referenceDate.toISOString().slice(0, 10)}: 2 empresas, 26 colaboradores, 10 competências e zero grants automáticos.`,
+    `Demo ${externalMode ? 'externa' : 'local'} concluída em ${referenceDate.toISOString().slice(0, 10)}: 2 empresas, 26 colaboradores, 10 competências e zero grants automáticos.`,
   );
 }
 

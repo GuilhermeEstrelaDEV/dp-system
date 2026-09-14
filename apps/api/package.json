@@ -16,7 +16,15 @@
     "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
     "prisma:seed": "prisma db seed --schema prisma/schema.prisma",
     "prisma:seed:demo": "tsx prisma/demo-seed.ts",
-    "prisma:demo:verify": "tsx prisma/demo-verify.ts"
+    "prisma:seed:external-demo": "tsx prisma/demo-seed.ts --external-demo",
+    "prisma:demo:verify": "tsx prisma/demo-verify.ts",
+    "external-demo:gate": "tsx prisma/external-demo-gate.ts",
+    "external-demo:reviewer:provision": "tsx prisma/external-demo-reviewer.ts provision",
+    "external-demo:reviewer:status": "tsx prisma/external-demo-reviewer.ts status",
+    "external-demo:reviewer:disable": "tsx prisma/external-demo-reviewer.ts disable",
+    "external-demo:access:grant": "tsx prisma/external-demo-access.ts grant",
+    "external-demo:access:status": "tsx prisma/external-demo-access.ts status",
+    "external-demo:access:revoke": "tsx prisma/external-demo-access.ts revoke"
   },
   "dependencies": {
     "@dp-system/config": "workspace:*",

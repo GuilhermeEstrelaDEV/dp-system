@@ -27,6 +27,7 @@ export function Header(props: HeaderProps) {
   const navigate = useNavigate();
   const company = auth.companies.find((item) => item.id === auth.activeCompanyId);
   const actorLabel = auth.user?.displayName ?? 'Usuário';
+  const isExternalDemo = import.meta.env.VITE_DEMO_ENV === 'external-demo';
 
   return (
     <header className="app-topbar">
@@ -67,7 +68,9 @@ export function Header(props: HeaderProps) {
         {auth.isLoading && <Spinner label="Atualizando" />}
         {import.meta.env.VITE_DEMO_MODE === 'true' && (
           <>
-            <Badge tone="warning">Ambiente de demonstração</Badge>
+            <Badge tone="warning">
+              {isExternalDemo ? 'Demo externa · Dados fictícios' : 'Ambiente de demonstração'}
+            </Badge>
             <Button
               onClick={onDemoHelpOpen}
               ref={demoHelpTriggerRef}

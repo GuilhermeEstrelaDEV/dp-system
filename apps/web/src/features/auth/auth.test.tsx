@@ -16,6 +16,18 @@ const failure = (status: number, message: string) =>
   });
 
 describe('authenticated experience', () => {
+  it('identifies the external demo without exposing the local demo account', () => {
+    vi.stubEnv('VITE_DEMO_MODE', 'true');
+    vi.stubEnv('VITE_DEMO_ENV', 'external-demo');
+
+    renderWithRouter('/login', false);
+
+    expect(screen.getByText('Demo externa · Dados fictícios')).toBeInTheDocument();
+    expect(screen.getByText('Conta de avaliação externa')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Preencher e-mail demo' })).not.toBeInTheDocument();
+    expect(screen.queryByText(/admin\.demo@dp-system\.local/u)).not.toBeInTheDocument();
+  });
+
   it('logs in, loads identity and allows company selection', async () => {
     vi.spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce(success({ accessToken: 'initial-token', tokenType: 'Bearer' }))

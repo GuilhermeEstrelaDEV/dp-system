@@ -33,7 +33,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "test": "turbo run test && node --test scripts/demo-readiness.test.mjs scripts/presentation.test.mjs",
+    "test": "turbo run test && node --test scripts/demo-readiness.test.mjs scripts/presentation.test.mjs scripts/validate-external-demo-web-env.test.mjs",
     "test:coverage": "turbo run test:coverage",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm prisma:validate",
     "format": "prettier --write .",
@@ -44,7 +44,15 @@
     "prisma:validate": "pnpm --filter @dp-system/api prisma:validate",
     "prisma:migrate:deploy": "pnpm --filter @dp-system/api prisma:migrate:deploy",
     "prisma:seed": "pnpm --filter @dp-system/api prisma:seed",
-    "prisma:seed:demo": "pnpm --filter @dp-system/api prisma:seed:demo"
+    "prisma:seed:demo": "pnpm --filter @dp-system/api prisma:seed:demo",
+    "external-demo:seed": "pnpm --filter @dp-system/api external-demo:gate && pnpm prisma:seed && pnpm --filter @dp-system/api prisma:seed:external-demo",
+    "external-demo:reviewer:provision": "pnpm --filter @dp-system/api external-demo:reviewer:provision",
+    "external-demo:reviewer:status": "pnpm --filter @dp-system/api external-demo:reviewer:status",
+    "external-demo:reviewer:disable": "pnpm --filter @dp-system/api external-demo:reviewer:disable",
+    "external-demo:access:grant": "pnpm --filter @dp-system/api external-demo:access:grant",
+    "external-demo:access:status": "pnpm --filter @dp-system/api external-demo:access:status",
+    "external-demo:access:revoke": "pnpm --filter @dp-system/api external-demo:access:revoke",
+    "external-demo:web:validate": "node scripts/validate-external-demo-web-env.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
