@@ -11,8 +11,8 @@ services:
     autoDeployTrigger: checksPass
     buildCommand: >-
       corepack enable && corepack prepare pnpm@9.15.5 --activate &&
-      pnpm install --frozen-lockfile && pnpm prisma:generate &&
-      pnpm --filter @dp-system/api build
+      pnpm install --frozen-lockfile --prod=false && pnpm prisma:generate &&
+      pnpm exec turbo run build --filter=@dp-system/api...
     startCommand: >-
       pnpm prisma:migrate:deploy &&
       pnpm --filter @dp-system/api start:prod
@@ -78,8 +78,8 @@ services:
     autoDeployTrigger: checksPass
     buildCommand: >-
       corepack enable && corepack prepare pnpm@9.15.5 --activate &&
-      pnpm install --frozen-lockfile && pnpm external-demo:web:validate &&
-      pnpm --filter @dp-system/web build
+      pnpm install --frozen-lockfile --prod=false && pnpm external-demo:web:validate &&
+      pnpm exec turbo run build --filter=@dp-system/web...
     staticPublishPath: apps/web/dist
     envVars:
       - key: VITE_API_URL
