@@ -15,6 +15,13 @@ services:
       pnpm exec turbo run build --filter=@dp-system/api...
     startCommand: >-
       pnpm prisma:migrate:deploy &&
+      if [ "$EXTERNAL_DEMO_BOOTSTRAP_ON_START" = "true" ]; then
+        pnpm external-demo:seed &&
+        pnpm external-demo:reviewer:provision &&
+        pnpm external-demo:access:grant &&
+        pnpm external-demo:reviewer:status &&
+        pnpm external-demo:access:status;
+      fi &&
       pnpm --filter @dp-system/api start:prod
     initialDeployHook: >-
       pnpm external-demo:seed &&
@@ -30,6 +37,8 @@ services:
         value: external-demo
       - key: EXTERNAL_DEMO_MODE
         value: 'true'
+      - key: EXTERNAL_DEMO_BOOTSTRAP_ON_START
+        value: 'false'
       - key: EXTERNAL_DEMO_CONFIRM_DATABASE
         value: dp_system_external_demo
       - key: DEMO_ENV
