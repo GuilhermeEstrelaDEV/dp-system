@@ -26,6 +26,8 @@ describe('authenticated experience', () => {
     expect(screen.getByText('Conta de avaliação externa')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Preencher e-mail demo' })).not.toBeInTheDocument();
     expect(screen.queryByText(/admin\.demo@dp-system\.local/u)).not.toBeInTheDocument();
+    expect(screen.getByRole('contentinfo')).toHaveTextContent('Desenvolvido por Guilherme Estrela');
+    expect(screen.getByRole('contentinfo')).toHaveTextContent('DP System © 2026');
   });
 
   it('logs in, loads identity and allows company selection', async () => {
