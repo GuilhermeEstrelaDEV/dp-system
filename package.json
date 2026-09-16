@@ -33,7 +33,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "test": "turbo run test && node --test scripts/demo-readiness.test.mjs scripts/presentation.test.mjs",
+    "test": "turbo run test && node --test scripts/demo-readiness.test.mjs scripts/presentation.test.mjs scripts/validate-external-demo-web-env.test.mjs",
     "test:coverage": "turbo run test:coverage",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm prisma:validate",
     "format": "prettier --write .",
@@ -44,7 +44,15 @@
     "prisma:validate": "pnpm --filter @dp-system/api prisma:validate",
     "prisma:migrate:deploy": "pnpm --filter @dp-system/api prisma:migrate:deploy",
     "prisma:seed": "pnpm --filter @dp-system/api prisma:seed",
-    "prisma:seed:demo": "pnpm --filter @dp-system/api prisma:seed:demo"
+    "prisma:seed:demo": "pnpm --filter @dp-system/api prisma:seed:demo",
+    "external-demo:seed": "pnpm --filter @dp-system/api external-demo:gate && pnpm prisma:seed && pnpm --filter @dp-system/api prisma:seed:external-demo",
+    "external-demo:reviewer:provision": "pnpm --filter @dp-system/api external-demo:reviewer:provision",
+    "external-demo:reviewer:status": "pnpm --filter @dp-system/api external-demo:reviewer:status",
+    "external-demo:reviewer:disable": "pnpm --filter @dp-system/api external-demo:reviewer:disable",
+    "external-demo:access:grant": "pnpm --filter @dp-system/api external-demo:access:grant",
+    "external-demo:access:status": "pnpm --filter @dp-system/api external-demo:access:status",
+    "external-demo:access:revoke": "pnpm --filter @dp-system/api external-demo:access:revoke",
+    "external-demo:web:validate": "node scripts/validate-external-demo-web-env.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
@@ -63,8 +71,17 @@
     "overrides": {
       "effect@<3.20.0": "3.20.0",
       "brace-expansion@<1.1.18": "1.1.18",
+      "brace-expansion@>=2.0.0 <2.1.4": "2.1.7",
       "brace-expansion@>=4.0.0 <5.0.9": "5.0.9",
-      "js-yaml@>=4.0.0 <4.3.1": "4.3.1"
+      "browserslist@>=4.0.0 <4.28.7": "4.29.0",
+      "fast-uri@>=3.0.0 <3.1.6": "3.1.8",
+      "js-yaml@>=3.0.0 <3.15.2": "3.15.2",
+      "js-yaml@>=4.0.0 <4.3.2": "4.3.2",
+      "multer@<2.3.0": "2.3.0",
+      "nanoid@>=3.0.0 <3.3.18": "3.3.19",
+      "postcss@>=8.0.0 <=8.5.22": "8.5.28",
+      "qs@<6.16.0": "6.16.0",
+      "baseline-browser-mapping@>=2.0.0 <2.11.0": "2.11.24"
     }
   }
 }

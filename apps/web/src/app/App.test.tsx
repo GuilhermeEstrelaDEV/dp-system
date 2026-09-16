@@ -28,6 +28,8 @@ describe('application shell', () => {
     expect(await screen.findByRole('heading', { name: 'Visão executiva' })).toBeInTheDocument();
     expect(screen.getByText('DP-System')).toBeInTheDocument();
     expect(screen.getAllByText(/Ambiente (demonstrativo|local)/).length).toBeGreaterThan(0);
+    expect(screen.getByRole('contentinfo')).toHaveTextContent('Desenvolvido por Guilherme Estrela');
+    expect(screen.getByRole('contentinfo')).toHaveTextContent('DP System © 2026');
   });
 
   it('navigates to the approved payroll review surface and marks the active route', async () => {

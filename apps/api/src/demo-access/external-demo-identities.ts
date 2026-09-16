@@ -1,0 +1,4 @@
+export const EXTERNAL_DEMO_REVIEWER_USER_ID = '20000000-0000-4000-8000-000000000001';
+export const EXTERNAL_DEMO_INACTIVE_HR_USER_ID = '20000000-0000-4000-8000-000000000002';
+export const EXTERNAL_DEMO_REVIEWER_PLACEHOLDER_EMAIL = 'reviewer.pending@external-demo.invalid';
+export const EXTERNAL_DEMO_HR_PLACEHOLDER_EMAIL = 'hr.disabled@external-demo.invalid';

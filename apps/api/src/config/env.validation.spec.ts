@@ -19,4 +19,40 @@ describe('validateEnvironment', () => {
     expect(() => validateEnvironment({ ...valid, JWT_SECRET: 'short' })).toThrow('JWT_SECRET');
     expect(() => validateEnvironment({ ...valid, JWT_SECRET: 'short' })).not.toThrow('short');
   });
+
+  it('accepts the provider-managed HTTP port', () => {
+    expect(validateEnvironment({ ...valid, PORT: '10000' })).toMatchObject({ PORT: 10000 });
+  });
+
+  it('requires one exact HTTPS CORS origin and disabled Swagger for the external demo', () => {
+    expect(
+      validateEnvironment({
+        ...valid,
+        NODE_ENV: 'production',
+        DEPLOYMENT_ENV: 'external-demo',
+        CORS_ORIGINS: 'https://external-demo.example',
+        SWAGGER_ENABLED: 'false',
+      }),
+    ).toMatchObject({
+      CORS_ORIGINS: 'https://external-demo.example',
+      SWAGGER_ENABLED: false,
+    });
+  });
+
+  it.each([
+    'http://external-demo.example',
+    'https://external-demo.example/path',
+    'https://external-demo.example,https://other.example',
+    'https://localhost:55173',
+  ])('rejects an unsafe external demo CORS origin', (corsOrigins) => {
+    expect(() =>
+      validateEnvironment({
+        ...valid,
+        NODE_ENV: 'production',
+        DEPLOYMENT_ENV: 'external-demo',
+        CORS_ORIGINS: corsOrigins,
+        SWAGGER_ENABLED: 'false',
+      }),
+    ).toThrow('Invalid external demo configuration');
+  });
 });
