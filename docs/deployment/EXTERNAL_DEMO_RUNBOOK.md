@@ -21,8 +21,10 @@ No authorized Render session was available while this package was prepared. A hu
 
 Required inputs:
 
-- API `CORS_ORIGINS`: the exact real HTTPS origin assigned to the static site;
-- web `VITE_API_URL`: the exact real HTTPS API URL followed by `/api`;
+- API `CORS_ORIGINS`: use `https://placeholder.invalid` only for initial creation, then replace it
+  with the exact real HTTPS origin assigned to the static site;
+- web `VITE_API_URL`: use `https://placeholder.invalid/api` only for initial creation, then replace
+  it with the exact real HTTPS API URL followed by `/api`;
 - API `EXTERNAL_DEMO_REVIEWER_EMAIL`: a distinct fictitious `@dp-system.local` identity;
 - API `EXTERNAL_DEMO_REVIEWER_PASSWORD`: a unique secret of at least 16 characters.
 
@@ -32,11 +34,12 @@ service so the value is embedded in the build.
 
 ## First deployment
 
-The API pre-deploy command applies all existing migrations through `prisma migrate deploy`. It does
-not run a development migration and does not modify migration history.
+The Free API start command applies all existing migrations through `prisma migrate deploy` before
+starting NestJS. It never runs a development migration and does not modify migration history. This
+idempotent step also runs after a free instance restart.
 
-After the API deployment is healthy, open an authenticated Render Shell for the API service and
-run these one-shot commands in order:
+After the first successful API deploy, Render runs this `initialDeployHook` once for that service
+instance:
 
 ```text
 pnpm external-demo:seed
@@ -45,6 +48,10 @@ pnpm external-demo:access:grant
 pnpm external-demo:reviewer:status
 pnpm external-demo:access:status
 ```
+
+Do not run these commands from a Render Shell: Free web services have no Dashboard Shell or SSH,
+and one-off jobs are billable. Confirm the hook result only through the initial deploy logs. A
+failure in any command fails the hook and must block sharing the demo.
 
 The seed runs the canonical catalog/base seed and then the external dataset seed. Both are
 idempotent. The external seed fails unless every external-demo gate and the exact exclusive
@@ -78,30 +85,19 @@ and real URL are available, the status is `HUMAN VISUAL REVIEW REQUIRED`.
 
 ## Renew access
 
-Grants expire after at most 8 hours. To renew, first preserve the current evidence and run:
+Grants expire after at most 8 hours. The fully free topology has no supported in-place command
+channel for renewal, and a normal redeploy does not rerun `initialDeployHook`. Treat expiration as
+the end of the review window. To open another window, destroy the disposable external demo and
+recreate the Blueprint under the reset procedure so a new API service instance runs the hook.
 
-```text
-pnpm external-demo:access:revoke
-pnpm external-demo:access:grant
-pnpm external-demo:access:status
-```
-
-Re-running `grant` while the approved assignments remain active is idempotent and does not extend
-their lifetime silently.
+Never lengthen the TTL, create a permanent grant, or move grant creation into application startup.
 
 ## Revoke and disable the reviewer
 
-Run in this order:
-
-```text
-pnpm external-demo:access:revoke
-pnpm external-demo:access:status
-pnpm external-demo:reviewer:disable
-pnpm external-demo:reviewer:status
-```
-
-Revocation preserves assignment history. Reviewer deactivation is refused while an external-demo
-assignment is still active.
+Free services have no remote shell for an immediate database-level revoke. For immediate containment,
+suspend or delete the API service so no login or API request remains reachable, then destroy the
+disposable database under the reset procedure. The local tools continue to preserve assignment
+history when exercised in controlled local validation, but that does not create a free Render shell.
 
 ## Reset fictitious data
 
@@ -112,7 +108,8 @@ There is intentionally no unattended destructive reset command. For an approved 
 3. capture any required non-sensitive evidence;
 4. delete only that database from the Render Blueprint/dashboard;
 5. recreate/sync the Blueprint;
-6. apply migrations and repeat the first-deployment one-shot commands.
+6. recreate the Blueprint; the start command applies migrations and the new API service instance
+   runs the first-deploy hook.
 
 Never point a reset or seed command at another database.
 
@@ -122,6 +119,15 @@ To suspend access, revoke grants, disable the reviewer, and suspend the two Rend
 destroy the demo, remove the static site and API service, then delete only
 `dp-system-external-demo-db`. Confirm deletion in the Render dashboard. These operations do not
 change `develop`, production, or any local demo volume.
+
+## Free-plan operational limits
+
+- The API spins down after 15 minutes without inbound traffic; allow about one minute for a cold
+  first request.
+- Free web services provide no Dashboard Shell or SSH.
+- One-off jobs are billable and are not part of this fully free topology.
+- Free PostgreSQL expires after 30 days and has no managed backups.
+- The environment is disposable, contains only fictitious data, and is never production.
 
 ## Incident stop conditions
 

@@ -13,8 +13,15 @@ services:
       corepack enable && corepack prepare pnpm@9.15.5 --activate &&
       pnpm install --frozen-lockfile && pnpm prisma:generate &&
       pnpm --filter @dp-system/api build
-    preDeployCommand: pnpm prisma:migrate:deploy
-    startCommand: pnpm --filter @dp-system/api start:prod
+    startCommand: >-
+      pnpm prisma:migrate:deploy &&
+      pnpm --filter @dp-system/api start:prod
+    initialDeployHook: >-
+      pnpm external-demo:seed &&
+      pnpm external-demo:reviewer:provision &&
+      pnpm external-demo:access:grant &&
+      pnpm external-demo:reviewer:status &&
+      pnpm external-demo:access:status
     healthCheckPath: /api/v1/health/live
     envVars:
       - key: NODE_ENV

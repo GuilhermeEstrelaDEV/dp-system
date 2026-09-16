@@ -29,8 +29,10 @@ flowchart LR
 ```
 
 - The static site builds `apps/web` and rewrites all SPA routes to `index.html`.
-- The API builds `apps/api`, runs `prisma migrate deploy` before start, and starts with the
-  repository's `start:prod` command.
+- The API builds `apps/api`, runs `prisma migrate deploy` in its start command, and then starts with
+  the repository's `start:prod` command.
+- The API's `initialDeployHook` seeds the fictitious dataset, provisions the reviewer, and creates
+  the 35 temporary `MANUAL` assignments once, after the first successful deploy.
 - The database is exclusive to this demo and has no public inbound IP range.
 - Redis is not provisioned. No package or application module uses Redis at runtime; references are
   limited to local demo orchestration.
@@ -44,8 +46,8 @@ The Blueprint follows Render's current [Blueprint specification](https://render.
 - Node.js: `>=20.17.0 <21`
 - pnpm: `9.15.5`
 - API build: `pnpm prisma:generate && pnpm --filter @dp-system/api build`
-- API pre-deploy: `pnpm prisma:migrate:deploy`
-- API start: `pnpm --filter @dp-system/api start:prod`
+- API start: `pnpm prisma:migrate:deploy && pnpm --filter @dp-system/api start:prod`
+- API first-deploy initialization: external seed, reviewer provision, grant, and status checks
 - Web build: `pnpm --filter @dp-system/web build`
 - Web publish directory: `apps/web/dist`
 - API health check: `/api/v1/health/live`
@@ -86,6 +88,20 @@ Access is granted separately by `pnpm external-demo:access:grant`:
 - no automatic HR grant;
 - idempotent grant and revocation;
 - append-preserving, audited assignment governance.
+
+## Free-plan limitations
+
+All three resources use Render's free plans. This keeps paid resources at zero, but it also means:
+
+- the API spins down after 15 minutes without inbound traffic, so the first request can take about
+  one minute;
+- the API has no Dashboard Shell, SSH, or free one-off job execution;
+- the PostgreSQL database expires 30 days after creation;
+- Free PostgreSQL has no provider-managed backups or recovery;
+- the 8-hour reviewer access window cannot be renewed in place through a remote shell.
+
+This topology is disposable and non-production. A new review window requires controlled recreation
+as described in the runbook; it never justifies permanent grants or a longer TTL.
 
 ## URLs
 
