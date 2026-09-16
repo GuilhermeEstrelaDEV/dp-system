@@ -10,6 +10,7 @@ import {
   Input,
   Spinner,
 } from '@/components/common/Primitives';
+import { safeInternalPath } from '@/lib/safeInternalPath';
 import { useAuth } from './AuthContext';
 
 export function LoginPage() {
@@ -134,7 +135,7 @@ export function CompanySelectionPage() {
   const auth = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const returnTo = (location.state as { from?: string } | null)?.from ?? '/';
+  const returnTo = safeInternalPath((location.state as { from?: unknown } | null)?.from);
   const [error, setError] = useState<string>();
   if (!auth.token) return <Navigate to="/login" replace />;
   return (
