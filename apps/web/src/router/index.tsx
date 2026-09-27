@@ -1,5 +1,6 @@
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { App } from '@/app/App';
+import { StandaloneShell } from '@/components/layout/StandaloneShell';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { RouteErrorPage } from '@/pages/RouteErrorPage';
@@ -44,12 +45,17 @@ import {
 
 export const appRoutes: RouteObject[] = [
   {
-    path: '/login',
-    element: <LoginPage />,
-  },
-  {
-    path: '/selecionar-empresa',
-    element: <CompanySelectionPage />,
+    element: <StandaloneShell />,
+    children: [
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+      {
+        path: '/selecionar-empresa',
+        element: <CompanySelectionPage />,
+      },
+    ],
   },
   {
     element: <AuthenticatedRoute />,

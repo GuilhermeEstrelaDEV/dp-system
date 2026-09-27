@@ -17,6 +17,7 @@ import {
 } from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { CreateListFeedback } from '@/features/shared/CreateListFeedback';
 import { ContractForm, type ContractValues } from './ContractForm';
 
 type ContractDetails = EmploymentContractContract & {
@@ -59,10 +60,13 @@ export function EmploymentContractsPage() {
         method: 'POST',
         body: JSON.stringify(payload(values)),
       }),
-    onSuccess: () => {
-      void client.invalidateQueries({ queryKey: ['employment-contracts'] });
-      void client.invalidateQueries({ queryKey: ['employee'] });
+    onSuccess: async () => {
       setFormOpen(false);
+      await Promise.all([
+        client.invalidateQueries({ queryKey: ['employment-contracts'] }),
+        client.invalidateQueries({ queryKey: ['employee'] }),
+        client.invalidateQueries({ queryKey: ['employees'] }),
+      ]);
     },
   });
 
@@ -74,7 +78,14 @@ export function EmploymentContractsPage() {
         title="Contratos de trabalho"
       >
         {canManage ? (
-          <Button aria-label="Novo contrato" onClick={() => setFormOpen(true)} type="button">
+          <Button
+            aria-label="Novo contrato"
+            onClick={() => {
+              create.reset();
+              setFormOpen(true);
+            }}
+            type="button"
+          >
             + Novo contrato
           </Button>
         ) : null}
@@ -103,6 +114,17 @@ export function EmploymentContractsPage() {
         />
       ) : null}
       {create.isError ? <Alert tone="danger">{create.error.message}</Alert> : null}
+      {create.isSuccess ? (
+        <CreateListFeedback
+          action={
+            <Link className="ui-button ui-button--secondary" to={`/contratos/${create.data.id}`}>
+              Abrir contrato
+            </Link>
+          }
+          resourceLabel="Contrato"
+          visible={Boolean(list.data?.items.some((item) => item.id === create.data.id))}
+        />
+      ) : null}
 
       {list.isLoading ? (
         <LoadingState label="Carregando contratos…" />
@@ -112,7 +134,14 @@ export function EmploymentContractsPage() {
         <EmptyState
           action={
             canManage && !search ? (
-              <Button aria-label="Novo contrato" onClick={() => setFormOpen(true)} type="button">
+              <Button
+                aria-label="Novo contrato"
+                onClick={() => {
+                  create.reset();
+                  setFormOpen(true);
+                }}
+                type="button"
+              >
                 + Novo contrato
               </Button>
             ) : undefined

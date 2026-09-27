@@ -4,6 +4,7 @@ import { DataTable, DataTableActions, DataTableStatus } from '@/components/commo
 import { PageHeader } from '@/components/common/PageHeader';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { CreateListFeedback } from '@/features/shared/CreateListFeedback';
 
 type Benefit = {
   id: string;
@@ -48,13 +49,14 @@ export function BenefitsPage() {
     queryKey: ['benefit-enrollments', auth?.activeCompanyId, contractId],
     queryFn: () => apiRequest<Enrollment[]>(`/benefits/enrollments/${contractId}`),
   });
-  const invalidate = () => {
-    void client.invalidateQueries({ queryKey: ['benefits'] });
-    void client.invalidateQueries({ queryKey: ['benefit-enrollments'] });
-  };
+  const invalidate = () =>
+    Promise.all([
+      client.invalidateQueries({ queryKey: ['benefits'] }),
+      client.invalidateQueries({ queryKey: ['benefit-enrollments'] }),
+    ]);
   const createBenefit = useMutation({
     mutationFn: (form: FormData) =>
-      apiRequest('/benefits', {
+      apiRequest<{ id: string }>('/benefits', {
         method: 'POST',
         body: JSON.stringify({
           code: form.get('code'),
@@ -66,7 +68,7 @@ export function BenefitsPage() {
   });
   const createPlan = useMutation({
     mutationFn: (form: FormData) =>
-      apiRequest('/benefits/plans', {
+      apiRequest<{ id: string }>('/benefits/plans', {
         method: 'POST',
         body: JSON.stringify({
           benefitId: form.get('benefitId'),
@@ -82,7 +84,7 @@ export function BenefitsPage() {
   });
   const createEnrollment = useMutation({
     mutationFn: (form: FormData) =>
-      apiRequest('/benefits/enrollments', {
+      apiRequest<{ id: string }>('/benefits/enrollments', {
         method: 'POST',
         body: JSON.stringify({
           employmentContractId: form.get('employmentContractId'),
@@ -194,6 +196,58 @@ export function BenefitsPage() {
         </div>
       )}
       {mutationError && <p role="alert">{mutationError.message}</p>}
+      {createBenefit.isSuccess ? (
+        <CreateListFeedback
+          action={
+            <button
+              type="button"
+              onClick={() => {
+                setSearch('');
+                setType('ALL');
+              }}
+            >
+              Limpar filtros
+            </button>
+          }
+          resourceLabel="Benefício"
+          visible={benefits.data?.some((item) => item.id === createBenefit.data.id)}
+        />
+      ) : null}
+      {createPlan.isSuccess ? (
+        <CreateListFeedback
+          action={
+            <button
+              type="button"
+              onClick={() => {
+                setSearch('');
+                setType('ALL');
+              }}
+            >
+              Limpar filtros
+            </button>
+          }
+          resourceLabel="Plano"
+          visible={benefits.data?.some((item) =>
+            item.plans.some((plan) => plan.id === createPlan.data.id),
+          )}
+        />
+      ) : null}
+      {createEnrollment.isSuccess ? (
+        <CreateListFeedback
+          action={
+            <button
+              type="button"
+              onClick={() =>
+                setContractId(String(createEnrollment.variables?.get('employmentContractId') ?? ''))
+              }
+            >
+              Abrir adesões do contrato
+            </button>
+          }
+          resourceLabel="Adesão"
+          visible={enrollments.data?.some((item) => item.id === createEnrollment.data.id)}
+        />
+      ) : null}
       <div role="search" className="grid gap-3 md:grid-cols-2">
         <label>
           Pesquisar catálogo

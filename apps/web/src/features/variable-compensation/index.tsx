@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { DataTable, DataTableStatus } from '@/components/common/DataTable';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
+import { CreateListFeedback } from '@/features/shared/CreateListFeedback';
 import { type RecordKind, variableCompensationApi } from './api';
 
 const kinds: Array<[RecordKind, string]> = [
@@ -31,11 +32,11 @@ export function VariableCompensationPanel() {
   });
   const create = useMutation({
     mutationFn: (body: Record<string, string>) => variableCompensationApi.create(kind, body),
-    onSuccess: () => {
+    onSuccess: async () => {
       setAmount('');
       setType('');
       setDetails('');
-      void client.invalidateQueries({ queryKey: ['variable-compensation'] });
+      await client.invalidateQueries({ queryKey: ['variable-compensation'] });
     },
   });
   const isReconciliation = kind === 'reconciliations';
@@ -117,6 +118,12 @@ export function VariableCompensationPanel() {
             <p role="alert">Informe um decimal com até duas casas.</p>
           ) : null}
           {create.isError ? <p role="alert">{create.error.message}</p> : null}
+          {create.isSuccess ? (
+            <CreateListFeedback
+              resourceLabel="Registro"
+              visible={records.data?.some((record) => record.id === create.data.id)}
+            />
+          ) : null}
         </form>
       )}
       {records.isLoading ? <p role="status">Carregando registros…</p> : null}

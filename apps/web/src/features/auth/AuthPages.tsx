@@ -10,10 +10,12 @@ import {
   Input,
   Spinner,
 } from '@/components/common/Primitives';
+import { safeInternalPath } from '@/lib/safeInternalPath';
 import { useAuth } from './AuthContext';
 
 export function LoginPage() {
   const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
+  const isExternalDemo = import.meta.env.VITE_DEMO_ENV === 'external-demo';
   const auth = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,7 +46,11 @@ export function LoginPage() {
         <Brand inverse />
         <div>
           <p className="auth-layout__eyebrow">
-            {isDemoMode ? 'Ambiente local de demonstração' : 'Gestão de Departamento Pessoal'}
+            {isExternalDemo
+              ? 'Demo externa · Dados fictícios'
+              : isDemoMode
+                ? 'Ambiente local de demonstração'
+                : 'Gestão de Departamento Pessoal'}
           </p>
           <h1>Departamento Pessoal com contexto, segurança e rastreabilidade.</h1>
           <p>
@@ -52,7 +58,11 @@ export function LoginPage() {
             protótipo.
           </p>
         </div>
-        {isDemoMode && <small>Dados fictícios · Data-base 01/07/2026</small>}
+        {isDemoMode && (
+          <small>
+            {isExternalDemo ? 'Homologação externa · ' : ''}Dados fictícios · Data-base 01/07/2026
+          </small>
+        )}
       </section>
       <section className="auth-layout__form" aria-labelledby="login-title">
         <div className="auth-layout__mobile-brand">
@@ -95,16 +105,24 @@ export function LoginPage() {
             <Card>
               <div className="auth-form__demo-heading">
                 <Badge tone="warning">Ambiente de demonstração</Badge>
-                <strong>Conta demonstrativa</strong>
+                <strong>
+                  {isExternalDemo ? 'Conta de avaliação externa' : 'Conta demonstrativa'}
+                </strong>
               </div>
-              <p>Administrador Demo · uso fictício e exclusivamente local.</p>
-              <Button
-                onClick={() => setEmail('admin.demo@dp-system.local')}
-                type="button"
-                variant="ghost"
-              >
-                Preencher e-mail demo
-              </Button>
+              <p>
+                {isExternalDemo
+                  ? 'Use as credenciais fictícias compartilhadas pelo proprietário em canal privado.'
+                  : 'Administrador Demo · uso fictício e exclusivamente local.'}
+              </p>
+              {!isExternalDemo && (
+                <Button
+                  onClick={() => setEmail('admin.demo@dp-system.local')}
+                  type="button"
+                  variant="ghost"
+                >
+                  Preencher e-mail demo
+                </Button>
+              )}
             </Card>
           )}
         </form>
@@ -117,7 +135,7 @@ export function CompanySelectionPage() {
   const auth = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const returnTo = (location.state as { from?: string } | null)?.from ?? '/';
+  const returnTo = safeInternalPath((location.state as { from?: unknown } | null)?.from);
   const [error, setError] = useState<string>();
   if (!auth.token) return <Navigate to="/login" replace />;
   return (

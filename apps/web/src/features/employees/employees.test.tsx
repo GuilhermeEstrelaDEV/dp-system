@@ -29,6 +29,15 @@ function renderPage(path: string) {
     </MemoryRouter>,
   );
 }
+
+function fillRequiredEmployeeFields(name = 'Nova Pessoa Fictícia') {
+  fireEvent.change(screen.getByLabelText(/Nome completo/), { target: { value: name } });
+  fireEvent.change(screen.getByLabelText(/CPF/), { target: { value: '529.982.247-25' } });
+  fireEvent.change(screen.getByLabelText(/Data de nascimento/), {
+    target: { value: '1990-02-28' },
+  });
+}
+
 describe('EmployeesPage', () => {
   beforeEach(() => {
     apiRequest.mockReset();
@@ -55,29 +64,29 @@ describe('EmployeesPage', () => {
     expect(screen.getByText('Data de nascimento é obrigatória')).toBeInTheDocument();
   });
 
-  it('routes a newly created employee to its first contract before opening the scoped detail', async () => {
+  it('refetches and renders the employee returned by create without a page reload', async () => {
+    const createdEmployee = {
+      id: 'employee-new',
+      legalName: 'Nova Pessoa Fictícia',
+      preferredName: null,
+      status: 'ACTIVE',
+    };
+    let persisted = false;
     apiRequest.mockImplementation((path: string, options?: RequestInit) => {
       if (path === '/employees' && options?.method === 'POST') {
-        return Promise.resolve({
-          id: 'employee-new',
-          legalName: 'Nova Pessoa Fictícia',
-          preferredName: null,
-          status: 'ACTIVE',
-        });
+        persisted = true;
+        return Promise.resolve(createdEmployee);
       }
-      return Promise.resolve({ items: [] });
+      if (path === '/employees') {
+        return Promise.resolve({ items: persisted ? [createdEmployee] : [] });
+      }
+      return Promise.resolve(createdEmployee);
     });
     renderPage('/colaboradores');
 
     await screen.findByText('Nenhum colaborador demonstrativo encontrado');
     fireEvent.click(screen.getAllByRole('button', { name: 'Novo colaborador' })[0]!);
-    fireEvent.change(screen.getByLabelText(/Nome completo/), {
-      target: { value: 'Nova Pessoa Fictícia' },
-    });
-    fireEvent.change(screen.getByLabelText(/CPF/), { target: { value: '529.982.247-25' } });
-    fireEvent.change(screen.getByLabelText(/Data de nascimento/), {
-      target: { value: '1990-02-28' },
-    });
+    fillRequiredEmployeeFields();
     fireEvent.change(screen.getByLabelText(/Estado civil/), { target: { value: 'SINGLE' } });
     fireEvent.change(screen.getByLabelText(/E-mail pessoal/), {
       target: { value: 'nova.pessoa@dp-system.local' },
@@ -93,7 +102,16 @@ describe('EmployeesPage', () => {
     fireEvent.change(screen.getByLabelText(/^UF/), { target: { value: 'DF' } });
     fireEvent.click(screen.getByRole('button', { name: 'Criar colaborador' }));
 
-    expect(await screen.findByText('Cadastro inicial de contrato')).toBeInTheDocument();
+    expect(await screen.findByText('Colaborador criado com sucesso.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Nova Pessoa Fictícia' })).toHaveAttribute(
+      'href',
+      '/colaboradores/employee-new',
+    );
+    expect(screen.getByRole('link', { name: 'Abrir colaborador' })).toHaveAttribute(
+      'href',
+      '/colaboradores/employee-new',
+    );
+    expect(apiRequest.mock.calls.filter(([path]) => path === '/employees')).toHaveLength(3);
     expect(apiRequest).toHaveBeenCalledWith('/employees', {
       method: 'POST',
       body: JSON.stringify({
@@ -112,6 +130,37 @@ describe('EmployeesPage', () => {
         },
       }),
     });
+  });
+
+  it('explains when an active created employee is hidden by the current filter', async () => {
+    const createdEmployee = {
+      id: 'employee-filtered',
+      legalName: 'Pessoa Fora do Filtro',
+      preferredName: null,
+      status: 'ACTIVE',
+    };
+    apiRequest.mockImplementation((path: string, options?: RequestInit) => {
+      if (path === '/employees' && options?.method === 'POST') {
+        return Promise.resolve(createdEmployee);
+      }
+      return Promise.resolve({ items: [] });
+    });
+    renderPage('/colaboradores');
+    await screen.findByText('Nenhum colaborador demonstrativo encontrado');
+    fireEvent.change(screen.getByLabelText('Filtrar colaboradores por status'), {
+      target: { value: 'INACTIVE' },
+    });
+    fireEvent.click(screen.getAllByRole('button', { name: 'Novo colaborador' })[0]!);
+    fillRequiredEmployeeFields('Pessoa Fora do Filtro');
+    fireEvent.click(screen.getByRole('button', { name: 'Criar colaborador' }));
+
+    expect(
+      await screen.findByText(/não aparece na visualização atual devido aos filtros/),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Abrir colaborador' })).toHaveAttribute(
+      'href',
+      '/colaboradores/employee-filtered',
+    );
   });
   it('shows active employee and allows logical inactivation', async () => {
     apiRequest.mockResolvedValue({

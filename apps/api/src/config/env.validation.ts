@@ -3,6 +3,8 @@ import Joi from 'joi';
 export function validateEnvironment(config: Record<string, unknown>) {
   const schema = Joi.object({
     NODE_ENV: Joi.string().valid('development', 'test', 'production').default('development'),
+    DEPLOYMENT_ENV: Joi.string().optional(),
+    PORT: Joi.number().port().optional(),
     API_PORT: Joi.number().port().default(3000),
     API_PREFIX: Joi.string()
       .pattern(/^[a-z0-9-]+$/)
@@ -38,6 +40,27 @@ export function validateEnvironment(config: Record<string, unknown>) {
     throw new Error(
       `Invalid environment configuration: ${error.details.map((detail) => detail.path.join('.')).join(', ')}`,
     );
+  }
+
+  if (value.DEPLOYMENT_ENV === 'external-demo') {
+    const corsOrigins = value.CORS_ORIGINS as unknown;
+    if (typeof corsOrigins !== 'string' || corsOrigins.includes(',')) {
+      throw new Error('Invalid external demo configuration: CORS_ORIGINS');
+    }
+    let origin: URL;
+    try {
+      origin = new URL(corsOrigins);
+    } catch {
+      throw new Error('Invalid external demo configuration: CORS_ORIGINS');
+    }
+    if (
+      origin.protocol !== 'https:' ||
+      origin.origin !== corsOrigins ||
+      ['localhost', '127.0.0.1', '::1'].includes(origin.hostname) ||
+      value.SWAGGER_ENABLED !== false
+    ) {
+      throw new Error('Invalid external demo configuration: CORS_ORIGINS, SWAGGER_ENABLED');
+    }
   }
 
   return value;

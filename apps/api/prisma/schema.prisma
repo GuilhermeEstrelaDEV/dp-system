@@ -366,6 +366,7 @@ model Company {
   positions                                   Position[]
   costCenters                                 CostCenter[]
   employmentContracts                         EmploymentContract[]
+  originatedEmployees                         Employee[]                                   @relation("EmployeeOriginCompany")
   admissionProcesses                          AdmissionProcess[]
   checklistTemplates                          ChecklistTemplate[]
   workSchedules                               WorkSchedule[]
@@ -524,6 +525,7 @@ model CostCenter {
 
 model Employee {
   id                  String                    @id @default(uuid()) @db.Uuid
+  originCompanyId     String?                   @map("origin_company_id") @db.Uuid
   legalName           String                    @map("legal_name") @db.VarChar(160)
   preferredName       String?                   @map("preferred_name") @db.VarChar(160)
   cpf                 String?                   @db.VarChar(11)
@@ -539,9 +541,11 @@ model Employee {
   emergencyContact    EmployeeEmergencyContact?
   employmentContracts EmploymentContract[]
   admissionProcesses  AdmissionProcess[]
+  originCompany       Company?                  @relation("EmployeeOriginCompany", fields: [originCompanyId], references: [id], onDelete: Restrict)
 
   @@index([status])
   @@index([legalName])
+  @@index([originCompanyId, status])
   @@map("employees")
 }
 

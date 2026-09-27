@@ -94,6 +94,7 @@ describe('EmployeesService profile expansion', () => {
     expect(prisma.employee.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
+          originCompanyId: 'company-id',
           cpf: '52998224725',
           birthDate: new Date('1990-02-28T00:00:00.000Z'),
           maritalStatus: 'SINGLE',
@@ -178,6 +179,43 @@ describe('EmployeesService profile expansion', () => {
     expect(projection).not.toHaveProperty('cpf');
     expect(projection).not.toHaveProperty('birthDate');
     expect(projection).not.toHaveProperty('address');
+    expect(prisma.employee.findMany.mock.calls[0]?.[0]?.where).toEqual(
+      expect.objectContaining({
+        AND: expect.arrayContaining([
+          {
+            OR: [
+              { originCompanyId: 'company-id' },
+              { employmentContracts: { some: { companyId: 'company-id' } } },
+            ],
+          },
+        ]),
+      }),
+    );
+  });
+
+  it('keeps organizational filters bound to contracts in the active company', async () => {
+    prisma.employee.findMany.mockResolvedValue([]);
+    prisma.employee.count.mockResolvedValue(0);
+    prisma.$transaction.mockImplementation(async (operations: Array<Promise<unknown>>) =>
+      Promise.all(operations),
+    );
+
+    await service.list(
+      {
+        page: 1,
+        pageSize: 20,
+        sortBy: 'legalName',
+        sortDirection: 'asc',
+        departmentId: 'department-id',
+      },
+      principal,
+    );
+
+    expect(prisma.employee.findMany.mock.calls[0]?.[0]?.where?.AND?.[0]).toEqual({
+      employmentContracts: {
+        some: expect.objectContaining({ companyId: 'company-id', departmentId: 'department-id' }),
+      },
+    });
   });
 
   it('returns 404 when the employee does not belong to the active company', async () => {

@@ -204,7 +204,7 @@ async function main() {
   exact('eventos', events, 28);
   exact('parâmetros', parameters, 4);
   exact('rubricas', rubrics, 4);
-  exact('migrations', Number(migrations[0]?.count ?? 0), 17);
+  exact('migrations', Number(migrations[0]?.count ?? 0), 18);
 
   const now = new Date();
   const activeDemoGrants = rolePermissions.filter(

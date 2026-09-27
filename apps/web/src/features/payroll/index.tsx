@@ -16,6 +16,7 @@ import { payrollRubricsApi, type CreatePayrollRubric, type PayrollRubric } from 
 import { VariableCompensationPanel } from '@/features/variable-compensation';
 import { PayrollPeriodHistoryPanel } from '@/features/payroll-period-history/PayrollPeriodHistoryPages';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
+import { CreateListFeedback } from '@/features/shared/CreateListFeedback';
 
 const payrollPages = [
   [
@@ -202,10 +203,10 @@ function PayrollRubricsPanel() {
       return payrollRubricsApi.list(query);
     },
   });
-  const refresh = () => void client.invalidateQueries({ queryKey: ['payroll-rubrics'] });
+  const refresh = () => client.invalidateQueries({ queryKey: ['payroll-rubrics'] });
   const create = useMutation({
     mutationFn: payrollRubricsApi.create,
-    onSuccess: () => {
+    onSuccess: async () => {
       setForm({
         companyId: auth?.activeCompanyId ?? '',
         payrollRubricCategoryId: '',
@@ -217,7 +218,7 @@ function PayrollRubricsPanel() {
         incidenceConfigurationText: '',
       });
       setFormError(undefined);
-      refresh();
+      await refresh();
     },
   });
   const updateStatus = useMutation({
@@ -339,6 +340,24 @@ function PayrollRubricsPanel() {
           <button disabled={create.isPending}>Criar rubrica</button>
           {formError ? <p role="alert">{formError}</p> : null}
           {create.isError ? <p role="alert">{create.error.message}</p> : null}
+          {create.isSuccess ? (
+            <CreateListFeedback
+              action={
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch('');
+                    setStatus('ALL');
+                    setPage(1);
+                  }}
+                >
+                  Limpar filtros
+                </button>
+              }
+              resourceLabel="Rubrica"
+              visible={rubrics.data?.items.some((item) => item.id === create.data.id)}
+            />
+          ) : null}
         </form>
       )}
       <label className="mt-4 block">
@@ -538,10 +557,10 @@ function PayrollParametersPanel() {
       return payrollParametersApi.list(query);
     },
   });
-  const refresh = () => void client.invalidateQueries({ queryKey: ['payroll-parameters'] });
+  const refresh = () => client.invalidateQueries({ queryKey: ['payroll-parameters'] });
   const create = useMutation({
     mutationFn: payrollParametersApi.create,
-    onSuccess: () => {
+    onSuccess: async () => {
       setForm({
         companyId: auth?.activeCompanyId ?? '',
         code: '',
@@ -554,7 +573,7 @@ function PayrollParametersPanel() {
         definitionText: '',
       });
       setFormError(undefined);
-      refresh();
+      await refresh();
     },
   });
   const updateStatus = useMutation({
@@ -670,6 +689,24 @@ function PayrollParametersPanel() {
           <button disabled={create.isPending}>Criar parâmetro</button>
           {formError ? <p role="alert">{formError}</p> : null}
           {create.isError ? <p role="alert">{create.error.message}</p> : null}
+          {create.isSuccess ? (
+            <CreateListFeedback
+              action={
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch('');
+                    setStatus('ALL');
+                    setPage(1);
+                  }}
+                >
+                  Limpar filtros
+                </button>
+              }
+              resourceLabel="Parâmetro"
+              visible={parameters.data?.items.some((item) => item.id === create.data.id)}
+            />
+          ) : null}
         </form>
       )}
       <label className="mt-4 block">
@@ -816,17 +853,17 @@ function PayrollRunsPanel() {
         }),
       ),
   });
-  const refresh = () => void client.invalidateQueries({ queryKey: ['payroll-runs'] });
+  const refresh = () => client.invalidateQueries({ queryKey: ['payroll-runs'] });
   const create = useMutation({
     mutationFn: payrollRunsApi.create,
-    onSuccess: () => {
+    onSuccess: async () => {
       setForm({
         payrollPeriodId: '',
         engineVersion: 'foundation-v1',
         parameterSnapshotVersion: '',
         technicalNotes: '',
       });
-      refresh();
+      await refresh();
     },
   });
   return (
@@ -887,6 +924,17 @@ function PayrollRunsPanel() {
           </label>
           <button disabled={create.isPending}>Iniciar execução técnica</button>
           {create.isError ? <p role="alert">{create.error.message}</p> : null}
+          {create.isSuccess ? (
+            <CreateListFeedback
+              action={
+                <button type="button" onClick={() => setPage(1)}>
+                  Ir para a primeira página
+                </button>
+              }
+              resourceLabel="Execução de folha"
+              visible={runs.data?.items.some((item) => item.id === create.data.id)}
+            />
+          ) : null}
         </form>
       ) : null}
       <label className="mt-4 block">
@@ -1009,10 +1057,10 @@ function PayrollInputsPanel() {
         }),
       ),
   });
-  const refresh = () => void client.invalidateQueries({ queryKey: ['payroll-inputs'] });
+  const refresh = () => client.invalidateQueries({ queryKey: ['payroll-inputs'] });
   const create = useMutation({
     mutationFn: payrollInputsApi.create,
-    onSuccess: () => {
+    onSuccess: async () => {
       setForm({
         payrollPeriodId: '',
         employeeId: '',
@@ -1025,7 +1073,7 @@ function PayrollInputsPanel() {
         technicalNotes: '',
       });
       setFormError(undefined);
-      refresh();
+      await refresh();
     },
   });
   const inactivate = useMutation({
@@ -1136,6 +1184,17 @@ function PayrollInputsPanel() {
           <button disabled={create.isPending}>Criar lançamento</button>
           {formError ? <p role="alert">{formError}</p> : null}
           {create.isError ? <p role="alert">{create.error.message}</p> : null}
+          {create.isSuccess ? (
+            <CreateListFeedback
+              action={
+                <button type="button" onClick={() => setPage(1)}>
+                  Ir para a primeira página
+                </button>
+              }
+              resourceLabel="Lançamento"
+              visible={inputs.data?.items.some((item) => item.id === create.data.id)}
+            />
+          ) : null}
         </form>
       ) : null}
       <label className="mt-4 block">
@@ -1246,17 +1305,17 @@ function PayrollPeriodsPanel() {
     queryFn: () =>
       payrollPeriodsApi.list(new URLSearchParams({ companyId, page: '1', pageSize: '20' })),
   });
-  const refresh = () => void client.invalidateQueries({ queryKey: ['payroll-periods'] });
+  const refresh = () => client.invalidateQueries({ queryKey: ['payroll-periods'] });
   const create = useMutation({
     mutationFn: payrollPeriodsApi.create,
-    onSuccess: () => {
+    onSuccess: async () => {
       setForm({
         companyId: auth?.activeCompanyId ?? '',
         payrollCalendarId: '',
         referenceDate: '',
         type: 'REGULAR',
       });
-      refresh();
+      await refresh();
     },
   });
   const validate = useMutation({ mutationFn: payrollPeriodsApi.validate });
@@ -1301,6 +1360,12 @@ function PayrollPeriodsPanel() {
           </label>
           <button disabled={create.isPending}>Criar competência</button>
           {create.isError ? <p role="alert">{create.error.message}</p> : null}
+          {create.isSuccess ? (
+            <CreateListFeedback
+              resourceLabel="Competência"
+              visible={periods.data?.items.some((item) => item.id === create.data.id)}
+            />
+          ) : null}
         </form>
       ) : null}
       <label className="mt-4 block">

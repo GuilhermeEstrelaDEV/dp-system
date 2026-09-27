@@ -29,6 +29,7 @@ import {
   Select,
 } from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
+import { CreateListFeedback } from '@/features/shared/CreateListFeedback';
 import { apiRequest } from '@/lib/api';
 import { EmployeeForm } from './EmployeeForm';
 import { type EmployeeValues, toEmployeeProfilePayload } from './employee-profile';
@@ -92,6 +93,7 @@ export function EmployeeDetailsPage() {
   const client = useQueryClient();
   const [editingEmployee, setEditingEmployee] = useState(false);
   const [editingContact, setEditingContact] = useState<EmployeeContactContract | null>(null);
+  const [lastCreatedContactId, setLastCreatedContactId] = useState<string>();
   const [pendingContact, setPendingContact] = useState<EmployeeContactContract | null>(null);
   const contactValueErrorId = `${useId()}-contact-value-error`;
   const employee = useQuery({
@@ -116,7 +118,7 @@ export function EmployeeDetailsPage() {
   });
   const saveContact = useMutation({
     mutationFn: (values: ContactValues) =>
-      apiRequest(
+      apiRequest<EmployeeContactContract>(
         editingContact
           ? `/employees/${employeeId}/contacts/${editingContact.id}`
           : `/employees/${employeeId}/contacts`,
@@ -125,10 +127,12 @@ export function EmployeeDetailsPage() {
           body: JSON.stringify(values),
         },
       ),
-    onSuccess: () => {
-      void client.invalidateQueries({ queryKey: ['employee'] });
+    onSuccess: async (contact) => {
+      const created = !editingContact;
       setEditingContact(null);
       contactForm.reset({ type: 'EMAIL', value: '', isPrimary: false });
+      if (created) setLastCreatedContactId(contact.id);
+      await client.invalidateQueries({ queryKey: ['employee'] });
     },
   });
   const toggleContact = useMutation({
@@ -504,6 +508,12 @@ export function EmployeeDetailsPage() {
               </label>
             </FormSection>
             {saveContact.isError ? <Alert tone="danger">{saveContact.error.message}</Alert> : null}
+            {saveContact.isSuccess && lastCreatedContactId ? (
+              <CreateListFeedback
+                resourceLabel="Contato"
+                visible={item.contacts.some((contact) => contact.id === lastCreatedContactId)}
+              />
+            ) : null}
             <FormActions>
               {editingContact ? (
                 <Button

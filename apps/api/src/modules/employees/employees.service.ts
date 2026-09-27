@@ -84,23 +84,39 @@ export class EmployeesService {
   async list(query: EmployeeListQueryDto, principal: AuthenticatedPrincipal) {
     this.authorization.requireCapability(principal, 'employee.read');
     const companyId = principal.activeCompanyId!;
+    const hasOrganizationalFilter = Boolean(
+      query.branchId ?? query.departmentId ?? query.positionId ?? query.costCenterId,
+    );
+    const companyScope: Prisma.EmployeeWhereInput = hasOrganizationalFilter
+      ? {
+          employmentContracts: {
+            some: {
+              companyId,
+              branchId: query.branchId,
+              departmentId: query.departmentId,
+              positionId: query.positionId,
+              costCenterId: query.costCenterId,
+            },
+          },
+        }
+      : {
+          OR: [{ originCompanyId: companyId }, { employmentContracts: { some: { companyId } } }],
+        };
     const where: Prisma.EmployeeWhereInput = {
       status: query.status,
-      employmentContracts: {
-        some: {
-          companyId,
-          branchId: query.branchId,
-          departmentId: query.departmentId,
-          positionId: query.positionId,
-          costCenterId: query.costCenterId,
-        },
-      },
-      OR: query.search
-        ? [
-            { legalName: { contains: query.search, mode: 'insensitive' } },
-            { preferredName: { contains: query.search, mode: 'insensitive' } },
-          ]
-        : undefined,
+      AND: [
+        companyScope,
+        ...(query.search
+          ? [
+              {
+                OR: [
+                  { legalName: { contains: query.search, mode: 'insensitive' as const } },
+                  { preferredName: { contains: query.search, mode: 'insensitive' as const } },
+                ],
+              },
+            ]
+          : []),
+      ],
     };
     const [items, totalItems] = await this.prisma.$transaction([
       this.prisma.employee.findMany({
@@ -130,7 +146,10 @@ export class EmployeesService {
 
   private async findInCompany(id: string, companyId: string) {
     const entity = await this.prisma.employee.findFirst({
-      where: { id, employmentContracts: { some: { companyId } } },
+      where: {
+        id,
+        OR: [{ originCompanyId: companyId }, { employmentContracts: { some: { companyId } } }],
+      },
       select: {
         ...employeeProfileProjection,
         contacts: { select: contactProjection, orderBy: { createdAt: 'asc' } },
@@ -159,7 +178,11 @@ export class EmployeesService {
     try {
       return await this.audit.transaction(async (tx) => {
         const employee = await tx.employee.create({
-          data: { legalName: dto.legalName, ...this.employeeProfileData(dto) },
+          data: {
+            legalName: dto.legalName,
+            originCompanyId: principal.activeCompanyId!,
+            ...this.employeeProfileData(dto),
+          },
           select: employeeProfileProjection,
         });
         await this.syncProfileRelations(tx, employee.id, dto);

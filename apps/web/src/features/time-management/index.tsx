@@ -4,6 +4,7 @@ import { DataTable, DataTableActions, DataTableStatus } from '@/components/commo
 import { PageHeader } from '@/components/common/PageHeader';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { CreateListFeedback } from '@/features/shared/CreateListFeedback';
 
 type TimeEntry = {
   id: string;
@@ -32,11 +33,12 @@ type Balance = {
   entries: Array<{ id: string; occurredOn: string; type: string; minutes: number }>;
 };
 
-const invalidateTime = (client: ReturnType<typeof useQueryClient>) => {
-  void client.invalidateQueries({ queryKey: ['work-schedules'] });
-  void client.invalidateQueries({ queryKey: ['time-entries'] });
-  void client.invalidateQueries({ queryKey: ['time-balance'] });
-};
+const invalidateTime = (client: ReturnType<typeof useQueryClient>) =>
+  Promise.all([
+    client.invalidateQueries({ queryKey: ['work-schedules'] }),
+    client.invalidateQueries({ queryKey: ['time-entries'] }),
+    client.invalidateQueries({ queryKey: ['time-balance'] }),
+  ]);
 
 export function TimeManagementPage() {
   const auth = useOptionalAuth();
@@ -102,6 +104,7 @@ export function TimeManagementPage() {
           scope: 'COMPANY',
         }),
       }),
+    onSuccess: () => invalidateTime(client),
   });
   const createEntry = useMutation({
     mutationFn: (form: FormData) =>
@@ -337,7 +340,7 @@ function MutationForm({
   children,
 }: {
   readonly title: string;
-  readonly mutation: { mutate(form: FormData): void; isPending: boolean };
+  readonly mutation: { mutate(form: FormData): void; isPending: boolean; isSuccess: boolean };
   readonly children: ReactNode;
 }) {
   return (
@@ -353,6 +356,7 @@ function MutationForm({
       <DataTableActions>
         <button disabled={mutation.isPending}>Salvar</button>
       </DataTableActions>
+      {mutation.isSuccess ? <CreateListFeedback resourceLabel={title} /> : null}
     </form>
   );
 }

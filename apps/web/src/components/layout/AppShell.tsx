@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { AppFooter } from './AppFooter';
 import { Breadcrumbs } from './Breadcrumbs';
 import { Header } from './Header';
 import { MobileNavigation } from './MobileNavigation';
@@ -62,6 +63,7 @@ export function AppShell() {
             <Breadcrumbs />
             <Outlet />
           </main>
+          <AppFooter />
         </div>
       </div>
       {isMobileMenuOpen && <MobileNavigation onClose={closeMobileMenu} />}
