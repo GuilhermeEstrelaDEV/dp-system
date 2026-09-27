@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
+import { CreateListFeedback } from '@/features/shared/CreateListFeedback';
 
 type DocumentRequirement = {
   id: string;
@@ -40,12 +41,11 @@ export function AdmissionDocumentsPage() {
           observation: 'Controle lógico atualizado no ambiente demonstrativo.',
         }),
       }),
-    onSuccess: () =>
-      void client.invalidateQueries({ queryKey: ['admission-documents', admissionId] }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ['admission-documents'] }),
   });
   const create = useMutation({
     mutationFn: (form: FormData) =>
-      apiRequest(`/admission-processes/${admissionId}/documents`, {
+      apiRequest<DocumentRequirement>(`/admission-processes/${admissionId}/documents`, {
         method: 'POST',
         body: JSON.stringify({
           documentType: form.get('documentType'),
@@ -53,8 +53,7 @@ export function AdmissionDocumentsPage() {
           observation: form.get('observation') || undefined,
         }),
       }),
-    onSuccess: () =>
-      void client.invalidateQueries({ queryKey: ['admission-documents', auth?.activeCompanyId] }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ['admission-documents'] }),
   });
   const update = useMutation({
     mutationFn: () =>
@@ -157,6 +156,12 @@ export function AdmissionDocumentsPage() {
         <p role="alert">
           {action.error?.message ?? create.error?.message ?? update.error?.message}
         </p>
+      ) : null}
+      {create.isSuccess ? (
+        <CreateListFeedback
+          resourceLabel="Requisito documental"
+          visible={documents.data?.some((item) => item.id === create.data.id)}
+        />
       ) : null}
     </section>
   );

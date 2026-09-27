@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '@/components/common/PageHeader';
 import { apiRequest } from '@/lib/api';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
+import { CreateListFeedback } from '@/features/shared/CreateListFeedback';
 import { useState } from 'react';
 
 type Template = {
@@ -24,7 +25,7 @@ export function ChecklistTemplatesPage() {
   const status = useMutation({
     mutationFn: ({ id, next }: { id: string; next: 'activate' | 'inactivate' }) =>
       apiRequest(`/checklist-templates/${id}/${next}`, { method: 'PATCH' }),
-    onSuccess: () => void client.invalidateQueries({ queryKey: ['checklist-templates'] }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ['checklist-templates'] }),
   });
   const create = useMutation({
     mutationFn: (form: FormData) =>
@@ -127,6 +128,12 @@ export function ChecklistTemplatesPage() {
         <p role="alert">
           {status.error?.message ?? create.error?.message ?? detail.error?.message}
         </p>
+      ) : null}
+      {create.isSuccess ? (
+        <CreateListFeedback
+          resourceLabel="Template"
+          visible={templates.data?.some((item) => item.id === create.data.id)}
+        />
       ) : null}
     </section>
   );

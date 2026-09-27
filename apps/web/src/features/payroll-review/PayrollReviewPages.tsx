@@ -3,6 +3,7 @@ import { type FormEvent, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { useAuth } from '@/features/auth/AuthContext';
+import { CreateListFeedback } from '@/features/shared/CreateListFeedback';
 import { ApiClientError } from '@/lib/api';
 import { minimalProjectionKey, minimalProjectionScopeKey } from '@/lib/projectionCache';
 import {
@@ -130,7 +131,7 @@ export function PayrollRunReviewPage() {
   });
   const create = useMutation({
     mutationFn: () => payrollReviewApi.createCycle(runId),
-    onSuccess: () => void client.invalidateQueries({ queryKey: cyclesKey }),
+    onSuccess: () => client.invalidateQueries({ queryKey: cyclesKey }),
   });
   const hasActive = cycles.data?.some((cycle) => cycle.status !== 'CLOSED') ?? false;
   return (
@@ -166,6 +167,12 @@ export function PayrollRunReviewPage() {
         </button>
       ) : null}
       {create.isError ? <ErrorMessage error={create.error} /> : null}
+      {create.isSuccess ? (
+        <CreateListFeedback
+          resourceLabel="Ciclo de conferência"
+          visible={cycles.data?.some((cycle) => cycle.id === create.data.id)}
+        />
+      ) : null}
       <h2 className="mt-6">Ciclos de conferência</h2>
       {cycles.data?.length === 0 ? <p>Nenhum ciclo criado.</p> : null}
       <ul className="grid gap-3">
@@ -228,16 +235,15 @@ export function PayrollReviewDetailPage() {
     queryKey: historyKey,
     queryFn: () => payrollReviewApi.history(reviewId),
   });
-  const refresh = () => {
-    void client.invalidateQueries({
+  const refresh = () =>
+    client.invalidateQueries({
       queryKey: minimalProjectionScopeKey(auth.activeCompanyId, auth.user?.actorId),
     });
-  };
   const createFinding = useMutation({
     mutationFn: (body: CreateFinding) => payrollReviewApi.createFinding(reviewId, body),
-    onSuccess: () => {
+    onSuccess: async () => {
       setFindingForm(emptyFinding);
-      refresh();
+      await refresh();
     },
   });
   const action = useMutation({
@@ -381,6 +387,23 @@ export function PayrollReviewDetailPage() {
             pending={createFinding.isPending}
             onChange={setFindingForm}
             onSubmit={submitFinding}
+          />
+        ) : null}
+        {createFinding.isSuccess ? (
+          <CreateListFeedback
+            action={
+              <button
+                type="button"
+                onClick={() => {
+                  setStatusFilter('ALL');
+                  setSeverityFilter('ALL');
+                }}
+              >
+                Limpar filtros
+              </button>
+            }
+            resourceLabel="Achado"
+            visible={data.findings.some((finding) => finding.id === createFinding.data.id)}
           />
         ) : null}
         {findings?.length === 0 ? <p>Nenhum achado para os filtros selecionados.</p> : null}

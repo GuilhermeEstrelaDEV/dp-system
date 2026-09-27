@@ -4,6 +4,7 @@ import { DataTable, DataTableActions, DataTableStatus } from '@/components/commo
 import { PageHeader } from '@/components/common/PageHeader';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { CreateListFeedback } from '@/features/shared/CreateListFeedback';
 
 type LeaveType = {
   id: string;
@@ -37,7 +38,7 @@ export function VacationsLeavesPage() {
   });
   const createType = useMutation({
     mutationFn: (form: FormData) =>
-      apiRequest('/leave-types', {
+      apiRequest<{ id: string }>('/leave-types', {
         method: 'POST',
         body: JSON.stringify({
           code: form.get('code'),
@@ -45,11 +46,11 @@ export function VacationsLeavesPage() {
           requiresExpectedReturn: form.get('requiresExpectedReturn') === 'on',
         }),
       }),
-    onSuccess: () => void client.invalidateQueries({ queryKey: ['leave-types'] }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ['leave-types'] }),
   });
   const createLeave = useMutation({
     mutationFn: (form: FormData) =>
-      apiRequest('/leave-cases', {
+      apiRequest<{ id: string }>('/leave-cases', {
         method: 'POST',
         body: JSON.stringify({
           employmentContractId: form.get('employmentContractId'),
@@ -59,7 +60,7 @@ export function VacationsLeavesPage() {
           reason: form.get('reason') || undefined,
         }),
       }),
-    onSuccess: () => void client.invalidateQueries({ queryKey: ['leave-cases'] }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ['leave-cases'] }),
   });
   const registerReturn = useMutation({
     mutationFn: ({ id, form }: { id: string; form: FormData }) =>
@@ -151,6 +152,18 @@ export function VacationsLeavesPage() {
       ) : null}
       {createType.isError || createLeave.isError ? (
         <p role="alert">{createType.error?.message ?? createLeave.error?.message}</p>
+      ) : null}
+      {createType.isSuccess ? (
+        <CreateListFeedback
+          resourceLabel="Tipo de afastamento"
+          visible={types.data?.some((item) => item.id === createType.data.id)}
+        />
+      ) : null}
+      {createLeave.isSuccess ? (
+        <CreateListFeedback
+          resourceLabel="Afastamento"
+          visible={leaves.data?.some((item) => item.id === createLeave.data.id)}
+        />
       ) : null}
       {leaves.isLoading ? <p role="status">Carregando afastamentos…</p> : null}
       {leaves.data?.length === 0 ? <p>Nenhum afastamento demonstrativo encontrado.</p> : null}
@@ -268,13 +281,14 @@ export function VacationManagementPage() {
         `/vacation-requests${contractId ? `?employmentContractId=${contractId}` : ''}`,
       ),
   });
-  const invalidate = () => {
-    void client.invalidateQueries({ queryKey: ['vacation-periods'] });
-    void client.invalidateQueries({ queryKey: ['vacation-requests'] });
-  };
+  const invalidate = () =>
+    Promise.all([
+      client.invalidateQueries({ queryKey: ['vacation-periods'] }),
+      client.invalidateQueries({ queryKey: ['vacation-requests'] }),
+    ]);
   const createPeriod = useMutation({
     mutationFn: (form: FormData) =>
-      apiRequest('/vacation-periods', {
+      apiRequest<{ id: string }>('/vacation-periods', {
         method: 'POST',
         body: JSON.stringify({
           employmentContractId: form.get('employmentContractId'),
@@ -289,7 +303,7 @@ export function VacationManagementPage() {
   });
   const createRequest = useMutation({
     mutationFn: (form: FormData) =>
-      apiRequest('/vacation-requests', {
+      apiRequest<{ id: string }>('/vacation-requests', {
         method: 'POST',
         body: JSON.stringify({
           employmentContractId: form.get('employmentContractId'),
@@ -304,7 +318,7 @@ export function VacationManagementPage() {
   });
   const createCollective = useMutation({
     mutationFn: (form: FormData) =>
-      apiRequest('/collective-vacations', {
+      apiRequest<{ id: string }>('/collective-vacations', {
         method: 'POST',
         body: JSON.stringify({
           name: form.get('name'),
@@ -420,6 +434,19 @@ export function VacationManagementPage() {
         </div>
       )}
       {mutationError && <p role="alert">{mutationError.message}</p>}
+      {createPeriod.isSuccess ? (
+        <CreateListFeedback
+          resourceLabel="Período aquisitivo"
+          visible={periods.data?.some((item) => item.id === createPeriod.data.id)}
+        />
+      ) : null}
+      {createRequest.isSuccess ? (
+        <CreateListFeedback
+          resourceLabel="Solicitação de férias"
+          visible={requests.data?.some((item) => item.id === createRequest.data.id)}
+        />
+      ) : null}
+      {createCollective.isSuccess ? <CreateListFeedback resourceLabel="Férias coletivas" /> : null}
       {periods.isError || requests.isError ? (
         <p role="alert">{periods.error?.message ?? requests.error?.message}</p>
       ) : null}

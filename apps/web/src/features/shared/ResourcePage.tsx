@@ -22,6 +22,7 @@ import {
 } from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { CreateListFeedback } from './CreateListFeedback';
 
 type Field = readonly [key: string, label: string, required?: boolean];
 
@@ -58,6 +59,7 @@ export function ResourcePage<TItem extends RecordItem>({
   const [editing, setEditing] = useState<TItem | null>(null);
   const [selected, setSelected] = useState<TItem | null>(null);
   const [pendingStatus, setPendingStatus] = useState<TItem | null>(null);
+  const [lastCreated, setLastCreated] = useState<TItem | null>(null);
   const formId = useId();
   const client = useQueryClient();
   const schema = z.object(
@@ -88,12 +90,14 @@ export function ResourcePage<TItem extends RecordItem>({
         method: editing ? 'PATCH' : 'POST',
         body: JSON.stringify(companyScoped && !editing ? { ...values, companyId } : values),
       }),
-    onSuccess: () => {
-      void client.invalidateQueries({ queryKey: [endpoint] });
+    onSuccess: async (item) => {
+      const created = !editing;
       setEditing(null);
       setShowForm(false);
       setSelected(null);
       form.reset();
+      if (created) setLastCreated(item);
+      await client.invalidateQueries({ queryKey: [endpoint] });
     },
   });
   const toggle = useMutation({
@@ -107,6 +111,7 @@ export function ResourcePage<TItem extends RecordItem>({
 
   const openCreate = () => {
     save.reset();
+    setLastCreated(null);
     setEditing(null);
     form.reset();
     setShowForm(true);
@@ -210,7 +215,16 @@ export function ResourcePage<TItem extends RecordItem>({
         </form>
       ) : null}
 
-      {save.isSuccess && !showForm ? (
+      {save.isSuccess && !showForm && lastCreated ? (
+        <CreateListFeedback
+          action={
+            <Button onClick={() => setSelected(lastCreated)} type="button" variant="secondary">
+              Abrir registro criado
+            </Button>
+          }
+          visible={Boolean(list.data?.items.some((item) => item.id === lastCreated.id))}
+        />
+      ) : save.isSuccess && !showForm ? (
         <Alert tone="success">Registro salvo com sucesso.</Alert>
       ) : null}
       {!ready ? (

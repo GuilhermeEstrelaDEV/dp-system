@@ -1,7 +1,7 @@
 import type { EmployeeContract } from '@dp-system/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { DataTable, DataTableActions, DataTableStatus } from '@/components/common/DataTable';
 import { PageHeader } from '@/components/common/PageHeader';
 import {
@@ -17,6 +17,7 @@ import {
 } from '@/components/common/Primitives';
 import { useOptionalAuth } from '@/features/auth/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { CreateListFeedback } from '@/features/shared/CreateListFeedback';
 import { EmployeeForm } from './EmployeeForm';
 import { type EmployeeValues, toEmployeeProfilePayload } from './employee-profile';
 
@@ -28,7 +29,6 @@ export function EmployeesPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<EmployeeContract | null>(null);
   const client = useQueryClient();
-  const navigate = useNavigate();
   const list = useQuery({
     queryKey: ['employees', auth?.activeCompanyId, search, status],
     queryFn: () => {
@@ -45,9 +45,9 @@ export function EmployeesPage() {
         method: 'POST',
         body: JSON.stringify(toEmployeeProfilePayload(values)),
       }),
-    onSuccess: (employee) => {
-      void client.invalidateQueries({ queryKey: ['employees'] });
-      navigate(`/colaboradores/${employee.id}/contratos`);
+    onSuccess: async () => {
+      setCreateOpen(false);
+      await client.invalidateQueries({ queryKey: ['employees'] });
     },
   });
   const toggle = useMutation({
@@ -67,7 +67,14 @@ export function EmployeesPage() {
         title="Colaboradores"
       >
         {canManage ? (
-          <Button aria-label="Novo colaborador" onClick={() => setCreateOpen(true)} type="button">
+          <Button
+            aria-label="Novo colaborador"
+            onClick={() => {
+              create.reset();
+              setCreateOpen(true);
+            }}
+            type="button"
+          >
             + Novo colaborador
           </Button>
         ) : null}
@@ -107,6 +114,20 @@ export function EmployeesPage() {
         />
       ) : null}
       {create.isError ? <Alert tone="danger">{create.error.message}</Alert> : null}
+      {create.isSuccess ? (
+        <CreateListFeedback
+          action={
+            <Link
+              className="ui-button ui-button--secondary"
+              to={`/colaboradores/${create.data.id}`}
+            >
+              Abrir colaborador
+            </Link>
+          }
+          resourceLabel="Colaborador"
+          visible={Boolean(list.data?.items.some((item) => item.id === create.data.id))}
+        />
+      ) : null}
       {list.isLoading ? (
         <LoadingState label="Carregando colaboradores…" />
       ) : list.isError ? (
@@ -117,7 +138,10 @@ export function EmployeesPage() {
             canManage && !search && !status ? (
               <Button
                 aria-label="Novo colaborador"
-                onClick={() => setCreateOpen(true)}
+                onClick={() => {
+                  create.reset();
+                  setCreateOpen(true);
+                }}
                 type="button"
               >
                 + Novo colaborador

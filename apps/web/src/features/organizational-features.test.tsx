@@ -196,4 +196,52 @@ describe('organizational structure features', () => {
       ),
     );
   });
+
+  it('refetches a shared resource and explains when the current filter hides it', async () => {
+    useOptionalAuth.mockReturnValue({ hasCapability: () => true });
+    const created = {
+      id: 'company-created',
+      legalName: 'Empresa Criada',
+      tradeName: 'Criada',
+      taxId: '22.222.222/0001-22',
+      status: 'ACTIVE',
+    };
+    apiRequest.mockImplementation((path: string, options?: RequestInit) => {
+      if (path === '/companies' && options?.method === 'POST') return Promise.resolve(created);
+      return Promise.resolve({ items: [], pagination: { totalPages: 1 } });
+    });
+    renderFeature(<CompaniesPage />);
+    await screen.findByText('Nenhum registro em empresas');
+    fireEvent.change(screen.getByLabelText('Filtrar por status'), {
+      target: { value: 'INACTIVE' },
+    });
+    fireEvent.click(screen.getAllByRole('button', { name: 'Nova empresa' })[0]!);
+    fireEvent.change(screen.getByLabelText(/Razão social/), {
+      target: { value: created.legalName },
+    });
+    fireEvent.change(screen.getByLabelText(/Nome fantasia/), {
+      target: { value: created.tradeName },
+    });
+    fireEvent.change(screen.getByLabelText(/CNPJ fictício/), {
+      target: { value: created.taxId },
+    });
+    fireEvent.click(
+      screen
+        .getAllByRole('button', { name: 'Nova empresa' })
+        .find((button) => button.getAttribute('type') === 'submit')!,
+    );
+
+    expect(
+      await screen.findByText(/não aparece na visualização atual devido aos filtros/),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir registro criado' }));
+    expect(screen.getByRole('region', { name: 'Detalhes do registro' })).toHaveTextContent(
+      created.legalName,
+    );
+    expect(
+      apiRequest.mock.calls.filter(
+        ([path, options]) => String(path).startsWith('/companies?') && !options,
+      ).length,
+    ).toBeGreaterThanOrEqual(3);
+  });
 });
